@@ -19,8 +19,6 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 public class GreenLanternPipeline extends OpenCvPipeline
 {
-    // we want to use webcam for our source.
-    OpenCvWebcam webcam;
 
     // HSV low and high values for our team shipping element.
     Scalar lowValues = new Scalar(86, 102, 11);
@@ -43,9 +41,9 @@ public class GreenLanternPipeline extends OpenCvPipeline
             new Point(1280,720 ),
             new Point(853.333334,0 ));
 
-    boolean DEBUG = true;
+    boolean DEBUG;
 
-    double threshold_percentage = 0.4; // 40% of the element color
+    double threshold_percentage = 0.01; // 1% of the element color
 
     // the list of locations that can be
     public enum Location{
@@ -87,13 +85,15 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
         // if debugging so we display more values in telemetry.
         if(DEBUG){
-            telemetry.addLine("Left raw value: " + (int) Core.sumElems(left).val[0]);
-            telemetry.addLine("Center raw value: " + (int) Core.sumElems(center).val[0]);
-            telemetry.addLine("Right raw value: " + (int) Core.sumElems(right).val[0]);
+            threshold_percentage = 0;
 
-            telemetry.addLine("Left average percentage: " + (int) Math.round(leftAvg * 100) + "%");
-            telemetry.addLine("Center average percentage: " + (int) Math.round(centerAvg * 100) + "%");
-            telemetry.addLine("Right average percentage: " + (int) Math.round(rightAvg * 100) + "%");
+            telemetry.addData("Left raw value", Core.sumElems(left).val[0]);
+            telemetry.addData("Center raw value", Core.sumElems(center).val[0]);
+            telemetry.addData("Right raw value", Core.sumElems(right).val[0]);
+            telemetry.addData("Left average percentage", Math.round(leftAvg * 100) + "%");
+            telemetry.addData("Center average percentage", Math.round(centerAvg * 100) + "%");
+            telemetry.addData("Right average percentage", Math.round(rightAvg * 100) + "%");
+            telemetry.addData("Barcode Location", getLocation());
             telemetry.update();
         }
 
@@ -106,22 +106,22 @@ public class GreenLanternPipeline extends OpenCvPipeline
         if(barcodeLeft && barcodeCenter && barcodeRight){
             // NOT FOUND
             location = Location.Not_Found;
-            telemetry.addData("Barcode Location:","Unknown Barcode.");
+            //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }else if(barcodeLeft){
             location = Location.Left;
-            telemetry.addData("Barcode Location:","LEFT Barcode.");
+            //telemetry.addData("Barcode Location:","LEFT Barcode.");
         }else if(barcodeCenter){
             location = Location.Center;
-            telemetry.addData("Barcode Location:","CENTER Barcode.");
+            //telemetry.addData("Barcode Location:","CENTER Barcode.");
         }else if(barcodeRight){
             location = Location.Right;
-            telemetry.addData("Barcode Location:","RIGHT Barcode.");
+            //telemetry.addData("Barcode Location:","RIGHT Barcode.");
         }else{
             // NOT FOUND
             location = Location.Not_Found;
-            telemetry.addData("Barcode Location:","Unknown Barcode.");
+            //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }
-        telemetry.update();
+        //telemetry.update();
 
         Imgproc.cvtColor(mask, mask, Imgproc.COLOR_GRAY2RGB);
 

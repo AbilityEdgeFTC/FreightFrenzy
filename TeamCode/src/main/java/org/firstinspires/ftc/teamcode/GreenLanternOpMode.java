@@ -39,7 +39,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @TeleOp(group="Tests")
-public class OpenCVOpenModePipeline extends LinearOpMode {
+public class GreenLanternOpMode extends LinearOpMode {
 
     OpenCvWebcam webcam;
 
@@ -52,6 +52,7 @@ public class OpenCVOpenModePipeline extends LinearOpMode {
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
         GreenLanternPipeline pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
+        pipeline.DEBUG = false;
         webcam.setPipeline(pipeline);
 
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
@@ -109,6 +110,8 @@ public class OpenCVOpenModePipeline extends LinearOpMode {
                     break;
             }
 
+            telemetry.addData("Barcode Location:",pipeline.getLocation());
+            telemetry.update();
         }
 
         //STOP streaming when opmode is done.
