@@ -19,7 +19,7 @@ public class Gamepad extends LinearOpMode {
     private DcMotor leftMotor_b = null;
     private DcMotor rightMotor_f = null;
     private DcMotor rightMotor_b = null;
-    private double power = .9;
+    private double power = 1;
 
     /*
      * Code to run ONCE when the driver hits INIT
