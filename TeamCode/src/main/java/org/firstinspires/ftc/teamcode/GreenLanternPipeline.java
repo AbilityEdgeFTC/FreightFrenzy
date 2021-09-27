@@ -17,6 +17,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.lang.reflect.Array;
+
 public class GreenLanternPipeline extends OpenCvPipeline
 {
 
@@ -137,4 +139,5 @@ public class GreenLanternPipeline extends OpenCvPipeline
     public Location getLocation() {
         return location;
     }
+
 }
