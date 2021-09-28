@@ -32,15 +32,15 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name="Autonomy Menu", group="Tests")
-public class AutonmousUsingMenu extends LinearOpMode {
+@TeleOp(name="Autonomous Using Menu", group="Tests")
+public class AutonomousUsingMenu extends LinearOpMode {
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // TODO: HERE WE RE
+        // TODO: HERE WE READ FROM THE FILES
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -48,7 +48,7 @@ public class AutonmousUsingMenu extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            //TODO: HERE WE CAN USE THE displayOnTelemetry function.
+            //TODO: HERE WE DO THE IF STATMENTS FOR AUTO
 
         }
     }

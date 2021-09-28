@@ -2,9 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -32,23 +35,22 @@ public class AutonomyMenu {
     // current number of option we are in from the object
     int currentOptionNum;
 
-
     // opmode members we need to set in the opmode
     Telemetry telemetry;
     Gamepad gamepad;
 
     // creating the files for saving.
-    FileWriter objectFilesWrite;
-    ArrayList<FileWriter> optionFilesWrite;
-    FileReader objectFilesRead;
-    ArrayList<FileReader> optionFilesRead;
+    File objectFile;
+    ArrayList<File> optionsFile;
 
     // declaring the files we need in order to save our objects and options to be read on autonomous code.
     public void createFiles() throws IOException {
-        objectFilesWrite = new FileWriter("Objects.txt");
+        File filesOptions = null;
+        objectFile = new File("Objects.txt");
 
         for(int i = 1; i <= options.size(); i++){
-            optionFilesWrite = new ArrayList<FileWriter>((Collection<? extends FileWriter>) new FileWriter("Objects" + i + ".txt"));
+            filesOptions = new File("Options" + i + ".txt");
+            optionsFile.add(filesOptions);
         }
     }
 
@@ -149,17 +151,44 @@ public class AutonomyMenu {
     }
 
     // we save each object by writing the object name to 1 file, and for each option of the object we write to another file.
-    public void saveObject(String objName, ArrayList options) throws IOException {
-        objectFilesWrite.write(objName + "\\n");
+    public void saveObject(String objName) throws IOException {
+        ReadWriteFile.writeFile(objectFile, objName + ",");
 
         for(int i = 1; i <= options.size(); i++){
-            optionFilesWrite.get(i).write(options.get(i) + "\\n");
+            ReadWriteFile.writeFile(optionsFile.get(i), options.get(i) + ",");
         }
     }
 
-    //TODO:
-    public void readObject(String objName){
+    // we get the names of the objects from the saved files, and we return them as an ArrayList
+    public ArrayList readObjectsNames() throws IOException {
+        ArrayList objectArray = new ArrayList();
+        String lineSpliter = ",";
 
+        for(int i = 1; i <= maxObjects; i++){
+            String lines[] = ReadWriteFile.readFile(objectFile).split(lineSpliter);
+            objectArray.add(lines[i]);
+        }
+
+        return objectArray;
+    }
+
+    // we get the name of the object we want to read the options from it
+    // and we go through all of the object names using readObjectsNames(), and we
+    // check want number of object is it from the list of names, and we get
+    // all of its options and add it an ArrayList and return it
+    public ArrayList readObjectOptions(String objName) throws IOException {
+        ArrayList optionArray = new ArrayList();
+
+        for(int i = 1; i <= readObjectsNames().size(); i++){
+            if(readObjectsNames().get(i) == objName){
+                for(int j = 1; j <= options.size(); j++){
+                    optionArray.add(ReadWriteFile.readFile(optionsFile.get(i)));
+                }
+
+            }
+        }
+
+        return optionArray;
     }
 
 }
