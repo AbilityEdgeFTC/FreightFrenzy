@@ -58,6 +58,8 @@ public class GamepadTask extends LinearOpMode {
     private DcMotor mBL = null;
     private DcMotor mBR = null;
 
+    private DcMotor Intake = null;
+
     double Power = 0.6;
 
     @Override
@@ -79,7 +81,6 @@ public class GamepadTask extends LinearOpMode {
         mBR.setDirection(DcMotor.Direction.FORWARD);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -121,6 +122,7 @@ public class GamepadTask extends LinearOpMode {
                 mBL.setPower(0.0);
                 mBR.setPower(0.0);
             }
+
 
         }
         
