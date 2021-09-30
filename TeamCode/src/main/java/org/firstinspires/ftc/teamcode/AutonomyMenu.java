@@ -43,6 +43,21 @@ public class AutonomyMenu {
     File objectFile;
     ArrayList<File> optionsFile;
 
+    // Constructor for the class.
+    public AutonomyMenu(String objName, ArrayList options, Telemetry telemetry, int maxObjects, Gamepad gamepad) {
+        this.objName = objName;
+        this.options = options;
+        this.telemetry = telemetry;
+        this.maxObjects = maxObjects;
+        this.gamepad = gamepad;
+    }
+
+    // Constructor for the class.
+    public void newObject(String objName, ArrayList options) {
+        this.objName = objName;
+        this.options = options;
+    }
+
     // declaring the files we need in order to save our objects and options to be read on autonomous code.
     public void createFiles() throws IOException {
         File filesOptions = null;
@@ -52,16 +67,6 @@ public class AutonomyMenu {
             filesOptions = new File("Options" + i + ".txt");
             optionsFile.add(filesOptions);
         }
-    }
-
-
-    // Constructor for the class.
-    public AutonomyMenu(String objName, ArrayList options, Telemetry telemetry, int maxObjects, Gamepad gamepad) {
-        this.objName = objName;
-        this.options = options;
-        this.telemetry = telemetry;
-        this.maxObjects = maxObjects;
-        this.gamepad = gamepad;
     }
 
     // getter and setter for each class member
@@ -151,7 +156,7 @@ public class AutonomyMenu {
     }
 
     // we save each object by writing the object name to 1 file, and for each option of the object we write to another file.
-    public void saveObject(String objName) throws IOException {
+    public void saveObject(String objName){
         ReadWriteFile.writeFile(objectFile, objName + ",");
 
         for(int i = 1; i <= options.size(); i++){
@@ -160,7 +165,7 @@ public class AutonomyMenu {
     }
 
     // we get the names of the objects from the saved files, and we return them as an ArrayList
-    public ArrayList readObjectsNames() throws IOException {
+    public ArrayList readObjectsNames() {
         ArrayList objectArray = new ArrayList();
         String lineSpliter = ",";
 
