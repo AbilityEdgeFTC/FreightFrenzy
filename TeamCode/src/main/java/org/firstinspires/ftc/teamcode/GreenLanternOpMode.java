@@ -53,6 +53,7 @@ public class GreenLanternOpMode extends LinearOpMode {
         GreenLanternPipeline pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
+        pipeline.TSE = true;
         webcam.setPipeline(pipeline);
 
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.

@@ -19,12 +19,17 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.lang.reflect.Array;
 
+import static org.firstinspires.ftc.teamcode.GreenLanternPipeline.Location.Not_Found;
+
 public class GreenLanternPipeline extends OpenCvPipeline
 {
 
     // HSV low and high values for our team shipping element.
-    Scalar lowValues = new Scalar(86, 102, 11);
-    Scalar highValues = new Scalar(108, 203, 102);
+    Scalar lowValuesTSE = new Scalar(86, 102, 11);
+    Scalar highValuesTSE = new Scalar(108, 203, 102);
+
+    Scalar lowValuesDUCK = new Scalar(86, 102, 11);
+    Scalar highValuesDUCK = new Scalar(108, 203, 102);
 
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
@@ -62,13 +67,21 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
     Telemetry telemetry;
 
+    public boolean TSE = true;
+
     @Override
     public Mat processFrame(Mat input) {
 
         Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
 
         // turning all colors not between the low and high values to black and the rest white.
-        Core.inRange(mask, lowValues, highValues, mask);
+        if(TSE){
+            Core.inRange(mask, lowValuesTSE, highValuesTSE, mask);
+        }else if(!TSE){
+            Core.inRange(mask, lowValuesDUCK, highValuesDUCK, mask);
+        }else{
+            Core.inRange(mask, lowValuesTSE, highValuesTSE, mask);
+        }
 
         // taking sections from the mask to another mat
         Mat left = mask.submat(LEFT_SEC);
@@ -107,7 +120,7 @@ public class GreenLanternPipeline extends OpenCvPipeline
         //checking which barcode is found.
         if(barcodeLeft && barcodeCenter && barcodeRight){
             // NOT FOUND
-            location = Location.Not_Found;
+            location = Not_Found;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }else if(barcodeLeft){
             location = Location.Left;
@@ -120,7 +133,7 @@ public class GreenLanternPipeline extends OpenCvPipeline
             //telemetry.addData("Barcode Location:","RIGHT Barcode.");
         }else{
             // NOT FOUND
-            location = Location.Not_Found;
+            location = Not_Found;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }
         //telemetry.update();
@@ -140,4 +153,11 @@ public class GreenLanternPipeline extends OpenCvPipeline
         return location;
     }
 
+    public boolean isTSE() {
+        return TSE;
+    }
+
+    public void setTSE(boolean TSE) {
+        this.TSE = TSE;
+    }
 }
