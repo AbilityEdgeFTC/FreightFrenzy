@@ -44,9 +44,7 @@ public class AutonomyMenu {
     ArrayList<File> optionsFile;
 
     // Constructor for the class.
-    public AutonomyMenu(String objName, ArrayList options, Telemetry telemetry, int maxObjects, Gamepad gamepad) {
-        this.objName = objName;
-        this.options = options;
+    public AutonomyMenu(Telemetry telemetry, int maxObjects, Gamepad gamepad) {
         this.telemetry = telemetry;
         this.maxObjects = maxObjects;
         this.gamepad = gamepad;
@@ -131,11 +129,11 @@ public class AutonomyMenu {
             }
 
             // displaying the current object and its current option.
-            if(currentItemNum == i){
-                telemetry.addData(" >> " + objName, options.get(currentOptionNum));
-            }else{
+            //if(currentItemNum == i){
+           //     telemetry.addData(" >> " + objName, options.get(currentOptionNum));
+          //  }else{
                 telemetry.addData(objName, options.get(currentObjectNum));
-            }
+           // }
 
             // scrolling with the gamepad right and left through the options from the object, and checking
             // if the currentOptionNum is at the max and you want to go up so jump to the first option,

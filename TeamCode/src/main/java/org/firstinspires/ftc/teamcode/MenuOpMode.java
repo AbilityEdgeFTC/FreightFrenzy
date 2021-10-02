@@ -42,12 +42,37 @@ public class MenuOpMode extends LinearOpMode {
 
     // TODO: HERE WE DECLARE THE NAMES OF THE OBJECTS AND THE ARRAYS
 
+    ArrayList colorOPT = new ArrayList();
+    ArrayList VisionOPT = new ArrayList();
+    ArrayList ParkOPT = new ArrayList();
+    ArrayList CarouselOPT = new ArrayList();
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         // TODO: HERE WE CREATE THE OBJECT and FILES using the createFiles function FROM THE CLASS AutonomyMenu.A
+        AutonomyMenu menu = new AutonomyMenu(telemetry, 1, gamepad1);
+        //Color Option ArrayList
+        colorOPT.add("Blue");
+        colorOPT.add("Red");
+        //VisionType Option Array
+        VisionOPT.add("TSE");
+        VisionOPT.add("Duck");
+        VisionOPT.add("No Vision");
+        //Park Option ArrayList
+        ParkOPT.add("Parked In Alliance Storage Unit");
+        ParkOPT.add("Parked Completely In Alliance Storage Unit");
+        ParkOPT.add("Parked In Warehouse");
+        ParkOPT.add("Parked Completely In Warehouse");
+        //Carousel Option ArrayList
+        CarouselOPT.add("Off");
+        CarouselOPT.add("On");
+
+        menu.newObject("Color",colorOPT);
+        menu.newObject("Vision",VisionOPT);
+        menu.newObject("Park",ParkOPT);
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -56,7 +81,7 @@ public class MenuOpMode extends LinearOpMode {
         while (opModeIsActive()) {
 
             //TODO: HERE WE CAN USE THE displayOnTelemetry function.
-
+            menu.displayOnTelemetry();
         }
 
         // TODO: HERE WE SAVE EACH AND EACH OBJECT
