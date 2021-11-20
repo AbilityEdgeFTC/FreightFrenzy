@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.tests.IntakeSystem;
 
 public class Teleop {
     @TeleOp(name = "Gamepad OpMode")
@@ -94,7 +93,7 @@ public class Teleop {
                 if (gamepad1.dpad_down) {
 
                 }
-                
+
                 // D-PAD UP
                 if (gamepad1.dpad_up) {
 
