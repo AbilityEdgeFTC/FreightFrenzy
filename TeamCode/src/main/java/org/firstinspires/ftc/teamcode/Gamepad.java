@@ -64,11 +64,13 @@ public class Gamepad extends LinearOpMode{
                 double drive = -gamepad1.left_stick_y;
                 double strafe = gamepad1.left_stick_y;
                 double twist = gamepad1.right_stick_x;
+                //TODO: CHECK THIS AGAIN
 
                 leftPower_f = Range.clip(drive + strafe + twist, -Power, Power);
                 leftPower_b = Range.clip(drive - strafe + twist, -Power, Power);
                 rightPower_f = Range.clip(drive - strafe - twist, -Power, Power);
                 rightPower_b = Range.clip(drive + strafe - twist, -Power, Power);
+                //TODO: CHECK THIS AGAIN
 
                 mFL.setPower(leftPower_f);
                 mFR.setPower(rightPower_f);
