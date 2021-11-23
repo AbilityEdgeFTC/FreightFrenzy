@@ -33,23 +33,23 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@Autonomous(name="Autonomous Using Menu", group="Tests")
-public class AutonomousUsingMenu extends LinearOpMode {
+@TeleOp(name="Reading file", group="Tests")
+public class FILE extends LinearOpMode {
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // TODO: HERE WE READ FROM THE FILES
+        FileReader fileReader = new FileReader();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            //TODO: HERE WE DO THE IF STATMENTS FOR AUTO
+            fileReader.readFile(telemetry);
+            //    //TODO: HERE WE DO THE IF STATMENTS FOR AUTO
 
         }
     }
