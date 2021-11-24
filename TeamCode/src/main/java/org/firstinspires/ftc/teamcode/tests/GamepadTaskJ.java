@@ -109,7 +109,7 @@ public class GamepadTaskJ extends LinearOpMode {
             double rightPower_b;
 
             double drive = -gamepad1.left_stick_y;
-            double strafe = gamepad1.left_stick_y;
+            double strafe = gamepad1.left_stick_x;
             double twist = gamepad1.right_stick_x;
 
             leftPower_f = Range.clip(drive + strafe + twist, -Power, Power);
