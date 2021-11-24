@@ -64,18 +64,20 @@ public class Gamepad extends LinearOpMode {
             double drive = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
             double twist = gamepad1.right_stick_x;
+            double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(twist), 1);
             //TODO: CHECK THIS AGAIN
 
-            leftPower_f = Range.clip(drive + strafe + twist, -Power, Power);
-            leftPower_b = Range.clip(drive - strafe + twist, -Power, Power);
-            rightPower_f = Range.clip(drive - strafe - twist, -Power, Power);
-            rightPower_b = Range.clip(drive + strafe - twist, -Power, Power);
+            leftPower_f = (drive + strafe + twist) / denominator;
+            leftPower_b = (drive - strafe + twist) / denominator;
+            rightPower_f = (drive - strafe - twist) / denominator;
+            rightPower_b = (drive + strafe - twist) / denominator;
             //TODO: CHECK THIS AGAIN
 
             mFL.setPower(leftPower_f);
-            mFR.setPower(rightPower_f);
             mBL.setPower(leftPower_b);
+            mFR.setPower(rightPower_f);
             mBR.setPower(rightPower_b);
+
 
 
             // BUTTON Y
