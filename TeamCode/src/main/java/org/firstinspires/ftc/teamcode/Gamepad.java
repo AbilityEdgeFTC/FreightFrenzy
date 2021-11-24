@@ -78,8 +78,7 @@ public class Gamepad extends LinearOpMode {
             mFR.setPower(rightPower_f);
             mBR.setPower(rightPower_b);
 
-
-
+            
             // BUTTON Y
             if (gamepad1.y) {
 
