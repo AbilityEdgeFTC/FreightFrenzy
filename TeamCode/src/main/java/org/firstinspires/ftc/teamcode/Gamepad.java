@@ -10,110 +10,112 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.tel
 
 
 @TeleOp(name = "Gamepad OpMode")
-public class Gamepad extends LinearOpMode{
+public class Gamepad extends LinearOpMode {
 
-        // Declare OpMode members.
-        private ElapsedTime runtime = new ElapsedTime();
-        private DcMotor mFL = null;
-        private DcMotor mFR = null;
-        private DcMotor mBL = null;
-        private DcMotor mBR = null;
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor mFL = null;
+    private DcMotor mFR = null;
+    private DcMotor mBL = null;
+    private DcMotor mBR = null;
 
-        double Power = .6;
-
-
-        @Override
-
-        public void runOpMode() {
-            telemetry.addData("Status", "Initialized");
-
-            // Initialize the hardware variables. Note that the strings used here as parameters
-            // to 'get' must correspond to the names assigned during the robot configuration
-            // step (using the FTC Robot Controller app on the phone).
-            mFL = hardwareMap.get(DcMotor.class, "mFL");
-            mFR = hardwareMap.get(DcMotor.class, "mFR");
-            mBL = hardwareMap.get(DcMotor.class, "mBL");
-            mBR = hardwareMap.get(DcMotor.class, "mBR");
-
-            // Most robots need the motor on one side to be reversed to drive forward
-            // Reverse the motor that runs backwards when connected directly to the battery
-            mFL.setDirection(DcMotor.Direction.REVERSE);
-            mFR.setDirection(DcMotor.Direction.FORWARD);
-            mBL.setDirection(DcMotor.Direction.REVERSE);
-            mBR.setDirection(DcMotor.Direction.FORWARD);
+    double Power = .6;
 
 
-            // Tell the driver that initialization is complete.
-            telemetry.addData("Status", "Initialized");
+    @Override
 
-            // Wait for the game to start (driver presses PLAY)
-            waitForStart();
-            runtime.reset();
+    public void runOpMode() {
+        telemetry.addData("Status", "Initialized");
+
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must correspond to the names assigned during the robot configuration
+        // step (using the FTC Robot Controller app on the phone).
+        mFL = hardwareMap.get(DcMotor.class, "mFL");
+        mFR = hardwareMap.get(DcMotor.class, "mFR");
+        mBL = hardwareMap.get(DcMotor.class, "mBL");
+        mBR = hardwareMap.get(DcMotor.class, "mBR");
+
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Reverse the motor that runs backwards when connected directly to the battery
+        mFL.setDirection(DcMotor.Direction.REVERSE);
+        mFR.setDirection(DcMotor.Direction.FORWARD);
+        mBL.setDirection(DcMotor.Direction.REVERSE);
+        mBR.setDirection(DcMotor.Direction.FORWARD);
 
 
-            // Joysticks
-            if (isStopRequested()) return;
+        // Tell the driver that initialization is complete.
+        telemetry.addData("Status", "Initialized");
 
-            while (opModeIsActive()) {
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        runtime.reset();
 
-                double leftPower_f;
-                double leftPower_b;
-                double rightPower_f;
-                double rightPower_b;
 
-                double drive = -gamepad1.left_stick_y;
-                double strafe = gamepad1.left_stick_y;
-                double twist = gamepad1.right_stick_x;
-                //TODO: CHECK THIS AGAIN
+        // Joysticks
+        if (isStopRequested()) return;
 
-                leftPower_f = Range.clip(drive + strafe + twist, -Power, Power);
-                leftPower_b = Range.clip(drive - strafe + twist, -Power, Power);
-                rightPower_f = Range.clip(drive - strafe - twist, -Power, Power);
-                rightPower_b = Range.clip(drive + strafe - twist, -Power, Power);
-                //TODO: CHECK THIS AGAIN
+        while (opModeIsActive()) {
 
-                mFL.setPower(leftPower_f);
-                mFR.setPower(rightPower_f);
-                mBL.setPower(leftPower_b);
-                mBR.setPower(rightPower_b);
+            double leftPower_f;
+            double leftPower_b;
+            double rightPower_f;
+            double rightPower_b;
 
-                // BUTTON Y
-                if (gamepad1.y) {
+            double drive = -gamepad1.left_stick_y;
+            double strafe = gamepad1.left_stick_x;
+            double twist = gamepad1.right_stick_x;
+            //TODO: CHECK THIS AGAIN
 
-                }
+            leftPower_f = Range.clip(drive + strafe + twist, -Power, Power);
+            leftPower_b = Range.clip(drive - strafe + twist, -Power, Power);
+            rightPower_f = Range.clip(drive - strafe - twist, -Power, Power);
+            rightPower_b = Range.clip(drive + strafe - twist, -Power, Power);
+            //TODO: CHECK THIS AGAIN
 
-                // BUTTON A
-                if (gamepad1.a) {
+            mFL.setPower(leftPower_f);
+            mFR.setPower(rightPower_f);
+            mBL.setPower(leftPower_b);
+            mBR.setPower(rightPower_b);
 
-                }
 
-                // BUTTON B
-                if (gamepad1.b) {
-
-                }
-
-                // D-PAD DOWN
-                if (gamepad1.dpad_down) {
-
-                }
-
-                // D-PAD UP
-                if (gamepad1.dpad_up) {
-
-                }
-
-                // RIGHT BUMPER
-                if (gamepad1.right_bumper) {
-
-                }
-
-                // LEFT BUMPER
-                if (gamepad1.left_bumper) {
-                }
+            // BUTTON Y
+            if (gamepad1.y) {
 
             }
+
+            // BUTTON A
+            if (gamepad1.a) {
+
+            }
+
+            // BUTTON B
+            if (gamepad1.b) {
+
+            }
+
+            // D-PAD DOWN
+            if (gamepad1.dpad_down) {
+
+            }
+
+            // D-PAD UP
+            if (gamepad1.dpad_up) {
+
+            }
+
+            // RIGHT BUMPER
+            if (gamepad1.right_bumper) {
+
+            }
+
+            // LEFT BUMPER
+            if (gamepad1.left_bumper) {
+            }
+
         }
-    
+    }
 }
+    
+
 
 
