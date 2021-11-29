@@ -19,7 +19,8 @@ public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
+        Pose2d myPose = new Pose2d(0, 0, Math.toRadians(0));
+        drive.setPoseEstimate(myPose);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
@@ -34,6 +35,7 @@ public class LocalizationTest extends LinearOpMode {
             );
 
             drive.update();
+
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());

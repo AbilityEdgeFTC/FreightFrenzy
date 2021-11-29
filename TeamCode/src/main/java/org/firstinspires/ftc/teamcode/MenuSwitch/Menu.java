@@ -106,7 +106,7 @@ public class Menu {
             // and if the currentOptionNum is at the min and you want to go down so jump to the max.
             if(gamepad.right_bumper){
                 currentItemNum++;
-            }else if(gamepad.right_bumper && currentOptionNum > options.get(c)){
+            }else if(gamepad.right_bumper && currentOptionNum >= options.size()){
                 currentItemNum = 1;
             }else if(gamepad.left_bumper){
                 currentItemNum--;
