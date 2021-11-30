@@ -37,7 +37,7 @@ public class TestCameraOpMode extends OpMode
 
     @Override
     public void loop() {
-        final int robotRadius = 9; // inches
+        final double robotRadius = 6.79; // inches
 
         TelemetryPacket packet = new TelemetryPacket();
         Canvas field = packet.fieldOverlay();

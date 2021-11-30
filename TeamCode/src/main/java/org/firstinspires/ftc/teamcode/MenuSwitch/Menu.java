@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.MenuSwitch;
 
+import android.icu.text.CurrencyPluralInfo;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -14,6 +16,7 @@ public class Menu {
     // Options for that object we created, such as "Blue" / "Red"
     String optionName;
 
+    String curentObject = "";
 
     // Number of max objects in the menu
     int maxOptions = 0;
@@ -38,6 +41,9 @@ public class Menu {
 
 
     public void displayOnTelemetry(){
+
+
+
 
         ArrayList<ArrayList<String>> options = new ArrayList<ArrayList<String>>();
 
@@ -82,15 +88,23 @@ public class Menu {
             if(gamepad.dpad_up){
                 currentOptionNum++;
                 CurentObject = options.get(currentItemNum);
+                curentObject = String.valueOf(options.get(currentItemNum));
+                telemetry.addData(curentObject+": ", CurentObject);
             }else if(gamepad.dpad_down){
                 currentItemNum--;
                 CurentObject = options.get(currentItemNum);
+                curentObject = String.valueOf(options.get(currentItemNum));
+                telemetry.addData(curentObject+": ", CurentObject);
             }else if(gamepad.dpad_up && currentOptionNum> maxOptions){
                 currentItemNum = 1;
                 CurentObject = options.get(currentItemNum);
+                curentObject = String.valueOf(options.get(currentItemNum));
+                telemetry.addData(curentObject+": ", CurentObject);
             }else if(gamepad.dpad_down && currentItemNum <= 0){
                 currentItemNum = maxOptions;
                 CurentObject = options.get(currentItemNum);
+                curentObject = String.valueOf(options.get(currentItemNum));
+                telemetry.addData(curentObject+": ", CurentObject);
             }
 
 
@@ -106,6 +120,7 @@ public class Menu {
             // and if the currentOptionNum is at the min and you want to go down so jump to the max.
             if(gamepad.right_bumper){
                 currentItemNum++;
+                telemetry.addData(currentOptionNum+": ",options.get(currentOptionNum));
             }else if(gamepad.right_bumper && currentOptionNum >= options.size()){
                 currentItemNum = 1;
             }else if(gamepad.left_bumper){
