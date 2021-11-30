@@ -57,7 +57,9 @@ public class Elevator extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            if(gamepad1.dpad_up){
 
+            }
             if(gamepad1.a){
                 elevator.goToLevelOne();
             }else if(gamepad1.b){

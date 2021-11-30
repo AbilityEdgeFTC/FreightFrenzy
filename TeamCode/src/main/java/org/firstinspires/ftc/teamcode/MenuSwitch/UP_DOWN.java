@@ -27,30 +27,86 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.MenuSwitch;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@Autonomous(name="Autonomous Using Menu", group="Tests")
-public class AutonomousUsingMenu extends LinearOpMode {
+import java.util.ArrayList;
+
+@TeleOp(name="Up down" , group="Tests")
+public class UP_DOWN extends LinearOpMode {
+
+    // TODO: HERE WE DECLARE THE NAMES OF THE OBJECTS AND THE ARRAYS
+
+
+    // Options for that object we created, such as "Blue" / "Red"
+
+    //the string name of the option specific object now
+    String currentObject = "";
+    //the string name of the option now
+    String currentOption = "";
+    // Number of max options in the menu
+    int maxOptions  = 0;
+
+    int currentObjectNum = 1;
+
+    int currentOptionNum = 1;
+
+    boolean flag = false;
+
+
+    //options list
+
+
+    //lisy for each option
 
     @Override
     public void runOpMode() {
+
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // TODO: HERE WE READ FROM THE FILES
+        // TODO: HERE WE CREATE THE OBJECT and FILES using the createFiles function FROM THE CLASS AutonomyMenu.A
+
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
 
-            //TODO: HERE WE DO THE IF STATMENTS FOR AUTO
+        //UP AND DOWN
+        while (opModeIsActive()) {
+            if(gamepad1.dpad_up && flag == false){
+                currentOptionNum--;
+                flag = true;
+
+            }else if(gamepad1.dpad_down && flag ==false){
+                currentOptionNum++;
+                flag = true;
+
+            } else if (gamepad1.a)
+                flag = false;
+
+
+            /*
+            else   if (gamepad1.dpad_up && flag == true ){
+                flag = false;
+            }else   if (gamepad1.dpad_down && flag == true ){
+                flag = false;
+            }
+*/
+
+
+            telemetry.addLine( "bibi "+currentOptionNum);
+            telemetry.update();
+                //TODO: HERE WE CAN USE THE displayOnTelemetry function.
 
         }
+
+        // TODO: HERE WE SAVE EACH AND EACH OBJECT
+
     }
 }

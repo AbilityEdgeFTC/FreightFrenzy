@@ -68,8 +68,11 @@ public class elevatorSubsystems{
         this.hw = hw;
         this.telemetry = telemetry;
 
+        this.mE = hw.get(DcMotor.class, "mE");
         mE = hw.get(DcMotor.class, "mE");
+        this.mE.setDirection(DcMotorSimple.Direction.REVERSE);
         mE.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
@@ -120,6 +123,18 @@ public class elevatorSubsystems{
             mE.setPower(0);
         }
     }
+
+    public int getPosition(){
+        return mE.getCurrentPosition();
+    }
+    public void Up (){
+        mE.setPower(power);
+    }
+    public void Down(){
+        mE.setPower(-power);
+    }
+
+
 
     // display power of motor, and its position.
     public void displayTelemetry(){

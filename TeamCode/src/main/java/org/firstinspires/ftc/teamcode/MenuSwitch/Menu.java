@@ -35,15 +35,7 @@ public class Menu {
     Gamepad gamepad;
 
 
-
-
-
-
-
-    public void displayOnTelemetry(){
-
-
-
+    public void displayOnTelemetry(Telemetry telemetry){
 
         ArrayList<ArrayList<String>> options = new ArrayList<ArrayList<String>>();
 

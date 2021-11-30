@@ -34,7 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.AutonomyMenu;
 
 import java.util.ArrayList;
 
@@ -50,24 +49,15 @@ public class MenuOpModeTest extends LinearOpMode {
     String currentObject = "";
     //the string name of the option now
     String currentOption = "";
-
     // Number of max options in the menu
-    int maxOptions ;
-
+    int maxOptions  = 0;
 
     int currentObjectNum = 1;
 
     int currentOptionNum = 1;
 
 
-
-
-
-    // opmode members we need to set in the opmode
-    Telemetry telemetry;
-    Gamepad gamepad;
-
-
+    boolean flag = false;
 
     //options list
     ArrayList<ArrayList<String>> options = new ArrayList<ArrayList<String>>();
@@ -78,7 +68,7 @@ public class MenuOpModeTest extends LinearOpMode {
     ArrayList<String> ParkOPT = new ArrayList<String>();
     ArrayList<String> CarouselOPT = new ArrayList<String>();
     //the currnent option list
-    ArrayList<String> CurentObject = new ArrayList<String>();
+    ArrayList<String> CurentOption = new ArrayList<String>();
     @Override
     public void runOpMode() {
 
@@ -119,43 +109,51 @@ public class MenuOpModeTest extends LinearOpMode {
 
         //UP AND DOWN
         while (opModeIsActive()) {
-            if(gamepad.dpad_up){
+            if(gamepad1.dpad_up && flag == false){
                 currentOptionNum--;
-                CurentObject = options.get(currentOptionNum);
+                CurentOption = options.get(currentOptionNum);
                 currentOption = String.valueOf(options.get(currentOptionNum));
+                flag = true;
 
-            }else if(gamepad.dpad_down){
+            }else if(gamepad1.dpad_down && flag == false){
                 currentOptionNum++;
-                CurentObject = options.get(currentOptionNum);
+                CurentOption = options.get(currentOptionNum);
                 currentOption = String.valueOf(options.get(currentOptionNum));
-
-            }else if(gamepad.dpad_up && currentOptionNum<= 0){
+                flag = true;
+            }else if(gamepad1.dpad_up && currentOptionNum<= 0 && flag == false){
                 currentOptionNum = maxOptions;
-                CurentObject = options.get(currentOptionNum);
+                CurentOption = options.get(currentOptionNum);
                 currentOption = String.valueOf(options.get(currentOptionNum));
-
-            }else if(gamepad.dpad_down && currentOptionNum >maxOptions){
+                flag = true;
+            }else if(gamepad1.dpad_down && currentOptionNum >maxOptions && flag == false){
                 currentOptionNum = 1;
-                CurentObject = options.get(currentOptionNum);
+                CurentOption = options.get(currentOptionNum);
                 currentOption = String.valueOf(options.get(currentOptionNum));
-
+                flag = true;
+            }else if (gamepad1.a){
+                flag = false;
             }
 
             //LEFT AND RIGHT
-            if(gamepad.right_bumper){
+            if(gamepad1.right_bumper /*&& flag == false*/){
                 currentObjectNum++;
-                telemetry.addData(currentOptionNum+": ",options.get(currentOptionNum));
-            }else if(gamepad.right_bumper && currentOptionNum >= options.size()){
+                //flag = true;
+            }else if(gamepad1.right_bumper && currentOptionNum >= options.size() /*&& flag == false*/){
                 currentObjectNum = 1;
-            }else if(gamepad.left_bumper){
+                //flag = true;
+            }else if(gamepad1.left_bumper /*&& flag == false*/){
                 currentObjectNum--;
-            }else if(gamepad.left_bumper && currentOptionNum <= 0){
-                currentObjectNum = CurentObject.size();
-            }
-            telemetry.addLine(currentOption+": ");
+                //flag = true;
+            }else if(gamepad1.left_bumper && currentOptionNum <= 0 /*&& flag == false*/){
+                currentObjectNum = CurentOption.size();
+                //flag = true;
+            }else if(gamepad1.a)
+                //flag = false;
+
+            telemetry.addLine( ""+CurentOption.get(currentObjectNum));
             telemetry.update();
                 //TODO: HERE WE CAN USE THE displayOnTelemetry function.
-            
+
         }
 
         // TODO: HERE WE SAVE EACH AND EACH OBJECT
