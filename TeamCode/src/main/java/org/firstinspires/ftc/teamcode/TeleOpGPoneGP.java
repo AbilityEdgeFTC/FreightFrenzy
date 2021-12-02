@@ -16,6 +16,7 @@ package org.firstinspires.ftc.teamcode;
 import android.util.Log;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -37,6 +38,7 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 
+@Config
 @TeleOp(name="Gamepad OnePad", group="States")
 public class TeleOpGPoneGP extends LinearOpMode {
 
@@ -50,7 +52,7 @@ public class TeleOpGPoneGP extends LinearOpMode {
     private DcMotor leftMotor_b = null;
     private DcMotor rightMotor_f = null;
     private DcMotor rightMotor_b = null;
-    private double power = .8;
+    private static double power = .5;
     private double minPower = .5;
     private double maxPower = 1;
 
