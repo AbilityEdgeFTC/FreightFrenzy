@@ -18,10 +18,6 @@ public class TestCameraOpMode extends OpMode
     // We treat this like a singleton because there should only ever be one object per camera
     private static T265Camera slamra = null;
 
-
-
-
-
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
     @Override

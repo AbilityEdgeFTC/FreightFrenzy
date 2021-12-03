@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.intel.realsense.librealsense.*;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -33,6 +34,8 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
+
+    Pipeline pipeline;
 
     // creating 3 rectangles(sections) for checking the colors inside them.
     final Rect LEFT_SEC = new Rect(
@@ -71,7 +74,6 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
     @Override
     public Mat processFrame(Mat input) {
-
         Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
 
         // turning all colors not between the low and high values to black and the rest white.
