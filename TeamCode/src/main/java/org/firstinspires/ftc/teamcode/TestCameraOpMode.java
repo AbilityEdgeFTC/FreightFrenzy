@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.intel.realsense.librealsense.*;
 import com.spartronics4915.lib.T265Camera;
 
 @TeleOp(name="Test T265", group="Iterative Opmode")
@@ -17,13 +18,19 @@ public class TestCameraOpMode extends OpMode
     // We treat this like a singleton because there should only ever be one object per camera
     private static T265Camera slamra = null;
 
+
+
+
+
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
     @Override
     public void init() {
-        //if (slamra == null) {
-        slamra = new T265Camera(new Transform2d(), 0.1, hardwareMap.appContext);
-        //}
+        if (slamra == null) {
+            slamra = new T265Camera(new Transform2d(), 0.1, hardwareMap.appContext);
+        }
+
+        slamra.setPose(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
     }
 
     @Override
@@ -33,7 +40,6 @@ public class TestCameraOpMode extends OpMode
     @Override
     public void start() {
         slamra.start();
-        slamra.setPose(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
     }
 
     @Override
