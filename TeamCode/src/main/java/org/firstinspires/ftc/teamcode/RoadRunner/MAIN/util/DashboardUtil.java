@@ -12,8 +12,8 @@ import java.util.List;
  */
 public class DashboardUtil {
     private static final double DEFAULT_RESOLUTION = 2.0; // distance units; presumed inches
-    private static final double ROBOT_WIDTH = 6.79; // in
-    private static final double ROBOT_HEIGHT = 9; // in
+    private static final double ROBOT_WIDTH = 17.72; // in
+    private static final double ROBOT_HEIGHT = 13.58; // in
 
 
     public static void drawPoseHistory(Canvas canvas, List<Pose2d> poseHistory) {

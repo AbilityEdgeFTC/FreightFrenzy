@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.tests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
@@ -12,6 +13,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.intel.realsense.librealsense.*;
 import com.spartronics4915.lib.T265Camera;
 
+import org.checkerframework.checker.units.qual.C;
+
+@Config
 @TeleOp(name="Test T265", group="Iterative Opmode")
 public class TestCameraOpMode extends OpMode
 {
@@ -20,10 +24,16 @@ public class TestCameraOpMode extends OpMode
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
+    public static double xCordinate = 0.375;
+    public static double yCordinate = -0.375;
+    public static double angleCordinate = 0;
+
     @Override
     public void init() {
         if (slamra == null) {
-            slamra = new T265Camera(new Transform2d(), 0.1, hardwareMap.appContext);
+            //slamra = new T265Camera(new Transform2d(new Translation2d(7.38,10.63),Rotation2d.fromDegrees(0)), 0.1, hardwareMap.appContext);
+            slamra = new T265Camera(new Transform2d(new Translation2d(xCordinate,yCordinate),Rotation2d.fromDegrees(angleCordinate)), 0.1, hardwareMap.appContext);
+
         }
 
         slamra.setPose(new Pose2d(0,0,Rotation2d.fromDegrees(0)));

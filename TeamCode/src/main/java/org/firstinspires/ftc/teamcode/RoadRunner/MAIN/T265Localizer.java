@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.localization.Localizer;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
+import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
 
@@ -27,13 +28,15 @@ import org.jetbrains.annotations.Nullable;
  */
 @Config
 public class T265Localizer implements Localizer {
-    public static double LATERAL_DISTANCE = 0; // in; offset of the camera from the left or right of the middle of the robot.
-    public static double FORWARD_OFFSET = 0; // in; offset of the camera from the front or back of the middle of the robot.
-    public static double DIRECTION = 90;
+    public static double LATERAL_DISTANCE = 7.09; // in; offset of the camera from the left or right of the middle of the robot.
+    public static double FORWARD_OFFSET = 0.59; // in; offset of the camera from the front or back of the middle of the robot.
+    public static double DIRECTION = 0;
 
     private static T265Camera slamra = null;
 
     public T265Localizer(HardwareMap hardwareMap){
+        super();
+
         Translation2d translation = new Translation2d(LATERAL_DISTANCE,FORWARD_OFFSET);
         Transform2d offset = new Transform2d(translation, Rotation2d.fromDegrees(DIRECTION));
 
@@ -49,10 +52,7 @@ public class T265Localizer implements Localizer {
     public Pose2d getPoseEstimate() {
         T265Camera.CameraUpdate up = slamra.getLastReceivedCameraUpdate();
 
-        Translation2d translation = new Translation2d(up.pose.getTranslation().getX() / 0.0254, up.pose.getTranslation().getY() / 0.0254);
-        Rotation2d rotation = up.pose.getRotation();
-
-        Pose2d pose = new Pose2d(translation.getX(), translation.getY(), rotation.getRadians());
+        Pose2d pose = new Pose2d(up.pose.getX() * 39.37, up.pose.getY() * 39.37, up.pose.getHeading() * 180/Math.PI);
 
         return pose;
     }
@@ -65,14 +65,32 @@ public class T265Localizer implements Localizer {
     @Nullable
     @Override
     public Pose2d getPoseVelocity() {
-        return null;
+        ChassisSpeeds up = slamra.getLastReceivedCameraUpdate().velocity;
+
+        Pose2d poseV = new Pose2d(up.vxMetersPerSecond, up.vyMetersPerSecond, up.omegaRadiansPerSecond);
+
+        return poseV;
     }
 
     @Override
     public void update() {
-        T265Camera.CameraUpdate up = slamra.getLastReceivedCameraUpdate();
-        if (up == null) return;
     }
+
+    /**
+     * Gets the last update received from the camera
+     * @return The CameraUpdate
+     */
+    public T265Camera.CameraUpdate getRawUpdate() {
+        return slamra.getLastReceivedCameraUpdate();
+    }
+
+    /**
+     * Sends external odometry to the Realsense camera for extra accuracy
+     */
+    public void sendOdometry(Pose2d velocity) {
+        slamra.sendOdometry(velocity.getX(), velocity.getY());
+    }
+
 
     /**
      * TODO: ADD THESE MANUALLY TO EVERY END OF OPMODE USING ROADRUNNER!!!!!!!!!!!!!
@@ -81,7 +99,8 @@ public class T265Localizer implements Localizer {
         slamra.stop();
     }
 
-    public void start(){
+    public void start(HardwareMap hardwareMap){
+        //slamra = new T265Camera(new Transform2d(), 0.1, hardwareMap.appContext);
         slamra.start();
     }
 

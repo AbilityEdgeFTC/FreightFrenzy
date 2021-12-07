@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MAIN.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.RoadRunner.MAIN.T265Localizer;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -22,6 +23,11 @@ public class LocalizationTest extends LinearOpMode {
         Pose2d myPose = new Pose2d(0, 0, Math.toRadians(0));
         drive.setPoseEstimate(myPose);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        T265Localizer localizer = new T265Localizer(hardwareMap);
+        localizer.start(hardwareMap);
+        localizer.setPoseEstimate(myPose);
+
 
         waitForStart();
 
@@ -43,5 +49,7 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
+
+        localizer.stop();
     }
 }
