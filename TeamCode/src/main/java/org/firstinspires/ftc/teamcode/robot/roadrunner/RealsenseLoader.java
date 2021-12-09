@@ -31,8 +31,8 @@ import org.firstinspires.ftc.teamcode.robot.util.PoseUtil;
 import javax.annotation.Nullable;
 
 public class RealsenseLoader {
-    // TODO: tune this based on the relative positions of the camera and the robot
-    //  This transform is the distance between the camera and the robot (not vice versa)
+    // TODO: tune this based on the relative positions of the camera and the teleop
+    //  This transform is the distance between the camera and the teleop (not vice versa)
     //  Use the normal coordinate system the field uses.
     public static final Transform2d cameraRobotOffset = PoseUtil.toTransform2d(
             PoseUtil.inchesToMeters(

@@ -46,7 +46,7 @@ public class GreenLanternOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        //setting up webcam from config, and displaying it in the robot controller.
+        //setting up webcam from config, and displaying it in the teleop controller.
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 

@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
  * class is instantiated on the Robot Controller and executed.
  *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
+ * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled teleop
  * It includes all the skeletal structure that all linear OpModes contain.
  *
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
@@ -64,7 +64,7 @@ public class ReadEncoders extends LinearOpMode {
         telemetry.update();
 
         // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
+        // to 'get' must correspond to the names assigned during the teleop configuration
         // step (using the FTC Robot Controller app on the phone).
         mFL  = hardwareMap.get(DcMotor.class, "mFL");
         mFR = hardwareMap.get(DcMotor.class, "mFR");

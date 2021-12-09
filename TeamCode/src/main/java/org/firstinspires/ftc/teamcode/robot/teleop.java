@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -35,44 +35,23 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
+import org.firstinspires.ftc.teamcode.robot.subsystems.robot;
 
 @Config
 @TeleOp(group="Tests")
-public class Elevator extends LinearOpMode {
-
-    DcMotor mE = null;
-    public static double power = 0;
-    public static int positionLevelOne = 170;
-    public static int positionLevelTwo = 250;
-    public static int positionLevelThree = 500;
+public class teleop extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
 
-        elevatorSubsystems elevator = new elevatorSubsystems(power, hardwareMap, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+        robot robot = new robot(hardwareMap);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
 
         while (opModeIsActive()) {
-
-            if(gamepad1.dpad_up){
-
-            }
-            if(gamepad1.a){
-                elevator.goToLevelOne();
-            }else if(gamepad1.b){
-                elevator.goToLevelTwo();
-            }else if(gamepad1.x){
-                elevator.goToLevelThree();
-            }else if(gamepad1.y){
-                elevator.goToZeroPos();
-            }
-
-            elevator.displayTelemetry();
 
         }
     }

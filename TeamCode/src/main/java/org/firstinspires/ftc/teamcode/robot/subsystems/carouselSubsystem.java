@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -37,44 +38,43 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class carouselSubsystem{
 
     //motor carousel
-    //DcMotor mC;
-    CRServo sC;
+    DcMotor mC;
+    // CRServo carousel
+    //CRServo sC;
     double power;
     HardwareMap hw;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public carouselSubsystem(CRServo sC, double power, HardwareMap hw) {
-        this.sC = sC;
+    public carouselSubsystem(double power, HardwareMap hw) {
         this.power = power;
         this.hw = hw;
 
-        this.sC = hw.get(CRServo.class, "sC");
-        sC = hw.get(CRServo.class, "sC");
-        //sC.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mC = hw.get(DcMotor.class, "mC");
+        mC = hw.get(DcMotor.class, "mC");
+        mC.setDirection(DcMotor.Direction.REVERSE);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public carouselSubsystem(CRServo sC, double power, HardwareMap hw, Telemetry telemetry) {
-        this.sC = sC;
+    public carouselSubsystem(double power, HardwareMap hw, Telemetry telemetry) {
         this.power = power;
         this.hw = hw;
         this.telemetry = telemetry;
 
-        this.sC = hw.get(CRServo.class, "sC");
-        sC = hw.get(CRServo.class, "sC");
-        //sC.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mC = hw.get(DcMotor.class, "mC");
+        mC = hw.get(DcMotor.class, "mC");
+        mC.setDirection(DcMotor.Direction.REVERSE);
     }
 
     // spin carousel motor with power.
     public void spinCarouselMotor(){
-        sC.setPower(power);
+        mC.setPower(power);
     }
 
     // spin carousel motor with power for seconds long.
     public void spinCarouselMotor(double seconds) throws InterruptedException {
-        sC.setPower(power);
+        mC.setPower(power);
         Thread.sleep((long)seconds*1000);
         stopCarouselMotor();
     }
@@ -82,20 +82,20 @@ public class carouselSubsystem{
     // spin carousel motor with -power.
     public void spinCarouselMotor(boolean reverse){
         if(reverse){
-            sC.setPower(-power);
+            mC.setPower(-power);
         }else{
-            sC.setPower(power);
+            mC.setPower(power);
         }
     }
 
     // spin carousel motor with -power for seconds long.
     public void spinCarouselMotor(double seconds, boolean reverse) throws InterruptedException {
         if(reverse){
-            sC.setPower(power);
+            mC.setPower(power);
             Thread.sleep((long)seconds*1000);
             stopCarouselMotor();
         }else{
-            sC.setPower(-power);
+            mC.setPower(-power);
             Thread.sleep((long)seconds*1000);
             stopCarouselMotor();
         }
@@ -103,7 +103,7 @@ public class carouselSubsystem{
 
     // stop carousel motor.
     public void stopCarouselMotor(){
-        sC.setPower(0);
+        mC.setPower(0);
     }
 
     // display power of motor.

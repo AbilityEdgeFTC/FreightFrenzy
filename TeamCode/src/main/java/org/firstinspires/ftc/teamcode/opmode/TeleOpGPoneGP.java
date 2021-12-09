@@ -31,7 +31,7 @@ public class TeleOpGPoneGP extends LinearOpMode {
     /**
      * these 7 variables are for all of our 4 motors(leftMotor_f, leftMotor_b, rightMotor_f, rightMotor_b) for our drivetrain and
      the power to give to the drivetrain's motors. there also a minPower and maxPower
-     in case you need to slow down the robot or move faster.
+     in case you need to slow down the teleop or move faster.
      */
     private DcMotor leftMotor_f = null;
     private DcMotor leftMotor_b = null;
@@ -55,9 +55,9 @@ public class TeleOpGPoneGP extends LinearOpMode {
      * these 4 variables are for our shooting mechanism.
      * the MIN_POS is 0.3 for the default position of the servo, which is not pushing the rings to the
      shooter. the pushing position is MAX_POS.
-     the servoPS is the servo that pushes the rings from the cartridge to the shooting motors and shooting the ring out of the robot.
+     the servoPS is the servo that pushes the rings from the cartridge to the shooting motors and shooting the ring out of the teleop.
      * the timeToShoot variable is the amount of milliseconds between each ring shot while shooting 3 rings. in this case
-     we will have 0.2 seconds delay till the next ring is shot out of the robot.
+     we will have 0.2 seconds delay till the next ring is shot out of the teleop.
      */
     Servo servoPS;
     double MIN_POS     =  0.3;     // Minimum rotational position
@@ -89,7 +89,7 @@ public class TeleOpGPoneGP extends LinearOpMode {
     /**
      * these 4 variables are for our shooting mechanism.
      2 motors, left and right Shoot(leftShoot & rightShoot( both running on the powerShoot variable. these 2 motors spin very
-     fast and shoot the rings out of the robot. the powerOnShoot boolean is to see if the shooting motors should turn or not.
+     fast and shoot the rings out of the teleop. the powerOnShoot boolean is to see if the shooting motors should turn or not.
      */
     DcMotor leftShoot;
     DcMotor rightShoot;
@@ -118,7 +118,7 @@ public class TeleOpGPoneGP extends LinearOpMode {
         rightMotor_b  = hardwareMap.get(DcMotor.class, "mBR");
 
         /**
-         *  Reverse the motors who are backwards. in our robot, the left motors are reversed
+         *  Reverse the motors who are backwards. in our teleop, the left motors are reversed
          but the right motors are in the default forwards direction.
          */
         leftMotor_f.setDirection(DcMotorSimple.Direction.REVERSE);

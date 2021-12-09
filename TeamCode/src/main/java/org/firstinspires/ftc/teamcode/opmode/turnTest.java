@@ -60,7 +60,7 @@ public class turnTest extends LinearOpMode {
 
             oldAngleToTurn=degreesLeft;
             degreesLeft = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))+(int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
-            if(Math.abs(angles.firstAngle-oldAngle)<1){speed*=1.1;} //bump up speed to wheels in case robot stalls before reaching target
+            if(Math.abs(angles.firstAngle-oldAngle)<1){speed*=1.1;} //bump up speed to wheels in case teleop stalls before reaching target
             oldAngle=angles.firstAngle;
 
             telemetry.addData("Angle left to turn", angleToTurn);

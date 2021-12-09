@@ -95,7 +95,7 @@ public class LynxModuleUtil {
     }
 
     /**
-     * Ensure all of the Lynx modules attached to the robot satisfy the minimum requirement.
+     * Ensure all of the Lynx modules attached to the teleop satisfy the minimum requirement.
      * @param hardwareMap hardware map containing Lynx modules
      */
     public static void ensureMinimumFirmwareVersion(HardwareMap hardwareMap) {

@@ -24,7 +24,7 @@ import java.util.List;
  *   1. Slowly ramp the motor power and record encoder values along the way.
  *   2. Run a linear regression on the encoder velocity vs. motor power plot to obtain a slope (kV)
  *      and an optional intercept (kStatic).
- *   3. Accelerate the robot (apply constant power) and record the encoder counts.
+ *   3. Accelerate the teleop (apply constant power) and record the encoder counts.
  *   4. Adjust the encoder data based on the velocity tuning data and find kA with another linear
  *      regression.
  */
@@ -78,7 +78,7 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         telemetry.clearAll();
         telemetry.addLine(Misc.formatInvariant(
-                "Place your robot on the field with at least %.2f in of room in front", DISTANCE));
+                "Place your teleop on the field with at least %.2f in of room in front", DISTANCE));
         telemetry.addLine("Press (Y/Δ) to begin");
         telemetry.update();
 
@@ -159,7 +159,7 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         if (fitAccelFF) {
             telemetry.clearAll();
-            telemetry.addLine("Place the robot back in its starting position");
+            telemetry.addLine("Place the teleop back in its starting position");
             telemetry.addLine("Press (Y/Δ) to continue");
             telemetry.update();
 

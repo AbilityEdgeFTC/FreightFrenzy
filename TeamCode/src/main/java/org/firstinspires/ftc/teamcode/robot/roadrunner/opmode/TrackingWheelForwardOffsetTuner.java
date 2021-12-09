@@ -53,7 +53,7 @@ public class TrackingWheelForwardOffsetTuner extends LinearOpMode {
         }
 
         telemetry.addLine("Press play to begin the forward offset tuner");
-        telemetry.addLine("Make sure your robot has enough clearance to turn smoothly");
+        telemetry.addLine("Make sure your teleop has enough clearance to turn smoothly");
         telemetry.update();
 
         waitForStart();

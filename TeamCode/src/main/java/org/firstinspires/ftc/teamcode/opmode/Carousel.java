@@ -40,7 +40,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.carouselSubsystem;
 @TeleOp(group="Tests")
 public class Carousel extends LinearOpMode {
 
-    CRServo sC;
     public static double power = -1;
     //public static double time = 2;
 
@@ -49,7 +48,7 @@ public class Carousel extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        carouselSubsystem carousel = new carouselSubsystem(sC, power, hardwareMap, telemetry);
+        carouselSubsystem carousel = new carouselSubsystem(power, hardwareMap, telemetry);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
