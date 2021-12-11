@@ -53,24 +53,27 @@ public class UP_DOWN extends LinearOpMode
         //UP AND DOWN
         while (opModeIsActive())
         {
-            if (gamepad1.dpad_up && flag == false)
+            if (gamepad1.dpad_up && !flag)
             {
                 currentOptionNum--;
                 flag = true;
 
             }
-            else if (gamepad1.dpad_down && flag == false)
+            else if (gamepad1.dpad_down && !flag)
             {
                 currentOptionNum++;
                 flag = true;
-
             }
-            else if (gamepad1.a)
+            else if(!gamepad1.dpad_down)
+            {
+                flag = false;
+            }
+            else if(!gamepad1.dpad_up)
             {
                 flag = false;
             }
 
-            telemetry.addLine( "bibi "+currentOptionNum);
+            telemetry.addData( "bibi ", currentOptionNum);
             telemetry.update();
         }
 

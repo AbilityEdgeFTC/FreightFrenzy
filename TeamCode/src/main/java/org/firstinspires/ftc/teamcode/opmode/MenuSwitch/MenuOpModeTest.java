@@ -32,131 +32,196 @@ package org.firstinspires.ftc.teamcode.opmode.MenuSwitch;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 @TeleOp(name="Autonomy Menu Test" , group="Tests")
 public class MenuOpModeTest extends LinearOpMode
 {
 
-    //the string name of the option now
-    String currentOption = "";
-    // Number of max options in the menu
-    int maxOptions  = 0, currentObjectNum = 1, currentOptionNum = 1;
-    boolean flag = false;
+    int maxTasks = 0, maxOptions = 0, taskNum = 0, optionNum = 0;
+    boolean flag = false, flag2 = false, flag3;
+    String taskName = "";
 
-    //options list
-    ArrayList<ArrayList<String>> options = new ArrayList<ArrayList<String>>();
+    // the list of the tasks, and their options(list in list)
+    ArrayList<ArrayList<String>> tasks = new ArrayList<ArrayList<String>>();
+    // the tasks' names
+    ArrayList<String> tasksName = new ArrayList<String>();
 
-    //lisy for each option
-    ArrayList<String> colorOPT = new ArrayList<String>();
-    ArrayList<String> VisionOPT = new ArrayList<String>();
-    ArrayList<String> ParkOPT = new ArrayList<String>();
-    ArrayList<String> CarouselOPT = new ArrayList<String>();
-    //the currnent option list
-    ArrayList<String> CurentOption = new ArrayList<String>();
+    // list for each task
+    ArrayList<String> colorTask = new ArrayList<String>();
+    ArrayList<String> VisionTask = new ArrayList<String>();
+    ArrayList<String> parkTask = new ArrayList<String>();
+    ArrayList<String> carouselTask = new ArrayList<String>();
+
+    // list of the final options the player chose
+    ArrayList<String> finalOptions = new ArrayList<String>();
+
     @Override
     public void runOpMode()
     {
+        File myFile = new File("options.txt");
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        try {
+            if(myFile.delete() && !myFile.createNewFile()){
+                try {
+                    myFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        //Color Option ArrayList
-        colorOPT.add("Blue");
-        colorOPT.add("Red");
-        //VisionType Option Array
-        VisionOPT.add("TSE");
-        VisionOPT.add("Duck");
-        VisionOPT.add("No Vision");
-        //Park Option ArrayList
-        ParkOPT.add("Parked In Alliance Storage Unit");
-        ParkOPT.add("Parked Completely In Alliance Storage Unit");
-        ParkOPT.add("Parked In Warehouse");
-        ParkOPT.add("Parked Completely In Warehouse");
-        //Carousel Option ArrayList
-        CarouselOPT.add("Off");
-        CarouselOPT.add("On");
+        // adding the options to color task
+        colorTask.add("Blue");
+        colorTask.add("Red");
 
+        // adding the options to vision task
+        VisionTask.add("TSE");
+        VisionTask.add("Duck");
+        VisionTask.add("No Vision");
 
-        options.add(colorOPT);
-        options.add(VisionOPT);
-        options.add(ParkOPT);
-        options.add(CarouselOPT);
+        // adding the options to park task
+        parkTask.add("Not Completely In ASU");
+        parkTask.add("Completely In ASU");
+        parkTask.add("Not Completely In WH");
+        parkTask.add("Completely In WH");
 
-        maxOptions = options.size();
+        // adding the options to carousel task
+        carouselTask.add("Yes");
+        carouselTask.add("No");
 
+        // adding all the tasks to list of tasks
+        tasks.add(colorTask);
+        tasks.add(VisionTask);
+        tasks.add(parkTask);
+        tasks.add(carouselTask);
 
-        // Wait for the game to start (driver presses PLAY)
+        // adding the names of the tasks to the list of tasks' names.
+        tasksName.add("color");
+        tasksName.add("vision");
+        tasksName.add("park");
+        tasksName.add("carousel");
+
+        // max tasks is the size of the list of tasks.
+        maxTasks = tasks.size();
+
+        // wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // run until the end of the match (driver presses STOP)
-
-        //UP AND DOWN
-        while (opModeIsActive())
+        // run while player didn't press stop
+        while (opModeIsActive() && !flag3)
         {
-            if(gamepad1.dpad_up && flag == false)
-            {
-                currentOptionNum--;
-                CurentOption = options.get(currentOptionNum);
-                currentOption = String.valueOf(options.get(currentOptionNum));
-                flag = true;
 
-            }
-            else if(gamepad1.dpad_down && flag == false)
+            // if player pressed dpad up, and flag(helps to run the if only once when pressed once) not true so:
+            if(gamepad1.dpad_up && !flag)
             {
-                currentOptionNum++;
-                CurentOption = options.get(currentOptionNum);
-                currentOption = String.valueOf(options.get(currentOptionNum));
+                finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
+                // we go down a task
+                taskNum--;
+                // we check if the current task num is <= 0, and if yes so:
+                if(taskNum <= 0)
+                {
+                    // we jump to the last task in the list
+                    taskNum = maxTasks;
+                    // the max options will be the number of options in the current task number
+                    maxOptions = tasks.get(taskNum).size();
+                    // the name of the current task will be the index of taskNum from the list of tasks' name
+                    taskName = tasksName.get(taskNum);
+                }
+                // flag true, to exist
                 flag = true;
             }
-            else if(gamepad1.dpad_up && currentOptionNum<= 0 && flag == false)
+            else if(gamepad1.dpad_down && !flag)
             {
-                currentOptionNum = maxOptions;
-                CurentOption = options.get(currentOptionNum);
-                currentOption = String.valueOf(options.get(currentOptionNum));
+                finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
+                taskNum++;
+                if(taskNum > maxTasks)
+                {
+                    taskNum = 1;
+                    maxOptions = tasks.get(taskNum).size();
+                    taskName = tasksName.get(taskNum);
+                }
                 flag = true;
             }
-            else if(gamepad1.dpad_down && currentOptionNum >maxOptions && flag == false)
+
+            if(!gamepad1.dpad_down)
             {
-                currentOptionNum = 1;
-                CurentOption = options.get(currentOptionNum);
-                currentOption = String.valueOf(options.get(currentOptionNum));
-                flag = true;
+                flag = false;
             }
-            else if (gamepad1.a)
+            if(!gamepad1.dpad_up)
             {
                 flag = false;
             }
 
-            //LEFT AND RIGHT
-            if(gamepad1.right_bumper /*&& flag == false*/)
+
+
+            if(gamepad1.dpad_left && !flag2)
             {
-                currentObjectNum++;
-                //flag = true;
+                optionNum--;
+                if(optionNum <= 0)
+                {
+                    optionNum = maxOptions;
+                }
+                finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
+                flag2 = true;
             }
-            else if(gamepad1.right_bumper && currentOptionNum >= options.size() /*&& flag == false*/)
+            else if(gamepad1.dpad_right && !flag2)
             {
-                currentObjectNum = 1;
-                //flag = true;
-            }
-            else if(gamepad1.left_bumper /*&& flag == false*/)
-            {
-                currentObjectNum--;
-                //flag = true;
-            }
-            else if(gamepad1.left_bumper && currentOptionNum <= 0 /*&& flag == false*/)
-            {
-                currentObjectNum = CurentOption.size();
-                //flag = true;
-            }
-            else if(gamepad1.a)
-            {
-                //flag = false;
+                optionNum++;
+                if(optionNum > maxTasks)
+                {
+                    optionNum = 1;
+                }
+                finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
+                flag2 = true;
             }
 
-            telemetry.addLine( ""+CurentOption.get(currentObjectNum));
+
+            if(!gamepad1.dpad_down)
+            {
+                flag2 = false;
+            }
+            if(!gamepad1.dpad_up)
+            {
+                flag2 = false;
+            }
+
+            for(int i = 0; i < maxTasks; i++)
+            {
+                if(i == taskNum)
+                {
+                    telemetry.addData("-> ", taskName + "", tasks.get(taskNum).get(optionNum));
+                }
+                else
+                {
+                    telemetry.addData(taskName + "", tasks.get(taskNum).get(optionNum));
+                }
+            }
+
+            if(gamepad1.a)
+            {
+                try {
+                    FileWriter myWriter = new FileWriter(myFile);
+                    for(int j = 0; j < finalOptions.size(); j++)
+                    {
+                        myWriter.write(finalOptions.get(j)+"\n");
+                    }
+                    myWriter.close();
+                } catch (IOException e) {
+                    telemetry.addLine("ERROR COULD NOT SAVE.");
+                }
+                flag3 = true;
+            }
+
             telemetry.update();
         }
+
+
 
     }
 }
