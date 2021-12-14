@@ -1,48 +1,22 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package org.firstinspires.ftc.teamcode.opmode.MenuSwitch;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.checkerframework.checker.units.qual.C;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.util.Controller;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-@TeleOp(name="Autonomy Menu Test" , group="Tests")
+@TeleOp(group="Tests")
 public class MenuOpModeTest extends LinearOpMode
 {
 
     int maxTasks = 0, maxOptions = 0, taskNum = 0, optionNum = 0;
-    boolean flag = false, flag2 = false, flag3;
+    boolean flag = false;
     String taskName = "";
 
     // the list of the tasks, and their options(list in list)
@@ -55,6 +29,7 @@ public class MenuOpModeTest extends LinearOpMode
     ArrayList<String> VisionTask = new ArrayList<String>();
     ArrayList<String> parkTask = new ArrayList<String>();
     ArrayList<String> carouselTask = new ArrayList<String>();
+    ArrayList<Integer> order = new ArrayList<Integer>();
 
     // list of the final options the player chose
     ArrayList<String> finalOptions = new ArrayList<String>();
@@ -62,6 +37,8 @@ public class MenuOpModeTest extends LinearOpMode
     @Override
     public void runOpMode()
     {
+        Controller controller = new Controller(gamepad1);
+
         File myFile = new File("options.txt");
 
         try {
@@ -107,101 +84,50 @@ public class MenuOpModeTest extends LinearOpMode
         tasksName.add("park");
         tasksName.add("carousel");
 
+        for(int i = 0; i < tasks.size(); i++)
+        {
+            order.add(i);
+        }
+
+
+
         // max tasks is the size of the list of tasks.
-        maxTasks = tasks.size();
+        maxTasks = tasks.size()-1;
 
         // wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run while player didn't press stop
-        while (opModeIsActive() && !flag3)
+        while (opModeIsActive() && !flag)
         {
 
-            // if player pressed dpad up, and flag(helps to run the if only once when pressed once) not true so:
-            if(gamepad1.dpad_up && !flag)
+            controller.update();
+            taskName = tasksName.get(taskNum);
+            maxOptions = tasks.get(taskNum).size()-1;
+
+            if(controller.dpadUpOnce() && taskNum > 0)
             {
                 finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
-                // we go down a task
                 taskNum--;
-                // we check if the current task num is <= 0, and if yes so:
-                if(taskNum <= 0)
-                {
-                    // we jump to the last task in the list
-                    taskNum = maxTasks;
-                    // the max options will be the number of options in the current task number
-                    maxOptions = tasks.get(taskNum).size();
-                    // the name of the current task will be the index of taskNum from the list of tasks' name
-                    taskName = tasksName.get(taskNum);
-                }
-                // flag true, to exist
-                flag = true;
             }
-            else if(gamepad1.dpad_down && !flag)
+            if(controller.dpadDownOnce() && taskNum < maxTasks)
             {
                 finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
                 taskNum++;
-                if(taskNum > maxTasks)
-                {
-                    taskNum = 1;
-                    maxOptions = tasks.get(taskNum).size();
-                    taskName = tasksName.get(taskNum);
-                }
-                flag = true;
             }
 
-            if(!gamepad1.dpad_down)
+            if(controller.dpadLeftOnce() && optionNum > 0)
             {
-                flag = false;
-            }
-            if(!gamepad1.dpad_up)
-            {
-                flag = false;
-            }
-
-
-
-            if(gamepad1.dpad_left && !flag2)
-            {
+                finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
                 optionNum--;
-                if(optionNum <= 0)
-                {
-                    optionNum = maxOptions;
-                }
-                finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
-                flag2 = true;
             }
-            else if(gamepad1.dpad_right && !flag2)
+            if(controller.dpadRightOnce() && optionNum < maxOptions)
             {
+                finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
                 optionNum++;
-                if(optionNum > maxTasks)
-                {
-                    optionNum = 1;
-                }
-                finalOptions.add(taskNum, tasks.get(taskNum).get(optionNum));
-                flag2 = true;
             }
 
-
-            if(!gamepad1.dpad_down)
-            {
-                flag2 = false;
-            }
-            if(!gamepad1.dpad_up)
-            {
-                flag2 = false;
-            }
-
-            for(int i = 0; i < maxTasks; i++)
-            {
-                if(i == taskNum)
-                {
-                    telemetry.addData("-> ", taskName + "", tasks.get(taskNum).get(optionNum));
-                }
-                else
-                {
-                    telemetry.addData(taskName + "", tasks.get(taskNum).get(optionNum));
-                }
-            }
+            telemetry.addLine("(" + (taskNum+1) + ") " + taskName + ": " + tasks.get(taskNum).get(optionNum));
 
             if(gamepad1.a)
             {
@@ -215,7 +141,7 @@ public class MenuOpModeTest extends LinearOpMode
                 } catch (IOException e) {
                     telemetry.addLine("ERROR COULD NOT SAVE.");
                 }
-                flag3 = true;
+                flag = true;
             }
 
             telemetry.update();

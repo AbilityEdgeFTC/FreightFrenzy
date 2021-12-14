@@ -32,11 +32,13 @@ package org.firstinspires.ftc.teamcode.opmode.MenuSwitch;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.roadrunner.util.Controller;
+
 @TeleOp(name="Up down" , group="Tests")
 public class UP_DOWN extends LinearOpMode
 {
 
-    int currentOptionNum = 1;
+    int currentOptionNum = 1, count1, count2;
     boolean flag = false;
 
     @Override
@@ -44,6 +46,8 @@ public class UP_DOWN extends LinearOpMode
     {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        Controller controller = new Controller(gamepad1);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -53,27 +57,33 @@ public class UP_DOWN extends LinearOpMode
         //UP AND DOWN
         while (opModeIsActive())
         {
-            if (gamepad1.dpad_up && !flag)
+
+            controller.update();
+
+            if (controller.dpadUpOnce()/* && flag == false*/)
             {
                 currentOptionNum--;
-                flag = true;
-
+                //flag = true;
             }
-            else if (gamepad1.dpad_down && !flag)
+            else if (controller.dpadDownOnce()/* && flag == false*/)
             {
                 currentOptionNum++;
-                flag = true;
-            }
-            else if(!gamepad1.dpad_down)
-            {
-                flag = false;
-            }
-            else if(!gamepad1.dpad_up)
-            {
-                flag = false;
+                //flag = true;
             }
 
+
+//            if(gamepad1.atRest())
+//            {
+//                flag = false;
+//            }
+            /*if(!gamepad1.dpad_up || !gamepad1.dpad_down)
+            {
+                flag = false;
+            }*/
+
+
             telemetry.addData( "bibi ", currentOptionNum);
+            telemetry.addData( "flag ", flag);
             telemetry.update();
         }
 
