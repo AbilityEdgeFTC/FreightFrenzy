@@ -32,7 +32,7 @@ package org.firstinspires.ftc.teamcode.opmode.MenuSwitch;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.util.Controller;
+import org.firstinspires.ftc.teamcode.robot.util.Controller;
 
 @TeleOp(name="Up down" , group="Tests")
 public class UP_DOWN extends LinearOpMode

@@ -19,7 +19,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package org.firstinspires.ftc.teamcode.robot.roadrunner;
+package org.firstinspires.ftc.teamcode.robot.util;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
@@ -35,8 +35,8 @@ public class RealsenseLoader {
     //  This transform is the distance between the camera and the teleop (not vice versa)
     //  Use the normal coordinate system the field uses.
     public static final Transform2d cameraRobotOffset = PoseUtil.toTransform2d(
-            PoseUtil.inchesToMeters(
-                    new Pose2d(-4.75, -6, Math.toRadians(90))));
+            PoseUtil.metersToInches(
+                    new Pose2d(-0.475, -0.6, Math.toRadians(0))));
     public static final double encoderMeasurementCovariance = 0.8;
 
     @Nullable

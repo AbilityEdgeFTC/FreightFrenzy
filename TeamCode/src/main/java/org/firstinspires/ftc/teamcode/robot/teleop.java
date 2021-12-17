@@ -44,7 +44,7 @@ public class teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        robot robot = new robot(hardwareMap);
+        robot robot = new robot(hardwareMap, telemetry, gamepad1, gamepad2);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

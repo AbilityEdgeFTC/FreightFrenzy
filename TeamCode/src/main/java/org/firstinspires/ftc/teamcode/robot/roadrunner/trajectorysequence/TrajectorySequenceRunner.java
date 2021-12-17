@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.sequen
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.sequencesegment.TurnSegment;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.sequencesegment.WaitSegment;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.util.DashboardUtil;
+import org.firstinspires.ftc.teamcode.robot.util.DashboardUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;

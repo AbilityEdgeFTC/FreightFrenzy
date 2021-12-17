@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.util.LoggingUtil;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.util.RegressionUtil;
+import org.firstinspires.ftc.teamcode.robot.util.LoggingUtil;
+import org.firstinspires.ftc.teamcode.robot.util.RegressionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
