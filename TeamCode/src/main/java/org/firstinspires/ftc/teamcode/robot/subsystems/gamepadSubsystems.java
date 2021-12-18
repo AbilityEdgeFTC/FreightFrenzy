@@ -22,7 +22,7 @@ public class gamepadSubsystems{
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
 
-    double power;
+    double power = 0;
     double leftPower_f, leftPower_b, rightPower_f, rightPower_b;
     double drive = 0, strafe = 0, twist = 0;
     double lockAngle = 90;

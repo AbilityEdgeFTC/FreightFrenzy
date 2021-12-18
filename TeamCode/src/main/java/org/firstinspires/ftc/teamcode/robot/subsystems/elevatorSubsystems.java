@@ -56,6 +56,7 @@ public class elevatorSubsystems{
         this.power = power;
         this.hw = hw;
 
+        this.mE = hw.get(DcMotor.class, "mE");
         mE = hw.get(DcMotor.class, "mE");
         mE.setDirection(DcMotorSimple.Direction.REVERSE);
         mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -100,6 +101,8 @@ public class elevatorSubsystems{
         }else {
             mE.setPower(0);
         }
+
+        // TODO: AFTER PLACING SERVO SO RETURN TO LEVEL 0
     }
 
     // set target position to level two, and while target position isn't required so keep going up/down.
@@ -112,6 +115,8 @@ public class elevatorSubsystems{
         }else {
             mE.setPower(0);
         }
+
+        // TODO: AFTER PLACING SERVO SO RETURN TO LEVEL 0
     }
 
     // set target position to level three, and while target position isn't required so keep going up.
@@ -124,6 +129,9 @@ public class elevatorSubsystems{
         }else {
             mE.setPower(0);
         }
+
+        // TODO: AFTER PLACING SERVO SO RETURN TO LEVEL 0
+
     }
 
     public int getPosition(){

@@ -25,6 +25,10 @@ import java.util.List;
  *    \--------------/
  *
  */
+
+//right encoder - expantion hub 1 mI
+//front encoder - expantion hub 2 mC
+//left encoder - expantion hub 3
 @Config
 public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 0;

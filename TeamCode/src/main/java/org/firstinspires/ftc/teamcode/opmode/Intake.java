@@ -27,24 +27,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
-import org.firstinspires.ftc.teamcode.robot.subsystems.robot;
 
 @Config
 @TeleOp(group="Tests")
-public class teleop extends LinearOpMode {
+public class Intake extends LinearOpMode {
+
+    DcMotor mI = null;
+    public static boolean isReverse = true;
+    public static double power = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
-        robot robot = new robot(hardwareMap, telemetry, gamepad1, gamepad2);
+        mI = hardwareMap.get(DcMotor.class, "mI");
+        mI.setDirection(DcMotorSimple.Direction.REVERSE);
+        if (isReverse)
+            mI.setDirection(DcMotorSimple.Direction.REVERSE);
+        else
+            mI.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -52,7 +65,20 @@ public class teleop extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
 
         while (opModeIsActive()) {
-            robot.update();
+
+            if(gamepad1.dpad_up){
+                mI.setPower(power);
+            }
+            else if(gamepad1.dpad_down) {
+                mI.setPower(-power);
+            }
+            else{
+                mI.setPower(0);
+            }
+
+
+
+
         }
     }
 }

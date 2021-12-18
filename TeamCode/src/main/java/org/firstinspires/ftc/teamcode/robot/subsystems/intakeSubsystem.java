@@ -27,32 +27,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.robot.subsystems;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
-import org.firstinspires.ftc.teamcode.robot.subsystems.robot;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-@Config
-@TeleOp(group="Tests")
-public class teleop extends LinearOpMode {
+public class intakeSubsystem {
 
-    @Override
-    public void runOpMode() throws InterruptedException {
+    //motor intake
+    DcMotor mI;
+    double power;
+    HardwareMap hw;
+    Telemetry telemetry;
 
-        robot robot = new robot(hardwareMap, telemetry, gamepad1, gamepad2);
+    // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
+    /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
+    public intakeSubsystem(double power, HardwareMap hw) {
+        this.power = power;
+        this.hw = hw;
 
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-
-        // run until the end of the match (driver presses STOP)
-
-        while (opModeIsActive()) {
-            robot.update();
-        }
+        this.mI = hw.get(DcMotor.class, "mI");
+        mI = hw.get(DcMotor.class, "mI");
+        mI.setDirection(DcMotor.Direction.REVERSE);
     }
+
+    /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
+    public intakeSubsystem(double power, HardwareMap hw, Telemetry telemetry) {
+        this.power = power;
+        this.hw = hw;
+        this.telemetry = telemetry;
+
+        this.mI = hw.get(DcMotor.class, "mI");
+        mI = hw.get(DcMotor.class, "mI");
+        mI.setDirection(DcMotor.Direction.REVERSE);
+    }
+
+    // spin Intake motor with power.
+    public void intakeForward(){
+        mI.setPower(power);
+    }
+    // spin Intake motor with minos power.
+    public void intakeBackward(){
+        mI.setPower(-power);
+    }
+    // stop Intake motor.
+    public void stopCarouselMotor(){
+        mI.setPower(0);
+    }
+
+    // display power of motor.
+    public void displayTelemetry(){
+        telemetry.addLine("INTAKE Power at: " + power);
+        telemetry.update();
+    }
+
 }

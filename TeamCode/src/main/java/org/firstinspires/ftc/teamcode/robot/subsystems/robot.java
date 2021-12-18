@@ -11,6 +11,7 @@ public class robot {
 
     public static double powerCarousel = 0.325;
     public static double powerElevator = 0.8;
+    public static double powerIntake = 1;
     public static int positionLevelOne = 170;
     public static int positionLevelTwo = 250;
     public static int positionLevelThree = 500;
@@ -22,90 +23,71 @@ public class robot {
     double mainPower = .7;
     boolean isRegularDrive = true;
 
+    //carouselSubsystem carousel;
+    //elevatorSubsystems elevator;
+    intakeSubsystem intake;
+    gamepadSubsystems gamepads;
+
     public robot(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         this.hw = hw;
         this.telemetry = telemetry;
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
+
+        //carousel = new carouselSubsystem(powerCarousel, hw);
+        //elevator = new elevatorSubsystems(powerElevator, hw, positionLevelOne, positionLevelTwo, positionLevelThree);
+        gamepads = new gamepadSubsystems(gamepad1, gamepad2, mainPower, isRegularDrive, hw, telemetry);
+        intake = new intakeSubsystem(powerIntake, hw);
     }
 
-    carouselSubsystem carousel = new carouselSubsystem(powerCarousel, hw);
-    elevatorSubsystems elevator = new elevatorSubsystems(powerElevator, hw, positionLevelOne, positionLevelTwo, positionLevelThree);
-    gamepadSubsystems gamepads = new gamepadSubsystems(gamepad1, gamepad2, mainPower, isRegularDrive, hw, telemetry);
+    //
 
     public void update() throws InterruptedException {
 
         gamepads.update();
 
-        // BUTTON Y
-        if (gamepad1.y) {
-
-        }
-
-        // BUTTON A
-        if (gamepad1.a) {
-
-        }
-
-        // BUTTON B
-        if (gamepad1.b) {
-
-        }
-
-        // D-PAD DOWN
-        if (gamepad1.dpad_down) {
-
-        }
-
-        // D-PAD UP
-        if (gamepad1.dpad_up) {
-
-        }
-
-        // RIGHT BUMPER
-        if (gamepad1.right_bumper) {
-
-        }
-
-        // LEFT BUMPER
-        if (gamepad1.left_bumper) {
-
+        // GAMEPAD1 BUMPER
+        if (gamepad1.right_bumper || gamepad1.right_bumper) {
+            // TODO: ADD SERVO TURNING TO TAKE OUT THE FRIEGHT IN ELEVATOR AND AUTOMATICLLY AFTER RETURN TO ELEVATOR 0
         }
 
         // BUTTON Y
         if (gamepad2.y) {
-
+            //elevator.goToLevelThree();
         }
 
         // BUTTON A
         if (gamepad2.a) {
-
+            //elevator.goToLevelOne();
         }
 
         // BUTTON B
-        if (gamepad2.b) {
+        if (gamepad2.b || gamepad2.x) {
+            //elevator.goToLevelTwo();
+        }
 
+        // RIGHT TRIGGER
+        if (gamepad2.left_bumper)
+        {
+            intake.intakeForward();
+        }
+
+        // LEFT TRIGGER
+        if (gamepad2.right_bumper)
+        {
+            intake.intakeBackward();
         }
 
         // D-PAD DOWN
-        if (gamepad2.dpad_down) {
-
+        if (gamepad2.dpad_right) {
+            //carousel.spinCarouselMotor();
         }
 
         // D-PAD UP
-        if (gamepad2.dpad_up) {
-
+        if (gamepad2.dpad_left) {
+            //carousel.spinCarouselMotor(true);
         }
 
-        // RIGHT BUMPER
-        if (gamepad2.right_bumper) {
-
-        }
-
-        // LEFT BUMPER
-        if (gamepad2.left_bumper) {
-
-        }
     }
 
 
