@@ -37,31 +37,27 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class intakeSubsystem {
 
     //motor intake
-    DcMotor mI;
-    double power;
+    public DcMotor mI;
     HardwareMap hw;
+    double power;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public intakeSubsystem(double power, HardwareMap hw) {
+    public intakeSubsystem(HardwareMap hw, double power) {
         this.power = power;
         this.hw = hw;
-
         this.mI = hw.get(DcMotor.class, "mI");
-        mI = hw.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotor.Direction.REVERSE);
+        this.mI.setDirection(DcMotor.Direction.REVERSE);;
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public intakeSubsystem(double power, HardwareMap hw, Telemetry telemetry) {
+    public intakeSubsystem(HardwareMap hw, double power, Telemetry telemetry) {
         this.power = power;
         this.hw = hw;
-        this.telemetry = telemetry;
-
         this.mI = hw.get(DcMotor.class, "mI");
-        mI = hw.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotor.Direction.REVERSE);
+        this.mI.setDirection(DcMotor.Direction.REVERSE);;
+        this.telemetry = telemetry;
     }
 
     // spin Intake motor with power.

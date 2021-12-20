@@ -30,36 +30,30 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
+import org.firstinspires.ftc.teamcode.robot.util.Controller;
 
 @Config
 @TeleOp(group="Tests")
-@Disabled
-public class Intake extends LinearOpMode {
+public class servoElevator extends LinearOpMode {
 
-    DcMotor mI = null;
-    public static boolean isReverse = true;
-    public static double power = 1;
+    Servo sE = null;
+    double position = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        mI = hardwareMap.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotorSimple.Direction.REVERSE);
-        if (isReverse)
-            mI.setDirection(DcMotorSimple.Direction.REVERSE);
-        else
-            mI.setDirection(DcMotorSimple.Direction.FORWARD);
+        Controller controller = new Controller(gamepad1);
 
-
+        sE = hardwareMap.get(Servo.class, "sE");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -68,19 +62,21 @@ public class Intake extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if(gamepad1.dpad_up){
-                mI.setPower(power);
+            controller.update();
+
+            if(controller.dpadUpOnce()){
+                position += 0.05;
             }
-            else if(gamepad1.dpad_down) {
-                mI.setPower(-power);
+            else if(controller.dpadDownOnce()){
+                position -= 0.05;
             }
-            else{
-                mI.setPower(0);
+            else if(controller.AOnce())
+            {
+                position = 0;
             }
 
-
-
-
+            sE.setPosition(position);
+            sleep(300);
         }
     }
 }
