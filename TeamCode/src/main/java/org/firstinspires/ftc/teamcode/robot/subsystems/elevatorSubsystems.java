@@ -57,9 +57,8 @@ public class elevatorSubsystems{
         this.hw = hw;
 
         this.mE = hw.get(DcMotor.class, "mE");
-        mE = hw.get(DcMotor.class, "mE");
-        mE.setDirection(DcMotorSimple.Direction.REVERSE);
-        mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.mE.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
@@ -72,11 +71,8 @@ public class elevatorSubsystems{
         this.telemetry = telemetry;
 
         this.mE = hw.get(DcMotor.class, "mE");
-        mE = hw.get(DcMotor.class, "mE");
         this.mE.setDirection(DcMotorSimple.Direction.REVERSE);
-        mE.setDirection(DcMotorSimple.Direction.REVERSE);
         this.mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     // set target position to zero pos(start pos), and while target position isn't required so keep going down.

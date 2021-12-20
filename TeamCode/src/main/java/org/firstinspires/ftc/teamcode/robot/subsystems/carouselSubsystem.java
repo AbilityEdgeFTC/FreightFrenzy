@@ -52,8 +52,7 @@ public class carouselSubsystem{
         this.hw = hw;
 
         this.mC = hw.get(DcMotor.class, "mC");
-        mC = hw.get(DcMotor.class, "mC");
-        mC.setDirection(DcMotor.Direction.REVERSE);
+        this.mC.setDirection(DcMotor.Direction.REVERSE);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
@@ -63,8 +62,7 @@ public class carouselSubsystem{
         this.telemetry = telemetry;
 
         this.mC = hw.get(DcMotor.class, "mC");
-        mC = hw.get(DcMotor.class, "mC");
-        mC.setDirection(DcMotor.Direction.REVERSE);
+        this.mC.setDirection(DcMotor.Direction.REVERSE);
     }
 
     // spin carousel motor with power.
