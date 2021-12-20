@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode.MenuSwitch;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
