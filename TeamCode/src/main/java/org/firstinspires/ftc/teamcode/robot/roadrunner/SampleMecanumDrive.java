@@ -28,6 +28,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
@@ -128,9 +130,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        //setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap)); for 3 encoders only
-        // setLocalizer(new DoubleLocalizer(hardwareMap)); for camera and 3 encoders
-        setLocalizer(new T265Localizer(hardwareMap)); // only camera
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap)); //for 3 encoders only
+        //setLocalizer(new DoubleLocalizer(hardwareMap)); //for camera and 3 encoders
+        //setLocalizer(new T265Localizer(hardwareMap)); // only camera
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {

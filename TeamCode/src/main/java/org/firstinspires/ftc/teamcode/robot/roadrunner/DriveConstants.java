@@ -88,9 +88,9 @@ public class DriveConstants {
      
      */
     public static double MAX_VEL = 30;
-    public static double MAX_ACCEL = 30; // TODO: set default values until there is PID for new teleop(check in roadrunner quickstart what are the default values).
-    public static double MAX_ANG_VEL = Math.toRadians(180); // TODO: set default values until there is PID for new teleop(check in roadrunner quickstart what are the default values).
-    public static double MAX_ANG_ACCEL = Math.toRadians(180); // TODO: set default values until there is PID for new teleop(check in roadrunner quickstart what are the default values).
+    public static double MAX_ACCEL = 30;
+    public static double MAX_ANG_VEL = Math.toRadians(180);
+    public static double MAX_ANG_ACCEL = Math.toRadians(180);
 
 
     public static double encoderTicksToInches(double ticks) {

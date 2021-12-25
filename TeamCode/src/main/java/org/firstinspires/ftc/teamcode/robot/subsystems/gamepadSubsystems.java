@@ -37,7 +37,7 @@ public class gamepadSubsystems{
         this.hw = hw;
         this.telemetry = telemetry;
 
-        imu = new imuSubsystems(hw, telemetry);
+        imu = new imuSubsystems(hw);
     }
 
     public void update() throws InterruptedException {

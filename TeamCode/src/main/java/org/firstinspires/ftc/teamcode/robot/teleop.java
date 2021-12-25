@@ -3,15 +3,12 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepadSubsystems;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intakeSubsystem;
 
 @Config
-@TeleOp
+@TeleOp(group = "main")
 public class teleop extends LinearOpMode {
 
     public static double powerCarousel = 0.325;
@@ -32,8 +29,8 @@ public class teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        //carousel = new carouselSubsystem(powerCarousel, hw);
-        //elevator = new elevatorSubsystems(powerElevator, hw, positionLevelOne, positionLevelTwo, positionLevelThree);
+        //carousel = new carouselSubsystem(powerCarousel, hardwareMap);
+        //elevator = new elevatorSubsystems(powerElevator, hardwareMap, positionLevelOne, positionLevelTwo, positionLevelThree);
         gamepads = new gamepadSubsystems(gamepad1, gamepad2, mainPower, isRegularDrive, hardwareMap, telemetry);
         intake = new intakeSubsystem(hardwareMap, powerIntake);
 
