@@ -35,8 +35,6 @@ public class DriveConstants {
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(24.8, 0, 23.5,
             13.1);
 
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
-            getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 
 
     /*
@@ -51,7 +49,7 @@ public class DriveConstants {
     public static double WHEEL_RADIUS = 1.8898; // in // TODO: check mecanum wheel radius again ברא נראלי התבלבלתי עם אומני
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
 
-    public static double TRACK_WIDTH = 10.63; // in
+    public static double TRACK_WIDTH = 13.1; // in
 
 
     /*
