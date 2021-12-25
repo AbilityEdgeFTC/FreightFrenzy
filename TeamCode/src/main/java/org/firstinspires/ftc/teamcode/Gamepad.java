@@ -22,6 +22,7 @@ public class Gamepad extends LinearOpMode {
     double Power = .6;
 
 
+
     @Override
 
     public void runOpMode() {
