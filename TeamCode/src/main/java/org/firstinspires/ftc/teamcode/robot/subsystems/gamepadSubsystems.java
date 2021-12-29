@@ -1,26 +1,30 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static java.lang.Thread.sleep;
 
 public class gamepadSubsystems{
 
-    imuSubsystems imu;
-
-    HardwareMap hw;
-    Telemetry telemetry;
+    // State used for updating telemetry
+    Orientation angles;
 
     Gamepad gamepad1, gamepad2;
+    BNO055IMU imu;
+
     DcMotor mFL, mBL, mFR, mBR;
+    Telemetry telemetry;
 
     double power = 0;
     double leftPower_f, leftPower_b, rightPower_f, rightPower_b;
@@ -29,15 +33,19 @@ public class gamepadSubsystems{
 
     boolean regularDrive = true, lockOnAngle = false;
 
-    public gamepadSubsystems(Gamepad gamepad1, Gamepad gamepad2, double power, boolean regularDrive, HardwareMap hw, Telemetry telemetry) {
+    public gamepadSubsystems(Gamepad gamepad1, Gamepad gamepad2, BNO055IMU imu, DcMotor mFL, DcMotor mBL, DcMotor mFR, DcMotor mBR, double power, boolean regularDrive, Telemetry telemetry) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.power = power;
         this.regularDrive = regularDrive;
-        this.hw = hw;
         this.telemetry = telemetry;
+        this.imu = imu;
+        this.mFL = mFL;
+        this.mBL = mBL;
+        this.mFR = mFR;
+        this.mBR = mBR;
 
-        imu = new imuSubsystems(hw);
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 
     public void update() throws InterruptedException {
@@ -81,7 +89,7 @@ public class gamepadSubsystems{
 
     public void centicDrive()
     {
-        double firstAngleRadians = Math.toRadians(imu.angles.firstAngle);
+        double firstAngleRadians = Math.toRadians(angles.firstAngle);
 
         drive = drive * Math.cos(firstAngleRadians) + strafe * Math.sin(firstAngleRadians);
         strafe = -drive * Math.sin(firstAngleRadians) + strafe * Math.cos(firstAngleRadians);
@@ -93,10 +101,12 @@ public class gamepadSubsystems{
     }
 
     public void lockOnAngle(double angle) throws InterruptedException {
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
         double oldAngleToTurn = angle;
         double scaledSpeed = power;
-        double targetHeading = imu.angles.firstAngle + angle;
-        double oldAngle = imu.angles.firstAngle;
+        double targetHeading = angles.firstAngle + angle;
+        double oldAngle = angles.firstAngle;
 
         if(targetHeading<-180)
         {
@@ -125,11 +135,11 @@ public class gamepadSubsystems{
 
             degreesLeft = calculateDegressLeft(targetHeading);
 
-            if(Math.abs(imu.angles.firstAngle-oldAngle)<1){power*=1.1;} //bump up speed to wheels in case teleop stalls before reaching target
-            oldAngle = imu.angles.firstAngle;
+            if(Math.abs(angles.firstAngle-oldAngle)<1){power*=1.1;} //bump up speed to wheels in case teleop stalls before reaching target
+            oldAngle = angles.firstAngle;
 
             telemetry.addData("Angle left to turn", degreesLeft);
-            telemetry.addData("Angle rn", imu.angles.firstAngle);
+            telemetry.addData("Angle rn", angles.firstAngle);
         }
         leftPower_b = 0;
         rightPower_b = 0;
@@ -152,8 +162,8 @@ public class gamepadSubsystems{
 
     public double calculateDegressLeft(double targetHeading)
     {
-        return ((int)(Math.signum(imu.angles.firstAngle - targetHeading)+1)/2)*(360-Math.abs(imu.angles.firstAngle - targetHeading)) +
-                (int)(Math.signum(targetHeading-imu.angles.firstAngle)+1)/2*Math.abs(imu.angles.firstAngle-targetHeading);
+        return ((int)(Math.signum(angles.firstAngle - targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle - targetHeading)) +
+                (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
     }
 
 }

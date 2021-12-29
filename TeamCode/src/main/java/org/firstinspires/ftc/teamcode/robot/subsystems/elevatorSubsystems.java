@@ -38,7 +38,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class elevatorSubsystems{
 
-    DcMotor mE = null;
+    DcMotor mE;
     double power = 0;
     Telemetry telemetry = null;
     HardwareMap hw = null;
@@ -48,26 +48,22 @@ public class elevatorSubsystems{
 
     // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public elevatorSubsystems(double power, HardwareMap hw, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
+    public elevatorSubsystems(DcMotor mE, double power, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
     {
         this.positionLevelOne = positionLevelOne;
         this.positionLevelTwo = positionLevelTwo;
         this.positionLevelThree = positionLevelThree;
         this.power = power;
-        this.hw = hw;
-
-        this.mE = hw.get(DcMotor.class, "mE");
-        this.mE.setDirection(DcMotorSimple.Direction.REVERSE);
-        this.mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.mE = mE;
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public elevatorSubsystems(double power, HardwareMap hw, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
+    public elevatorSubsystems(DcMotor mE, double power, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
         this.positionLevelOne = positionLevelOne;
         this.positionLevelTwo = positionLevelTwo;
         this.positionLevelThree = positionLevelThree;
         this.power = power;
-        this.hw = hw;
+        this.mE = mE;
         this.telemetry = telemetry;
 
         this.mE = hw.get(DcMotor.class, "mE");

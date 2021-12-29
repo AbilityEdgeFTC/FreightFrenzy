@@ -44,7 +44,7 @@ import org.firstinspires.ftc.teamcode.robot.util.Controller;
 public class servoElevator extends LinearOpMode {
 
     Servo sE = null;
-    double position = 0;
+    public static double position = 0.1;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -64,7 +64,7 @@ public class servoElevator extends LinearOpMode {
 
             controller.update();
 
-            if(controller.dpadUpOnce()){
+            /*if(controller.dpadUpOnce()){
                 position += 0.05;
             }
             else if(controller.dpadDownOnce()){
@@ -73,10 +73,10 @@ public class servoElevator extends LinearOpMode {
             else if(controller.AOnce())
             {
                 position = 0;
-            }
+            }*/
 
             sE.setPosition(position);
-            sleep(300);
+            sleep(500);
         }
     }
 }

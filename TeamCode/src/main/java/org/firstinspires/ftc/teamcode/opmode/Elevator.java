@@ -33,6 +33,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
 
@@ -51,7 +52,11 @@ public class Elevator extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        elevatorSubsystems elevator = new elevatorSubsystems(power, hardwareMap, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+        mE = hardwareMap.get(DcMotor.class, "mE");
+        mE.setDirection(DcMotorSimple.Direction.REVERSE);
+        mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        elevatorSubsystems elevator = new elevatorSubsystems(mE, power, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
