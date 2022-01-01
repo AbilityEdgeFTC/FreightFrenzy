@@ -39,29 +39,20 @@ public class intakeSubsystem {
     //motor intake
     DcMotor mI;
     double power;
-    HardwareMap hw;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public intakeSubsystem(double power, HardwareMap hw) {
+    public intakeSubsystem(DcMotor mI, double power) {
         this.power = power;
-        this.hw = hw;
-
-        this.mI = hw.get(DcMotor.class, "mI");
-        mI = hw.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotor.Direction.REVERSE);
+        this.mI = mI;
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public intakeSubsystem(double power, HardwareMap hw, Telemetry telemetry) {
+    public intakeSubsystem(DcMotor mI, double power, Telemetry telemetry) {
         this.power = power;
-        this.hw = hw;
+        this.mI = mI;
         this.telemetry = telemetry;
-
-        this.mI = hw.get(DcMotor.class, "mI");
-        mI = hw.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotor.Direction.REVERSE);
     }
 
     // spin Intake motor with power.

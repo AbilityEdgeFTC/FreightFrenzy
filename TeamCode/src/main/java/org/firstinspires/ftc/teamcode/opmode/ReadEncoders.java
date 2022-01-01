@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.opmode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -49,14 +50,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Read Encoders", group="Linear Opmode")
+@Disabled
 public class ReadEncoders extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor mFL = null;
-    private DcMotor mFR = null;
-    private DcMotor mBL = null;
-    private DcMotor mBR = null;
+//    private DcMotor mFL = null;
+//    private DcMotor mFR = null;
+//    private DcMotor mBL = null;
+//    private DcMotor mBR = null;
+    private DcMotor mI = null;
+    private DcMotor mC = null;
+    private DcMotor eL = null;
 
     @Override
     public void runOpMode() {
@@ -66,27 +71,39 @@ public class ReadEncoders extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the teleop configuration
         // step (using the FTC Robot Controller app on the phone).
-        mFL  = hardwareMap.get(DcMotor.class, "mFL");
-        mFR = hardwareMap.get(DcMotor.class, "mFR");
-        mBL = hardwareMap.get(DcMotor.class, "mBL");
-        mBR = hardwareMap.get(DcMotor.class, "mBR");
+//        mFL  = hardwareMap.get(DcMotor.class, "mFL");
+//        mFR = hardwareMap.get(DcMotor.class, "mFR");
+//        mBL = hardwareMap.get(DcMotor.class, "mBL");
+//        mBR = hardwareMap.get(DcMotor.class, "mBR");
+//
+//        mFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        mFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        mBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        mBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//
+//        mFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        mFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        mBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        mBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        mFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        mFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        mBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        mBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        mI  = hardwareMap.get(DcMotor.class, "mI");
+        mC = hardwareMap.get(DcMotor.class, "mC");
+        eL = hardwareMap.get(DcMotor.class, "eL");
+
+        mI.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        mC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        eL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        mFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        mFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        mBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        mBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        mI.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        mC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        eL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        mFL.setDirection(DcMotor.Direction.REVERSE);
-        mBL.setDirection(DcMotor.Direction.REVERSE);
+        //mFL.setDirection(DcMotor.Direction.REVERSE);
+        //mBL.setDirection(DcMotor.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -95,11 +112,14 @@ public class ReadEncoders extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            telemetry.addLine("Motor Front Left: " + mFL.getCurrentPosition());
-            telemetry.addLine("Motor Back Left: " + mBL.getCurrentPosition());
-            telemetry.addLine("Motor Front Right: " + mFR.getCurrentPosition());
-            telemetry.addLine("Motor Back Right: " + mBR.getCurrentPosition());
+//            telemetry.addLine("Motor Front Left: " + mFL.getCurrentPosition());
+//            telemetry.addLine("Motor Back Left: " + mBL.getCurrentPosition());
+//            telemetry.addLine("Motor Front Right: " + mFR.getCurrentPosition());
+//            telemetry.addLine("Motor Back Right: " + mBR.getCurrentPosition());
 
+            telemetry.addLine("Right Encoder: " + mI.getCurrentPosition());
+            telemetry.addLine("Front Encoder: " + mC.getCurrentPosition());
+            telemetry.addLine("Left Encoder: " + eL.getCurrentPosition());
             telemetry.update();
         }
     }

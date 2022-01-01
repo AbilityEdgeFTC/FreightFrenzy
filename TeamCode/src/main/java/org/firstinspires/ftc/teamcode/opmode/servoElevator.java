@@ -27,65 +27,56 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmode.MenuSwitch;
+package org.firstinspires.ftc.teamcode.opmode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
 import org.firstinspires.ftc.teamcode.robot.util.Controller;
 
-@TeleOp(name="Up down" , group="Tests")
-public class UP_DOWN extends LinearOpMode
-{
+@Config
+@TeleOp(group="Tests")
+public class servoElevator extends LinearOpMode {
 
-    int currentOptionNum = 1, count1, count2;
-    boolean flag = false;
+    Servo sE = null;
+    public static double position = 0.1;
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         Controller controller = new Controller(gamepad1);
+
+        sE = hardwareMap.get(Servo.class, "sE");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
 
-        //UP AND DOWN
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
 
             controller.update();
 
-            if (controller.dpadUpOnce()/* && flag == false*/)
-            {
-                currentOptionNum--;
-                //flag = true;
+            /*if(controller.dpadUpOnce()){
+                position += 0.05;
             }
-            else if (controller.dpadDownOnce()/* && flag == false*/)
-            {
-                currentOptionNum++;
-                //flag = true;
+            else if(controller.dpadDownOnce()){
+                position -= 0.05;
             }
-
-
-//            if(gamepad1.atRest())
-//            {
-//                flag = false;
-//            }
-            /*if(!gamepad1.dpad_up || !gamepad1.dpad_down)
+            else if(controller.AOnce())
             {
-                flag = false;
+                position = 0;
             }*/
 
-
-            telemetry.addData( "bibi ", currentOptionNum);
-            telemetry.addData( "flag ", flag);
-            telemetry.update();
+            sE.setPosition(position);
+            sleep(500);
         }
-
     }
 }

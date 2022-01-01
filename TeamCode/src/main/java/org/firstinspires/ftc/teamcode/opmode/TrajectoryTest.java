@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 
@@ -29,6 +30,7 @@ public class TrajectoryTest extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setLocalizer(new DoubleLocalizer(hardwareMap));
 
         drive.setPoseEstimate(startPose);
 
@@ -41,9 +43,6 @@ public class TrajectoryTest extends LinearOpMode {
                 .waitSeconds(5)
                 .lineToSplineHeading(startPose)
                 .build();
-
-        T265Localizer localizer = new T265Localizer(hardwareMap);
-        localizer.start(hardwareMap);
 
         waitForStart();
 
@@ -59,6 +58,5 @@ public class TrajectoryTest extends LinearOpMode {
             telemetry.update();
         }
 
-        localizer.stop();
     }
 }

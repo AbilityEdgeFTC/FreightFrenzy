@@ -39,32 +39,22 @@ public class carouselSubsystem{
 
     //motor carousel
     DcMotor mC;
-    // CRServo carousel
-    //CRServo sC;
     double power;
         HardwareMap hw;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public carouselSubsystem(double power, HardwareMap hw) {
+    public carouselSubsystem(DcMotor mC, double power) {
         this.power = power;
-        this.hw = hw;
-
-        this.mC = hw.get(DcMotor.class, "mC");
-        mC = hw.get(DcMotor.class, "mC");
-        mC.setDirection(DcMotor.Direction.REVERSE);
+        this.mC = mC;
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public carouselSubsystem(double power, HardwareMap hw, Telemetry telemetry) {
+    public carouselSubsystem(DcMotor mC, double power, Telemetry telemetry) {
         this.power = power;
-        this.hw = hw;
+        this.mC = mC;
         this.telemetry = telemetry;
-
-        this.mC = hw.get(DcMotor.class, "mC");
-        mC = hw.get(DcMotor.class, "mC");
-        mC.setDirection(DcMotor.Direction.REVERSE);
     }
 
     // spin carousel motor with power.

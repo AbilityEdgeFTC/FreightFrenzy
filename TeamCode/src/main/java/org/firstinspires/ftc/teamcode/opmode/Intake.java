@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -39,6 +40,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
 
 @Config
 @TeleOp(group="Tests")
+@Disabled
 public class Intake extends LinearOpMode {
 
     DcMotor mI = null;

@@ -156,7 +156,7 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
                 // Save the calibration data to a file. You can choose whatever file
                 // name you wish here, but you'll want to indicate the same file name
                 // when you initialize the IMU in an opmode in which it is used. If you
-                // have more than one IMU on your robot, you'll of course want to use
+                // have more than one IMU on your teleop, you'll of course want to use
                 // different configuration file names for each.
                 String filename = "AdafruitIMUCalibration.json";
                 File file = AppUtil.getInstance().getSettingsFile(filename);
