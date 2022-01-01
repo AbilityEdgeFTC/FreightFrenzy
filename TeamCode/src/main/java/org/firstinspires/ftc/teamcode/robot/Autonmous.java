@@ -63,8 +63,8 @@ public class Autonmous extends LinearOpMode {
 
         for(int i = 0; i < points.size(); i++)
         {
-            Trajectory trajectory= drive.trajectoryBuilder(new Pose2d())
-                    .splineToSplineHeading(points.get(i), drive.getPoseEstimate().getHeading())
+            Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
+                    .lineToSplineHeading(points.get(i))
                     .build();
 
             trajectories.add(i, trajectory);

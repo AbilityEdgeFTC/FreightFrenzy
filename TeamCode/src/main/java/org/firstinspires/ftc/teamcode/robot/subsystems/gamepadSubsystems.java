@@ -36,14 +36,14 @@ public class gamepadSubsystems{
     public gamepadSubsystems(Gamepad gamepad1, Gamepad gamepad2, BNO055IMU imu, DcMotor mFL, DcMotor mBL, DcMotor mFR, DcMotor mBR, double power, boolean regularDrive, Telemetry telemetry) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
-        this.power = power;
-        this.regularDrive = regularDrive;
-        this.telemetry = telemetry;
         this.imu = imu;
         this.mFL = mFL;
         this.mBL = mBL;
         this.mFR = mFR;
         this.mBR = mBR;
+        this.power = power;
+        this.regularDrive = regularDrive;
+        this.telemetry = telemetry;
 
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }

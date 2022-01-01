@@ -71,17 +71,17 @@ public class teleop extends LinearOpMode {
 
             // BUTTON Y
             if (gamepad2.y) {
-                //elevator.goToLevelThree();
+                elevator.goToLevelThree();
             }
 
             // BUTTON A
             if (gamepad2.a) {
-                //elevator.goToLevelOne();
+                elevator.goToLevelOne();
             }
 
             // BUTTON B
             if (gamepad2.b || gamepad2.x) {
-                //elevator.goToLevelTwo();
+                elevator.goToLevelTwo();
             }
 
             // RIGHT TRIGGER
@@ -98,12 +98,12 @@ public class teleop extends LinearOpMode {
 
             // D-PAD DOWN
             if (gamepad2.dpad_right) {
-                //carousel.spinCarouselMotor();
+                carousel.spinCarouselMotor();
             }
 
             // D-PAD UP
             if (gamepad2.dpad_left) {
-                //carousel.spinCarouselMotor(true);
+                carousel.spinCarouselMotor(true);
             }
         }
     }
