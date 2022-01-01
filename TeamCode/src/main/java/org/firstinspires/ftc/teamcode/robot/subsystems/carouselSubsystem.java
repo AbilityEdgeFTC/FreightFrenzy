@@ -42,7 +42,7 @@ public class carouselSubsystem{
     // CRServo carousel
     //CRServo sC;
     double power;
-    HardwareMap hw;
+        HardwareMap hw;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
