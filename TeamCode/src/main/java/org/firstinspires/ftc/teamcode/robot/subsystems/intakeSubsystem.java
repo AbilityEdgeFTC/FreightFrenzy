@@ -64,7 +64,7 @@ public class intakeSubsystem {
         mI.setPower(-power);
     }
     // stop Intake motor.
-    public void stopCarouselMotor(){
+    public void stop(){
         mI.setPower(0);
     }
 

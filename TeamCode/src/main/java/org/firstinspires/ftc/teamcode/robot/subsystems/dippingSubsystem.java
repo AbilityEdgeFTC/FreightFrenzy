@@ -27,58 +27,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.robot.subsystems;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
-import org.firstinspires.ftc.teamcode.robot.util.Controller;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-// .6 is throw freight
-// 1 is get freight from intake
-@Config
-@TeleOp(group="Tests")
-public class servoElevator extends LinearOpMode {
+public class dippingSubsystem {
 
-    Servo sE = null;
-    public static double position = 0.1;
+    //servo intake
+    Servo sD;
+    double intakePosition, dippingPosition;
+    Telemetry telemetry;
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        Controller controller = new Controller(gamepad1);
-
-        sE = hardwareMap.get(Servo.class, "sE");
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-
-        // run until the end of the match (driver presses STOP)
-
-        while (opModeIsActive()) {
-
-            controller.update();
-
-            if(controller.dpadUpOnce()){
-                position += 0.05;
-            }
-            else if(controller.dpadDownOnce()){
-                position -= 0.05;
-            }
-            else if(controller.AOnce())
-            {
-                position = 0;
-            }
-
-            sE.setPosition(position);
-            sleep(500);
-        }
+    // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
+    /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
+    public dippingSubsystem(Servo sD, double intakePosition, double dippingPosition) {
+        this.intakePosition = intakePosition;
+        this.dippingPosition = dippingPosition;
+        this.sD = sD;
     }
+
+    /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
+    public dippingSubsystem(Servo sD, double power, Telemetry telemetry) {
+        this.intakePosition = intakePosition;
+        this.dippingPosition = dippingPosition;
+        this.sD = sD;
+        this.telemetry = telemetry;
+    }
+
+    // spin Intake motor with power.
+    public void getFreight() throws InterruptedException {
+        sD.setPosition(intakePosition);
+        Thread.sleep(500);
+    }
+    // spin Intake motor with minos power.
+    public void releaseFreight() throws InterruptedException {
+        sD.setPosition(dippingPosition);
+        Thread.sleep(500);
+    }
+
+    // display power of motor.
+    public void displayTelemetry(){
+        telemetry.addLine("Servo freight at: " + sD.getPosition());
+        telemetry.update();
+    }
+
 }

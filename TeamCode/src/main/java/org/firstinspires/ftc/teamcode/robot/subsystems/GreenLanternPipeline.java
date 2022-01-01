@@ -9,8 +9,6 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline.Location.Not_Found;
-
 public class GreenLanternPipeline extends OpenCvPipeline
 {
 
@@ -50,7 +48,7 @@ public class GreenLanternPipeline extends OpenCvPipeline
         Not_Found
     }
 
-    private Location location;
+    public Location location;
 
     // color for the rectangles to show on the screen
     Scalar colorBarcodeRect = new Scalar(0, 255, 0);
@@ -58,6 +56,8 @@ public class GreenLanternPipeline extends OpenCvPipeline
     public Telemetry telemetry;
 
     public boolean TSE = true;
+
+    boolean barcodeLeft, barcodeCenter, barcodeRight;
 
     @Override
     public Mat processFrame(Mat input) {
@@ -102,14 +102,14 @@ public class GreenLanternPipeline extends OpenCvPipeline
         }
 
         // comparing the average color in the left/center/right rect to the threshold.
-        boolean barcodeLeft = leftAvg > threshold_percentage;
-        boolean barcodeCenter = centerAvg > threshold_percentage;
-        boolean barcodeRight = rightAvg > threshold_percentage;
+        barcodeLeft = leftAvg > threshold_percentage;
+        barcodeCenter = centerAvg > threshold_percentage;
+        barcodeRight = rightAvg > threshold_percentage;
 
         //checking which barcode is found.
         if(barcodeLeft && barcodeCenter && barcodeRight){
             // NOT FOUND
-            location = Not_Found;
+            location = Location.Not_Found;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }else if(barcodeLeft){
             location = Location.Left;
@@ -122,7 +122,7 @@ public class GreenLanternPipeline extends OpenCvPipeline
             //telemetry.addData("Barcode Location:","RIGHT Barcode.");
         }else{
             // NOT FOUND
-            location = Not_Found;
+            location = Location.Not_Found;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }
         //telemetry.update();
@@ -139,6 +139,27 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
     // getting location of the team shipping element.
     public Location getLocation() {
+        Location location;
+
+        if(barcodeLeft && barcodeCenter && barcodeRight){
+            // NOT FOUND
+            location = Location.Not_Found;
+            //telemetry.addData("Barcode Location:","Unknown Barcode.");
+        }else if(barcodeLeft){
+            location = Location.Left;
+            //telemetry.addData("Barcode Location:","LEFT Barcode.");
+        }else if(barcodeCenter){
+            location = Location.Center;
+            //telemetry.addData("Barcode Location:","CENTER Barcode.");
+        }else if(barcodeRight){
+            location = Location.Right;
+            //telemetry.addData("Barcode Location:","RIGHT Barcode.");
+        }else{
+            // NOT FOUND
+            location = Location.Not_Found;
+            //telemetry.addData("Barcode Location:","Unknown Barcode.");
+        }
+
         return location;
     }
 

@@ -45,7 +45,7 @@ public class gamepadSubsystems{
         this.regularDrive = regularDrive;
         this.telemetry = telemetry;
 
-        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 
     public void update() throws InterruptedException {
@@ -76,7 +76,6 @@ public class gamepadSubsystems{
         drive = -gamepad1.left_stick_y;
         strafe = gamepad1.left_stick_x;
         twist = gamepad1.right_stick_x;
-
     }
 
     public void regularDrive()

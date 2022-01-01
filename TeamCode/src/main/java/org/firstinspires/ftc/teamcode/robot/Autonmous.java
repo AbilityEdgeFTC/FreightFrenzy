@@ -55,6 +55,11 @@ public class Autonmous extends LinearOpMode {
         {
             telemetry.addData("Barcode Location:",pipeline.getLocation());
             telemetry.update();
+
+            if(isStopRequested())
+            {
+                webcam.stopStreaming();
+            }
         }
 
         MenuOpModeTest menu = new MenuOpModeTest();

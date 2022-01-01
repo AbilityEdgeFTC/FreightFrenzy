@@ -111,6 +111,8 @@ public class GreenLanternOpMode extends LinearOpMode {
                     //IF BARCODE IS ON RIGHT SIDE
 
                     break;
+                default:
+                    break;
             }
 
             telemetry.addData("Barcode Location:",pipeline.getLocation());
