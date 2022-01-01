@@ -138,7 +138,7 @@ public class GreenLanternPipeline extends OpenCvPipeline
     }
 
     // getting location of the team shipping element.
-    public Location getLocation()    {
+    public Location getLocation() {
         return location;
     }
 
