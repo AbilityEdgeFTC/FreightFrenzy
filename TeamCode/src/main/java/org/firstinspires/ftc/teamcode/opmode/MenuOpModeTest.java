@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.util.Controller;
 
 import java.io.File;
@@ -26,15 +28,22 @@ public class MenuOpModeTest extends LinearOpMode
     ArrayList<String> tasksName = new ArrayList<String>();
 
     // list for each task
-    ArrayList<String> colorTask = new ArrayList<String>();
-    ArrayList<String> parkTask = new ArrayList<String>();
-    ArrayList<String> carouselTask = new ArrayList<String>();
-    ArrayList<Integer> order = new ArrayList<Integer>();
+    public static ArrayList<String> colorTask = new ArrayList<String>();
+    public static ArrayList<String> parkTask = new ArrayList<String>();
+    public static ArrayList<String> carouselTask = new ArrayList<String>();
+    public static ArrayList<Integer> order = new ArrayList<Integer>();
 
     // list of the final options the player chose
-    ArrayList<String> finalOptions = new ArrayList<String>();
+    public static ArrayList<String> finalOptions = new ArrayList<String>();
 
     ArrayList<Integer> currentOption = new ArrayList<Integer>();
+
+    enum tasksEnum
+    {
+        color,
+        park,
+        carousel
+    }
 
     @Override
     public void runOpMode()
@@ -126,20 +135,26 @@ public class MenuOpModeTest extends LinearOpMode
 
 //            if(gamepad1.a)
 //            {
-//                try {
-//                    FileWriter myWriter = new FileWriter(myFile);
-//                    for(int j = 0; j < finalOptions.size(); j++)
+//                for(int i = 0; i < finalOptions.size(); i++)
+//                {
+//                    switch(i)
 //                    {
-//                        myWriter.write(finalOptions.get(j)+"\n");
+//                        case 0:
+//                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("color.txt"), finalOptions.get(i));
+//                            break;
+//                        case 1:
+//                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("park.txt"), finalOptions.get(i));
+//                            break;
+//                        case 2:
+//                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("carousel.txt"), finalOptions.get(i));
+//                            break;
 //                    }
-//                    myWriter.close();
-//                } catch (IOException e) {
-//                    telemetry.addLine("ERROR COULD NOT SAVE.");
 //                }
 //                flag = true;
 //            }
 
             telemetry.update();
+
         }
 
 

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.opmode.MenuOpModeTest;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
@@ -62,9 +64,11 @@ public class Autonmous extends LinearOpMode {
             }
         }
 
-        MenuOpModeTest menu = new MenuOpModeTest();
+//        String colorTask = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("color.txt"));
+//        String parkTask = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("park.txt"));
+//        String carouselTask = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("carousel.txt"));
 
-        points = menu.listOfPose();
+        points = listOfPose(MenuOpModeTest.finalOptions, MenuOpModeTest.colorTask, MenuOpModeTest.parkTask, MenuOpModeTest.carouselTask);
 
         for(int i = 0; i < points.size(); i++)
         {
@@ -136,6 +140,96 @@ public class Autonmous extends LinearOpMode {
                  */
             }
         });
+    }
+
+    public ArrayList<Pose2d> listOfPose(ArrayList<String> finalOptions, ArrayList<String> colorTask, ArrayList<String> parkTask, ArrayList<String> carouselTask)
+    {
+        ArrayList<Pose2d> pose2DS = new ArrayList<>();
+        boolean blue = false, red = false;
+
+        for(int i = 0; i <= finalOptions.size(); i++)
+        {
+            if(colorTask.get(0).equals(finalOptions.get(i)))
+            {
+                blue = true;
+                red = false;
+            }
+            else if(colorTask.get(1).equals(finalOptions.get(i)))
+            {
+                blue = false;
+                red = true;
+            }
+
+            if(parkTask.get(0).equals(finalOptions.get(i)))
+            {
+                if(blue)
+                {
+                    pose2DS.add(i, new Pose2d(1,1, 0));
+                }
+                else
+                {
+                    pose2DS.add(i, new Pose2d(-1,-1, 0));
+                }
+            }
+            else if(parkTask.get(1).equals(finalOptions.get(i)))
+            {
+                if(blue)
+                {
+                    pose2DS.add(i, new Pose2d(2,2, 0));
+                }
+                else
+                {
+                    pose2DS.add(i, new Pose2d(-2,-2, 0));
+                }
+            }
+            else if(parkTask.get(2).equals(finalOptions.get(i)))
+            {
+                if(blue)
+                {
+                    pose2DS.add(i, new Pose2d(3,3, 0));
+                }
+                else
+                {
+                    pose2DS.add(i, new Pose2d(-3,-3, 0));
+                }
+            }
+            else if(parkTask.get(3).equals(finalOptions.get(i)))
+            {
+                if(blue)
+                {
+                    pose2DS.add(i, new Pose2d(4,4, 0));
+                }
+                else
+                {
+                    pose2DS.add(i, new Pose2d(-4,-4, 0));
+                }
+            }
+
+            if(carouselTask.get(0).equals(finalOptions.get(i)))
+            {
+                if(blue)
+                {
+                    pose2DS.add(i, new Pose2d(1,1, 0));
+                }
+                else
+                {
+                    pose2DS.add(i, new Pose2d(-1,-1, 0));
+                }
+            }
+            else if(carouselTask.get(1).equals(finalOptions.get(i)))
+            {
+                if(blue)
+                {
+                    pose2DS.add(i, new Pose2d(2,2, 0));
+                }
+                else
+                {
+                    pose2DS.add(i, new Pose2d(-2,-2, 0));
+                }
+            }
+        }
+
+        return pose2DS;
     }
 
 }
