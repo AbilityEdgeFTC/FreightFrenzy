@@ -58,19 +58,19 @@ public class carouselSubsystem{
     }
 
     // spin carousel motor with power.
-    public void spinCarouselMotor(){
+    public void spin(){
         mC.setPower(power);
     }
 
     // spin carousel motor with power for seconds long.
-    public void spinCarouselMotor(double seconds) throws InterruptedException {
+    public void spin(double seconds) throws InterruptedException {
         mC.setPower(power);
         Thread.sleep((long)seconds*1000);
-        stopCarouselMotor();
+        stop();
     }
 
     // spin carousel motor with -power.
-    public void spinCarouselMotor(boolean reverse){
+    public void spin(boolean reverse){
         if(reverse){
             mC.setPower(-power);
         }else{
@@ -79,20 +79,20 @@ public class carouselSubsystem{
     }
 
     // spin carousel motor with -power for seconds long.
-    public void spinCarouselMotor(double seconds, boolean reverse) throws InterruptedException {
+    public void spin(double seconds, boolean reverse) throws InterruptedException {
         if(reverse){
             mC.setPower(power);
             Thread.sleep((long)seconds*1000);
-            stopCarouselMotor();
+            stop();
         }else{
             mC.setPower(-power);
             Thread.sleep((long)seconds*1000);
-            stopCarouselMotor();
+            stop();
         }
     }
 
     // stop carousel motor.
-    public void stopCarouselMotor(){
+    public void stop(){
         mC.setPower(0);
     }
 

@@ -68,8 +68,8 @@ public class teleop extends LinearOpMode {
             if (gamepad1.right_bumper || gamepad1.right_bumper) {
                 dip.releaseFreight();
                 wait(1500);
-                elevator.goToZeroPos();
                 dip.getFreight();
+                elevator.goToZeroPos();
             }
 
             // TODO: change to gamepad2
@@ -109,19 +109,16 @@ public class teleop extends LinearOpMode {
             }
 
             // TODO: change to gamepad2
-            // D-PAD DOWN
             if (gamepad1.dpad_right) {
-                carousel.spinCarouselMotor();
+                carousel.spin();
             }
-
             // TODO: change to gamepad2
-            // D-PAD UP
             else if (gamepad1.dpad_left) {
-                carousel.spinCarouselMotor(true);
+                carousel.spin(true);
             }
             else
             {
-                carousel.stopCarouselMotor();
+                carousel.stop();
             }
         }
     }

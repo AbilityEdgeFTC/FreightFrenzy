@@ -65,19 +65,14 @@ public class elevatorSubsystems{
         this.power = power;
         this.mE = mE;
         this.telemetry = telemetry;
-
-        this.mE = hw.get(DcMotor.class, "mE");
-        this.mE.setDirection(DcMotorSimple.Direction.REVERSE);
-        this.mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     // set target position to zero pos(start pos), and while target position isn't required so keep going down.
     public void goToZeroPos() {
         mE.setTargetPosition(0);
-        mE.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if(mE.getCurrentPosition() < positionLevelOne) {
-            mE.setPower(power);
+        if(mE.getCurrentPosition() > 0) {
+            mE.setPower(-power);
         }else {
             mE.setPower(0);
         }
@@ -86,57 +81,46 @@ public class elevatorSubsystems{
     // set target position to level one, and while target position isn't required so keep going up/down.
     public void goToLevelOne() {
         mE.setTargetPosition(positionLevelOne);
-        mE.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if(mE.getCurrentPosition() < positionLevelOne) {
+        if(mE.getCurrentPosition() <= positionLevelOne) {
             mE.setPower(power);
         }else {
             mE.setPower(0);
         }
-
-        // TODO: AFTER PLACING SERVO SO RETURN TO LEVEL 0
     }
 
     // set target position to level two, and while target position isn't required so keep going up/down.
     public void goToLevelTwo() {
         mE.setTargetPosition(positionLevelTwo);
-        mE.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if(mE.getCurrentPosition() < positionLevelTwo) {
+        if(mE.getCurrentPosition() <= positionLevelTwo) {
             mE.setPower(power);
         }else {
             mE.setPower(0);
         }
-
-        // TODO: AFTER PLACING SERVO SO RETURN TO LEVEL 0
     }
 
     // set target position to level three, and while target position isn't required so keep going up.
     public void goToLevelThree() {
         mE.setTargetPosition(positionLevelThree);
-        mE.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if(mE.getCurrentPosition() < positionLevelThree) {
+        if(mE.getCurrentPosition() <= positionLevelThree) {
             mE.setPower(power);
         }else {
             mE.setPower(0);
         }
-
-        // TODO: AFTER PLACING SERVO SO RETURN TO LEVEL 0
-
     }
 
     public int getPosition(){
         return mE.getCurrentPosition();
     }
+
     public void Up (){
         mE.setPower(power);
     }
     public void Down(){
         mE.setPower(-power);
     }
-
-
 
     // display power of motor, and its position.
     public void displayTelemetry(){
