@@ -50,21 +50,7 @@ public class teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        mFL = hardwareMap.get(DcMotor.class, "mFL");
-        mBL = hardwareMap.get(DcMotor.class, "mBL");
-        mBR = hardwareMap.get(DcMotor.class, "mBR");
-        mFR = hardwareMap.get(DcMotor.class, "mFR");
-        mFL.setDirection(DcMotor.Direction.REVERSE);
-        mBL.setDirection(DcMotor.Direction.REVERSE);
-        mI = hardwareMap.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotor.Direction.REVERSE);;
-        mC = hardwareMap.get(DcMotor.class, "mC");
-        mC.setDirection(DcMotor.Direction.REVERSE);
-        mE = hardwareMap.get(DcMotor.class, "mE");
-        mE.setDirection(DcMotorSimple.Direction.REVERSE);
-        mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sD = hardwareMap.get(Servo.class, "sE");
-        initImu();
+        initAll();
 
         carousel = new carouselSubsystem(mC, powerCarousel);
         elevator = new elevatorSubsystems(mE, powerElevator, positionLevelOne, positionLevelTwo, positionLevelThree);
@@ -138,6 +124,25 @@ public class teleop extends LinearOpMode {
                 carousel.stopCarouselMotor();
             }
         }
+    }
+
+    void initAll()
+    {
+        mFL = hardwareMap.get(DcMotor.class, "mFL");
+        mBL = hardwareMap.get(DcMotor.class, "mBL");
+        mBR = hardwareMap.get(DcMotor.class, "mBR");
+        mFR = hardwareMap.get(DcMotor.class, "mFR");
+        mFL.setDirection(DcMotor.Direction.REVERSE);
+        mBL.setDirection(DcMotor.Direction.REVERSE);
+        mI = hardwareMap.get(DcMotor.class, "mI");
+        mI.setDirection(DcMotor.Direction.REVERSE);;
+        mC = hardwareMap.get(DcMotor.class, "mC");
+        mC.setDirection(DcMotor.Direction.REVERSE);
+        mE = hardwareMap.get(DcMotor.class, "mE");
+        mE.setDirection(DcMotorSimple.Direction.REVERSE);
+        mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sD = hardwareMap.get(Servo.class, "sE");
+        initImu();
     }
 
     void initImu()

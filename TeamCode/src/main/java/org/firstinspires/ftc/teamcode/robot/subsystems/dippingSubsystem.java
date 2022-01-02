@@ -50,7 +50,7 @@ public class dippingSubsystem {
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public dippingSubsystem(Servo sD, double power, Telemetry telemetry) {
+    public dippingSubsystem(Servo sD, double intakePosition, double dippingPosition, Telemetry telemetry) {
         this.intakePosition = intakePosition;
         this.dippingPosition = dippingPosition;
         this.sD = sD;
