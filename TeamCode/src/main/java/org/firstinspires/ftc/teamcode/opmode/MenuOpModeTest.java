@@ -28,13 +28,13 @@ public class MenuOpModeTest extends LinearOpMode
     ArrayList<String> tasksName = new ArrayList<String>();
 
     // list for each task
-    public static ArrayList<String> colorTask = new ArrayList<String>();
-    public static ArrayList<String> parkTask = new ArrayList<String>();
-    public static ArrayList<String> carouselTask = new ArrayList<String>();
-    public static ArrayList<Integer> order = new ArrayList<Integer>();
+    ArrayList<String> colorTask = new ArrayList<String>();
+    ArrayList<String> parkTask = new ArrayList<String>();
+    ArrayList<String> carouselTask = new ArrayList<String>();
+    ArrayList<Integer> order = new ArrayList<Integer>();
 
     // list of the final options the player chose
-    public static ArrayList<String> finalOptions = new ArrayList<String>();
+    ArrayList<String> finalOptions = new ArrayList<String>();
 
     ArrayList<Integer> currentOption = new ArrayList<Integer>();
 
@@ -133,25 +133,25 @@ public class MenuOpModeTest extends LinearOpMode
 
             telemetry.addLine("(" + (taskNum+1) + ") " + taskName + ": " + tasks.get(taskNum).get(currentOption.get(taskNum)));
 
-//            if(gamepad1.a)
-//            {
-//                for(int i = 0; i < finalOptions.size(); i++)
-//                {
-//                    switch(i)
-//                    {
-//                        case 0:
-//                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("color.txt"), finalOptions.get(i));
-//                            break;
-//                        case 1:
-//                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("park.txt"), finalOptions.get(i));
-//                            break;
-//                        case 2:
-//                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("carousel.txt"), finalOptions.get(i));
-//                            break;
-//                    }
-//                }
-//                flag = true;
-//            }
+            if(gamepad1.a)
+            {
+                for(int i = 0; i < finalOptions.size(); i++)
+                {
+                    switch(i)
+                    {
+                        case 0:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("color.txt"), finalOptions.get(i));
+                            break;
+                        case 1:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("park.txt"), finalOptions.get(i));
+                            break;
+                        case 2:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("carousel.txt"), finalOptions.get(i));
+                            break;
+                    }
+                }
+                flag = true;
+            }
 
             telemetry.update();
 

@@ -3,32 +3,13 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ReadWriteFile;
-
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.opmode.MenuOpModeTest;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
-import org.firstinspires.ftc.teamcode.robot.subsystems.carouselSubsystem;
-import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
-import org.firstinspires.ftc.teamcode.robot.subsystems.gamepadSubsystems;
-import org.firstinspires.ftc.teamcode.robot.subsystems.intakeSubsystem;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -45,30 +26,30 @@ public class Autonmous extends LinearOpMode {
 
    ArrayList<Pose2d> points = new ArrayList();
    ArrayList<Trajectory> trajectories = new ArrayList();
+   ArrayList<String> colorTask = new ArrayList<String>();
+   ArrayList<String> parkTask = new ArrayList<String>();
+   ArrayList<String> carouselTask = new ArrayList<String>();
 
-    @Override
-    public void runOpMode() throws InterruptedException {
+   @Override
+   public void runOpMode() throws InterruptedException {
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+       SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         pipeline = new GreenLanternPipeline();
         initPipeline();
+        initLists();
 
         while(!opModeIsActive())
         {
             telemetry.addData("Barcode Location:",pipeline.getLocation());
             telemetry.update();
-
-            if(isStopRequested())
-            {
-                webcam.stopStreaming();
-            }
         }
 
-//        String colorTask = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("color.txt"));
-//        String parkTask = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("park.txt"));
-//        String carouselTask = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("carousel.txt"));
+       if(isStopRequested())
+       {
+           webcam.stopStreaming();
+       }
 
-        points = listOfPose(MenuOpModeTest.finalOptions, MenuOpModeTest.colorTask, MenuOpModeTest.parkTask, MenuOpModeTest.carouselTask);
+        points = listOfPose();
 
         for(int i = 0; i < points.size(); i++)
         {
@@ -142,25 +123,45 @@ public class Autonmous extends LinearOpMode {
         });
     }
 
-    public ArrayList<Pose2d> listOfPose(ArrayList<String> finalOptions, ArrayList<String> colorTask, ArrayList<String> parkTask, ArrayList<String> carouselTask)
+    void initLists()
     {
+        colorTask.add("Blue");
+        colorTask.add("Red");
+
+        // adding the options to park task
+        parkTask.add("Not Completely In ASU");
+        parkTask.add("Completely In ASU");
+        parkTask.add("Not Completely In WH");
+        parkTask.add("Completely In WH");
+
+        // adding the options to carousel task
+        carouselTask.add("Yes");
+        carouselTask.add("No");
+    }
+
+    public ArrayList<Pose2d> listOfPose()
+    {
+        String finalColor = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("color.txt"));
+        String finalPark = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("park.txt"));
+        String finalCarousel = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("carousel.txt"));
+
         ArrayList<Pose2d> pose2DS = new ArrayList<>();
         boolean blue = false, red = false;
 
-        for(int i = 0; i <= finalOptions.size(); i++)
+        for(int i = 0; i <= 2; i++)
         {
-            if(colorTask.get(0).equals(finalOptions.get(i)))
+            if(colorTask.get(0).equals(finalColor))
             {
                 blue = true;
                 red = false;
             }
-            else if(colorTask.get(1).equals(finalOptions.get(i)))
+            else if(colorTask.get(1).equals(finalColor))
             {
                 blue = false;
                 red = true;
             }
 
-            if(parkTask.get(0).equals(finalOptions.get(i)))
+            if(parkTask.get(0).equals(finalPark))
             {
                 if(blue)
                 {
@@ -171,7 +172,7 @@ public class Autonmous extends LinearOpMode {
                     pose2DS.add(i, new Pose2d(-1,-1, 0));
                 }
             }
-            else if(parkTask.get(1).equals(finalOptions.get(i)))
+            else if(parkTask.get(1).equals(finalPark))
             {
                 if(blue)
                 {
@@ -182,7 +183,7 @@ public class Autonmous extends LinearOpMode {
                     pose2DS.add(i, new Pose2d(-2,-2, 0));
                 }
             }
-            else if(parkTask.get(2).equals(finalOptions.get(i)))
+            else if(parkTask.get(2).equals(finalPark))
             {
                 if(blue)
                 {
@@ -193,7 +194,7 @@ public class Autonmous extends LinearOpMode {
                     pose2DS.add(i, new Pose2d(-3,-3, 0));
                 }
             }
-            else if(parkTask.get(3).equals(finalOptions.get(i)))
+            else if(parkTask.get(3).equals(finalPark))
             {
                 if(blue)
                 {
@@ -205,7 +206,7 @@ public class Autonmous extends LinearOpMode {
                 }
             }
 
-            if(carouselTask.get(0).equals(finalOptions.get(i)))
+            if(carouselTask.get(0).equals(finalCarousel))
             {
                 if(blue)
                 {
@@ -216,7 +217,7 @@ public class Autonmous extends LinearOpMode {
                     pose2DS.add(i, new Pose2d(-1,-1, 0));
                 }
             }
-            else if(carouselTask.get(1).equals(finalOptions.get(i)))
+            else if(carouselTask.get(1).equals(finalCarousel))
             {
                 if(blue)
                 {
