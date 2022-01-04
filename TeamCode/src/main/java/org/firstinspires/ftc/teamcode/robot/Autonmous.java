@@ -68,9 +68,12 @@ public class Autonmous extends LinearOpMode {
         // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
         drive.followTrajectory(trajectories.get(1));
         // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
-        drive.followTrajectory(trajectories.get(2));
-        // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
         drive.setMotorPowers(0,0,0,0);
+
+        while(opModeIsActive())
+        {
+            telemetry.update();
+        }
 
     }
 
@@ -145,88 +148,98 @@ public class Autonmous extends LinearOpMode {
         String finalPark = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("park.txt"));
         String finalCarousel = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("carousel.txt"));
 
+        int orderCarousel = 0, orderPark = 1;
         ArrayList<Pose2d> pose2DS = new ArrayList<>();
         boolean blue = false, red = false;
 
-        for(int i = 0; i <= 2; i++)
+        if(colorTask.get(0).equals(finalColor))
         {
-            if(colorTask.get(0).equals(finalColor))
-            {
-                blue = true;
-                red = false;
-            }
-            else if(colorTask.get(1).equals(finalColor))
-            {
-                blue = false;
-                red = true;
-            }
+            blue = true;
+            red = false;
+        }
+        else if(colorTask.get(1).equals(finalColor))
+        {
+            blue = false;
+            red = true;
+        }
 
-            if(parkTask.get(0).equals(finalPark))
+        if(carouselTask.get(0).equals(finalCarousel))
+        {
+            if(blue)
             {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(1,1, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-1,-1, 0));
-                }
+                telemetry.addLine("blue! carousel yes");
+                pose2DS.add(orderCarousel, new Pose2d(1,1, 0));
             }
-            else if(parkTask.get(1).equals(finalPark))
+            else
             {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(2,2, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-2,-2, 0));
-                }
+                telemetry.addLine("red! carousel yes");
+                pose2DS.add(orderCarousel, new Pose2d(-1,-1, 0));
             }
-            else if(parkTask.get(2).equals(finalPark))
+        }
+        else if(carouselTask.get(1).equals(finalCarousel))
+        {
+            if(blue)
             {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(3,3, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-3,-3, 0));
-                }
+                telemetry.addLine("blue! carousel no");
+                pose2DS.add(orderCarousel, new Pose2d(2,2, 0));
             }
-            else if(parkTask.get(3).equals(finalPark))
+            else
             {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(4,4, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-4,-4, 0));
-                }
+                telemetry.addLine("red! carousel no");
+                pose2DS.add(orderCarousel, new Pose2d(-2,-2, 0));
             }
+        }
 
-            if(carouselTask.get(0).equals(finalCarousel))
+        if(parkTask.get(0).equals(finalPark))
+        {
+            if(blue)
             {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(1,1, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-1,-1, 0));
-                }
+                telemetry.addLine("park blue! Not Completely In ASU");
+                pose2DS.add(orderPark, new Pose2d(1,1, 0));
             }
-            else if(carouselTask.get(1).equals(finalCarousel))
+            else
             {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(2,2, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-2,-2, 0));
-                }
+                telemetry.addLine("park red! Not Completely In ASU");
+                pose2DS.add(orderPark, new Pose2d(-1,-1, 0));
+            }
+        }
+        else if(parkTask.get(1).equals(finalPark))
+        {
+            if(blue)
+            {
+                telemetry.addLine("park blue! Completely In ASU");
+                pose2DS.add(orderPark, new Pose2d(2,2, 0));
+            }
+            else
+            {
+                telemetry.addLine("park red! Completely In ASU");
+                pose2DS.add(orderPark, new Pose2d(-2,-2, 0));
+            }
+        }
+        else if(parkTask.get(2).equals(finalPark))
+        {
+            if(blue)
+            {
+                telemetry.addLine("park blue! Not Completely In WH");
+                pose2DS.add(orderPark, new Pose2d(3,3, 0));
+            }
+            else
+            {
+                telemetry.addLine("park red! Not Completely In WH");
+                pose2DS.add(orderPark, new Pose2d(-3,-3, 0));
+            }
+        }
+        else if(parkTask.get(3).equals(finalPark))
+        {
+            if(blue)
+            {
+                telemetry.addLine("park blue! Completely In WH");
+                pose2DS.add(orderPark, new Pose2d(4,4, 0));
+            }
+            else
+            {
+                telemetry.addLine("park red! Completely In WH");
+                pose2DS.add(orderPark, new Pose2d(-4,-4, 0));
             }
         }
 
