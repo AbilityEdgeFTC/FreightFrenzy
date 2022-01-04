@@ -39,94 +39,63 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class elevatorSubsystems{
 
     DcMotor mE;
-    double power = 0;
     Telemetry telemetry = null;
-    HardwareMap hw = null;
-    public static int positionLevelOne;
-    public static int positionLevelTwo;
-    public static int positionLevelThree;
+    int positionLevelOne, positionLevelTwo, positionLevelThree;
+    double kP, kI, kD;
+    PIDController controller;
 
     // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public elevatorSubsystems(DcMotor mE, double power, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
+    public elevatorSubsystems(DcMotor mE, double kP, double kI, double kD, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
     {
         this.positionLevelOne = positionLevelOne;
         this.positionLevelTwo = positionLevelTwo;
         this.positionLevelThree = positionLevelThree;
-        this.power = power;
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
         this.mE = mE;
+        controller = new PIDController(kP,kI,kD);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public elevatorSubsystems(DcMotor mE, double power, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
+    public elevatorSubsystems(DcMotor mE, double kP, double kI, double kD, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
         this.positionLevelOne = positionLevelOne;
         this.positionLevelTwo = positionLevelTwo;
         this.positionLevelThree = positionLevelThree;
-        this.power = power;
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
         this.mE = mE;
         this.telemetry = telemetry;
+
+        controller = new PIDController(kP,kI,kD, telemetry);
     }
 
     // set target position to zero pos(start pos), and while target position isn't required so keep going down.
     public void goToZeroPos() {
-        mE.setTargetPosition(0);
-
-        if(mE.getCurrentPosition() > 0) {
-            mE.setPower(-power);
-        }else {
-            mE.setPower(0);
-        }
+        mE.setPower(controller.updatedPower(0, mE.getCurrentPosition()));
     }
 
     // set target position to level one, and while target position isn't required so keep going up/down.
     public void goToLevelOne() {
-        mE.setTargetPosition(positionLevelOne);
+        mE.setPower(controller.updatedPower(positionLevelOne, mE.getCurrentPosition()));
 
-        if(mE.getCurrentPosition() <= positionLevelOne) {
-            mE.setPower(power);
-        }else {
-            mE.setPower(0);
-        }
     }
 
     // set target position to level two, and while target position isn't required so keep going up/down.
     public void goToLevelTwo() {
-        mE.setTargetPosition(positionLevelTwo);
+        mE.setPower(controller.updatedPower(positionLevelTwo, mE.getCurrentPosition()));
 
-        if(mE.getCurrentPosition() <= positionLevelTwo) {
-            mE.setPower(power);
-        }else {
-            mE.setPower(0);
-        }
     }
 
     // set target position to level three, and while target position isn't required so keep going up.
     public void goToLevelThree() {
-        mE.setTargetPosition(positionLevelThree);
-
-        if(mE.getCurrentPosition() <= positionLevelThree) {
-            mE.setPower(power);
-        }else {
-            mE.setPower(0);
-        }
+        mE.setPower(controller.updatedPower(positionLevelThree, mE.getCurrentPosition()));
     }
 
     public int getPosition(){
         return mE.getCurrentPosition();
-    }
-
-    public void Up (){
-        mE.setPower(power);
-    }
-    public void Down(){
-        mE.setPower(-power);
-    }
-
-    // display power of motor, and its position.
-    public void displayTelemetry(){
-        telemetry.addLine("At: " + mE.getCurrentPosition());
-        telemetry.addLine("Power at: " + power);
-        telemetry.update();
     }
 
 }

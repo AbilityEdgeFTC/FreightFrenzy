@@ -31,14 +31,13 @@ public class teleop extends LinearOpMode {
     Servo sD;
 
     public static double powerCarousel = 0.325;
-    public static double powerElevator = 0.8;
     public static double powerIntake = 1;
     public static int positionLevelOne = 170;
     public static int positionLevelTwo = 250;
     public static int positionLevelThree = 500;
     public static double intakePosition = 1, dippingPosition = .6;
 
-    double mainPower = .7;
+    double mainPower = 1;
     boolean isRegularDrive = true;
 
     carouselSubsystem carousel;
@@ -47,13 +46,15 @@ public class teleop extends LinearOpMode {
     gamepadSubsystems gamepads;
     dippingSubsystem dip;
 
+    public static double kP = 0, kI = 0, kD = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         initAll();
 
         carousel = new carouselSubsystem(mC, powerCarousel);
-        elevator = new elevatorSubsystems(mE, powerElevator, positionLevelOne, positionLevelTwo, positionLevelThree);
+        elevator = new elevatorSubsystems(mE, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
         gamepads = new gamepadSubsystems(gamepad1, gamepad2, imu, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry);
         intake = new intakeSubsystem(mI, powerIntake);
         dip = new dippingSubsystem(sD, intakePosition, dippingPosition);
@@ -65,9 +66,9 @@ public class teleop extends LinearOpMode {
             gamepads.update();
 
             // GAMEPAD1 BUMPER
-            if (gamepad1.right_bumper || gamepad1.right_bumper) {
+            if (gamepad1.right_bumper/* || gamepad1.left_bumper*/) {
                 dip.releaseFreight();
-                wait(1500);
+                Thread.sleep(2000);
                 dip.getFreight();
                 elevator.goToZeroPos();
             }
@@ -135,9 +136,13 @@ public class teleop extends LinearOpMode {
         mI.setDirection(DcMotor.Direction.REVERSE);;
         mC = hardwareMap.get(DcMotor.class, "mC");
         mC.setDirection(DcMotor.Direction.REVERSE);
-        mE = hardwareMap.get(DcMotor.class, "mE");
-        mE.setDirection(DcMotorSimple.Direction.REVERSE);
-        mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        mE = hardwareMap.get(DcMotorEx.class, "mE");
+        // use braking to slow the motor down faster
+        mE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // disables the default velocity control
+        // this does NOT disable the encoder from counting,
+        // but lets us simply send raw motor power.
+        mE.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sD = hardwareMap.get(Servo.class, "sE");
         initImu();
     }

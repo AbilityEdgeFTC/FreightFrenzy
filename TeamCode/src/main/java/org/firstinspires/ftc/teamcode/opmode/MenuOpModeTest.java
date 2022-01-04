@@ -6,11 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.robot.util.Controller;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Controller;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -22,81 +19,48 @@ public class MenuOpModeTest extends LinearOpMode
     boolean flag = false;
     String taskName = "";
 
-    // the list of the tasks, and their options(list in list)
-    ArrayList<ArrayList<String>> tasks = new ArrayList<ArrayList<String>>();
-    // the tasks' names
-    ArrayList<String> tasksName = new ArrayList<String>();
-
-    // list for each task
-    ArrayList<String> colorTask = new ArrayList<String>();
-    ArrayList<String> parkTask = new ArrayList<String>();
-    ArrayList<String> carouselTask = new ArrayList<String>();
-    ArrayList<Integer> order = new ArrayList<Integer>();
-
-    // list of the final options the player chose
-    ArrayList<String> finalOptions = new ArrayList<String>();
-
-    ArrayList<Integer> currentOption = new ArrayList<Integer>();
-
-    enum tasksEnum
-    {
-        color,
-        park,
-        carousel
-    }
+    String[][] tasks = {};
+    String[] tasksName = {};
+    String[] colorTask = {};
+    String[] parkTask = {};
+    String[] carouselTask = {};
+    String[] finalOptions = {};
+    int[] currentOption = {};
 
     @Override
     public void runOpMode()
     {
         Controller controller = new Controller(gamepad1);
 
-//        File myFile = new File("options.txt");
-//
-//        try {
-//            if(myFile.delete() && !myFile.createNewFile()){
-//                try {
-//                    myFile.createNewFile();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         // adding the options to color task
-        colorTask.add("Blue");
-        colorTask.add("Red");
+        colorTask[0] = "Blue";
+        colorTask[1] = "Red";
 
-        // adding the options to park task
-        parkTask.add("Not Completely In ASU");
-        parkTask.add("Completely In ASU");
-        parkTask.add("Not Completely In WH");
-        parkTask.add("Completely In WH");
+        parkTask[0] = "Not Completely In ASU";
+        parkTask[1] = "Completely In ASU";
+        parkTask[2] = "Not Completely In WH";
+        parkTask[3] = "Completely In WH";
 
-        // adding the options to carousel task
-        carouselTask.add("Yes");
-        carouselTask.add("No");
+        carouselTask[0] = "Yes";
+        carouselTask[1] = "No";
 
-        // adding all the tasks to list of tasks
-        tasks.add(colorTask);
-        tasks.add(parkTask);
-        tasks.add(carouselTask);
+        tasks[0] = colorTask;
+        tasks[1] = parkTask;
+        tasks[2] = carouselTask;
 
         // adding the names of the tasks to the list of tasks' names.
-        tasksName.add("color");
-        tasksName.add("park");
-        tasksName.add("carousel");
+        tasksName[0] = "color";
+        tasksName[1] = "park";
+        tasksName[2] = "carousel";
 
 
-        for(int i = 0; i < tasks.size(); i++)
+        for(int i = 0; i < tasks.length; i++)
         {
-            order.add(i, i);
-            currentOption.add(i, 0);
+            currentOption[i] = 0;
         }
 
         // max tasks is the size of the list of tasks.
-        maxTasks = tasks.size()-1;
+        maxTasks = tasks.length-1;
 
         // wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -106,47 +70,47 @@ public class MenuOpModeTest extends LinearOpMode
         {
 
             controller.update();
-            taskName = tasksName.get(taskNum);
-            maxOptions = tasks.get(taskNum).size()-1;
+            taskName = tasksName[taskNum];
+            maxOptions = tasks[taskNum].length-1;
 
             if(controller.dpadUpOnce() && taskNum > 0)
             {
-                finalOptions.add(taskNum, tasks.get(taskNum).get(currentOption.get(taskNum)));
+                finalOptions[taskNum] =  tasks[taskNum][currentOption[taskNum]];
                 taskNum--;
             }
             if(controller.dpadDownOnce() && taskNum < maxTasks)
             {
-                finalOptions.add(taskNum, tasks.get(taskNum).get(currentOption.get(taskNum)));
+                finalOptions[taskNum] =  tasks[taskNum][currentOption[taskNum]];
                 taskNum++;
             }
 
-            if(controller.dpadLeftOnce() && currentOption.get(taskNum) > 0)
+            if(controller.dpadLeftOnce() && currentOption[taskNum] > 0)
             {
-                finalOptions.add(taskNum, tasks.get(taskNum).get(currentOption.get(taskNum)));
-                currentOption.set(taskNum, currentOption.get(taskNum)-1);
+                finalOptions[taskNum] = tasks[taskNum][currentOption[taskNum]];
+                currentOption[taskNum] = currentOption[taskNum]-1;
             }
-            if(controller.dpadRightOnce() && currentOption.get(taskNum) < maxOptions)
+            if(controller.dpadRightOnce() && currentOption[taskNum] < maxOptions)
             {
-                finalOptions.add(taskNum, tasks.get(taskNum).get(currentOption.get(taskNum)));
-                currentOption.set(taskNum, currentOption.get(taskNum)+1);
+                finalOptions[taskNum] = tasks[taskNum][currentOption[taskNum]];
+                currentOption[taskNum] = currentOption[taskNum]+1;
             }
 
-            telemetry.addLine("(" + (taskNum+1) + ") " + taskName + ": " + tasks.get(taskNum).get(currentOption.get(taskNum)));
+            telemetry.addLine("(" + (taskNum+1) + ") " + taskName + ": " + tasks[taskNum][currentOption[taskNum]]);
 
             if(gamepad1.a)
             {
-                for(int i = 0; i < finalOptions.size(); i++)
+                for(int i = 0; i < finalOptions.length; i++)
                 {
                     switch(i)
                     {
                         case 0:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("color.txt"), finalOptions.get(i));
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("color.txt"), finalOptions[i]);
                             break;
                         case 1:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("park.txt"), finalOptions.get(i));
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("park.txt"), finalOptions[i]);
                             break;
                         case 2:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("carousel.txt"), finalOptions.get(i));
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("carousel.txt"), finalOptions[i]);
                             break;
                     }
                 }
@@ -159,95 +123,5 @@ public class MenuOpModeTest extends LinearOpMode
 
 
 
-    }
-
-    public ArrayList<Pose2d> listOfPose()
-    {
-        ArrayList<Pose2d> pose2DS = new ArrayList<>();
-        boolean blue = false, red = false;
-
-        for(int i = 0; i <= finalOptions.size(); i++)
-        {
-            if(colorTask.get(0).equals(finalOptions.get(i)))
-            {
-                blue = true;
-                red = false;
-            }
-            else if(colorTask.get(1).equals(finalOptions.get(i)))
-            {
-                blue = false;
-                red = true;
-            }
-
-            if(parkTask.get(0).equals(finalOptions.get(i)))
-            {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(1,1, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-1,-1, 0));
-                }
-            }
-            else if(parkTask.get(1).equals(finalOptions.get(i)))
-            {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(2,2, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-2,-2, 0));
-                }
-            }
-            else if(parkTask.get(2).equals(finalOptions.get(i)))
-            {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(3,3, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-3,-3, 0));
-                }
-            }
-            else if(parkTask.get(3).equals(finalOptions.get(i)))
-            {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(4,4, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-4,-4, 0));
-                }
-            }
-
-            if(carouselTask.get(0).equals(finalOptions.get(i)))
-            {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(1,1, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-1,-1, 0));
-                }
-            }
-            else if(carouselTask.get(1).equals(finalOptions.get(i)))
-            {
-                if(blue)
-                {
-                    pose2DS.add(i, new Pose2d(2,2, 0));
-                }
-                else
-                {
-                    pose2DS.add(i, new Pose2d(-2,-2, 0));
-                }
-            }
-        }
-
-        return pose2DS;
     }
 }

@@ -32,12 +32,9 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
-import org.firstinspires.ftc.teamcode.robot.util.Controller;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Controller;
 
 // .6 is throw freight
 // 1 is get freight from intake

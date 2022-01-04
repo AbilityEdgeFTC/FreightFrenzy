@@ -33,6 +33,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
@@ -41,32 +42,34 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
 @TeleOp(group="Tests")
 public class Elevator extends LinearOpMode {
 
-    DcMotor mE = null;
-    public static double power = 0;
+    DcMotorEx mE = null;
+    public static double power = 0.7;
     public static int positionLevelOne = 170;
     public static int positionLevelTwo = 250;
     public static int positionLevelThree = 500;
+    public static double kP = 0, kI = 0, kD = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        mE = hardwareMap.get(DcMotor.class, "mE");
-        mE.setDirection(DcMotorSimple.Direction.REVERSE);
-        mE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        mE = hardwareMap.get(DcMotorEx.class, "mE");
+        // use braking to slow the motor down faster
+        mE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // disables the default velocity control
+        // this does NOT disable the encoder from counting,
+        // but lets us simply send raw motor power.
+        mE.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        elevatorSubsystems elevator = new elevatorSubsystems(mE, power, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+        elevatorSubsystems elevator = new elevatorSubsystems(mE, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-
         while (opModeIsActive()) {
 
-            if(gamepad1.dpad_up){
-
-            }
             if(gamepad1.a){
                 elevator.goToLevelOne();
             }else if(gamepad1.b){
@@ -76,8 +79,6 @@ public class Elevator extends LinearOpMode {
             }else if(gamepad1.y){
                 elevator.goToZeroPos();
             }
-
-            elevator.displayTelemetry();
 
         }
     }
