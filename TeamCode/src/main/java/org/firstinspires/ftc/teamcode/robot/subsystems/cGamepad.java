@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-public class Controller {
+public class cGamepad {
     private Gamepad gamepad;
 
     private int dpad_up, dpad_down, dpad_left, dpad_right;
@@ -12,7 +12,7 @@ public class Controller {
     public double left_stick_x, right_stick_x, left_stick_y, right_stick_y;
     public double left_trigger, right_trigger;
 
-    public Controller(Gamepad g) {
+    public cGamepad(Gamepad g) {
         gamepad = g;
     }
 

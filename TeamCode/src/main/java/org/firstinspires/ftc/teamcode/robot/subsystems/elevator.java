@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class elevatorSubsystems{
+public class elevator {
 
     DcMotor mE;
     Telemetry telemetry = null;
@@ -44,9 +44,9 @@ public class elevatorSubsystems{
     double kP, kI, kD;
     PIDController controller;
 
-    // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
+    // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public elevatorSubsystems(DcMotor mE, double kP, double kI, double kD, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
+    public elevator(DcMotor mE, double kP, double kI, double kD, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
     {
         this.positionLevelOne = positionLevelOne;
         this.positionLevelTwo = positionLevelTwo;
@@ -59,7 +59,7 @@ public class elevatorSubsystems{
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public elevatorSubsystems(DcMotor mE, double kP, double kI, double kD, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
+    public elevator(DcMotor mE, double kP, double kI, double kD, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
         this.positionLevelOne = positionLevelOne;
         this.positionLevelTwo = positionLevelTwo;
         this.positionLevelThree = positionLevelThree;

@@ -40,7 +40,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
  * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
  * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
+ * class is instantiated on the Robot cGamepad and executed.
  *
  * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled teleop
  * It includes all the skeletal structure that all linear OpModes contain.
@@ -70,7 +70,7 @@ public class ReadEncoders extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the teleop configuration
-        // step (using the FTC Robot Controller app on the phone).
+        // step (using the FTC Robot cGamepad app on the phone).
 //        mFL  = hardwareMap.get(DcMotor.class, "mFL");
 //        mFR = hardwareMap.get(DcMotor.class, "mFR");
 //        mBL = hardwareMap.get(DcMotor.class, "mBL");

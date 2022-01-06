@@ -30,15 +30,16 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.carouselSubsystem;
+import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 
 @Config
 @TeleOp(group="Tests")
+@Disabled
 public class Carousel extends LinearOpMode {
 
     DcMotor mC;
@@ -53,7 +54,7 @@ public class Carousel extends LinearOpMode {
         mC = hardwareMap.get(DcMotor.class, "mC");
         mC.setDirection(DcMotor.Direction.REVERSE);
 
-        carouselSubsystem carousel = new carouselSubsystem(mC, power, telemetry);
+        carousel carousel = new carousel(mC, power, telemetry);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

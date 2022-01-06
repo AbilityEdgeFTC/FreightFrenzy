@@ -34,9 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.elevatorSubsystems;
+import org.firstinspires.ftc.teamcode.robot.subsystems.elevator;
 
 @Config
 @TeleOp(group="Tests")
@@ -62,7 +61,7 @@ public class Elevator extends LinearOpMode {
         // but lets us simply send raw motor power.
         mE.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        elevatorSubsystems elevator = new elevatorSubsystems(mE, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+        elevator elevator = new elevator(mE, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

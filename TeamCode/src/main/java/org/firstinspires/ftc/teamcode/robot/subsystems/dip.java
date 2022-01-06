@@ -29,76 +29,48 @@
 
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class carouselSubsystem{
+public class dip {
 
-    //motor carousel
-    DcMotor mC;
-    double power;
-    HardwareMap hw;
+    //servo intake
+    Servo sD;
+    double intakePosition, dippingPosition;
     Telemetry telemetry;
 
-    // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
+    // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public carouselSubsystem(DcMotor mC, double power) {
-        this.power = power;
-        this.mC = mC;
+    public dip(Servo sD, double intakePosition, double dippingPosition) {
+        this.intakePosition = intakePosition;
+        this.dippingPosition = dippingPosition;
+        this.sD = sD;
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public carouselSubsystem(DcMotor mC, double power, Telemetry telemetry) {
-        this.power = power;
-        this.mC = mC;
+    public dip(Servo sD, double intakePosition, double dippingPosition, Telemetry telemetry) {
+        this.intakePosition = intakePosition;
+        this.dippingPosition = dippingPosition;
+        this.sD = sD;
         this.telemetry = telemetry;
     }
 
-    // spin carousel motor with power.
-    public void spin(){
-        mC.setPower(power);
+    // spin Intake motor with power.
+    public void getFreight() throws InterruptedException {
+        sD.setPosition(intakePosition);
+        Thread.sleep(500);
     }
-
-    // spin carousel motor with power for seconds long.
-    public void spin(double seconds) throws InterruptedException {
-        mC.setPower(power);
-        Thread.sleep((long)seconds*1000);
-        stop();
-    }
-
-    // spin carousel motor with -power.
-    public void spin(boolean reverse){
-        if(reverse){
-            mC.setPower(-power);
-        }else{
-            mC.setPower(power);
-        }
-    }
-
-    // spin carousel motor with -power for seconds long.
-    public void spin(double seconds, boolean reverse) throws InterruptedException {
-        if(reverse){
-            mC.setPower(power);
-            Thread.sleep((long)seconds*1000);
-            stop();
-        }else{
-            mC.setPower(-power);
-            Thread.sleep((long)seconds*1000);
-            stop();
-        }
-    }
-
-    // stop carousel motor.
-    public void stop(){
-        mC.setPower(0);
+    // spin Intake motor with minos power.
+    public void releaseFreight() throws InterruptedException {
+        sD.setPosition(dippingPosition);
+        Thread.sleep(500);
     }
 
     // display power of motor.
     public void displayTelemetry(){
-        telemetry.addLine("Power at: " + power);
+        telemetry.addLine("Servo freight at: " + sD.getPosition());
         telemetry.update();
     }
 

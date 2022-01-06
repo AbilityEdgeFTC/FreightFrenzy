@@ -30,16 +30,18 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.Controller;
+import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 
 // .6 is throw freight
 // 1 is get freight from intake
 @Config
 @TeleOp(group="Tests")
+@Disabled
 public class servoElevator extends LinearOpMode {
 
     Servo sE = null;
@@ -50,7 +52,7 @@ public class servoElevator extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        Controller controller = new Controller(gamepad1);
+        cGamepad cGamepad = new cGamepad(gamepad1);
 
         sE = hardwareMap.get(Servo.class, "sE");
 
@@ -61,15 +63,15 @@ public class servoElevator extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            controller.update();
+            cGamepad.update();
 
-            if(controller.dpadUpOnce()){
+            if(cGamepad.dpadUpOnce()){
                 position += 0.05;
             }
-            else if(controller.dpadDownOnce()){
+            else if(cGamepad.dpadDownOnce()){
                 position -= 0.05;
             }
-            else if(controller.AOnce())
+            else if(cGamepad.AOnce())
             {
                 position = 0;
             }

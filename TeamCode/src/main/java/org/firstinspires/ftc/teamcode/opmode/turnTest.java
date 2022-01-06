@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Config
 @Autonomous(group = "Tests")
+@Disabled
 public class turnTest extends LinearOpMode {
 
     private DcMotor leftMotor_f = null;

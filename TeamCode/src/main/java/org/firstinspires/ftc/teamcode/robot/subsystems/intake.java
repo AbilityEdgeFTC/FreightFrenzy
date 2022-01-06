@@ -30,47 +30,67 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class dippingSubsystem {
+public class intake {
 
-    //servo intake
-    Servo sD;
-    double intakePosition, dippingPosition;
+    DcMotor mI;
+    double power;
     Telemetry telemetry;
 
-    // 2 constructors for 2 options, construct the carouselSubsystem with and without telementry.
-    /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public dippingSubsystem(Servo sD, double intakePosition, double dippingPosition) {
-        this.intakePosition = intakePosition;
-        this.dippingPosition = dippingPosition;
-        this.sD = sD;
+    /**
+     * constructor for intake
+     * @param mI the intake motor
+     * @param power the power to give the motor
+     */
+    public intake(DcMotor mI, double power) {
+        this.power = power;
+        this.mI = mI;
     }
 
-    /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public dippingSubsystem(Servo sD, double intakePosition, double dippingPosition, Telemetry telemetry) {
-        this.intakePosition = intakePosition;
-        this.dippingPosition = dippingPosition;
-        this.sD = sD;
+    /**
+     * constructor for intake
+     * @param mI the intake motor
+     * @param power the power to give the motor
+     * @param telemetry the telemetry object from the opmode
+     */
+    public intake(DcMotor mI, double power, Telemetry telemetry) {
+        this.power = power;
+        this.mI = mI;
         this.telemetry = telemetry;
     }
 
-    // spin Intake motor with power.
-    public void getFreight() throws InterruptedException {
-        sD.setPosition(intakePosition);
-        Thread.sleep(500);
-    }
-    // spin Intake motor with minos power.
-    public void releaseFreight() throws InterruptedException {
-        sD.setPosition(dippingPosition);
-        Thread.sleep(500);
+    /**
+     * set power to mI
+     * setting the power given from the constructor to the mI
+     */
+    public void intakeForward(){
+        mI.setPower(power);
     }
 
-    // display power of motor.
+    /**
+     * set -power to mI
+     * setting the power in a negative value given from the constructor to the mI
+     */
+    public void intakeBackward(){
+        mI.setPower(-power);
+    }
+
+    /**
+     * set power 0 to mI
+     * stopping the mI motor
+     */
+    public void stop(){
+        mI.setPower(0);
+    }
+
+    /**
+     * displaying intake motor power
+     */
     public void displayTelemetry(){
-        telemetry.addLine("Servo freight at: " + sD.getPosition());
+        telemetry.addData("Intake motor power at", power);
         telemetry.update();
     }
 
