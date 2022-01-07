@@ -28,7 +28,7 @@ public class gamepad {
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
     double power, leftPower_f, leftPower_b, rightPower_f, rightPower_b, drive, strafe, twist, lockAngle;
-    boolean regularDrive, lockOnAngle;
+    boolean regularDrive, lockOnAngle = false;
     SampleMecanumDrive drivetrain;
 
     // Define 2 states, driver control or alignment control
@@ -76,11 +76,11 @@ public class gamepad {
         headingController.setInputBounds(-Math.PI, Math.PI);
     }
 
-    public void update() throws InterruptedException {
+    public void update() {
         switch (currentMode)
         {
             case NORMAL_CONTROL:
-                getGamepadDirections();
+                getGamepadDirections(true);
 
                 if(regularDrive)
                 {
@@ -107,16 +107,49 @@ public class gamepad {
                 mBR.setPower(rightPower_b);
                 break;
             case ALIGN_TO_ANGLE:
-                drivetrain.turn(drivetrain.getPoseEstimate().getHeading() - Math.toRadians(lockAngle));
+                drivetrain.turnAsync(drivetrain.getPoseEstimate().getHeading() - Math.toRadians(lockAngle));
+
+                getGamepadDirections(false);
+                if(regularDrive)
+                {
+                    regularDrive();
+                }
+                else
+                {
+                    centicDrive();
+                }
+                if(gamepad1.a)
+                {
+                    lockOnAngle = !lockOnAngle;
+                }
+
+                if(gamepad1.a && !lockOnAngle)
+                {
+                    lockOnAngle = !lockOnAngle;
+                    currentMode = Mode.NORMAL_CONTROL;
+                }
+                mFL.setPower(leftPower_f);
+                mBL.setPower(leftPower_b);
+                mFR.setPower(rightPower_f);
+                mBR.setPower(rightPower_b);
                 break;
         }
     }
 
-    public void getGamepadDirections()
+    public void getGamepadDirections(boolean canTurn)
     {
-        drive = -gamepad1.left_stick_y;
-        strafe = gamepad1.left_stick_x;
-        twist = gamepad1.right_stick_x;
+        if(canTurn)
+        {
+            drive = -gamepad1.left_stick_y;
+            strafe = gamepad1.left_stick_x;
+            twist = gamepad1.right_stick_x;
+        }
+        else
+        {
+            drive = -gamepad1.left_stick_y;
+            strafe = gamepad1.left_stick_x;
+            twist = 0;
+        }
     }
 
     public void regularDrive()
