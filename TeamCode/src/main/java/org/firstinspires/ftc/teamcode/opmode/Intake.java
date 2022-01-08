@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -52,6 +53,7 @@ public class Intake extends LinearOpMode {
 
         mI = hardwareMap.get(DcMotor.class, "mI");
         mI.setDirection(DcMotorSimple.Direction.REVERSE);
+
         if (isReverse)
             mI.setDirection(DcMotorSimple.Direction.REVERSE);
         else

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -110,7 +111,7 @@ public class gamepad {
                 mBR.setPower(rightPower_b);
                 break;
             case ALIGN_TO_ANGLE:
-                drivetrain.turnAsync(Math.toRadians(lockAngle) - drivetrain.getPoseEstimate().getHeading());
+                drivetrain.turnAsync(Angle.normDelta(Math.toRadians(lockAngle) - drivetrain.getPoseEstimate().getHeading()));
 
                 getGamepadDirections(false);
 
@@ -169,13 +170,21 @@ public class gamepad {
         // TODO: CHANGE TO MORE RELIABLE ANGLE READING
         double firstAngleRadians = Math.toRadians(angles.firstAngle);
 
+        /** if this doesn't work */
         drive = drive * Math.cos(firstAngleRadians) + strafe * Math.sin(firstAngleRadians);
         strafe = -drive * Math.sin(firstAngleRadians) + strafe * Math.cos(firstAngleRadians);
 
-        leftPower_f = Range.clip(drive + strafe + twist, -power, power);
-        leftPower_b = Range.clip(drive - strafe + twist, -power, power);
-        rightPower_f = Range.clip(drive - strafe - twist, -power, power);
-        rightPower_b = Range.clip(drive + strafe - twist, -power, power);
+        /**try this
+        Vector2d input = new Vector2d(
+        -gamepad1.left_stick_y,
+        -gamepad1.left_stick_x
+        ).rotated(-firstAngleRadians);
+
+        leftPower_f = Range.clip(input.getX() + input.getY() + -twist, -power, power);
+        leftPower_b = Range.clip(input.getX() - input.getY() + -twist, -power, power);
+        rightPower_f = Range.clip(input.getX() - input.getY() - -twist, -power, power);
+        rightPower_b = Range.clip(input.getX() + input.getY() - -twist, -power, power);
+         */
     }
 
 
