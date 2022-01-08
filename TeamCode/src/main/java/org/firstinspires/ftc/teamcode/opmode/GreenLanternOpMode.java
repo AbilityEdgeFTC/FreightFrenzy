@@ -47,8 +47,6 @@ public class GreenLanternOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        FtcDashboard.getInstance().startCameraStream(webcam, 0);
-
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
         GreenLanternPipeline pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;

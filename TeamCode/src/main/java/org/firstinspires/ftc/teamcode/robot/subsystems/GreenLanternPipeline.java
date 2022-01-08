@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -132,7 +133,7 @@ public class GreenLanternPipeline extends OpenCvPipeline
             location = Location.Not_Found;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }
-        //telemetry.update();
+        telemetry.update();
 
         Imgproc.cvtColor(mask, mask, Imgproc.COLOR_GRAY2RGB);
 
@@ -218,6 +219,7 @@ public class GreenLanternPipeline extends OpenCvPipeline
                  * away from the user.
                  */
                 finalWebcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                FtcDashboard.getInstance().startCameraStream(finalWebcam, 0);
             }
 
             @Override

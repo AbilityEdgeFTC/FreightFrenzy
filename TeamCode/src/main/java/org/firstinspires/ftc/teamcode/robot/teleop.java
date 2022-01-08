@@ -30,6 +30,7 @@ public class teleop extends LinearOpMode {
     public static int positionLevelTwo = 250;
     public static int positionLevelThree = 500;
     public static double intakePosition = 1, dippingPosition = .6;
+    public static double lockOn = 90;
 
     double mainPower = 1;
     boolean isRegularDrive = true;
@@ -57,13 +58,23 @@ public class teleop extends LinearOpMode {
 
         carousel = new carousel(mC, powerCarousel);
         elevator = new elevator(mE, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
-        gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive);
+        gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive, lockOn);
         intake = new intake(mI, powerIntake);
         dip = new dip(sD, intakePosition, dippingPosition);
 
         waitForStart();
 
         while (opModeIsActive()) {
+            if(gamepad1.right_stick_button || gamepad1.left_stick_button)
+            {
+                mainPower = .7;
+
+            }
+            else
+            {
+                mainPower = 1;
+            }
+
             gamepads.update();
 
             // TODO: change to gamepad 1 right or left bumber
@@ -76,6 +87,12 @@ public class teleop extends LinearOpMode {
             {
                 dip.getFreight();
                 elevator.goToZeroPos();
+            }
+
+            // TODO: change to gamepad1
+            if(gamepad2.a)
+            {
+                gamepads.lockOnAngle = !gamepads.lockOnAngle;
             }
 
             // TODO: change to gamepad2

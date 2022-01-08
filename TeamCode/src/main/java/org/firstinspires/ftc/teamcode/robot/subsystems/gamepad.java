@@ -27,8 +27,9 @@ public class gamepad {
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
-    double power, leftPower_f, leftPower_b, rightPower_f, rightPower_b, drive, strafe, twist, lockAngle;
-    boolean regularDrive, lockOnAngle = false;
+    double power, leftPower_f, leftPower_b, rightPower_f, rightPower_b, drive, strafe, twist;
+    public double lockAngle;
+    public boolean regularDrive, lockOnAngle = false;
     SampleMecanumDrive drivetrain;
 
     // Define 2 states, driver control or alignment control
@@ -58,8 +59,9 @@ public class gamepad {
      * @param regularDrive use regular or centric drive
      * @param telemetry the telemetry object from teleop
      * @param drivetrain the SampleMecanumDrive object from teleop
+     * @param power the angle to lock on during teleop
      */
-    public gamepad(Gamepad gamepad1, Gamepad gamepad2, DcMotor mFL, DcMotor mBL, DcMotor mFR, DcMotor mBR, double power, boolean regularDrive, Telemetry telemetry, SampleMecanumDrive drivetrain) {
+    public gamepad(Gamepad gamepad1, Gamepad gamepad2, DcMotor mFL, DcMotor mBL, DcMotor mFR, DcMotor mBR, double power, boolean regularDrive, Telemetry telemetry, SampleMecanumDrive drivetrain, double lockAngle) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.mFL = mFL;
@@ -70,6 +72,7 @@ public class gamepad {
         this.regularDrive = regularDrive;
         this.telemetry = telemetry;
         this.drivetrain = drivetrain;
+        this.lockAngle = lockAngle;
 
         // Set input bounds for the heading controller
         // Automatically handles overflow
@@ -107,9 +110,10 @@ public class gamepad {
                 mBR.setPower(rightPower_b);
                 break;
             case ALIGN_TO_ANGLE:
-                drivetrain.turnAsync(drivetrain.getPoseEstimate().getHeading() - Math.toRadians(lockAngle));
+                drivetrain.turnAsync(Math.toRadians(lockAngle) - drivetrain.getPoseEstimate().getHeading());
 
                 getGamepadDirections(false);
+
                 if(regularDrive)
                 {
                     regularDrive();
@@ -162,6 +166,7 @@ public class gamepad {
 
     public void centicDrive()
     {
+        // TODO: CHANGE TO MORE RELIABLE ANGLE READING
         double firstAngleRadians = Math.toRadians(angles.firstAngle);
 
         drive = drive * Math.cos(firstAngleRadians) + strafe * Math.sin(firstAngleRadians);
@@ -186,10 +191,5 @@ public class gamepad {
         }
     }
 
-    public double calculateDegressLeft(double targetHeading)
-    {
-        return ((int)(Math.signum(angles.firstAngle - targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle - targetHeading)) +
-                (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
-    }
 
 }

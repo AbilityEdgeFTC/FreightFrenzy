@@ -65,7 +65,7 @@ public class angleChecking extends LinearOpMode {
         mBL.setDirection(DcMotor.Direction.REVERSE);
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        gamepad gamepad = new gamepad( gamepad1, gamepad2, mFL, mBL, mFR, mBR, power, true, telemetry, drive);
+        gamepad gamepad = new gamepad( gamepad1, gamepad2, mFL, mBL, mFR, mBR, power, true, telemetry, drive, 0);
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 

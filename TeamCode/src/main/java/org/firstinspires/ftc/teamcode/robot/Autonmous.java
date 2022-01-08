@@ -39,7 +39,6 @@ public class Autonmous extends LinearOpMode {
         pipeline = new GreenLanternPipeline();
         valueStorage poseStorage = new valueStorage();
        pipeline.initPipeline(webcam, hardwareMap);
-       FtcDashboard.getInstance().startCameraStream(webcam, 0);
 
        while(!opModeIsActive())
         {
