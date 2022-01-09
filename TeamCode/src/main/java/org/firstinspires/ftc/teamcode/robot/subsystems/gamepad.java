@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDriveCancelable;
 import org.opencv.core.Mat;
 
 import static java.lang.Thread.sleep;
@@ -31,7 +31,7 @@ public class gamepad {
     double power, leftPower_f, leftPower_b, rightPower_f, rightPower_b, drive, strafe, twist;
     public double lockAngle;
     public boolean regularDrive, lockOnAngle = false;
-    SampleMecanumDrive drivetrain;
+    SampleMecanumDriveCancelable drivetrain;
 
     // Define 2 states, driver control or alignment control
     enum Mode {
@@ -42,7 +42,7 @@ public class gamepad {
     private Mode currentMode = Mode.NORMAL_CONTROL;
     // Declare a PIDF cGamepad to regulate heading
     // Use the same gains as SampleMecanumDrive's heading controller
-    private PIDFController headingController = new PIDFController(SampleMecanumDrive.HEADING_PID);
+    private PIDFController headingController = new PIDFController(SampleMecanumDriveCancelable.HEADING_PID);
 
     // Declare a target vector you'd like your bot to align with
     // Can be any x/y coordinate of your choosing
@@ -59,10 +59,10 @@ public class gamepad {
      * @param power the power to give the motors
      * @param regularDrive use regular or centric drive
      * @param telemetry the telemetry object from teleop
-     * @param drivetrain the SampleMecanumDrive object from teleop
+     * @param drivetrain the SampleMecanumDriveCancable object from teleop
      * @param power the angle to lock on during teleop
      */
-    public gamepad(Gamepad gamepad1, Gamepad gamepad2, DcMotor mFL, DcMotor mBL, DcMotor mFR, DcMotor mBR, double power, boolean regularDrive, Telemetry telemetry, SampleMecanumDrive drivetrain, double lockAngle) {
+    public gamepad(Gamepad gamepad1, Gamepad gamepad2, DcMotor mFL, DcMotor mBL, DcMotor mFR, DcMotor mBR, double power, boolean regularDrive, Telemetry telemetry, SampleMecanumDriveCancelable drivetrain, double lockAngle) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.mFL = mFL;
@@ -84,6 +84,7 @@ public class gamepad {
         switch (currentMode)
         {
             case NORMAL_CONTROL:
+                drivetrain.cancelFollowing();
                 getGamepadDirections(true);
 
                 if(regularDrive)

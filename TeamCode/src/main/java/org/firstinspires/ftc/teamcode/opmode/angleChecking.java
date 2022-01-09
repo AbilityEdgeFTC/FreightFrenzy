@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 
@@ -64,8 +65,10 @@ public class angleChecking extends LinearOpMode {
         mFL.setDirection(DcMotor.Direction.REVERSE);
         mBL.setDirection(DcMotor.Direction.REVERSE);
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        gamepad gamepad = new gamepad( gamepad1, gamepad2, mFL, mBL, mFR, mBR, power, true, telemetry, drive, 0);
+        SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
+
+        gamepad gamepad = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, power, true, telemetry, drive, 0);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 

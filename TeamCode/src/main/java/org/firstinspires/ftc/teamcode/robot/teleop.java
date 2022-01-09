@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -48,7 +49,7 @@ public class teleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         initAll();
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
         drive.setPoseEstimate(currentPose);
         // We want to turn off velocity control for teleop
         // Velocity control per wheel is not necessary outside of motion profiled auto
@@ -58,7 +59,10 @@ public class teleop extends LinearOpMode {
 
         carousel = new carousel(mC, powerCarousel);
         elevator = new elevator(mE, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
-        gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive, lockOn);
+
+        //TODO: CHANGE FOR CENTRIC DRIVE
+
+        gamepad gamepad = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, true, telemetry, drive, lockOn);
         intake = new intake(mI, powerIntake);
         dip = new dip(sD, intakePosition, dippingPosition);
 
