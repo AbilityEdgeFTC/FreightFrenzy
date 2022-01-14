@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.elevator;
 
 @Config
@@ -61,7 +62,8 @@ public class Elevator extends LinearOpMode {
         // but lets us simply send raw motor power.
         mE.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        elevator elevator = new elevator(mE, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+        cGamepad gamepads = new cGamepad(gamepad1);
+        elevator elevator = new elevator(mE, power, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -69,13 +71,13 @@ public class Elevator extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            if(gamepad1.a){
+            if(gamepads.AOnce()){
                 elevator.goToLevelOne();
-            }else if(gamepad1.b){
+            }else if(gamepads.BOnce()){
                 elevator.goToLevelTwo();
-            }else if(gamepad1.x){
+            }else if(gamepads.XOnce()){
                 elevator.goToLevelThree();
-            }else if(gamepad1.y){
+            }else if(gamepads.YOnce()){
                 elevator.goToZeroPos();
             }
 

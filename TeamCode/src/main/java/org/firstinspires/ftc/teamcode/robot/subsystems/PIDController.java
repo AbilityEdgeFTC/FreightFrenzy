@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 /**
  * How to tune:
@@ -22,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class PIDController {
 
-    double Kp, Ki, Kd;
+    double Kp, Ki, Kd, power;
     Telemetry telemetry;
 
     /**
@@ -31,10 +32,11 @@ public class PIDController {
      * @param Ki Integral coefficient
      * @param Kd Derivative coefficient
      */
-    public PIDController(double Kp, double Ki, double Kd) {
+    public PIDController(double power, double Kp, double Ki, double Kd) {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
+        this.power = power;
     }
 
     /**
@@ -44,11 +46,12 @@ public class PIDController {
      * @param Kd Derivative coefficient
      * @param telemetry dashboard telemetry
      */
-    public PIDController(double Kp, double Ki, double Kd, Telemetry telemetry) {
+    public PIDController(double power, double Kp, double Ki, double Kd, Telemetry telemetry) {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
         this.telemetry = telemetry;
+        this.power = power;
 
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -84,7 +87,7 @@ public class PIDController {
             telemetry.update();
         }
 
-        return (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+        return Range.clip((Kp * error) + (Ki * integralSum) + (Kd * derivative), -power, power);
 
     }
 }

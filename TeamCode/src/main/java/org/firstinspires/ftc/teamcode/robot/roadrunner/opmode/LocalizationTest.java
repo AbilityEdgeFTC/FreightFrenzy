@@ -24,9 +24,9 @@ public class LocalizationTest extends LinearOpMode {
         drive.setPoseEstimate(myPose);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        T265Localizer localizer = new T265Localizer(hardwareMap);
+        /*T265Localizer localizer = new T265Localizer(hardwareMap);
         localizer.start(hardwareMap);
-        localizer.setPoseEstimate(myPose);
+        localizer.setPoseEstimate(myPose);*/
 
 
         waitForStart();
@@ -50,6 +50,6 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.update();
         }
 
-        localizer.stop();
+        //localizer.stop();
     }
 }

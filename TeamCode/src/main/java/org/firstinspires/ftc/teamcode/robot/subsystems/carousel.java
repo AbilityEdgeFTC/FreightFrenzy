@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.robot.subsystems;
+package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -40,7 +40,6 @@ public class carousel {
     //motor carousel
     DcMotor mC;
     double power;
-    HardwareMap hw;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.

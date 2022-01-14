@@ -5,16 +5,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDriveCancelable;
-import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
-import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
-import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
-import org.firstinspires.ftc.teamcode.robot.subsystems.elevator;
-import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
-import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.carousel;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.dip;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.elevator;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.gamepad;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.intake;
 
 import static org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage.currentPose;
 
@@ -27,14 +28,14 @@ public class teleop extends LinearOpMode {
 
     public static double powerCarousel = 0.325;
     public static double powerIntake = 1;
+    public static double powerElevator = .5;
     public static int positionLevelOne = 170;
     public static int positionLevelTwo = 250;
     public static int positionLevelThree = 500;
     public static double intakePosition = 1, dippingPosition = .6;
     public static double lockOn = 90;
-
-    double mainPower = 1;
-    boolean isRegularDrive = true;
+    public static double mainPower = .9;
+    public static boolean isRegularDrive = true;
 
     carousel carousel;
     elevator elevator;
@@ -58,36 +59,36 @@ public class teleop extends LinearOpMode {
         cGamepad cGamepad2 = new cGamepad(gamepad2);
 
         carousel = new carousel(mC, powerCarousel);
-        elevator = new elevator(mE, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+        elevator = new elevator(mE, powerElevator, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+        gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive, lockOn);
 
-        //TODO: CHANGE FOR CENTRIC DRIVE
-
-        gamepad gamepad = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, true, telemetry, drive, lockOn);
         intake = new intake(mI, powerIntake);
         dip = new dip(sD, intakePosition, dippingPosition);
 
         waitForStart();
 
         while (opModeIsActive()) {
+            cGamepad1.update();
+            cGamepad2.update();
+            gamepads.update();
+            gamepads.regularDrive = isRegularDrive;
+
             if(gamepad1.right_stick_button || gamepad1.left_stick_button)
             {
-                mainPower = .7;
-
+                mainPower = .4;
             }
             else
             {
-                mainPower = 1;
+                mainPower = .7;
             }
 
-            gamepads.update();
-
             // TODO: change to gamepad 1 right or left bumber
-            if (cGamepad1.dpadDownOnce()) {
+            if (cGamepad1.dpadUpOnce()) {
                 dip.releaseFreight();
             }
 
             // TODO: change to gamepad2
-            if(cGamepad1.dpadDownOnce())
+            if(gamepad1.dpad_down)
             {
                 dip.getFreight();
                 elevator.goToZeroPos();
@@ -118,18 +119,18 @@ public class teleop extends LinearOpMode {
             }
 
             // TODO: change to gamepad2
-            if (cGamepad1.leftBumper()) {
+            if (gamepad1.left_bumper) {
                 intake.intakeBackward();
             }
             // TODO: change to gamepad2
-            else if (cGamepad1.rightBumper()) {
+            else if (gamepad1.right_bumper) {
                 intake.intakeForward();
             } else {
                 intake.stop();
             }
 
             // TODO: change to gamepad2
-            if (cGamepad1.dpadRight() || cGamepad1.dpadLeft()) {
+            if (/*cGamepad1.dpadRight() || cGamepad1.dpadLeft()*/ gamepad1.dpad_right || gamepad1.dpad_left) {
                 carousel.spin();
             }
             else {
@@ -149,7 +150,6 @@ public class teleop extends LinearOpMode {
         mI.setDirection(DcMotor.Direction.REVERSE);
         ;
         mC = hardwareMap.get(DcMotor.class, "mC");
-        mC.setDirection(DcMotor.Direction.REVERSE);
         mE = hardwareMap.get(DcMotorEx.class, "mE");
         // use braking to slow the motor down faster
         mE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

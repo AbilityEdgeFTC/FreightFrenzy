@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot.subsystems;
+package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -30,7 +30,7 @@ public class gamepad {
     Telemetry telemetry;
     double power, leftPower_f, leftPower_b, rightPower_f, rightPower_b, drive, strafe, twist;
     public double lockAngle;
-    public boolean regularDrive, lockOnAngle = false;
+    public boolean regularDrive = false, lockOnAngle = false;
     SampleMecanumDriveCancelable drivetrain;
 
     // Define 2 states, driver control or alignment control
@@ -42,11 +42,7 @@ public class gamepad {
     private Mode currentMode = Mode.NORMAL_CONTROL;
     // Declare a PIDF cGamepad to regulate heading
     // Use the same gains as SampleMecanumDrive's heading controller
-    private PIDFController headingController = new PIDFController(SampleMecanumDriveCancelable.HEADING_PID);
-
-    // Declare a target vector you'd like your bot to align with
-    // Can be any x/y coordinate of your choosing
-    private Pose2d targetPosition;
+    //private PIDFController headingController = new PIDFController(SampleMecanumDriveCancelable.HEADING_PID);
 
     /**
      * constructor for gamepad
@@ -77,7 +73,7 @@ public class gamepad {
 
         // Set input bounds for the heading controller
         // Automatically handles overflow
-        headingController.setInputBounds(-Math.PI, Math.PI);
+        //headingController.setInputBounds(-Math.PI, Math.PI);
     }
 
     public void update() {
@@ -87,14 +83,7 @@ public class gamepad {
                 drivetrain.cancelFollowing();
                 getGamepadDirections(true);
 
-                if(regularDrive)
-                {
-                    regularDrive();
-                }
-                else
-                {
-                    centicDrive();
-                }
+                regularDrive();
 
                 if(gamepad1.a)
                 {
@@ -112,18 +101,12 @@ public class gamepad {
                 mBR.setPower(rightPower_b);
                 break;
             case ALIGN_TO_ANGLE:
-                drivetrain.turnAsync(Angle.normDelta(Math.toRadians(lockAngle) - drivetrain.getPoseEstimate().getHeading()));
+                drivetrain.turnAsync(Angle.normDelta(Math.toRadians(lockAngle) - drivetrain.getExternalHeading()));
 
                 getGamepadDirections(false);
 
-                if(regularDrive)
-                {
-                    regularDrive();
-                }
-                else
-                {
-                    centicDrive();
-                }
+                regularDrive();
+
                 if(gamepad1.a)
                 {
                     lockOnAngle = !lockOnAngle;
@@ -148,11 +131,11 @@ public class gamepad {
         {
             drive = -gamepad1.left_stick_y;
             strafe = gamepad1.left_stick_x;
-            twist = gamepad1.right_stick_x;
+            twist = gamepad1.right_stick_x / 2;
         }
         else
         {
-            drive = -gamepad1.left_stick_y;
+            drive = gamepad1.left_stick_y;
             strafe = gamepad1.left_stick_x;
             twist = 0;
         }
@@ -160,32 +143,10 @@ public class gamepad {
 
     public void regularDrive()
     {
-        leftPower_f = Range.clip(drive + strafe + twist, -power, power);
-        leftPower_b = Range.clip(drive - strafe + twist, -power, power);
-        rightPower_f = Range.clip(drive - strafe - twist, -power, power);
-        rightPower_b = Range.clip(drive + strafe - twist, -power, power);
-    }
-
-    public void centicDrive()
-    {
-        // TODO: CHANGE TO MORE RELIABLE ANGLE READING
-        double firstAngleRadians = Math.toRadians(angles.firstAngle);
-
-        /** if this doesn't work */
-        drive = drive * Math.cos(firstAngleRadians) + strafe * Math.sin(firstAngleRadians);
-        strafe = -drive * Math.sin(firstAngleRadians) + strafe * Math.cos(firstAngleRadians);
-
-        /**try this
-        Vector2d input = new Vector2d(
-        -gamepad1.left_stick_y,
-        -gamepad1.left_stick_x
-        ).rotated(-firstAngleRadians);
-
-        leftPower_f = Range.clip(input.getX() + input.getY() + -twist, -power, power);
-        leftPower_b = Range.clip(input.getX() - input.getY() + -twist, -power, power);
-        rightPower_f = Range.clip(input.getX() - input.getY() - -twist, -power, power);
-        rightPower_b = Range.clip(input.getX() + input.getY() - -twist, -power, power);
-         */
+        leftPower_f = Range.clip(drive + twist + strafe, -power, power);
+        leftPower_b = Range.clip(drive + twist - strafe, -power, power);
+        rightPower_f = Range.clip(drive - twist - strafe, -power, power);
+        rightPower_b = Range.clip(drive - twist + strafe, -power, power);
     }
 
 

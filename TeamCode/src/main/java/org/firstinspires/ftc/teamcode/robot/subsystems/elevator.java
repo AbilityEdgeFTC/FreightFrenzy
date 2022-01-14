@@ -27,13 +27,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.robot.subsystems;
+package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+import org.firstinspires.ftc.teamcode.robot.subsystems.PIDController;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class elevator {
@@ -41,12 +41,12 @@ public class elevator {
     DcMotor mE;
     Telemetry telemetry = null;
     int positionLevelOne, positionLevelTwo, positionLevelThree;
-    double kP, kI, kD;
+    double kP, kI, kD, power;
     PIDController controller;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public elevator(DcMotor mE, double kP, double kI, double kD, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
+    public elevator(DcMotor mE, double power, double kP, double kI, double kD, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
     {
         this.positionLevelOne = positionLevelOne;
         this.positionLevelTwo = positionLevelTwo;
@@ -55,11 +55,12 @@ public class elevator {
         this.kI = kI;
         this.kD = kD;
         this.mE = mE;
-        controller = new PIDController(kP,kI,kD);
+        this.power = power;
+        controller = new PIDController(power, kP,kI,kD);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public elevator(DcMotor mE, double kP, double kI, double kD, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
+    public elevator(DcMotor mE, double power, double kP, double kI, double kD, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
         this.positionLevelOne = positionLevelOne;
         this.positionLevelTwo = positionLevelTwo;
         this.positionLevelThree = positionLevelThree;
@@ -67,9 +68,10 @@ public class elevator {
         this.kI = kI;
         this.kD = kD;
         this.mE = mE;
+        this.power = power;
         this.telemetry = telemetry;
 
-        controller = new PIDController(kP,kI,kD, telemetry);
+        controller = new PIDController(power, kP,kI,kD, telemetry);
     }
 
     // set target position to zero pos(start pos), and while target position isn't required so keep going down.
