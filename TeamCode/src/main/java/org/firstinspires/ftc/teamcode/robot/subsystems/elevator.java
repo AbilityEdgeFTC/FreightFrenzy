@@ -1,103 +1,141 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-package org.firstinspires.ftc.teamcode.robot.Subsystems;
+package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.profile.MotionProfile;
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
+import com.acmerobotics.roadrunner.profile.MotionState;
+import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.robot.subsystems.PIDController;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class elevator {
 
-    DcMotor mE;
-    Telemetry telemetry = null;
-    int positionLevelOne, positionLevelTwo, positionLevelThree;
-    double kP, kI, kD, power;
-    PIDController controller;
+/*
+ * Hardware class for an elevator or linear lift driven by a pulley system.
+ */
+@Config
+public class Elevator {
+    public static final double TICKS_PER_REV = 384.5;
+    public static final double MAX_RPM = 435;
 
-    // 2 constructors for 2 options, construct the carousel with and without telementry.
-    /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public elevator(DcMotor mE, double power, double kP, double kI, double kD, int positionLevelOne, int positionLevelTwo, int positionLevelThree)
+    public static double SPOOL_RADIUS = 0.75; // in
+    public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed
+
+    // the operating range of the elevator is restricted to [0, MAX_HEIGHT]
+    public static double MAX_HEIGHT = 15.5; // TODO set value in inches
+    public static double MID_HEIGHT = 9; // TODO set value in inches
+    public static double MIN_HEIGHT = 4; // TODO set value in inches
+    public static double ZERO_HEIGHT = 0; // TODO set value in inches
+
+    public static PIDCoefficients PID = new PIDCoefficients(3, 0, 0); // TODO: tune
+
+    public static double MAX_VEL = 10; // in/s // TODO: tune
+    public static double MAX_ACCEL = 10; // in/s^2 // TODO: tune
+    public static double MAX_JERK = 20; // in/s^3 // TODO: tune
+
+    public static double kG = 0; // TODO: tune
+    public static double kV = 0; // TODO: tune
+    public static double kA = 0; // TODO: tune
+    public static double kStatic = 0; // TODO: tune
+
+    private DcMotorEx motor;
+    private MotionProfile profile;
+    private NanoClock clock = NanoClock.system();
+    private double profileStartTime, desiredHeight = 0;
+    private int offset;
+    PIDFController controller;
+    double power;
+
+    private static double encoderTicksToInches(int ticks) {
+        return SPOOL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
+    }
+
+    public static double rpmToVelocity(double rpm) {
+        return rpm * GEAR_RATIO * 2 * Math.PI * SPOOL_RADIUS / 60.0;
+    }
+
+    public static double getMaxRpm() {
+        return MAX_RPM;
+    }
+
+    public Elevator(HardwareMap hardwareMap) {
+        motor = hardwareMap.get(DcMotorEx.class, "mE");
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // if necessary, reverse the motor so "up" is positive
+        // motor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+
+        // note: if the elevator is affected by a non-negligible constant force along the direction
+        // of motion (e.g., gravity, kinetic friction, or a combination thereof), it may be
+        // beneficial to compensate for it with a gravity feedforward
+        controller = new PIDFController(PID, kV, kA, kStatic);
+        offset = motor.getCurrentPosition();
+
+    }
+
+    public boolean isBusy() {
+        return profile != null && (clock.seconds() - profileStartTime) <= profile.duration();
+    }
+
+    public void setHeight(double height) {
+        height = Math.min(Math.max(0, height), MAX_HEIGHT);
+
+        double time = clock.seconds() - profileStartTime;
+        MotionState start = isBusy() ? profile.get(time) : new MotionState(desiredHeight, 0, 0, 0);
+        MotionState goal = new MotionState(height, 0, 0, 0);
+        profile = MotionProfileGenerator.generateSimpleMotionProfile(
+                start, goal, MAX_VEL, MAX_ACCEL, MAX_JERK
+        );
+        profileStartTime = clock.seconds();
+
+        this.desiredHeight = height;
+    }
+
+    public double getCurrentHeight() {
+        return encoderTicksToInches(motor.getCurrentPosition() - offset);
+    }
+
+    public void update() {
+        double currentHeight = getCurrentHeight();
+        if (isBusy()) {
+            // following a profile
+            double time = clock.seconds() - profileStartTime;
+            MotionState state = profile.get(time);
+            //controller.setTargetAcceleration(controller.getTargetAcceleration() + kG);
+            controller.setTargetPosition(state.getX());
+            power = controller.update(currentHeight, state.getV());
+        } else {
+            // just hold the position
+            controller.setTargetPosition(desiredHeight);
+            power = controller.update(currentHeight);
+        }
+        setPower(power);
+    }
+
+    public double getVelocity()
     {
-        this.positionLevelOne = positionLevelOne;
-        this.positionLevelTwo = positionLevelTwo;
-        this.positionLevelThree = positionLevelThree;
-        this.kP = kP;
-        this.kI = kI;
-        this.kD = kD;
-        this.mE = mE;
-        this.power = power;
-        controller = new PIDController(power, kP,kI,kD);
+        if (isBusy()) {
+            // following a profile
+            double time = clock.seconds() - profileStartTime;
+            MotionState state = profile.get(time);
+            return state.getV();
+        } else {
+            return 0;
+        }
     }
 
-    /** THE CONSTRUCTOR GET THE MOTOR TO POWER, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public elevator(DcMotor mE, double power, double kP, double kI, double kD, Telemetry telemetry, int positionLevelOne, int positionLevelTwo, int positionLevelThree) {
-        this.positionLevelOne = positionLevelOne;
-        this.positionLevelTwo = positionLevelTwo;
-        this.positionLevelThree = positionLevelThree;
-        this.kP = kP;
-        this.kI = kI;
-        this.kD = kD;
-        this.mE = mE;
-        this.power = power;
-        this.telemetry = telemetry;
-
-        controller = new PIDController(power, kP,kI,kD, telemetry);
+    public double getTargetVelocity()
+    {
+        return controller.getTargetVelocity();
     }
 
-    // set target position to zero pos(start pos), and while target position isn't required so keep going down.
-    public void goToZeroPos() {
-        mE.setPower(controller.updatedPower(0, mE.getCurrentPosition()));
-    }
-
-    // set target position to level one, and while target position isn't required so keep going up/down.
-    public void goToLevelOne() {
-        mE.setPower(controller.updatedPower(positionLevelOne, mE.getCurrentPosition()));
-
-    }
-
-    // set target position to level two, and while target position isn't required so keep going up/down.
-    public void goToLevelTwo() {
-        mE.setPower(controller.updatedPower(positionLevelTwo, mE.getCurrentPosition()));
-
-    }
-
-    // set target position to level three, and while target position isn't required so keep going up.
-    public void goToLevelThree() {
-        mE.setPower(controller.updatedPower(positionLevelThree, mE.getCurrentPosition()));
-    }
-
-    public int getPosition(){
-        return mE.getCurrentPosition();
+    public void setPower(double power) {
+        motor.setPower(power);
     }
 
 }

@@ -27,79 +27,59 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.robot.Subsystems;
+package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+@Config
+@TeleOp(group="Tests")
+@Disabled
+public class Intake extends LinearOpMode {
 
-public class intake {
+    DcMotor mI = null;
+    public static boolean isReverse = true;
+    public static double power = 1;
 
-    DcMotor mI;
-    double power;
-    Telemetry telemetry;
-
-    /**
-     * constructor for intake
-     * @param mI the intake motor
-     * @param power the power to give the motor
-     */
-    public intake(DcMotor mI, double power) {
-        this.power = power;
-        this.mI = mI;
-    }
-
-    /**
-     * constructor for intake
-     * @param mI the intake motor
-     * @param power the power to give the motor
-     * @param telemetry the telemetry object from the opmode
-     */
-    public intake(DcMotor mI, double power, Telemetry telemetry) {
-        this.power = power;
-        this.mI = mI;
-        this.telemetry = telemetry;
-    }
-
-    /**
-     * set power to mI
-     * setting the power given from the user to the mI
-     */
-    public void powerIntake(double newPower){
-        mI.setPower(newPower);
-    }
-
-    /**
-     * set power to mI
-     * setting the power given from the constructor to the mI
-     */
-    public void intakeForward(){
-        mI.setPower(power);
-    }
-
-    /**
-     * set -power to mI
-     * setting the power in a negative value given from the constructor to the mI
-     */
-    public void intakeBackward(){
-        mI.setPower(-power);
-    }
-
-    /**
-     * set power 0 to mI
-     * stopping the mI motor
-     */
-    public void stop(){
-        mI.setPower(0);
-    }
-
-    /**
-     * displaying intake motor power
-     */
-    public void displayTelemetry(){
-        telemetry.addData("Intake motor power at", power);
+    @Override
+    public void runOpMode() throws InterruptedException {
+        telemetry.addData("Status", "Initialized");
         telemetry.update();
-    }
 
+        mI = hardwareMap.get(DcMotor.class, "mI");
+        mI.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        if (isReverse)
+            mI.setDirection(DcMotorSimple.Direction.REVERSE);
+        else
+            mI.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        // run until the end of the match (driver presses STOP)
+
+        while (opModeIsActive()) {
+
+            if(gamepad1.dpad_up){
+                mI.setPower(power);
+            }
+            else if(gamepad1.dpad_down) {
+                mI.setPower(-power);
+            }
+            else{
+                mI.setPower(0);
+            }
+
+
+
+
+        }
+    }
 }

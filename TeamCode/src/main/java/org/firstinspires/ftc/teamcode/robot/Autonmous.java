@@ -10,18 +10,27 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
-import org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import static org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage.carouselTask;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage.colorTask;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage.finalOptions;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage.parkTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.allianceTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.autoTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.carouselTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.collectFreightTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.finalOptions;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.numOfFreightTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.parkInTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.parkTypeTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.placeFreightAtTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.startDelayTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.startPosTask;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.tasks;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.tasksName;
 
 @Config
 @Autonomous(group = "main")
@@ -32,6 +41,8 @@ public class Autonmous extends LinearOpMode {
 
    Pose2d[] points = {};
    Trajectory[] trajectories = {};
+
+   boolean runAuto = true;
 
    @Override
    public void runOpMode() throws InterruptedException {
@@ -68,11 +79,14 @@ public class Autonmous extends LinearOpMode {
 
         webcam.stopStreaming();
 
-        drive.followTrajectory(trajectories[0]);
-        // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
-        drive.followTrajectory(trajectories[1]);
-        // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
-        drive.setMotorPowers(0,0,0,0);
+        if(runAuto)
+        {
+            drive.followTrajectory(trajectories[0]);
+            // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
+            drive.followTrajectory(trajectories[1]);
+            // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
+            drive.setMotorPowers(0, 0, 0, 0);
+        }
 
         while(opModeIsActive())
         {
@@ -84,11 +98,72 @@ public class Autonmous extends LinearOpMode {
 
     public Pose2d[] listOfPose()
     {
-        // TODO: REMOVE TELEMETRY
+        /*tasks[0] = allianceTask;
+        tasks[1] = startPosTask;
+        tasks[2] = startDelayTask;
+        tasks[3] = carouselTask;
+        tasks[4] = collectFreightTask;
+        tasks[5] = numOfFreightTask;
+        tasks[6] = placeFreightAtTask;
+        tasks[7] = parkInTask;
+        tasks[8] = parkTypeTask;
+
+        tasksName[0] = "Alliance";
+        tasksName[1] = "Start Position";
+        tasksName[2] = "Start Delay";
+        tasksName[3] = "Spin Carousel";
+        tasksName[4] = "Collect And Place Additional Freight";
+        tasksName[5] = "Number Of Freight To Collect";
+        tasksName[6] = "Place Freight In";
+        tasksName[7] = "Park In";
+        tasksName[8] = "Park Completely";
+
+
+        allianceTask[0] = "Red";
+        allianceTask[1] = "Blue";
+
+        startPosTask[0] = "Right";
+        startPosTask[1] = "Left";
+
+        for(int i = 0; i < 30; i++)
+        {
+            startDelayTask[i] = "" + i+1;
+        }
+
+        carouselTask[0] = "YES";
+        carouselTask[1] = "NO";
+
+        collectFreightTask[0] = "YES";
+        collectFreightTask[1] = "NO";
+
+        for(int i = 0; i < 10; i++)
+        {
+            numOfFreightTask[i] = "" + i+1;
+        }
+
+        placeFreightAtTask[0] = "LEFT";
+        placeFreightAtTask[1] = "RIGHT";
+        placeFreightAtTask[2] = "FRONT";
+        placeFreightAtTask[3] = "BACK";
+
+        parkInTask[0] = "Alliance Shipping Unit";
+        parkInTask[1] = "Warehouse";
+
+        parkTypeTask[0] = "Completely";
+        parkTypeTask[0] = "Not Completely";
 
         int orderCarousel = 0, orderPark = 1;
         Pose2d[] pose2DS = {};
         boolean blue = false, red = false;
+
+        if(autoTask[0].equals(finalOptions[0]))
+        {
+            runAuto = true;
+        }
+        else
+        {
+            runAuto = false;
+        }
 
         if(colorTask[0].equals(finalOptions[0]))
         {
@@ -179,9 +254,10 @@ public class Autonmous extends LinearOpMode {
                 telemetry.addLine("park red! Completely In WH");
                 pose2DS[orderPark] =  new Pose2d(-4,-4, 0);
             }
-        }
+        }*/
 
-        return pose2DS;
+        //return pose2DS;
+        return null;
     }
 
     public void initPipeline()

@@ -5,19 +5,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDriveCancelable;
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.dip;
-import org.firstinspires.ftc.teamcode.robot.Subsystems.elevator;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.intake;
 
-import static org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage.currentPose;
+import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.currentPose;
 
 @Config
 @TeleOp(group = "main")
@@ -38,7 +36,7 @@ public class teleop extends LinearOpMode {
     public static boolean isRegularDrive = true;
 
     carousel carousel;
-    elevator elevator;
+    //elevator elevator;
     intake intake;
     gamepad gamepads;
     dip dip;
@@ -59,7 +57,7 @@ public class teleop extends LinearOpMode {
         cGamepad cGamepad2 = new cGamepad(gamepad2);
 
         carousel = new carousel(mC, powerCarousel);
-        elevator = new elevator(mE, powerElevator, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
+        //elevator = new elevator(mE, powerElevator, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
         gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive, lockOn);
 
         intake = new intake(mI, powerIntake);
@@ -91,7 +89,7 @@ public class teleop extends LinearOpMode {
             if(gamepad1.dpad_down)
             {
                 dip.getFreight();
-                elevator.goToZeroPos();
+                //elevator.goToZeroPos();
             }
 
             // TODO: change to gamepad1
@@ -103,28 +101,28 @@ public class teleop extends LinearOpMode {
             // TODO: change to gamepad2
             // BUTTON Y
             if (cGamepad1.YOnce()) {
-                elevator.goToLevelThree();
+                //elevator.goToLevelThree();
             }
 
             // TODO: change to gamepad2
             // BUTTON A
             if (cGamepad1.AOnce()) {
-                elevator.goToLevelOne();
+                //elevator.goToLevelOne();
             }
 
             // TODO: change to gamepad2
             // BUTTON B
             if (cGamepad1.BOnce() || cGamepad1.XOnce()) {
-                elevator.goToLevelTwo();
+                //elevator.goToLevelTwo();
             }
 
             // TODO: change to gamepad2
-            if (gamepad1.left_bumper) {
-                intake.intakeBackward();
+            if (gamepad1.left_trigger != 0) {
+                intake.powerIntake(-gamepad1.left_trigger);
             }
             // TODO: change to gamepad2
-            else if (gamepad1.right_bumper) {
-                intake.intakeForward();
+            else if (gamepad1.right_trigger != 0) {
+                intake.powerIntake(gamepad1.right_trigger);
             } else {
                 intake.stop();
             }
