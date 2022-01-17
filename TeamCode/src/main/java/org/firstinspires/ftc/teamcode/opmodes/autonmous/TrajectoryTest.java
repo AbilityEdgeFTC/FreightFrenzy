@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.localizers.DoubleLocalizer;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDrive;
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class TrajectoryTest extends LinearOpMode {
 
     public static Pose2d startPose = new Pose2d(0,0,0);

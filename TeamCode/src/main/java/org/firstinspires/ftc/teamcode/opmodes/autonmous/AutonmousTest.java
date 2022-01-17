@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -46,40 +47,49 @@ public class AutonmousTest extends LinearOpMode {
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
 
         drive.setPoseEstimate(startPose);
+        //"Spin Carousel";
+        // "Collect And Place Additional Freight", "Number Of Freight To Collect";
+        // "Place Freight In";
+        // "Park In";
+        // "Park Completely";
 
-        Trajectory carousel = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToSplineHeading(poseCarousel)
+        Trajectory carousel = drive.trajectoryBuilder(drive.getPoseEstimate(), true)
+                .splineTo(new Vector2d(poseCarousel.getX(), poseCarousel.getY()), poseCarousel.getHeading())
                 .build();
         Trajectory hub = drive.trajectoryBuilder(carousel.end())
-                .lineToSplineHeading(poseHub)
+                .splineTo(new Vector2d(poseHub.getX(), poseHub.getY()), poseHub.getHeading())
                 .build();
-        Trajectory entrance = drive.trajectoryBuilder(hub.end())
-                .lineToSplineHeading(poseEntrance)
+        Trajectory collect1 = drive.trajectoryBuilder(hub.end())
+                .splineTo(new Vector2d(poseEntrance.getX(), poseEntrance.getY()), poseEntrance.getHeading())
+                .splineTo(new Vector2d(poseCollect.getX(), poseCollect.getY()), poseCollect.getHeading())
                 .build();
-        Trajectory collect = drive.trajectoryBuilder(entrance.end())
-                .lineToSplineHeading(poseCollect)
+        Trajectory placement1 = drive.trajectoryBuilder(collect1.end())
+                .splineTo(new Vector2d(poseHub.getX(), poseHub.getY()), poseHub.getHeading())
                 .build();
-        Trajectory entranceBack = drive.trajectoryBuilder(collect.end())
-                .lineToSplineHeading(poseEntrance)
+        Trajectory collect2 = drive.trajectoryBuilder(placement1.end())
+                .splineTo(new Vector2d(poseEntrance.getX(), poseEntrance.getY()), poseEntrance.getHeading())
+                .splineTo(new Vector2d(poseCollect.getX(), poseCollect.getY()), poseCollect.getHeading())
                 .build();
-        Trajectory collectBack = drive.trajectoryBuilder(entranceBack.end())
-                .lineToSplineHeading(poseCollect)
+        Trajectory placement2 = drive.trajectoryBuilder(collect2.end())
+                .splineTo(new Vector2d(poseHub.getX(), poseHub.getY()), poseHub.getHeading())
                 .build();
-
 
         waitForStart();
 
         if (isStopRequested()) return;
 
+
         drive.followTrajectory(carousel);
         Thread.sleep(2000);
         drive.followTrajectory(hub);
         Thread.sleep(2000);
-        drive.followTrajectory(entrance);
-        drive.followTrajectory(collect);
+        drive.followTrajectory(collect1);
         Thread.sleep(2000);
-        drive.followTrajectory(entranceBack);
-        drive.followTrajectory(collectBack);
+        drive.followTrajectory(placement1);
+        Thread.sleep(2000);
+        drive.followTrajectory(collect2);
+        Thread.sleep(2000);
+        drive.followTrajectory(placement2);
 
         while (opModeIsActive())
         {
