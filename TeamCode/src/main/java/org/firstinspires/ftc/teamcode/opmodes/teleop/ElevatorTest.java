@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Elevator;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.Elevator;
 
 /*
  * Simple test of motion-profiled elevator autonomous operation. The elevator should move *smoothly*
@@ -21,9 +21,16 @@ public class ElevatorTest extends LinearOpMode {
     public static boolean moveToMax = false;
     public static boolean moveToZero = false;
 
+    public static double MAX_HEIGHT = 15.5; // TODO set value in inches
+    public static double MID_HEIGHT = 9; // TODO set value in inches
+    public static double MIN_HEIGHT = 4; // TODO set value in inches
+    public static double ZERO_HEIGHT = 0; // TODO set value in inches
+
+    public static double timeTo = 2;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        Elevator elevator = new Elevator(hardwareMap);
+        Elevator elevator = new Elevator(hardwareMap, MAX_HEIGHT, MID_HEIGHT, MIN_HEIGHT, ZERO_HEIGHT);
         NanoClock clock = NanoClock.system();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         waitForStart();
@@ -32,34 +39,7 @@ public class ElevatorTest extends LinearOpMode {
 
         while (!isStopRequested()) {
             double startTime = clock.seconds();
-            if(gamepad1.a)
-            {
-                moveToMin = true;
-                moveToMid = false;
-                moveToMax = false;
-                moveToZero = false;
-            }
-            else if(gamepad1.b)
-            {
-                moveToMid = true;
-                moveToMin = false;
-                moveToMax = false;
-                moveToZero = false;
-            }
-            else if(gamepad1.y)
-            {
-                moveToMax = true;
-                moveToMin = false;
-                moveToMid = false;
-                moveToZero = false;
-            }
-            else if(gamepad1.x)
-            {
-                moveToZero = true;
-                moveToMin = false;
-                moveToMid = false;
-                moveToMax = false;
-            }
+            checkLevel();
 
             if(moveToMin)
             {
@@ -78,37 +58,76 @@ public class ElevatorTest extends LinearOpMode {
                 elevator.setHeight(Elevator.ZERO_HEIGHT);
             }
 
-            while (!isStopRequested() && (clock.seconds() - startTime) < 5 && moveToMin)
+            while (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToMin)
             {
                 elevator.update();
                 telemetry.addData("targetVelocity", elevator.getTargetVelocity());
                 telemetry.addData("measuredVelocity", elevator.getVelocity());
                 telemetry.update();
+                checkLevel();
+                moveToMin = false;
             }
-            while (!isStopRequested() && (clock.seconds() - startTime) < 5 && moveToMid)
+            while (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToMid)
             {
                 elevator.update();
                 telemetry.addData("targetVelocity", elevator.getTargetVelocity());
                 telemetry.addData("measuredVelocity", elevator.getVelocity());
                 telemetry.update();
-            }while (!isStopRequested() && (clock.seconds() - startTime) < 5 && moveToMax)
+                checkLevel();
+                moveToMid = false;
+            }while (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToMax)
             {
                 elevator.update();
                 telemetry.addData("targetVelocity", elevator.getTargetVelocity());
                 telemetry.addData("measuredVelocity", elevator.getVelocity());
                 telemetry.update();
-            }while (!isStopRequested() && (clock.seconds() - startTime) < 5 && moveToZero)
+                checkLevel();
+                moveToMax = false;
+            }while (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToZero)
             {
                 elevator.update();
                 telemetry.addData("targetVelocity", elevator.getTargetVelocity());
                 telemetry.addData("measuredVelocity", elevator.getVelocity());
                 telemetry.update();
+                checkLevel();
+                moveToZero = false;
             }
 
             telemetry.addData("targetVelocity", elevator.getTargetVelocity());
             telemetry.addData("measuredVelocity", elevator.getVelocity());
             telemetry.update();
+        }
+    }
 
+    void checkLevel()
+    {
+        if(gamepad1.a)
+        {
+            moveToMin = true;
+            moveToMid = false;
+            moveToMax = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.b)
+        {
+            moveToMid = true;
+            moveToMin = false;
+            moveToMax = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.y)
+        {
+            moveToMax = true;
+            moveToMin = false;
+            moveToMid = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.x)
+        {
+            moveToZero = true;
+            moveToMin = false;
+            moveToMid = false;
+            moveToMax = false;
         }
     }
 }

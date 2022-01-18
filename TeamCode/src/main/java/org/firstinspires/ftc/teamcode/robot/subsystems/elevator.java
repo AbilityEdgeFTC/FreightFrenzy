@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
@@ -24,20 +24,19 @@ public class Elevator {
     public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed
 
     // the operating range of the elevator is restricted to [0, MAX_HEIGHT]
-    public static double MAX_HEIGHT = 15.5; // TODO set value in inches
-    public static double MID_HEIGHT = 9; // TODO set value in inches
-    public static double MIN_HEIGHT = 4; // TODO set value in inches
-    public static double ZERO_HEIGHT = 0; // TODO set value in inches
+    public static double MAX_HEIGHT; // TODO set value in inches
+    public static double MID_HEIGHT; // TODO set value in inches
+    public static double MIN_HEIGHT; // TODO set value in inches
+    public static double ZERO_HEIGHT; // TODO set value in inches
 
-    public static PIDCoefficients PID = new PIDCoefficients(3, 0, 0); // TODO: tune
+    public static PIDCoefficients PID = new PIDCoefficients(4, 2, 0); // TODO: tune
 
-    public static double MAX_VEL = 10; // in/s // TODO: tune
-    public static double MAX_ACCEL = 10; // in/s^2 // TODO: tune
-    public static double MAX_JERK = 20; // in/s^3 // TODO: tune
+    public static double MAX_VEL = 40; // in/s // TODO: tune
+    public static double MAX_ACCEL = 40; // in/s^2 // TODO: tune
+    public static double MAX_JERK = 200; // in/s^3 // TODO: tune
 
-    public static double kG = 0; // TODO: tune
-    public static double kV = 0; // TODO: tune
-    public static double kA = 0; // TODO: tune
+    public static double kV = 10; // TODO: tune
+    public static double kA = 10; // TODO: tune
     public static double kStatic = 0; // TODO: tune
 
     private DcMotorEx motor;
@@ -60,7 +59,7 @@ public class Elevator {
         return MAX_RPM;
     }
 
-    public Elevator(HardwareMap hardwareMap) {
+    public Elevator(HardwareMap hardwareMap, double MAX_HEIGHT, double MID_HEIGHT, double MIN_HEIGHT, double ZERO_HEIGHT) {
         motor = hardwareMap.get(DcMotorEx.class, "mE");
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // if necessary, reverse the motor so "up" is positive
@@ -68,13 +67,16 @@ public class Elevator {
 
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
-
         // note: if the elevator is affected by a non-negligible constant force along the direction
         // of motion (e.g., gravity, kinetic friction, or a combination thereof), it may be
         // beneficial to compensate for it with a gravity feedforward
         controller = new PIDFController(PID, kV, kA, kStatic);
         offset = motor.getCurrentPosition();
+
+        this.MAX_HEIGHT = MAX_HEIGHT;
+        this.MID_HEIGHT = MID_HEIGHT;
+        this.MIN_HEIGHT = MIN_HEIGHT;
+        this.ZERO_HEIGHT = ZERO_HEIGHT;
 
     }
 
@@ -137,5 +139,6 @@ public class Elevator {
     public void setPower(double power) {
         motor.setPower(power);
     }
+
 
 }

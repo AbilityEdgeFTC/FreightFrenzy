@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.util.NanoClock;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDriveCancelable;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.dip;
@@ -26,27 +31,29 @@ public class teleop extends LinearOpMode {
 
     public static double powerCarousel = 0.325;
     public static double powerIntake = 1;
-    public static double powerElevator = .5;
-    public static int positionLevelOne = 170;
-    public static int positionLevelTwo = 250;
-    public static int positionLevelThree = 500;
     public static double intakePosition = 1, dippingPosition = .6;
     public static double lockOn = 90;
-    public static double mainPower = .9;
+    public static double mainPower = 1;
     public static boolean isRegularDrive = true;
 
+    public static double MAX_HEIGHT = 15.5; // TODO set value in inches
+    public static double MID_HEIGHT = 9; // TODO set value in inches
+    public static double MIN_HEIGHT = 4; // TODO set value in inches
+    public static double ZERO_HEIGHT = 0; // TODO set value in inches
+    public static boolean moveToMin = false;
+    public static boolean moveToMid = false;
+    public static boolean moveToMax = false;
+    public static boolean moveToZero = false;
+    public static double timeTo = 3;
+
     carousel carousel;
-    //elevator elevator;
+    Elevator elevator;
     intake intake;
     gamepad gamepads;
     dip dip;
 
-    // TODO: TUNE
-    public static double kP = 0, kI = 0, kD = 0;
-
     @Override
     public void runOpMode() throws InterruptedException {
-
         initAll();
         SampleMecanumDriveCancelable drive = new SampleMecanumDriveCancelable(hardwareMap);
         drive.setPoseEstimate(currentPose);
@@ -56,8 +63,10 @@ public class teleop extends LinearOpMode {
         cGamepad cGamepad1 = new cGamepad(gamepad1);
         cGamepad cGamepad2 = new cGamepad(gamepad2);
 
+        elevator = new Elevator(hardwareMap, MAX_HEIGHT, MID_HEIGHT, MIN_HEIGHT, ZERO_HEIGHT);
+        NanoClock clock = NanoClock.system();
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         carousel = new carousel(mC, powerCarousel);
-        //elevator = new elevator(mE, powerElevator, kP, kI, kD, telemetry, positionLevelOne, positionLevelTwo, positionLevelThree);
         gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive, lockOn);
 
         intake = new intake(mI, powerIntake);
@@ -65,31 +74,33 @@ public class teleop extends LinearOpMode {
 
         waitForStart();
 
+        if (isStopRequested()) return;
+
         while (opModeIsActive()) {
+            double startTime = clock.seconds();
+            checkLevel();
+
             cGamepad1.update();
             cGamepad2.update();
             gamepads.update();
-            gamepads.regularDrive = isRegularDrive;
 
             if(gamepad1.right_stick_button || gamepad1.left_stick_button)
             {
-                mainPower = .4;
+                mainPower = .6;
             }
             else
             {
-                mainPower = .7;
-            }
-
-            // TODO: change to gamepad 1 right or left bumber
-            if (cGamepad1.dpadUpOnce()) {
-                dip.releaseFreight();
+                mainPower = 1;
             }
 
             // TODO: change to gamepad2
             if(gamepad1.dpad_down)
             {
                 dip.getFreight();
-                //elevator.goToZeroPos();
+                moveToZero = true;
+                moveToMin = false;
+                moveToMid = false;
+                moveToMax = false;
             }
 
             // TODO: change to gamepad1
@@ -98,22 +109,23 @@ public class teleop extends LinearOpMode {
                 gamepads.lockOnAngle = !gamepads.lockOnAngle;
             }
 
-            // TODO: change to gamepad2
-            // BUTTON Y
-            if (cGamepad1.YOnce()) {
-                //elevator.goToLevelThree();
-            }
+            goToPoistions(clock, startTime);
 
-            // TODO: change to gamepad2
-            // BUTTON A
-            if (cGamepad1.AOnce()) {
-                //elevator.goToLevelOne();
+            if(moveToMin)
+            {
+                elevator.setHeight(Elevator.MIN_HEIGHT);
             }
-
-            // TODO: change to gamepad2
-            // BUTTON B
-            if (cGamepad1.BOnce() || cGamepad1.XOnce()) {
-                //elevator.goToLevelTwo();
+            else if(moveToMid)
+            {
+                elevator.setHeight(Elevator.MID_HEIGHT);
+            }
+            else if(moveToMax)
+            {
+                elevator.setHeight(Elevator.MAX_HEIGHT);
+            }
+            else if(moveToZero)
+            {
+                elevator.setHeight(Elevator.ZERO_HEIGHT);
             }
 
             // TODO: change to gamepad2
@@ -156,5 +168,71 @@ public class teleop extends LinearOpMode {
         // but lets us simply send raw motor power.
         mE.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sD = hardwareMap.get(Servo.class, "sE");
+    }
+
+    void checkLevel()
+    {
+        if(gamepad1.a)
+        {
+            moveToMin = true;
+            moveToMid = false;
+            moveToMax = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.b)
+        {
+            moveToMid = true;
+            moveToMin = false;
+            moveToMax = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.y)
+        {
+            moveToMax = true;
+            moveToMin = false;
+            moveToMid = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.x)
+        {
+            moveToZero = true;
+            moveToMin = false;
+            moveToMid = false;
+            moveToMax = false;
+        }
+    }
+
+    void goToPoistions(NanoClock clock, double startTime)
+    {
+        if (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToMin)
+        {
+            elevator.update();
+            telemetry.addData("targetVelocity", elevator.getTargetVelocity());
+            telemetry.addData("measuredVelocity", elevator.getVelocity());
+            telemetry.update();
+            checkLevel();
+        }
+        else if (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToMid)
+        {
+            elevator.update();
+            telemetry.addData("targetVelocity", elevator.getTargetVelocity());
+            telemetry.addData("measuredVelocity", elevator.getVelocity());
+            telemetry.update();
+            checkLevel();
+        }else if (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToMax)
+        {
+            elevator.update();
+            telemetry.addData("targetVelocity", elevator.getTargetVelocity());
+            telemetry.addData("measuredVelocity", elevator.getVelocity());
+            telemetry.update();
+            checkLevel();
+        }else if (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToZero)
+        {
+            elevator.update();
+            telemetry.addData("targetVelocity", elevator.getTargetVelocity());
+            telemetry.addData("measuredVelocity", elevator.getVelocity());
+            telemetry.update();
+            checkLevel();
+        }
     }
 }
