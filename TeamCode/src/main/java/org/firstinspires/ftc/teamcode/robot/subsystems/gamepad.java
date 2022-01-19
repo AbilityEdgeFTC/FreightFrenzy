@@ -28,7 +28,14 @@ public class gamepad {
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
-    double power, leftPower_f, leftPower_b, rightPower_f, rightPower_b, drive, strafe, twist;
+    public double power;
+    double leftPower_f;
+    double leftPower_b;
+    double rightPower_f;
+    double rightPower_b;
+    double drive;
+    double strafe;
+    double twist;
     public double lockAngle;
     public boolean regularDrive = false, lockOnAngle = false;
     SampleMecanumDriveCancelable drivetrain;

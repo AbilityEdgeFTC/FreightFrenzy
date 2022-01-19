@@ -43,6 +43,14 @@ public class intake {
     /**
      * constructor for intake
      * @param mI the intake motor
+     */
+    public intake(DcMotor mI) {
+        this.mI = mI;
+    }
+
+    /**
+     * constructor for intake
+     * @param mI the intake motor
      * @param power the power to give the motor
      */
     public intake(DcMotor mI, double power) {
