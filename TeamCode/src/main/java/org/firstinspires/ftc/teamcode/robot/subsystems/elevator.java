@@ -106,8 +106,12 @@ public class Elevator {
         double currentHeight = getCurrentHeight();
         if (isBusy()) {
             // following a profile
+            double targetVelo = controller.getTargetVelocity();
             double time = clock.seconds() - profileStartTime;
             MotionState state = profile.get(time);
+            if(targetVelo < 0) {
+                controller.setTargetVelocity(targetVelo / 2);
+            }
             //controller.setTargetAcceleration(controller.getTargetAcceleration() + kG);
             controller.setTargetPosition(state.getX());
             power = controller.update(currentHeight, state.getV());
