@@ -92,15 +92,15 @@ public class gamepad {
 
                 regularDrive();
 
-                if(gamepad1.a)
-                {
-                    lockOnAngle = !lockOnAngle;
-                }
-
-                if(gamepad1.a && lockOnAngle)
-                {
-                    currentMode = Mode.ALIGN_TO_ANGLE;
-                }
+//                if(gamepad1.a)
+//                {
+//                    lockOnAngle = !lockOnAngle;
+//                }
+//
+//                if(gamepad1.a && lockOnAngle)
+//                {
+//                    currentMode = Mode.ALIGN_TO_ANGLE;
+//                }
 
                 mFL.setPower(leftPower_f);
                 mBL.setPower(leftPower_b);
@@ -138,7 +138,7 @@ public class gamepad {
         {
             drive = -gamepad1.left_stick_y;
             strafe = gamepad1.left_stick_x;
-            twist = gamepad1.right_stick_x / 2;
+            twist = gamepad1.right_stick_x * 0.7;
         }
         else
         {

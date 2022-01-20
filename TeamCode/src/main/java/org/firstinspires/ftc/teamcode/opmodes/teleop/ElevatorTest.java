@@ -26,7 +26,7 @@ public class ElevatorTest extends LinearOpMode {
     public static double MIN_HEIGHT = 4; // TODO set value in inches
     public static double ZERO_HEIGHT = 0; // TODO set value in inches
 
-    public static double timeTo = 2;
+    public static double timeTo = 3;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,7 +37,7 @@ public class ElevatorTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        while (!isStopRequested()) {
+        while (opModeIsActive()) {
             double startTime = clock.seconds();
             checkLevel();
 
@@ -65,7 +65,7 @@ public class ElevatorTest extends LinearOpMode {
                 telemetry.addData("measuredVelocity", elevator.getVelocity());
                 telemetry.update();
                 checkLevel();
-                moveToMin = false;
+                //moveToMin = false;
             }
             while (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToMid)
             {
@@ -74,7 +74,7 @@ public class ElevatorTest extends LinearOpMode {
                 telemetry.addData("measuredVelocity", elevator.getVelocity());
                 telemetry.update();
                 checkLevel();
-                moveToMid = false;
+                //moveToMid = false;
             }while (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToMax)
             {
                 elevator.update();
@@ -82,7 +82,7 @@ public class ElevatorTest extends LinearOpMode {
                 telemetry.addData("measuredVelocity", elevator.getVelocity());
                 telemetry.update();
                 checkLevel();
-                moveToMax = false;
+                //moveToMax = false;
             }while (!isStopRequested() && (clock.seconds() - startTime) < timeTo && moveToZero)
             {
                 elevator.update();
@@ -90,7 +90,7 @@ public class ElevatorTest extends LinearOpMode {
                 telemetry.addData("measuredVelocity", elevator.getVelocity());
                 telemetry.update();
                 checkLevel();
-                moveToZero = false;
+                //moveToZero = false;
             }
 
             telemetry.addData("targetVelocity", elevator.getTargetVelocity());

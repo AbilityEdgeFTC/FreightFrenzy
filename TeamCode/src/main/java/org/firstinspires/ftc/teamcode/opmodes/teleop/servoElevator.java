@@ -41,7 +41,6 @@ import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
 // 1 is get freight from intake
 @Config
 @TeleOp(group="Tests")
-@Disabled
 public class servoElevator extends LinearOpMode {
 
     Servo sE = null;

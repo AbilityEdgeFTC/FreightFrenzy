@@ -19,13 +19,14 @@ public class MultitaskingThread extends Thread {
     dip dip;
     Servo sD;
 
-    public MultitaskingThread(Telemetry telemetry, HardwareMap hw, Gamepad gamepad1) {
+    public MultitaskingThread(Telemetry telemetry, HardwareMap hw, Gamepad gamepad1) throws InterruptedException {
         telemetry.addData("Thread Called: ", this.getName());
         mI = hw.get(DcMotor.class, "mI");
         mI.setDirection(DcMotor.Direction.REVERSE);
         intake = new intake(mI);
         sD = hw.get(Servo.class, "sE");
         dip = new dip(sD, intakePosition, dippingPosition);
+        dip.getFreight();
         this.gamepad1 = gamepad1;
     }
 
@@ -48,6 +49,10 @@ public class MultitaskingThread extends Thread {
 
                 // TODO: change to gamepad2
                 if(gamepad1.dpad_down)
+                {
+                    dip.releaseFreight();
+                }
+                else if(gamepad1.dpad_up)
                 {
                     dip.getFreight();
                 }

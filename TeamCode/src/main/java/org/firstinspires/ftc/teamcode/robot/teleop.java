@@ -19,7 +19,7 @@ import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.curre
 @TeleOp(group = "main")
 public class teleop extends LinearOpMode {
 
-    DcMotor mC, mFL, mBL, mFR, mBR, mI;
+    DcMotor mC, mFL, mBL, mFR, mBR;
 
     public static double powerCarousel = 0.325;
     public static double lockOn = 90;
@@ -40,8 +40,8 @@ public class teleop extends LinearOpMode {
         carousel = new carousel(mC, powerCarousel);
         gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive, lockOn);
 
-        Thread ElevatorThread = new ElevatorThread(telemetry, hardwareMap, gamepad2);
-        Thread MultitaskingThread = new MultitaskingThread(telemetry, hardwareMap, gamepad2);
+        Thread ElevatorThread = new ElevatorThread(telemetry, hardwareMap, gamepad1);
+        Thread MultitaskingThread = new MultitaskingThread(telemetry, hardwareMap, gamepad1);
 
         waitForStart();
 

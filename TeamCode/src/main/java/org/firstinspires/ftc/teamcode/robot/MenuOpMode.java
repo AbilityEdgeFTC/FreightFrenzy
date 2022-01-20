@@ -2,29 +2,29 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
-
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.allianceTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.autoTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.carouselTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.collectFreightTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.currentOption;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.finalOptions;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.numOfFreightTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.parkInTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.parkTypeTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.placeFreightAtTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.startDelayTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.startPosTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.taskName;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.tasks;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.tasksName;
 
 @TeleOp(name="Menu Autonmous", group="Main")
 public class MenuOpMode extends LinearOpMode
 {
-
+    public static String taskName = "";
+    public static String[][] tasks = {};
+    public static String[] tasksName = {};
+    public static String[] autoTask = {};
+    public static String[] allianceTask = {};
+    public static String[] startPosTask = {};
+    public static String[] startDelayTask = {};
+    public static String[] carouselTask = {};
+    public static String[] collectFreightTask = {};
+    public static String[] numOfFreightTask = {};
+    public static String[] placeFreightAtTask = {};
+    public static String[] parkInTask = {};
+    public static String[] parkTypeTask = {};
+    public static String[] finalOptions = {};
+    public static int[] currentOption = {};
     int maxTasks = 0, maxOptions = 0, taskNum = 0;
     boolean flag = false;
 
@@ -82,6 +82,42 @@ public class MenuOpMode extends LinearOpMode
 
             if(gamepad1.a)
             {
+                for(int i = 0; i < tasks.length; i++)
+                {
+                    switch(i)
+                    {
+                        case 0:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("autoTask.txt"), finalOptions[i]);
+                            break;
+                        case 1:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("allianceTask.txt"), finalOptions[i]);
+                            break;
+                        case 2:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("startPosTask.txt"), finalOptions[i]);
+                            break;
+                        case 3:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("startDelayTask.txt"), finalOptions[i]);
+                            break;
+                        case 4:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("carouselTask.txt"), finalOptions[i]);
+                            break;
+                        case 5:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("collectFreightTask.txt"), finalOptions[i]);
+                            break;
+                        case 6:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("numOfFreightTask.txt"), finalOptions[i]);
+                            break;
+                        case 7:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("placeFreightAtTask.txt"), finalOptions[i]);
+                            break;
+                        case 8:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("parkInTask.txt"), finalOptions[i]);
+                            break;
+                        case 9:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("parkTypeTask.txt"), finalOptions[i]);
+                            break;
+                    }
+                }
                 flag = true;
             }
 
@@ -95,8 +131,10 @@ public class MenuOpMode extends LinearOpMode
 
     void initTasks()
     {
+        //initOptions();
+
         tasks[0] = autoTask;
-        tasks[1] = allianceTask;
+        /*tasks[1] = allianceTask;
         tasks[2] = startPosTask;
         tasks[3] = startDelayTask;
         tasks[4] = carouselTask;
@@ -115,9 +153,8 @@ public class MenuOpMode extends LinearOpMode
         tasksName[6] = "Number Of Freight To Collect";
         tasksName[7] = "Place Freight In";
         tasksName[8] = "Park In";
-        tasksName[9] = "Park Completely";
+        tasksName[9] = "Park Completely";*/
 
-        initOptions();
     }
 
     void initOptions()
@@ -142,7 +179,7 @@ public class MenuOpMode extends LinearOpMode
         collectFreightTask[0] = "YES";
         collectFreightTask[1] = "NO";
 
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < numOfFreightTask.length; i++)
         {
             numOfFreightTask[i] = "" + i+1;
         }

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -16,13 +17,18 @@ public class ElevatorThread extends Thread{
     public static double ZERO_HEIGHT = 0; // TODO set value in inches
     public static boolean moveToMin = false, moveToMid = false, moveToMax = false, moveToZero = false;
     public static double timeTo = 3;
+    public static double intakePosition = 1, dippingPosition = .6;
     Elevator elevator;
     Gamepad gamepad1;
+    dip dip;
+    Servo sD;
 
     public ElevatorThread(Telemetry telemetry, HardwareMap hw, Gamepad gamepad1)
     {
         telemetry.addData("Thread Called: ", this.getName());
         elevator = new Elevator(hw, MAX_HEIGHT, MID_HEIGHT, MIN_HEIGHT, ZERO_HEIGHT);
+        sD = hw.get(Servo.class, "sE");
+        dip = new dip(sD, intakePosition, dippingPosition);
         this.gamepad1 = gamepad1;
     }
 
@@ -33,6 +39,7 @@ public class ElevatorThread extends Thread{
     {
         try
         {
+
             NanoClock clock = NanoClock.system();
 
             while (!isInterrupted())
@@ -55,9 +62,10 @@ public class ElevatorThread extends Thread{
                 }
                 else if(moveToZero) {
                     elevator.setHeight(Elevator.ZERO_HEIGHT);
+                    dip.releaseFreight();
                 }
 
-                goToPoistions(clock.seconds(), startTime);
+                goToPoistions(clock.seconds(), startTime, !isInterrupted());
 
             }
         }
@@ -97,24 +105,24 @@ public class ElevatorThread extends Thread{
         }
     }
 
-    void goToPoistions(double seconds, double startTime)
+    void goToPoistions(double seconds, double startTime, boolean isInterrupted)
     {
-        while ((seconds - startTime) < timeTo && moveToMin)
+        while (isInterrupted && (seconds - startTime) < timeTo && moveToMin)
         {
             elevator.update();
             checkLevel();
         }
-        while((seconds - startTime) < timeTo && moveToMid)
+        while(isInterrupted && (seconds - startTime) < timeTo && moveToMid)
         {
             elevator.update();
             checkLevel();
         }
-        while((seconds - startTime) < timeTo && moveToMax)
+        while(isInterrupted && (seconds - startTime) < timeTo && moveToMax)
         {
             elevator.update();
             checkLevel();
         }
-        while((seconds - startTime) < timeTo && moveToZero)
+        while(!isInterrupted && (seconds - startTime) < timeTo-1 && moveToZero)
         {
             elevator.update();
             checkLevel();

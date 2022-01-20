@@ -33,7 +33,7 @@ public class Elevator {
 
     public static double MAX_VEL = 40; // in/s // TODO: tune
     public static double MAX_ACCEL = 40; // in/s^2 // TODO: tune
-    public static double MAX_JERK = 200; // in/s^3 // TODO: tune
+    public static double MAX_JERK = 175; // in/s^3 // TODO: tune
 
     public static double kV = 10; // TODO: tune
     public static double kA = 10; // TODO: tune
@@ -106,13 +106,8 @@ public class Elevator {
         double currentHeight = getCurrentHeight();
         if (isBusy()) {
             // following a profile
-            double targetVelo = controller.getTargetVelocity();
             double time = clock.seconds() - profileStartTime;
             MotionState state = profile.get(time);
-            if(targetVelo < 0) {
-                controller.setTargetVelocity(targetVelo / 2);
-            }
-            //controller.setTargetAcceleration(controller.getTargetAcceleration() + kG);
             controller.setTargetPosition(state.getX());
             power = controller.update(currentHeight, state.getV());
         } else {

@@ -22,16 +22,16 @@ public class AutonmousTest extends LinearOpMode {
     public static double startPoseY = -64.24;
     public static double startPoseH = 0;
     public static double poseCarouselX = -58;
-    public static double poseCarouselY = -69;
+    public static double poseCarouselY = -67.23;
     public static double poseCarouselH = 135;
-    public static double poseHubX = -9.5;
-    public static double poseHubY = -50;
+    public static double poseHubX = -9.1;
+    public static double poseHubY = -51.5;
     public static double poseHubH = 90;
     public static double poseEntranceX = 12;
-    public static double poseEntranceY = -72.5;
+    public static double poseEntranceY = -71.1;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 48;
-    public static double poseCollectY = -72.5;
+    public static double poseCollectY = -71.8;
     public static double poseCollectH = 180;
 
     @Override
@@ -61,17 +61,19 @@ public class AutonmousTest extends LinearOpMode {
                 .build();
         Trajectory collect1 = drive.trajectoryBuilder(hub.end())
                 .lineToSplineHeading(poseEntrance)
-                .splineTo(new Vector2d(poseCollect.getX(), poseCollect.getY()), poseCollect.getHeading())
+                .splineToLinearHeading(poseCollect, drive.getPoseEstimate().getHeading())
                 .build();
-        Trajectory placement1 = drive.trajectoryBuilder(collect1.end())
-                .lineToSplineHeading(poseHub)
+        Trajectory placement1 = drive.trajectoryBuilder(collect1.end(), true)
+                .splineToLinearHeading(poseEntrance, drive.getPoseEstimate().getHeading())
+                .lineToSplineHeading(poseCollect)
                 .build();
         Trajectory collect2 = drive.trajectoryBuilder(placement1.end())
                 .lineToSplineHeading(poseEntrance)
-                .splineTo(new Vector2d(poseCollect.getX(), poseCollect.getY()), poseCollect.getHeading())
+                .splineToLinearHeading(poseCollect, drive.getPoseEstimate().getHeading())
                 .build();
-        Trajectory placement2 = drive.trajectoryBuilder(collect2.end())
-                .lineToSplineHeading(poseHub)
+        Trajectory placement2 = drive.trajectoryBuilder(collect2.end(), true)
+                .splineToLinearHeading(poseEntrance, drive.getPoseEstimate().getHeading())
+                .lineToSplineHeading(poseCollect)
                 .build();
 
         waitForStart();

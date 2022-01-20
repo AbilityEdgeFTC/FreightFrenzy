@@ -18,23 +18,24 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.allianceTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.autoTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.carouselTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.collectFreightTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.finalOptions;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.numOfFreightTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.parkInTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.parkTypeTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.placeFreightAtTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.startDelayTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.startPosTask;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.tasks;
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.tasksName;
-
 @Config
 @Autonomous(group = "main")
 public class Autonmous extends LinearOpMode {
+
+    public static String taskName = "";
+    public static String[][] tasks = {};
+    public static String[] autoTask = {};
+    public static String[] allianceTask = {};
+    public static String[] startPosTask = {};
+    public static String[] startDelayTask = {};
+    public static String[] carouselTask = {};
+    public static String[] collectFreightTask = {};
+    public static String[] numOfFreightTask = {};
+    public static String[] placeFreightAtTask = {};
+    public static String[] parkInTask = {};
+    public static String[] parkTypeTask = {};
+    public static String[] finalOptions = {};
+    public static int[] currentOption = {};
 
    GreenLanternPipeline pipeline;
    OpenCvWebcam webcam;
@@ -51,6 +52,7 @@ public class Autonmous extends LinearOpMode {
         pipeline = new GreenLanternPipeline();
         valueStorage poseStorage = new valueStorage();
         initPipeline();
+       initOptions();
        webcam.setPipeline(pipeline);
 
        while(!opModeIsActive())
@@ -95,29 +97,10 @@ public class Autonmous extends LinearOpMode {
         }
 
     }
-
-    public Pose2d[] listOfPose()
+    void initOptions()
     {
-        /*tasks[0] = allianceTask;
-        tasks[1] = startPosTask;
-        tasks[2] = startDelayTask;
-        tasks[3] = carouselTask;
-        tasks[4] = collectFreightTask;
-        tasks[5] = numOfFreightTask;
-        tasks[6] = placeFreightAtTask;
-        tasks[7] = parkInTask;
-        tasks[8] = parkTypeTask;
-
-        tasksName[0] = "Alliance";
-        tasksName[1] = "Start Position";
-        tasksName[2] = "Start Delay";
-        tasksName[3] = "Spin Carousel";
-        tasksName[4] = "Collect And Place Additional Freight";
-        tasksName[5] = "Number Of Freight To Collect";
-        tasksName[6] = "Place Freight In";
-        tasksName[7] = "Park In";
-        tasksName[8] = "Park Completely";
-
+        autoTask[0] = "YES";
+        autoTask[1] = "NO";
 
         allianceTask[0] = "Red";
         allianceTask[1] = "Blue";
@@ -152,18 +135,22 @@ public class Autonmous extends LinearOpMode {
         parkTypeTask[0] = "Completely";
         parkTypeTask[0] = "Not Completely";
 
-        int orderCarousel = 0, orderPark = 1;
-        Pose2d[] pose2DS = {};
-        boolean blue = false, red = false;
+    }
 
-        if(autoTask[0].equals(finalOptions[0]))
-        {
-            runAuto = true;
-        }
-        else
-        {
-            runAuto = false;
-        }
+    public Pose2d[] listOfPose()
+    {
+        finalOptions[0] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("autoTask.txt"));;
+        finalOptions[1] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("allianceTask.txt"));
+        finalOptions[2] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("autoTask.txt"));
+        finalOptions[3] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("startPosTask.txt"));
+        finalOptions[4] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("startDelayTask.txt"));
+        finalOptions[5] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("carouselTask.txt"));
+        finalOptions[6] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("collectFreightTask.txt"));
+        finalOptions[7] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("numOfFreightTask.txt"));
+        finalOptions[8] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("parkInTask.txt"));
+        finalOptions[9] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("parkTypeTask.txt"));
+
+        /*
 
         if(colorTask[0].equals(finalOptions[0]))
         {
