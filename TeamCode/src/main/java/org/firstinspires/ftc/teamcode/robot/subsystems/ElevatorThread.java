@@ -122,7 +122,7 @@ public class ElevatorThread extends Thread{
             elevator.update();
             checkLevel();
         }
-        while(!isInterrupted && (seconds - startTime) < timeTo-1 && moveToZero)
+        while(!isInterrupted && (seconds - startTime) < timeTo && moveToZero)
         {
             elevator.update();
             checkLevel();

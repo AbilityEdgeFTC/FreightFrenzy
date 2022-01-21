@@ -82,7 +82,7 @@ public class MenuOpMode extends LinearOpMode
 
             if(gamepad1.a)
             {
-                for(int i = 0; i < tasks.length; i++)
+                for(int i = 0; i < finalOptions.length; i++)
                 {
                     switch(i)
                     {
@@ -131,10 +131,10 @@ public class MenuOpMode extends LinearOpMode
 
     void initTasks()
     {
-        //initOptions();
+        initOptions();
 
         tasks[0] = autoTask;
-        /*tasks[1] = allianceTask;
+        tasks[1] = allianceTask;
         tasks[2] = startPosTask;
         tasks[3] = startDelayTask;
         tasks[4] = carouselTask;
@@ -153,7 +153,7 @@ public class MenuOpMode extends LinearOpMode
         tasksName[6] = "Number Of Freight To Collect";
         tasksName[7] = "Place Freight In";
         tasksName[8] = "Park In";
-        tasksName[9] = "Park Completely";*/
+        tasksName[9] = "Park Completely";
 
     }
 

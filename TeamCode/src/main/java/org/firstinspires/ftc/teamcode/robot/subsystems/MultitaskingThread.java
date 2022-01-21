@@ -19,8 +19,7 @@ public class MultitaskingThread extends Thread {
     dip dip;
     Servo sD;
 
-    public MultitaskingThread(Telemetry telemetry, HardwareMap hw, Gamepad gamepad1) throws InterruptedException {
-        telemetry.addData("Thread Called: ", this.getName());
+    public MultitaskingThread(HardwareMap hw, Gamepad gamepad1) throws InterruptedException {
         mI = hw.get(DcMotor.class, "mI");
         mI.setDirection(DcMotor.Direction.REVERSE);
         intake = new intake(mI);

@@ -6,8 +6,11 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.ElevatorThread;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.myElevator;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.MultitaskingThread;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.carousel;
@@ -24,7 +27,8 @@ public class teleop extends LinearOpMode {
     public static double powerCarousel = 0.325;
     public static double lockOn = 90;
     public static double mainPower = 1;
-    public static boolean isRegularDrive = true;
+    public static double slowPower = 1;
+    public static boolean isRegularDrive = true, slowMove = false;
 
     carousel carousel;
     gamepad gamepads;
@@ -40,12 +44,14 @@ public class teleop extends LinearOpMode {
         carousel = new carousel(mC, powerCarousel);
         gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive, lockOn);
 
-        Thread ElevatorThread = new ElevatorThread(telemetry, hardwareMap, gamepad1);
-        Thread MultitaskingThread = new MultitaskingThread(telemetry, hardwareMap, gamepad1);
+        //Thread ElevatorThread = new ElevatorThread(telemetry, hardwareMap, gamepad1);
+        Thread myElevator = new myElevator(hardwareMap, telemetry, gamepad1);
+        Thread MultitaskingThread = new MultitaskingThread(hardwareMap, gamepad1);
 
         waitForStart();
 
-        ElevatorThread.start();
+        //ElevatorThread.start();
+        myElevator.start();
         MultitaskingThread.start();
 
         while (opModeIsActive()) {
@@ -54,13 +60,18 @@ public class teleop extends LinearOpMode {
             cGamepad2.update();
             gamepads.update();
 
-            if(gamepad1.right_stick_button || gamepad1.left_stick_button)
+            if(cGamepad1.leftBumperOnce() || cGamepad1.rightBumperOnce())
             {
-                gamepads.power = .6;
+                slowMove = !slowMove;
+            }
+
+            if(slowMove)
+            {
+                gamepads.power = slowPower;
             }
             else
             {
-                gamepads.power = 1;
+                gamepads.power = mainPower;
             }
 
 //            // TODO: change to gamepad1
@@ -78,7 +89,8 @@ public class teleop extends LinearOpMode {
             }
         }
 
-        ElevatorThread.interrupt();
+        //ElevatorThread.interrupt();
+        myElevator.interrupt();
         MultitaskingThread.interrupt();
     }
 
@@ -90,6 +102,7 @@ public class teleop extends LinearOpMode {
         mFL.setDirection(DcMotor.Direction.REVERSE);
         mBL.setDirection(DcMotor.Direction.REVERSE);
         mC = hardwareMap.get(DcMotor.class, "mC");
+        mC.setDirection(DcMotorSimple.Direction.REVERSE);
         drive = new SampleMecanumDriveCancelable(hardwareMap);
         drive.setPoseEstimate(currentPose);
         // We want to turn off velocity control for teleop
