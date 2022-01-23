@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
 
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.util.PoseUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +39,7 @@ public class T265Localizer implements Localizer {
         super();
 
         Translation2d translation = new Translation2d(LATERAL_DISTANCE,FORWARD_OFFSET);
-        Transform2d offset = new Transform2d(translation, Rotation2d.fromDegrees(DIRECTION));
+        Transform2d offset = new Transform2d(PoseUtil.inchesToMeters(translation), Rotation2d.fromDegrees(DIRECTION));
 
         if (slamra == null) {
             slamra = new T265Camera(offset, 0.1, hardwareMap.appContext);

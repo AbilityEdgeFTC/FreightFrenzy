@@ -22,6 +22,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package org.firstinspires.ftc.teamcode.robot.RoadRunner.util;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
@@ -74,6 +75,15 @@ public class PoseUtil {
         return new Pose2d(
                 inputPose.vec().div(metersToInchesMultiplier),
                 inputPose.getHeading());
+    }
+
+    /**
+     * Converts measurements from inches to meters
+     * @param inputPose pose to convert
+     * @return converted pose
+     */
+    public static Translation2d inchesToMeters(Translation2d inputPose) {
+        return new Translation2d(inputPose.div(metersToInchesMultiplier).getX(), inputPose.div(metersToInchesMultiplier).getY());
     }
 
     /**

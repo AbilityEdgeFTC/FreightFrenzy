@@ -3,14 +3,19 @@ package org.firstinspires.ftc.teamcode.robot.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.ElevatorFeedforward;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.trajectorysequence.TrajectorySequence;
 
 
 /*
@@ -32,9 +37,9 @@ public class Elevator {
 
     public static PIDCoefficients PID = new PIDCoefficients(4, 2, 0); // TODO: tune
 
-    public static double MAX_VEL = 40; // in/s // TODO: tune
-    public static double MAX_ACCEL = 40; // in/s^2 // TODO: tune
-    public static double MAX_JERK = 175; // in/s^3 // TODO: tune
+    public static double MAX_VEL = 80; // in/s // TODO: tune
+    public static double MAX_ACCEL = 80; // in/s^2 // TODO: tune
+    public static double MAX_JERK = 200; // in/s^3 // TODO: tune
 
     public static double kV = 10; // TODO: tune
     public static double kA = 10; // TODO: tune
@@ -78,7 +83,6 @@ public class Elevator {
         this.MID_HEIGHT = MID_HEIGHT;
         this.MIN_HEIGHT = MIN_HEIGHT;
         this.ZERO_HEIGHT = ZERO_HEIGHT;
-
     }
 
     public boolean isBusy() {
@@ -94,6 +98,7 @@ public class Elevator {
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 start, goal, MAX_VEL, MAX_ACCEL, MAX_JERK
         );
+
         profileStartTime = clock.seconds();
 
         this.desiredHeight = height;

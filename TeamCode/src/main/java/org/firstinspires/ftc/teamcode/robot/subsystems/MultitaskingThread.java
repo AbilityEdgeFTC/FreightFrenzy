@@ -12,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class MultitaskingThread extends Thread {
 
-    public static double intakePosition = 1, dippingPosition = .6;
     intake intake;
     Gamepad gamepad1;
     DcMotor mI;
@@ -24,7 +23,7 @@ public class MultitaskingThread extends Thread {
         mI.setDirection(DcMotor.Direction.REVERSE);
         intake = new intake(mI);
         sD = hw.get(Servo.class, "sE");
-        dip = new dip(sD, intakePosition, dippingPosition);
+        dip = new dip(hw);
         dip.getFreight();
         this.gamepad1 = gamepad1;
     }

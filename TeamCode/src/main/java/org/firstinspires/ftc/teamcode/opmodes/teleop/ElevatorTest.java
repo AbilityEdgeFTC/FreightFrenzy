@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.Subsystems.Elevator;
 
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.robot.Subsystems.Elevator;
  * between random heights.
  */
 @Config
-@Autonomous(group = "elevator")
+@TeleOp(group = "elevator")
 public class ElevatorTest extends LinearOpMode {
     public static boolean moveToMin = false;
     public static boolean moveToMid = false;

@@ -24,11 +24,13 @@ package org.firstinspires.ftc.teamcode.robot.RoadRunner.localizers;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
 
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.util.PoseUtil;
 
 import java.util.List;
@@ -38,7 +40,7 @@ import java.util.List;
  */
 public class DoubleLocalizer implements Localizer {
     private final T265Localizer realsenseLocalizer;
-    private final StandardTrackingWheelLocalizer trackingWheelLocalizer;
+    private SampleMecanumDrive mecanumLocalizer;
 
     private ConfidenceTracker confidenceTracker = ConfidenceTracker.HIGH;
 
@@ -58,7 +60,7 @@ public class DoubleLocalizer implements Localizer {
     public DoubleLocalizer(HardwareMap hardwareMap) {
         super();
         realsenseLocalizer = new T265Localizer(hardwareMap);
-        trackingWheelLocalizer = new StandardTrackingWheelLocalizer(hardwareMap);
+        mecanumLocalizer = new SampleMecanumDrive(hardwareMap);
     }
 
     /**
@@ -71,7 +73,7 @@ public class DoubleLocalizer implements Localizer {
         if (confidenceTracker == ConfidenceTracker.HIGH) {
             return realsenseLocalizer.getPoseEstimate();
         }
-        return trackingWheelLocalizer.getPoseEstimate();
+        return mecanumLocalizer.getPoseEstimate();
     }
 
     /**
@@ -80,7 +82,7 @@ public class DoubleLocalizer implements Localizer {
      */
     @Override
     public void setPoseEstimate(@NonNull Pose2d pose2d) {
-        trackingWheelLocalizer.setPoseEstimate(pose2d);
+        mecanumLocalizer.setPoseEstimate(pose2d);
         realsenseLocalizer.setPoseEstimate(pose2d);
     }
 
@@ -102,7 +104,7 @@ public class DoubleLocalizer implements Localizer {
      */
     @Override
     public void update() {
-        List<Double> wheelVelocities = trackingWheelLocalizer.getWheelVelocities();
+        List<Double> wheelVelocities = mecanumLocalizer.getWheelVelocities();
         realsenseLocalizer.sendOdometry(
                 PoseUtil.inchesToMeters(
                     new Pose2d(wheelVelocities.get(0), wheelVelocities.get(2))
@@ -121,7 +123,7 @@ public class DoubleLocalizer implements Localizer {
                 break;
             default:
                 if (confidenceTracker == ConfidenceTracker.LOW) {
-                    realsenseLocalizer.setPoseEstimate(trackingWheelLocalizer.getPoseEstimate());
+                    realsenseLocalizer.setPoseEstimate(mecanumLocalizer.getPoseEstimate());
                     confidenceTracker = ConfidenceTracker.HIGH;
                 }
         }

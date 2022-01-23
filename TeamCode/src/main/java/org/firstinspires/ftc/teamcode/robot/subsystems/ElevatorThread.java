@@ -17,18 +17,16 @@ public class ElevatorThread extends Thread{
     public static double ZERO_HEIGHT = 0; // TODO set value in inches
     public static boolean moveToMin = false, moveToMid = false, moveToMax = false, moveToZero = false;
     public static double timeTo = 3;
-    public static double intakePosition = 1, dippingPosition = .6;
     Elevator elevator;
     Gamepad gamepad1;
     dip dip;
-    Servo sD;
+    Servo sD,sH;
 
     public ElevatorThread(Telemetry telemetry, HardwareMap hw, Gamepad gamepad1)
     {
         telemetry.addData("Thread Called: ", this.getName());
         elevator = new Elevator(hw, MAX_HEIGHT, MID_HEIGHT, MIN_HEIGHT, ZERO_HEIGHT);
-        sD = hw.get(Servo.class, "sE");
-        dip = new dip(sD, intakePosition, dippingPosition);
+        dip = new dip(hw);
         this.gamepad1 = gamepad1;
     }
 
@@ -39,6 +37,10 @@ public class ElevatorThread extends Thread{
     {
         try
         {
+            moveToMin = false;
+            moveToMid = false;
+            moveToMax = false;
+            moveToZero = false;
 
             NanoClock clock = NanoClock.system();
 
@@ -62,7 +64,6 @@ public class ElevatorThread extends Thread{
                 }
                 else if(moveToZero) {
                     elevator.setHeight(Elevator.ZERO_HEIGHT);
-                    dip.releaseFreight();
                 }
 
                 goToPoistions(clock.seconds(), startTime, !isInterrupted());
@@ -105,26 +106,19 @@ public class ElevatorThread extends Thread{
         }
     }
 
-    void goToPoistions(double seconds, double startTime, boolean isInterrupted)
-    {
-        while (isInterrupted && (seconds - startTime) < timeTo && moveToMin)
+    void goToPoistions(double seconds, double startTime, boolean isInterrupted) throws InterruptedException {
+        while (isInterrupted && (seconds - startTime) < timeTo)
         {
             elevator.update();
-            checkLevel();
-        }
-        while(isInterrupted && (seconds - startTime) < timeTo && moveToMid)
-        {
-            elevator.update();
-            checkLevel();
-        }
-        while(isInterrupted && (seconds - startTime) < timeTo && moveToMax)
-        {
-            elevator.update();
-            checkLevel();
-        }
-        while(!isInterrupted && (seconds - startTime) < timeTo && moveToZero)
-        {
-            elevator.update();
+            if(moveToMin || moveToMid || moveToMax)
+            {
+                dip.releaseFreightPos();
+                dip.releaseFreight();
+            }
+            else
+            {
+                dip.getFreight();
+            }
             checkLevel();
         }
     }

@@ -2,21 +2,29 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.localizers.DoubleLocalizer;
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.localizers.RealsenseLocalizer;
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.trajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.Queue;
 
 @Config
 @Autonomous(group = "main")
@@ -25,6 +33,7 @@ public class Autonmous extends LinearOpMode {
     public static String taskName = "";
     public static String[][] tasks = {};
     public static String[] autoTask = {};
+    public static String[] localizerTask = {};
     public static String[] allianceTask = {};
     public static String[] startPosTask = {};
     public static String[] startDelayTask = {};
@@ -37,58 +46,54 @@ public class Autonmous extends LinearOpMode {
     public static String[] finalOptions = {};
     public static int[] currentOption = {};
 
-   GreenLanternPipeline pipeline;
-   OpenCvWebcam webcam;
+    double delay = 0;
+    boolean runAuto = true, isRed, runCarousel = false, runHubFront = false, runHubBack = false, runHubRight = false, runHubLeft = false;
 
-   Pose2d[] points = {};
-   Trajectory[] trajectories = {};
+    GreenLanternPipeline pipeline;
+    OpenCvWebcam webcam;
 
-   boolean runAuto = true;
+    SampleMecanumDrive drive;
 
-   @Override
-   public void runOpMode() throws InterruptedException {
+    Trajectory carousel, hubLeft, hubRight, hubFront, hubBack;
+    Queue<Trajectory> trajectoryQueue;
 
-       SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        drive = new SampleMecanumDrive(hardwareMap);
         pipeline = new GreenLanternPipeline();
         valueStorage poseStorage = new valueStorage();
         initPipeline();
-       initOptions();
-       webcam.setPipeline(pipeline);
+        initOptions();
+        webcam.setPipeline(pipeline);
 
-       while(!opModeIsActive())
+        buildTrajectories();
+
+        readMenu();
+
+        while(!opModeIsActive())
         {
             telemetry.addData("Barcode Location:",pipeline.getLocation());
             telemetry.update();
         }
 
-       if(isStopRequested())
-       {
-           webcam.stopStreaming();
-       }
-
-        points = listOfPose();
-
-        for(int i = 0; i < points.length; i++)
+        if(isStopRequested())
         {
-            Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
-                    .lineToSplineHeading(points[i])
-                    .build();
-
-            trajectories[i] = trajectory;
+            webcam.stopStreaming();
         }
 
         waitForStart();
+        buildTrajectories();
 
         webcam.stopStreaming();
 
-        if(runAuto)
-        {
-            drive.followTrajectory(trajectories[0]);
-            // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
-            drive.followTrajectory(trajectories[1]);
-            // TODO: ADD CODE FOR THE TRAJECTORY(LIKE GET FREIGHT AND THAT)
-            drive.setMotorPowers(0, 0, 0, 0);
+        Thread.sleep((long)(delay * 1000));
+
+        while(!trajectoryQueue.isEmpty()) {
+            drive.followTrajectory(trajectoryQueue.poll());
         }
+
+        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         while(opModeIsActive())
         {
@@ -110,7 +115,7 @@ public class Autonmous extends LinearOpMode {
 
         for(int i = 0; i < 30; i++)
         {
-            startDelayTask[i] = "" + i+1;
+            startDelayTask[i] = "" + i;
         }
 
         carouselTask[0] = "YES";
@@ -133,118 +138,119 @@ public class Autonmous extends LinearOpMode {
         parkInTask[1] = "Warehouse";
 
         parkTypeTask[0] = "Completely";
-        parkTypeTask[0] = "Not Completely";
+        parkTypeTask[1] = "Not Completely";
 
     }
 
-    public Pose2d[] listOfPose()
+    void readMenu()
     {
-        finalOptions[0] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("autoTask.txt"));;
-        finalOptions[1] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("allianceTask.txt"));
-        finalOptions[2] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("autoTask.txt"));
+        finalOptions[0] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("autoTask.txt"));
+        finalOptions[1] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("localizerTask.txt"));
+        finalOptions[2] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("allianceTask.txt"));
         finalOptions[3] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("startPosTask.txt"));
         finalOptions[4] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("startDelayTask.txt"));
         finalOptions[5] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("carouselTask.txt"));
-        finalOptions[6] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("collectFreightTask.txt"));
-        finalOptions[7] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("numOfFreightTask.txt"));
-        finalOptions[8] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("parkInTask.txt"));
-        finalOptions[9] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("parkTypeTask.txt"));
+        finalOptions[6] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("placeFreightAtTask.txt"));
+        finalOptions[7] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("collectFreightTask.txt"));
+        finalOptions[8] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("numOfFreightTask.txt"));
+        finalOptions[9] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("parkInTask.txt"));
+        finalOptions[10] = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("parkTypeTask.txt"));
 
-        /*
-
-        if(colorTask[0].equals(finalOptions[0]))
+        if(autoTask[0].equals(finalOptions[0]))
         {
-            blue = true;
-            red = false;
+            runAuto = true;
         }
-        else if(colorTask[1].equals(finalOptions[0]))
+        else if(autoTask[1].equals(finalOptions[0]))
         {
-            blue = false;
-            red = true;
+            runAuto = false;
         }
 
-        if(carouselTask[0].equals(finalOptions[1]))
+        if(localizerTask[0].equals(finalOptions[1]))
         {
-            if(blue)
-            {
-                telemetry.addLine("blue! carousel yes");
-                pose2DS[orderCarousel] = new Pose2d(1,1, 0);
-            }
-            else
-            {
-                telemetry.addLine("red! carousel yes");
-                pose2DS[orderCarousel] = new Pose2d(-1,-1, 0);
-            }
+            drive.setLocalizer(new MecanumDrive.MecanumLocalizer(drive, true));
         }
-        else if(carouselTask[1].equals(finalOptions[1]))
+        /*else if(localizerTask[1].equals(finalOptions[1]))
         {
-            if(blue)
-            {
-                telemetry.addLine("blue! carousel no");
-                pose2DS[orderCarousel] = new Pose2d(2,2, 0);
-            }
-            else
-            {
-                telemetry.addLine("red! carousel no");
-                pose2DS[orderCarousel] = new Pose2d(-2,-2, 0);
-            }
+            drive.setLocalizer(new DoubleLocalizer(hardwareMap));
         }
-
-        if(parkTask[0].equals(finalOptions[2]))
+        else if(localizerTask[2].equals(finalOptions[1]))
         {
-            if(blue)
-            {
-                telemetry.addLine("park blue! Not Completely In ASU");
-                pose2DS[orderPark] = new Pose2d(1,1, 0);
-            }
-            else
-            {
-                telemetry.addLine("park red! Not Completely In ASU");
-                pose2DS[orderPark] = new Pose2d(-1,-1, 0);
-            }
-        }
-        else if(parkTask[1].equals(finalOptions[2]))
-        {
-            if(blue)
-            {
-                telemetry.addLine("park blue! Completely In ASU");
-                pose2DS[orderPark] = new Pose2d(2,2, 0);
-            }
-            else
-            {
-                telemetry.addLine("park red! Completely In ASU");
-                pose2DS[orderPark] = new Pose2d(-2,-2, 0);
-            }
-        }
-        else if(parkTask[2].equals(finalOptions[2]))
-        {
-            if(blue)
-            {
-                telemetry.addLine("park blue! Not Completely In WH");
-                pose2DS[orderPark] = new Pose2d(3,3, 0);
-            }
-            else
-            {
-                telemetry.addLine("park red! Not Completely In WH");
-                pose2DS[orderPark] = new Pose2d(-3,-3, 0);
-            }
-        }
-        else if(parkTask[3].equals(finalOptions[2]))
-        {
-            if(blue)
-            {
-                telemetry.addLine("park blue! Completely In WH");
-                pose2DS[orderPark] = new Pose2d(4,4, 0);
-            }
-            else
-            {
-                telemetry.addLine("park red! Completely In WH");
-                pose2DS[orderPark] =  new Pose2d(-4,-4, 0);
-            }
+            drive.setLocalizer(new RealsenseLocalizer(hardwareMap));
         }*/
 
-        //return pose2DS;
-        return null;
+        if(allianceTask[0].equals(finalOptions[2]))
+        {
+            isRed  = true;
+        }
+        else if(carouselTask[1].equals(finalOptions[2]))
+        {
+            isRed  = false;
+        }
+
+        if(startPosTask[0].equals(finalOptions[3]))
+        {
+            drive.setPoseEstimate(valueStorage.startPoseRight);
+        }
+        else if(startPosTask[1].equals(finalOptions[3]))
+        {
+            drive.setPoseEstimate(valueStorage.startPoseLeft);
+        }
+
+        for(int i = 0; i <= 30; i++)
+        {
+            if(startDelayTask[i].equals(finalOptions[4]))
+            {
+                delay = i;
+            }
+        }
+
+        if(carouselTask[0].equals(finalOptions[5]))
+        {
+            runCarousel = true;
+        }
+        else if(carouselTask[1].equals(finalOptions[5]))
+        {
+            runCarousel = false;
+        }
+
+        if(placeFreightAtTask[0].equals(finalOptions[6]))
+        {
+            runHubLeft = true;
+        }
+        else if(placeFreightAtTask[1].equals(finalOptions[6]))
+        {
+            runHubRight = true;
+        }
+        else if(placeFreightAtTask[2].equals(finalOptions[6]))
+        {
+            runHubFront = true;
+        }
+        else if(placeFreightAtTask[3].equals(finalOptions[6]))
+        {
+            runHubBack = true;
+        }
+
+    }
+
+    void buildTrajectories()
+    {
+        /*if()
+        carousel = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(valueStorage.poseCarousel1)
+                .splineToLinearHeading(valueStorage.poseCarousel2, 0)
+                .build();
+        hubLeft = drive.trajectoryBuilder(trajectoryQueue.peek())
+                .lineToSplineHeading(valueStorage.poseCarousel1)
+                .build();
+        hubRight = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToSplineHeading(valueStorage.poseCarousel1)
+                .build();
+        hubFront = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToSplineHeading(valueStorage.poseCarousel1)
+                .build();
+        hubBack = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToSplineHeading(valueStorage.poseCarousel1)
+                .build();*/
     }
 
     public void initPipeline()

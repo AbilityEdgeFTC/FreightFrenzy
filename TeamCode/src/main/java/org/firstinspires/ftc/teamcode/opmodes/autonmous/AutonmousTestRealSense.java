@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.localizers.DoubleLocalizer;
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage;
 
@@ -18,13 +19,15 @@ import org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage;
  */
 @Config
 @Autonomous(group = "drive")
-public class AutonmousTest extends LinearOpMode {
+public class AutonmousTestRealSense extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        drive.setLocalizer(new DoubleLocalizer(hardwareMap));
 
         drive.setPoseEstimate(valueStorage.startPoseLeft);
         //"Spin Carousel";
@@ -46,7 +49,6 @@ public class AutonmousTest extends LinearOpMode {
                 .lineToLinearHeading(valueStorage.poseHubFront)
                 .waitSeconds(1.5)
                 .build();
-
         /*
         Trajectory collect2 = drive.trajectoryBuilder(placement1.end())
                 .lineToSplineHeading(poseEntrance)

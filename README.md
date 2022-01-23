@@ -38,7 +38,7 @@ Note that the online documentation is an "evergreen" document that is constantly
 ### Javadoc Reference Material
 The Javadoc reference documentation for the FTC SDK is now available online.  Click on the following link to view the FTC SDK Javadoc documentation as a live website:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[FTC Javadoc Documentation](https://javadoc.io/org.firstinspires.ftc)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[FTC Javadoc Documentation](https://javadoc.io/doc/org.firstinspires.ftc)
 
 ### Online User Forum
 For technical questions regarding the Control System or the FTC SDK, please visit the FTC Technology forum:
@@ -53,6 +53,26 @@ Samples Folder: &nbsp;&nbsp; [/FtcRobotController/src/main/java/org/firstinspire
 The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc/teamcode](TeamCode/src/main/java/org/firstinspires/ftc/teamcode) folder contains an explanation of the sample naming convention, and instructions on how to copy them to your own project space.
 
 # Release Information
+
+## Version 7.1 (20211223-120805)
+
+* Fixes crash when calling `isPwmEnabled()` ([issue #223](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/233))
+* Fixes lint error ([issue #4](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/4))
+* Fixes Driver Station crash when attempting to use DualShock4 v1 gamepad with Advanced Gamepad Features enabled ([issue #173](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/173))
+* Fixes possible (but unlikely) Driver Station crash when connecting gamepads of any type
+* Fixes bug where Driver Station would use generic 20% deadzone for Xbox360 and Logitech F310 gamepads when Advanced Gamepad Features was disabled
+* Added SimpleOmniDrive sample OpMode
+* Adds UVC white balance control API
+* Fixes [issue 259](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/259) Most blocks samples for TensorFlow can't be used for a different model
+    * The blocks previously labeled TensorFlowObjectDetectionFreightFrenzy (from the subcategory named "Optimized for Freight Frenzy") and TensorFlowObjectDetectionCustomModel (from the subcategory named "Custom Model") have been replaced with blocks labeled TensorFlowObjectDetection. Blocks in existing opmodes will be automatically updated to the new blocks when opened in the blocks editor.
+* Fixes [issue 260](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/260) Blocks can't call java method that has a VuforiaLocalizer parameter
+    * Blocks now has a block labeled VuforiaFreightFrenzy.getVuforiaLocalizer for this.
+* Added a page to manage the TensorFlow Lite models in /sdcard/FIRST/tflitemodels. To get to the TFLite Models page:
+    * You can click on the link at the bottom of the the Manage page.
+    * You can click on the link at the upper-right the Blocks project page.
+* Fixes logspam when `isBusy()` is called on a motor not in RTP mode
+* Hides the "RC Password" item on the inspection screen for phone-based Robot Controllers. (It is only applicable for Control Hubs)
+* Adds channel 165 to Wi-Fi Direct channel selection menu in the settings screen. (165 was previously available through the web UI, but not locally in the app)
 
 ## Version 7.0 (20210915-141025)
 
@@ -96,7 +116,7 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
     * To see the full improvement, you must update both the Robot Controller and Driver Station apps
 * Updates samples located at [/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples](FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples)
     * Added ConceptGamepadRumble and ConceptGamepadTouchpad samples to illustrtate the use of these new gampad capabilities.
-    * Condensed existing Vuforia samples into just 2 samples (ConceptVuforiaFieldNavigation & ConceptVuforiaFieldNavigationWebcam) showing how to determine the robot's location on the field using Vuforia. These both use the current season's Target images.  
+    * Condensed existing Vuforia samples into just 2 samples (ConceptVuforiaFieldNavigation & ConceptVuforiaFieldNavigationWebcam) showing how to determine the robot's location on the field using Vuforia. These both use the current season's Target images.
     * Added ConceptVuforiaDriveToTargetWebcam to illustrate an easy way to drive directly to any visible Vuforia target.
 * Makes many improvements to the warning system and individual warnings
     * Warnings are now much more spaced out, so that they are easier to read
@@ -264,7 +284,7 @@ Version 5.5 requires Android Studio 4.0 or later.
     * If two gamepads are assigned, and have **different** VID/PID signatures, and BOTH drop: both will be recovered
     * If two gamepads are assigned, and have **the same** VID/PID signatures, and only one drops: it will be recovered
     * If two gamepads are assigned, and have **the same** VID/PID signatures, and BOTH drop: **neither** will be recovered, because of the ambiguity of the gamepads when they re-appear on the USB bus.
-    * There is currently one known edge case: if there are **two** gamepads with **the same** VID/PID signature plugged in, **but only one is assigned**, and they BOTH drop, it's a 50-50 chance of which one will be chosen for automatic recovery to the assigned position: it is determined by whichever one is re-enumerated first by the USB bus cGamepad.
+    * There is currently one known edge case: if there are **two** gamepads with **the same** VID/PID signature plugged in, **but only one is assigned**, and they BOTH drop, it's a 50-50 chance of which one will be chosen for automatic recovery to the assigned position: it is determined by whichever one is re-enumerated first by the USB bus controller.
 * Adds landscape user interface to Driver Station
     * New feature: practice timer with audio cues
     * New feature (Control Hub only): wireless network connection strength indicator (0-5 bars)
@@ -366,11 +386,11 @@ Version 5.5 requires Android Studio 4.0 or later.
 
 ## Version 5.4 (20200108-101156)
 * Fixes [SkyStone issue #88](https://github.com/FIRST-Tech-Challenge/SkyStone/issues/88)
-* Adds an inspection item that notes when a robot cGamepad (Control Hub) is using the factory default password.
+* Adds an inspection item that notes when a robot controller (Control Hub) is using the factory default password.
 * Fixes [SkyStone issue #61](https://github.com/FIRST-Tech-Challenge/SkyStone/issues/61)
 * Fixes [SkyStone issue #142](https://github.com/FIRST-Tech-Challenge/SkyStone/issues/142)
 * Fixes [ftc_app issue #417](https://github.com/ftctechnh/ftc_app/issues/417) by adding more current and voltage monitoring capabilities for REV Hubs.
-* Fixes [a crash sometimes caused by OnBotJava activity](https://ftcforum.firstinspires.org/forum/ftc-technology/76217-onbotjava-crashes-robot-cGamepad)
+* Fixes [a crash sometimes caused by OnBotJava activity](https://ftcforum.firstinspires.org/forum/ftc-technology/76217-onbotjava-crashes-robot-controller)
 * Improves OnBotJava autosave functionality [ftc_app #738](https://github.com/ftctechnh/ftc_app/issues/738)
 * Fixes system responsiveness issue when an Expansion Hub is disconnected
 * Fixes issue where IMU initialization could prevent Op Modes from stopping
@@ -503,7 +523,7 @@ Known issues:
      - Internet connectivity is required for the first build so the appropriate files can be downloaded from the Google repository.
      - Users should not need to be connected to the Internet for subsequent builds.
      - This should also fix buid issue where Android Studio would complain that it "Could not find com.android.tools.lint:lint-gradle:26.1.4" (or similar).
- * Added support for REV Spark Mini motor cGamepad as part of the configuration menu for a servo/PWM port on the REV Expansion Hub.
+ * Added support for REV Spark Mini motor controller as part of the configuration menu for a servo/PWM port on the REV Expansion Hub.
  * Provide examples for playing audio files in an Op Mode.
  * Block Development Tool Changes
      - Includes a fix for a problem with the Velocity blocks that were reported in the FTC Technology forum (Blocks Programming subforum).
@@ -578,7 +598,7 @@ Changes include:
     - Support for REV Robotics 2m Distance Sensor.
     - Added support for a REV Touch Sensor (no longer have to configure as a generic digital device).
     - Added blocks for DcMotorEx methods.
-        + These are enhanced methods that you can use when supported by the motor cGamepad hardware.
+        + These are enhanced methods that you can use when supported by the motor controller hardware.
 	+ The REV Robotics Expansion Hub supports these enhanced methods.
 	+ Enhanced methods include methods to get/set motor velocity (in encoder pulses per second), get/set PIDF coefficients, etc..
 
@@ -884,7 +904,7 @@ Changes include:
   * Remove Servo Glitches when robot stopped.
   * if user hits “Cancels” when editing a configuration file, clears the unsaved changes and reverts to original unmodified configuration.
   * Added log info to help diagnose why the Robot Controller app was terminated (for example, by watch dog function).
-  * Added ability to transfer log from the cGamepad.
+  * Added ability to transfer log from the controller.
   * Fixed inconsistency for AngularVelocity
   * Limit unbounded growth of data for telemetry.  If user does not call telemetry.update() for LinearOpMode in a timely manner, data added for telemetry might get lost if size limit is exceeded.
 
@@ -955,7 +975,7 @@ Changes include:
  * Changes in the Android SDK, JDK and build tool requirements (minsdk=19, java 1.7, build tools 23.0.3).
  * Standardized units in analog input.
  * Cleaned up code for existing analog sensor classes.
- * setChannelMode and getChannelMode were REMOVED from the DcMotorController class.  This is important - we no longer set the motor modes through the motor cGamepad.
+ * setChannelMode and getChannelMode were REMOVED from the DcMotorController class.  This is important - we no longer set the motor modes through the motor controller.
  * setMode and getMode were added to the DcMotor class.
  * ContinuousRotationServo class has been added to the FTC SDK.
  * Range.clip() method has been overloaded so it can support this operation for int, short and byte integers.
@@ -969,7 +989,7 @@ Changes include:
  * Inspection function has been integrated into the FTC Robot Controller and Driver Station Apps (Thanks Team HazMat… 9277 & 10650!).
  * Audio cues have been incorporated into FTC SDK.
  * Swap mechanism added to FTC Robot Controller configuration activity.  For example, if you have two motor controllers on a robot, and you misidentified them in your configuration file, you can use the Swap button to swap the devices within the configuration file (so you do not have to manually re-enter in the configuration info for the two devices).
- * Fix mechanism added to all user to replace an electronic module easily.  For example, suppose a servo cGamepad dies on your robot. You replace the broken module with a new module, which has a different serial number from the original servo cGamepad.  You can use the Fix button to automatically reconfigure your configuration file to use the serial number of the new module.
+ * Fix mechanism added to all user to replace an electronic module easily.  For example, suppose a servo controller dies on your robot. You replace the broken module with a new module, which has a different serial number from the original servo controller.  You can use the Fix button to automatically reconfigure your configuration file to use the serial number of the new module.
  * Improvements made to fix resiliency and responsiveness of the system.
  * For LinearOpMode the user now must for a telemetry.update() to update the telemetry data on the driver station.  This update() mechanism ensures that the driver station gets the updated data properly and at the same time.
  * The Auto Configure function of the Robot Controller is now template based.  If there is a commonly used robot configuration, a template can be created so that the Auto Configure mechanism can be used to quickly configure a robot of this type.
@@ -998,7 +1018,7 @@ Changes include:
     - For legacy module (NXT compatible), user no longer has to toggle between read and write modes when reading from or writing to a legacy device.
  * Changes made to enhance reliability/robustness during ESD event.
  * Changes made to make code thread safe.
- * Debug keystore added so that user-generated robot cGamepad APKs will all use the same signed key (to avoid conflicts if a team has multiple developer laptops for example).
+ * Debug keystore added so that user-generated robot controller APKs will all use the same signed key (to avoid conflicts if a team has multiple developer laptops for example).
  * Firmware version information for Modern Robotics modules are now logged.
  * Changes made to improve USB comm reliability and robustness.
  * Added support for voltage indicator for legacy (NXT-compatible) motor controllers.
@@ -1008,7 +1028,7 @@ Changes include:
  * Driver Station UI modified to display lowest measured voltage below current voltage (12V battery).
  * Driver Station UI modified to have color background for current voltage (green=good, yellow=caution, red=danger, extremely low voltage).
  * javadoc improved (edits and additional classes).
- * Added app build time to About activity for driver station and robot cGamepad apps.
+ * Added app build time to About activity for driver station and robot controller apps.
  * Display local IP addresses on Driver Station About activity.
  * Added I2cDeviceSynchImpl.
  * Added I2cDeviceSync interface.
@@ -1052,7 +1072,7 @@ Changes include:
  * added formatting variants to DbgLog and RobotLog APIs
  * code modified to allow for a long list of op mode names.
  * changes to improve thread safety of RobocolDatagramSocket
- * Fix for "missing hardware leaves robot cGamepad disconnected from driver station" error
+ * Fix for "missing hardware leaves robot controller disconnected from driver station" error
  * fix for "fast tapping of Init/Start causes problems" (toast is now only instantiated on UI thread).
  * added some log statements for thread life cycle.
  * moved gamepad reset logic inside of initActiveOpMode() for robustness
@@ -1093,7 +1113,7 @@ Changes include:
  * Fixed duplicate name UI bug (Legacy Module configuration).
  * Fixed race condition in EventLoopManager.
  * Fix to keep references stable when updating gamepad.
- * For legacy Matrix motor/servo controllers removed necessity of appending "Motor" and "Servo" to cGamepad names.
+ * For legacy Matrix motor/servo controllers removed necessity of appending "Motor" and "Servo" to controller names.
  * Updated HT color sensor driver to use constants from ModernRoboticsUsbLegacyModule class.
  * Updated MR color sensor driver to use constants from ModernRoboticsUsbDeviceInterfaceModule class.
  * Correctly handle I2C Address change in all color sensors
@@ -1104,15 +1124,15 @@ Changes include:
   - Added MRGyroTest.java op mode (demonstrates how to use MR Gyro Sensor).
   - Added MRRGBExample.java op mode (demonstrates how to use MR Color Sensor).
   - Added HTRGBExample.java op mode (demonstrates how to use HT legacy color sensor).
-  - Added MatrixControllerDemo.java (demonstrates how to use legacy Matrix cGamepad).
+  - Added MatrixControllerDemo.java (demonstrates how to use legacy Matrix controller).
  * Updated javadoc documentation.
  * Updated release .apk files for Robot Controller and Driver Station apps.
 
 ## Release 15.10.06.002
 
- * Added support for Legacy Matrix 9.6V motor/servo cGamepad.
+ * Added support for Legacy Matrix 9.6V motor/servo controller.
  * Cleaned up build.gradle file.
- * Minor UI and bug fixes for driver station and robot cGamepad apps.
+ * Minor UI and bug fixes for driver station and robot controller apps.
  * Throws error if Ultrasonic sensor (NXT) is not configured for legacy module port 4 or 5.
 
 

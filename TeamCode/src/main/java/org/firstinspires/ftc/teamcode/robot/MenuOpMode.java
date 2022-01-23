@@ -14,6 +14,7 @@ public class MenuOpMode extends LinearOpMode
     public static String[][] tasks = {};
     public static String[] tasksName = {};
     public static String[] autoTask = {};
+    public static String[] localizerTask = {};
     public static String[] allianceTask = {};
     public static String[] startPosTask = {};
     public static String[] startDelayTask = {};
@@ -90,30 +91,33 @@ public class MenuOpMode extends LinearOpMode
                             ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("autoTask.txt"), finalOptions[i]);
                             break;
                         case 1:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("allianceTask.txt"), finalOptions[i]);
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("localizerTask.txt"), finalOptions[i]);
                             break;
                         case 2:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("startPosTask.txt"), finalOptions[i]);
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("allianceTask.txt"), finalOptions[i]);
                             break;
                         case 3:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("startDelayTask.txt"), finalOptions[i]);
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("startPosTask.txt"), finalOptions[i]);
                             break;
                         case 4:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("carouselTask.txt"), finalOptions[i]);
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("startDelayTask.txt"), finalOptions[i]);
                             break;
                         case 5:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("collectFreightTask.txt"), finalOptions[i]);
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("carouselTask.txt"), finalOptions[i]);
                             break;
                         case 6:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("numOfFreightTask.txt"), finalOptions[i]);
-                            break;
-                        case 7:
                             ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("placeFreightAtTask.txt"), finalOptions[i]);
                             break;
+                        case 7:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("collectFreightTask.txt"), finalOptions[i]);
+                            break;
                         case 8:
-                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("parkInTask.txt"), finalOptions[i]);
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("numOfFreightTask.txt"), finalOptions[i]);
                             break;
                         case 9:
+                            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("parkInTask.txt"), finalOptions[i]);
+                            break;
+                        case 10:
                             ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("parkTypeTask.txt"), finalOptions[i]);
                             break;
                     }
@@ -134,26 +138,28 @@ public class MenuOpMode extends LinearOpMode
         initOptions();
 
         tasks[0] = autoTask;
-        tasks[1] = allianceTask;
-        tasks[2] = startPosTask;
-        tasks[3] = startDelayTask;
-        tasks[4] = carouselTask;
-        tasks[5] = collectFreightTask;
-        tasks[6] = numOfFreightTask;
-        tasks[7] = placeFreightAtTask;
-        tasks[8] = parkInTask;
-        tasks[9] = parkTypeTask;
+        tasks[1] = localizerTask;
+        tasks[2] = allianceTask;
+        tasks[3] = startPosTask;
+        tasks[4] = startDelayTask;
+        tasks[5] = carouselTask;
+        tasks[6] = placeFreightAtTask;
+        tasks[7] = collectFreightTask;
+        tasks[8] = numOfFreightTask;
+        tasks[9] = parkInTask;
+        tasks[10] = parkTypeTask;
 
         tasksName[0] = "Run Auto";
-        tasksName[1] = "Alliance";
-        tasksName[2] = "Start Position";
-        tasksName[3] = "Start Delay";
-        tasksName[4] = "Spin Carousel";
-        tasksName[5] = "Collect And Place Additional Freight";
-        tasksName[6] = "Number Of Freight To Collect";
-        tasksName[7] = "Place Freight In";
-        tasksName[8] = "Park In";
-        tasksName[9] = "Park Completely";
+        tasksName[1] = "Localizer";
+        tasksName[2] = "Alliance";
+        tasksName[3] = "Start Position";
+        tasksName[4] = "Start Delay";
+        tasksName[5] = "Spin Carousel";
+        tasksName[6] = "Place Freight In";
+        tasksName[7] = "Collect And Place Additional Freight";
+        tasksName[8] = "Number Of Freight To Collect";
+        tasksName[9] = "Park In";
+        tasksName[10] = "Park Completely";
 
     }
 
@@ -162,15 +168,19 @@ public class MenuOpMode extends LinearOpMode
         autoTask[0] = "YES";
         autoTask[1] = "NO";
 
+        localizerTask[0] = "Mecanum ONLY";
+        //localizerTask[1] = "Mecanum AND RealSense";
+        //localizerTask[2] = "RealSense ONLY";
+
         allianceTask[0] = "Red";
         allianceTask[1] = "Blue";
 
         startPosTask[0] = "Right";
         startPosTask[1] = "Left";
 
-        for(int i = 0; i < 30; i++)
+        for(int i = 0; i <= 30; i++)
         {
-            startDelayTask[i] = "" + i+1;
+            startDelayTask[i] = "" + i;
         }
 
         carouselTask[0] = "YES";
@@ -179,9 +189,9 @@ public class MenuOpMode extends LinearOpMode
         collectFreightTask[0] = "YES";
         collectFreightTask[1] = "NO";
 
-        for(int i = 0; i < numOfFreightTask.length; i++)
+        for(int i = 1; i <= 10; i++)
         {
-            numOfFreightTask[i] = "" + i+1;
+            numOfFreightTask[i] = "" + i;
         }
 
         placeFreightAtTask[0] = "LEFT";
@@ -193,7 +203,7 @@ public class MenuOpMode extends LinearOpMode
         parkInTask[1] = "Warehouse";
 
         parkTypeTask[0] = "Completely";
-        parkTypeTask[0] = "Not Completely";
+        parkTypeTask[1] = "Not Completely";
 
     }
 }

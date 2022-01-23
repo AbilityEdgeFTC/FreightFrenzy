@@ -29,31 +29,32 @@
 
 package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Config
 public class dip {
-
+    // TODO: hand holding 1 pushing .4
     //servo intake
-    Servo sD;
-    double intakePosition, dippingPosition;
+    Servo sD, sH;
+    public static double intakePosition = .3, releasingPosition = .46, holdingPosition = 1, pushingPosition = .4;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public dip(Servo sD, double intakePosition, double dippingPosition) {
-        this.intakePosition = intakePosition;
-        this.dippingPosition = dippingPosition;
-        this.sD = sD;
+    public dip(HardwareMap hardwareMap) {
+        this.sD = hardwareMap.get(Servo.class, "sE");
+        this.sH = hardwareMap.get(Servo.class, "sH");;
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public dip(Servo sD, double intakePosition, double dippingPosition, Telemetry telemetry) {
-        this.intakePosition = intakePosition;
-        this.dippingPosition = dippingPosition;
-        this.sD = sD;
+    public dip(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.sD = hardwareMap.get(Servo.class, "sE");
+        this.sH = hardwareMap.get(Servo.class, "sH");;
         this.telemetry = telemetry;
     }
 
@@ -63,8 +64,14 @@ public class dip {
         Thread.sleep(500);
     }
     // spin Intake motor with minos power.
+    public void releaseFreightPos() throws InterruptedException {
+        sD.setPosition(releasingPosition);
+        sH.setPosition(holdingPosition);
+        Thread.sleep(500);
+    }
+
     public void releaseFreight() throws InterruptedException {
-        sD.setPosition(dippingPosition);
+        sD.setPosition(pushingPosition);
         Thread.sleep(500);
     }
 
