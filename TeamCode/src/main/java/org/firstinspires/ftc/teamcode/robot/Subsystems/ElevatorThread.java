@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class ElevatorThread extends Thread{
 
     public static boolean moveToMin = false, moveToMid = false, moveToMax = false, moveToZero = false;
-    public static double timeTo = 3;
+    public static double timeTo = 2;
     Elevator elevator;
     Gamepad gamepad1;
 
@@ -87,7 +87,7 @@ public class ElevatorThread extends Thread{
     }
 
     void checkLevel() throws InterruptedException {
-        if(gamepad1.a)
+        /*if(gamepad1.a)
         {
             moveToMin = true;
             moveToMid = false;
@@ -114,9 +114,9 @@ public class ElevatorThread extends Thread{
             moveToMin = false;
             moveToMid = false;
             moveToMax = false;
-        }
+        }*/
 
-        /*
+
         if(gamepad1.y)
         {
             moveToMin = true;
@@ -145,6 +145,6 @@ public class ElevatorThread extends Thread{
             moveToMid = false;
             moveToMax = false;
         }
-         */
+
     }
 }

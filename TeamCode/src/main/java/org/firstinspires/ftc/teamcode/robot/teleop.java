@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.Subsystems.ElevatorThread;
-import org.firstinspires.ftc.teamcode.robot.Subsystems.MultitaskingThread;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.MultitaskingThreadTeleop;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.gamepad;
@@ -44,14 +44,14 @@ public class teleop extends LinearOpMode {
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
         Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
-        Thread MultitaskingThread = new MultitaskingThread(hardwareMap, gamepad2);
-
-        // wait till after init
-        waitForStart();
+        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad2);
 
         // start the 2 threads
         ElevatorThread.start();
         MultitaskingThread.start();
+
+        // wait till after init
+        waitForStart();
 
         while (opModeIsActive()) {
 

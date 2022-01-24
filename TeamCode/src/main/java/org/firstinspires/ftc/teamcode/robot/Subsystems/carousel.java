@@ -18,7 +18,7 @@ public class carousel {
     //motor carousel
     DcMotor mC;
     Telemetry telemetry;
-    public static double powerCarousel = 0.325;
+    public static double powerCarousel = 0.3;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */

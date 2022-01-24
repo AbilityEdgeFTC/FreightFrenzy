@@ -10,14 +10,14 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
-public class MultitaskingThread extends Thread {
+public class MultitaskingThreadTeleop extends Thread {
 
     intake intake;
     Gamepad gamepad1;
     DcMotor mI;
     dip dip;
 
-    public MultitaskingThread(HardwareMap hw, Gamepad gamepad1) throws InterruptedException {
+    public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1) throws InterruptedException {
         mI = hw.get(DcMotor.class, "mI");
         mI.setDirection(DcMotor.Direction.REVERSE);
         intake = new intake(mI);
