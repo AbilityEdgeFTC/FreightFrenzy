@@ -25,8 +25,8 @@ public class teleop extends LinearOpMode {
 
     public static double powerCarousel = 0.325;
     public static double lockOn = 90;
-    public static double mainPower = 1;
-    public static double slowPower = 1;
+    public static double mainPower = .9;
+    public static double slowPower = .6;
     public static boolean isRegularDrive = true, slowMove = false;
 
     carousel carousel;
@@ -44,13 +44,11 @@ public class teleop extends LinearOpMode {
         gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry, drive, lockOn);
 
         Thread ElevatorThread = new ElevatorThread(telemetry, hardwareMap, gamepad2);
-        //Thread myElevator = new myElevator(hardwareMap, telemetry, gamepad1);
         Thread MultitaskingThread = new MultitaskingThread(hardwareMap, gamepad2);
 
         waitForStart();
 
         ElevatorThread.start();
-        //myElevator.start();
         MultitaskingThread.start();
 
         while (opModeIsActive()) {
@@ -89,7 +87,6 @@ public class teleop extends LinearOpMode {
         }
 
         ElevatorThread.interrupt();
-        //myElevator.interrupt();
         MultitaskingThread.interrupt();
     }
 

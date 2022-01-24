@@ -29,13 +29,12 @@ public class Elevator {
     public static double SPOOL_RADIUS = 0.75; // in
     public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed
 
-    // the operating range of the elevator is restricted to [0, MAX_HEIGHT]
-    public static double MAX_HEIGHT; // TODO set value in inches
-    public static double MID_HEIGHT; // TODO set value in inches
-    public static double MIN_HEIGHT; // TODO set value in inches
-    public static double ZERO_HEIGHT; // TODO set value in inches
+    public static double MAX_HEIGHT = 20; // TODO set value in inches
+    public static double MID_HEIGHT = 12; // TODO set value in inches
+    public static double MIN_HEIGHT = 9; // TODO set value in inches
+    public static double ZERO_HEIGHT = 0; // TODO set value in inches
 
-    public static PIDCoefficients PID = new PIDCoefficients(4, 2, 0); // TODO: tune
+    public static PIDCoefficients PID = new PIDCoefficients(2.5, 2, 0); // TODO: tune
 
     public static double MAX_VEL = 80; // in/s // TODO: tune
     public static double MAX_ACCEL = 80; // in/s^2 // TODO: tune

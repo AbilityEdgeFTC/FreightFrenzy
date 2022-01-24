@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -22,6 +24,7 @@ import org.opencv.core.Mat;
 
 import static java.lang.Thread.sleep;
 
+@Config
 public class gamepad {
 
     Orientation angles;
@@ -39,6 +42,7 @@ public class gamepad {
     public double lockAngle;
     public boolean regularDrive = false, lockOnAngle = false;
     SampleMecanumDriveCancelable drivetrain;
+    public static double multiplier = .5;
 
     // Define 2 states, driver control or alignment control
     enum Mode {
@@ -138,7 +142,7 @@ public class gamepad {
         {
             drive = -gamepad1.left_stick_y;
             strafe = gamepad1.left_stick_x;
-            twist = gamepad1.right_stick_x * 0.7;
+            twist = gamepad1.right_stick_x * multiplier;
         }
         else
         {

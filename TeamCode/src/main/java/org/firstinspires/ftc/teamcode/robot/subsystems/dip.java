@@ -41,7 +41,7 @@ public class dip {
     // TODO: hand holding 1 pushing .4
     //servo intake
     Servo sD, sH;
-    public static double intakePosition = .3, releasingPosition = .46, holdingPosition = 1, pushingPosition = .4;
+    public static double intakePosition = .42, releasingPosition = .25, holdingPosition = 1, pushingPosition = .4;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
@@ -61,6 +61,7 @@ public class dip {
     // spin Intake motor with power.
     public void getFreight() throws InterruptedException {
         sD.setPosition(intakePosition);
+        sH.setPosition(holdingPosition);
         Thread.sleep(500);
     }
     // spin Intake motor with minos power.
@@ -71,7 +72,7 @@ public class dip {
     }
 
     public void releaseFreight() throws InterruptedException {
-        sD.setPosition(pushingPosition);
+        sH.setPosition(pushingPosition);
         Thread.sleep(500);
     }
 
