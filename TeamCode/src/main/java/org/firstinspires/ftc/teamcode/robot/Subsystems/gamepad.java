@@ -27,7 +27,7 @@ public class gamepad {
     double drive,  strafe, twist, power = mainPower;
     public static double lockAngle = 90;
     public boolean  lockOnAngle = false;
-    public static double mainPower = 1, slowPower = .6, multiplier = .65;
+    public static double mainPower = 1, slowPower = .6, multiplier = .9;
     public static boolean isRegularDrive = true, slowMove = false;
     //SampleMecanumDriveCancelable drivetrain;
     cGamepad cGamepad1, cGamepad2;

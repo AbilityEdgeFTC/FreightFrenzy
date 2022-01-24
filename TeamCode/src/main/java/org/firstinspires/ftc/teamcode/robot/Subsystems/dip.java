@@ -17,6 +17,7 @@ public class dip {
     Servo sD, sH;
     public static double intakePosition = .42, releasingPosition = .25, holdingPosition = 1, pushingPosition = .4;
     Telemetry telemetry;
+    public static double time = 100;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
@@ -36,19 +37,19 @@ public class dip {
     public void getFreight() throws InterruptedException {
         sD.setPosition(intakePosition);
         sH.setPosition(holdingPosition);
-        Thread.sleep(500);
+        Thread.sleep((long)time);
     }
     // spin dip servo to releasing positions, and holding servo to hold position.
     public void releaseFreightPos() throws InterruptedException {
         sD.setPosition(releasingPosition);
         sH.setPosition(holdingPosition);
-        Thread.sleep(500);
+        Thread.sleep((long)time);
     }
 
     // spin holding servo to push position.
     public void releaseFreight() throws InterruptedException {
         sH.setPosition(pushingPosition);
-        Thread.sleep(500);
+        Thread.sleep((long)time);
     }
 
     // display position of servo's.

@@ -115,5 +115,36 @@ public class ElevatorThread extends Thread{
             moveToMid = false;
             moveToMax = false;
         }
+
+        /*
+        if(gamepad1.y)
+        {
+            moveToMin = true;
+            moveToMid = false;
+            moveToMax = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.b)
+        {
+            moveToMid = true;
+            moveToMin = false;
+            moveToMax = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.x)
+        {
+            moveToMax = true;
+            moveToMin = false;
+            moveToMid = false;
+            moveToZero = false;
+        }
+        else if(gamepad1.a)
+        {
+            moveToZero = true;
+            moveToMin = false;
+            moveToMid = false;
+            moveToMax = false;
+        }
+         */
     }
 }

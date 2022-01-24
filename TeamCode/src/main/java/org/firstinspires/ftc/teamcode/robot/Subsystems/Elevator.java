@@ -24,7 +24,7 @@ public class Elevator {
     public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed
 
     public static double MAX_HEIGHT = 20;
-    public static double MID_HEIGHT = 11.7;
+    public static double MID_HEIGHT = 13;
     public static double MIN_HEIGHT = 9;
     public static double ZERO_HEIGHT = 0;
 
