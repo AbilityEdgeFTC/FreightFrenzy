@@ -34,8 +34,7 @@ public class AutonmousTest extends LinearOpMode {
         // "Park Completely";
 
         TrajectorySequence auto = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(valueStorage.poseCarousel1)
-                .splineToLinearHeading(valueStorage.poseCarousel2, 0)
+                .lineToLinearHeading(valueStorage.poseCarousel)
                 .waitSeconds(1.5)
                 .lineToSplineHeading(valueStorage.poseHubFront)
                 .waitSeconds(1.5)
