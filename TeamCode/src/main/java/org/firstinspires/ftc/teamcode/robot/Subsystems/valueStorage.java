@@ -1,8 +1,17 @@
+/**
+ * Created by Ability Edge#18273
+ * - Elior Yousefi
+ */
+
 package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
+/**
+ * Static variables are like stored in the memory, that way, we can change the values in different opmodes, and transfer
+ * the updated value of them to the other opmodes when presses.
+ */
 @Config
 public class valueStorage
 {

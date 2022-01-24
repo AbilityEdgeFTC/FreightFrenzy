@@ -3,14 +3,10 @@ package org.firstinspires.ftc.teamcode.robot.Subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.util.NanoClock;
-import com.arcrobotics.ftclib.controller.wpilibcontroller.ElevatorFeedforward;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -27,20 +23,20 @@ public class Elevator {
     public static double SPOOL_RADIUS = 0.75; // in
     public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed
 
-    public static double MAX_HEIGHT = 20; // TODO set value in inches
-    public static double MID_HEIGHT = 12; // TODO set value in inches
-    public static double MIN_HEIGHT = 9; // TODO set value in inches
-    public static double ZERO_HEIGHT = 0; // TODO set value in inches
+    public static double MAX_HEIGHT = 20;
+    public static double MID_HEIGHT = 11.7;
+    public static double MIN_HEIGHT = 9;
+    public static double ZERO_HEIGHT = 0;
 
-    public static PIDCoefficients PID = new PIDCoefficients(2.5, 2, 0); // TODO: tune
+    public static PIDCoefficients PID = new PIDCoefficients(2.5, 2, 0);
 
-    public static double MAX_VEL = 80; // in/s // TODO: tune
-    public static double MAX_ACCEL = 80; // in/s^2 // TODO: tune
-    public static double MAX_JERK = 200; // in/s^3 // TODO: tune
+    public static double MAX_VEL = 80; // in/s
+    public static double MAX_ACCEL = 80; // in/s^2
+    public static double MAX_JERK = 200; // in/s^3
 
-    public static double kV = 10; // TODO: tune
-    public static double kA = 10; // TODO: tune
-    public static double kStatic = 0; // TODO: tune
+    public static double kV = 10;
+    public static double kA = 10;
+    public static double kStatic = 0;
 
     private DcMotorEx motor;
     private MotionProfile profile;
@@ -62,7 +58,7 @@ public class Elevator {
         return MAX_RPM;
     }
 
-    public Elevator(HardwareMap hardwareMap, double MAX_HEIGHT, double MID_HEIGHT, double MIN_HEIGHT, double ZERO_HEIGHT) {
+    public Elevator(HardwareMap hardwareMap) {
         motor = hardwareMap.get(DcMotorEx.class, "mE");
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // if necessary, reverse the motor so "up" is positive
@@ -75,11 +71,6 @@ public class Elevator {
         // beneficial to compensate for it with a gravity feedforward
         controller = new PIDFController(PID, kV, kA, kStatic);
         offset = motor.getCurrentPosition();
-
-        this.MAX_HEIGHT = MAX_HEIGHT;
-        this.MID_HEIGHT = MID_HEIGHT;
-        this.MIN_HEIGHT = MIN_HEIGHT;
-        this.ZERO_HEIGHT = ZERO_HEIGHT;
     }
 
     public boolean isBusy() {

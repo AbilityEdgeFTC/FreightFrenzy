@@ -1,29 +1,27 @@
+/**
+ * Created by Ability Edge#18273
+ * - Elior Yousefi
+ */
 package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
 public class ElevatorThread extends Thread{
 
-    public static double MAX_HEIGHT = 20; // TODO set value in inches
-    public static double MID_HEIGHT = 11.7; // TODO set value in inches
-    public static double MIN_HEIGHT = 9; // TODO set value in inches
-    public static double ZERO_HEIGHT = 0; // TODO set value in inches
     public static boolean moveToMin = false, moveToMid = false, moveToMax = false, moveToZero = false;
     public static double timeTo = 3;
     Elevator elevator;
     Gamepad gamepad1;
 
-    public ElevatorThread(Telemetry telemetry, HardwareMap hw, Gamepad gamepad1)
+    public ElevatorThread(HardwareMap hw, Gamepad gamepad1)
     {
-        telemetry.addData("Thread Called: ", this.getName());
-        elevator = new Elevator(hw, MAX_HEIGHT, MID_HEIGHT, MIN_HEIGHT, ZERO_HEIGHT);
+        elevator = new Elevator(hw);
         this.gamepad1 = gamepad1;
     }
 

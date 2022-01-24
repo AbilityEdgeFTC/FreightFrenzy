@@ -1,26 +1,17 @@
+/**
+ * Created by Ability Edge#18273
+ * - Elior Yousefi
+ */
 package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.control.PIDFController;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.util.Angle;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
-import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.opencv.core.Mat;
-
-import static java.lang.Thread.sleep;
 
 @Config
 public class gamepad {
