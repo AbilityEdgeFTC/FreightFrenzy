@@ -29,41 +29,44 @@
 
 package org.firstinspires.ftc.teamcode.robot.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Config
 public class carousel {
 
     //motor carousel
     DcMotor mC;
-    double power;
     Telemetry telemetry;
+    public static double powerCarousel = 0.325;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public carousel(DcMotor mC, double power) {
-        this.power = power;
-        this.mC = mC;
+    public carousel(HardwareMap hardwareMap) {
+        this.mC = hardwareMap.get(DcMotor.class, "mC");
+        this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public carousel(DcMotor mC, double power, Telemetry telemetry) {
-        this.power = power;
-        this.mC = mC;
+    public carousel(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.mC = hardwareMap.get(DcMotor.class, "mC");
+        this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
         this.telemetry = telemetry;
     }
 
     // spin carousel motor with power.
     public void spin(){
-        mC.setPower(power);
+        mC.setPower(powerCarousel);
     }
 
     // spin carousel motor with power for seconds long.
     public void spin(double seconds) throws InterruptedException {
-        mC.setPower(power);
+        mC.setPower(powerCarousel);
         Thread.sleep((long)seconds*1000);
         stop();
     }
@@ -71,20 +74,20 @@ public class carousel {
     // spin carousel motor with -power.
     public void spin(boolean reverse){
         if(reverse){
-            mC.setPower(-power);
+            mC.setPower(-powerCarousel);
         }else{
-            mC.setPower(power);
+            mC.setPower(powerCarousel);
         }
     }
 
     // spin carousel motor with -power for seconds long.
     public void spin(double seconds, boolean reverse) throws InterruptedException {
         if(reverse){
-            mC.setPower(power);
+            mC.setPower(powerCarousel);
             Thread.sleep((long)seconds*1000);
             stop();
         }else{
-            mC.setPower(-power);
+            mC.setPower(-powerCarousel);
             Thread.sleep((long)seconds*1000);
             stop();
         }
@@ -97,7 +100,7 @@ public class carousel {
 
     // display power of motor.
     public void displayTelemetry(){
-        telemetry.addLine("Power at: " + power);
+        telemetry.addLine("Power at: " + powerCarousel);
         telemetry.update();
     }
 

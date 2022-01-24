@@ -14,19 +14,9 @@ import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.gamepad;
 
-import static org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage.currentPose;
-
 @Config
 @TeleOp(group = "main")
 public class teleop extends LinearOpMode {
-
-    DcMotor mC, mFL, mBL, mFR, mBR;
-
-    public static double powerCarousel = 0.325;
-    public static double lockOn = 90;
-    public static double mainPower = .9;
-    public static double slowPower = .6;
-    public static boolean isRegularDrive = true, slowMove = false;
 
     carousel carousel;
     gamepad gamepads;
@@ -34,13 +24,13 @@ public class teleop extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initAll();
+        //initAll();
         cGamepad cGamepad1 = new cGamepad(gamepad1);
         cGamepad cGamepad2 = new cGamepad(gamepad2);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        carousel = new carousel(mC, powerCarousel);
-        gamepads = new gamepad(gamepad1, gamepad2, mFL, mBL, mFR, mBR, mainPower, isRegularDrive, telemetry/*, drive*/, lockOn);
+        carousel = new carousel(hardwareMap);
+        gamepads = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry/*, drive*/);
 
         Thread ElevatorThread = new ElevatorThread(telemetry, hardwareMap, gamepad2);
         Thread MultitaskingThread = new MultitaskingThread(hardwareMap, gamepad2);
@@ -55,20 +45,6 @@ public class teleop extends LinearOpMode {
             cGamepad1.update();
             cGamepad2.update();
             gamepads.update();
-
-            if(cGamepad1.leftBumperOnce() || cGamepad1.rightBumperOnce())
-            {
-                slowMove = !slowMove;
-            }
-
-            if(slowMove)
-            {
-                gamepads.power = slowPower;
-            }
-            else
-            {
-                gamepads.power = mainPower;
-            }
 
 //            // TODO: change to gamepad1
 //            if(gamepad2.a)
@@ -90,14 +66,6 @@ public class teleop extends LinearOpMode {
     }
 
     void initAll() {
-        mFL = hardwareMap.get(DcMotor.class, "mFL");
-        mBL = hardwareMap.get(DcMotor.class, "mBL");
-        mBR = hardwareMap.get(DcMotor.class, "mBR");
-        mFR = hardwareMap.get(DcMotor.class, "mFR");
-        mFL.setDirection(DcMotor.Direction.REVERSE);
-        mBL.setDirection(DcMotor.Direction.REVERSE);
-        mC = hardwareMap.get(DcMotor.class, "mC");
-        mC.setDirection(DcMotorSimple.Direction.REVERSE);
         //drive = new SampleMecanumDriveCancelable(hardwareMap);
         //drive.setPoseEstimate(currentPose);
         // We want to turn off velocity control for teleop
