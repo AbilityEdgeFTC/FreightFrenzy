@@ -30,7 +30,7 @@ public class gamepad {
     public static double lockAngle = 90;
     public boolean  lockOnAngle = false;
     public static double mainPower = 1, slowPower = .6, multiplier = .9;
-    public static boolean isRegularDrive = true, slowMove = false;
+    public static boolean isRegularDrive = false, slowMove = false;
     SampleMecanumDriveCancelable drivetrain;
     cGamepad cGamepad1, cGamepad2;
     Vector2d vectorDrive;
@@ -101,15 +101,15 @@ public class gamepad {
                 }
 
 
-//                if(gamepad1.a)
-//                {
-//                    lockOnAngle = !lockOnAngle;
-//                }
+//              if(gamepad1.a)
+//              {
+//                  lockOnAngle = !lockOnAngle;
+//              }
 //
-//                if(gamepad1.a && lockOnAngle)
-//                {
-//                    currentMode = Mode.ALIGN_TO_ANGLE;
-//                }
+//              if(gamepad1.a && lockOnAngle)
+//              {
+//                  currentMode = Mode.ALIGN_TO_ANGLE;
+//              }
 
                 mFL.setPower(leftPower_f);
                 mBL.setPower(leftPower_b);
@@ -121,6 +121,12 @@ public class gamepad {
 
                 getGamepadDirections(false);
 
+                if (slowMove) {
+                    power = slowPower;
+                } else {
+                    power = mainPower;
+                }
+
                 if (isRegularDrive)
                 {
                     regularDrive();
@@ -130,16 +136,16 @@ public class gamepad {
                     centricDrive();
                 }
 
-                if(gamepad1.a)
-                {
-                    lockOnAngle = !lockOnAngle;
-                }
+//              if(gamepad1.a)
+//              {
+//                  lockOnAngle = !lockOnAngle;
+//              }
+//
+//              if(gamepad1.a && lockOnAngle)
+//              {
+//                  currentMode = Mode.ALIGN_TO_ANGLE;
+//              }
 
-                if(gamepad1.a && !lockOnAngle)
-                {
-                    lockOnAngle = !lockOnAngle;
-                    currentMode = Mode.NORMAL_CONTROL;
-                }
                 mFL.setPower(leftPower_f);
                 mBL.setPower(leftPower_b);
                 mFR.setPower(rightPower_f);
@@ -162,8 +168,6 @@ public class gamepad {
             strafe = gamepad1.left_stick_x;
             twist = 0;
         }
-        vectorDrive = new Vector2d(drive, strafe);
-        vectorDrive.rotated(drivetrain.getExternalHeading());
     }
 
     public void regularDrive()
@@ -176,6 +180,10 @@ public class gamepad {
 
     public void centricDrive()
     {
+        vectorDrive = new Vector2d(drive, strafe);
+        vectorDrive.rotated(drivetrain.getPoseEstimate().getHeading());
+        //vectorDrive.rotated(-drivetrain.getPoseEstimate().getHeading());
+
         leftPower_f = Range.clip(vectorDrive.getX() + vectorDrive.angle() + vectorDrive.getY(), -power, power);
         leftPower_b = Range.clip(vectorDrive.getX() + vectorDrive.angle() - vectorDrive.getY(), -power, power);
         rightPower_f = Range.clip(vectorDrive.getX() - vectorDrive.angle() - vectorDrive.getY(), -power, power);
