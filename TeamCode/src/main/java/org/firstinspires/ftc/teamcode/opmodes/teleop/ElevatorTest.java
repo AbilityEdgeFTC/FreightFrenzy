@@ -22,16 +22,11 @@ public class ElevatorTest extends LinearOpMode {
     public static boolean moveToMax = false;
     public static boolean moveToZero = false;
 
-    public static double MAX_HEIGHT = 15.5; // TODO set value in inches
-    public static double MID_HEIGHT = 9; // TODO set value in inches
-    public static double MIN_HEIGHT = 4; // TODO set value in inches
-    public static double ZERO_HEIGHT = 0; // TODO set value in inches
-
-    public static double timeTo = 3;
+    public static double timeTo = 2;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Elevator elevator = new Elevator(hardwareMap, MAX_HEIGHT, MID_HEIGHT, MIN_HEIGHT, ZERO_HEIGHT);
+        Elevator elevator = new Elevator(hardwareMap);
         NanoClock clock = NanoClock.system();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         waitForStart();

@@ -54,7 +54,7 @@ public class Carousel extends LinearOpMode {
         mC = hardwareMap.get(DcMotor.class, "mC");
         mC.setDirection(DcMotor.Direction.REVERSE);
 
-        carousel carousel = new carousel(mC, power, telemetry);
+        carousel carousel = new carousel(hardwareMap, telemetry);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
