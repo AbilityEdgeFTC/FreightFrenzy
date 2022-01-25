@@ -38,7 +38,7 @@ public class gamepad {
     // Define 2 states, driver control or alignment control
     enum Mode {
         NORMAL_CONTROL,
-        ALIGN_TO_ANGLE
+        HOLD_ANGLE
     }
 
     private Mode currentMode = Mode.NORMAL_CONTROL;
@@ -78,7 +78,6 @@ public class gamepad {
 
         switch (currentMode) {
             case NORMAL_CONTROL:
-                //drivetrain.cancelFollowing();
                 getGamepadDirections(true);
 
                 if (cGamepad1.leftBumperOnce() || cGamepad1.rightBumperOnce()) {
@@ -100,25 +99,21 @@ public class gamepad {
                     centricDrive();
                 }
 
-
-//              if(gamepad1.a)
-//              {
-//                  lockOnAngle = !lockOnAngle;
-//              }
-//
-//              if(gamepad1.a && lockOnAngle)
-//              {
-//                  currentMode = Mode.ALIGN_TO_ANGLE;
-//              }
+                if(lockOnAngle)
+                {
+                    currentMode = Mode.HOLD_ANGLE;
+                }
+                else
+                {
+                    currentMode = Mode.NORMAL_CONTROL;
+                }
 
                 mFL.setPower(leftPower_f);
                 mBL.setPower(leftPower_b);
                 mFR.setPower(rightPower_f);
                 mBR.setPower(rightPower_b);
                 break;
-            case ALIGN_TO_ANGLE:
-                //drivetrain.turnAsync(Angle.normDelta(Math.toRadians(lockAngle) - drivetrain.getExternalHeading()));
-
+            case HOLD_ANGLE:
                 getGamepadDirections(false);
 
                 if (slowMove) {
@@ -136,15 +131,19 @@ public class gamepad {
                     centricDrive();
                 }
 
-//              if(gamepad1.a)
-//              {
-//                  lockOnAngle = !lockOnAngle;
-//              }
-//
-//              if(gamepad1.a && lockOnAngle)
-//              {
-//                  currentMode = Mode.ALIGN_TO_ANGLE;
-//              }
+                if(gamepad1.a)
+                {
+                   lockOnAngle = !lockOnAngle;
+                }
+
+                if(lockOnAngle)
+                {
+                    currentMode = Mode.HOLD_ANGLE;
+                }
+                else
+                {
+                  currentMode = Mode.NORMAL_CONTROL;
+                }
 
                 mFL.setPower(leftPower_f);
                 mBL.setPower(leftPower_b);
@@ -188,19 +187,6 @@ public class gamepad {
         leftPower_b = Range.clip(vectorDrive.getX() + vectorDrive.angle() - vectorDrive.getY(), -power, power);
         rightPower_f = Range.clip(vectorDrive.getX() - vectorDrive.angle() - vectorDrive.getY(), -power, power);
         rightPower_b = Range.clip(vectorDrive.getX() - vectorDrive.angle() + vectorDrive.getY(), -power, power);
-    }
-
-
-    public boolean isStoped()
-    {
-        if(leftPower_f == 0 && leftPower_b == 0 && rightPower_f == 0 && rightPower_b == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
 

@@ -10,6 +10,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.ElevatorThread;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.robot.Subsystems.MultitaskingThreadTeleop;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.gamepad;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage;
 
 @Config
 @TeleOp(group = "main")
@@ -83,11 +85,11 @@ public class teleop extends LinearOpMode {
     }
 
     void initAll() {
-        //drive = new SampleMecanumDriveCancelable(hardwareMap);
-        //drive.setPoseEstimate(currentPose);
+        drive = new SampleMecanumDriveCancelable(hardwareMap);
+        drive.setPoseEstimate(valueStorage.currentPose);
         // We want to turn off velocity control for teleop
         // Velocity control per wheel is not necessary outside of motion profiled auto
-        //drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
 }

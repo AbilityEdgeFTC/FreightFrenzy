@@ -18,10 +18,12 @@ public class ElevatorThread extends Thread{
     public static double timeTo = 2;
     Elevator elevator;
     Gamepad gamepad1;
+    dip dip;
 
     public ElevatorThread(HardwareMap hw, Gamepad gamepad1)
     {
         elevator = new Elevator(hw);
+        dip = new dip(hw);
         this.gamepad1 = gamepad1;
     }
 
@@ -46,18 +48,22 @@ public class ElevatorThread extends Thread{
 
                 if(moveToMin)
                 {
+                    dip.releaseFreightPos();
                     elevator.setHeight(Elevator.MIN_HEIGHT);
                 }
                 else if(moveToMid)
                 {
+                    dip.releaseFreightPos();
                     elevator.setHeight(Elevator.MID_HEIGHT);
                 }
                 else if(moveToMax)
                 {
+                    dip.releaseFreightPos();
                     elevator.setHeight(Elevator.MAX_HEIGHT);
                 }
                 else if(moveToZero)
                 {
+                    dip.getFreight();
                     elevator.setHeight(Elevator.ZERO_HEIGHT);
                 }
 

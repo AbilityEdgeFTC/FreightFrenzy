@@ -21,13 +21,15 @@ import org.firstinspires.ftc.teamcode.robot.Subsystems.valueStorage;
 @Autonomous(group = "drive")
 public class AutonmousTestRealSense extends LinearOpMode {
 
+    DoubleLocalizer doubleLocalizer;
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-        drive.setLocalizer(new DoubleLocalizer(hardwareMap));
+        doubleLocalizer = new DoubleLocalizer(hardwareMap);
+        drive.setLocalizer(doubleLocalizer);
 
         drive.setPoseEstimate(valueStorage.startPoseLeft);
         //"Spin Carousel";
@@ -77,7 +79,6 @@ public class AutonmousTestRealSense extends LinearOpMode {
             telemetry.update();
         }
 
-
-        while (!isStopRequested() && opModeIsActive()) ;
+        doubleLocalizer.stop();
     }
 }

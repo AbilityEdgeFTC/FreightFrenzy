@@ -67,7 +67,7 @@ public class Autonmous extends LinearOpMode {
 
         while(!opModeIsActive())
         {
-            telemetry.addData("Barcode Location:",pipeline.getLocation());
+            telemetry.addData("Barcode Location:", pipeline.getLocation());
             telemetry.update();
         }
 

@@ -128,4 +128,9 @@ public class DoubleLocalizer implements Localizer {
                 }
         }
     }
+
+    public void stop()
+    {
+        realsenseLocalizer.stop();
+    }
 }

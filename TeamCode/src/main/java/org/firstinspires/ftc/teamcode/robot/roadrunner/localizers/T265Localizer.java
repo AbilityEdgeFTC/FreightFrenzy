@@ -18,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
  * Sample tracking wheel localizer implementation assuming the standard configuration:
  *
  *    /--------------\
- *    |     ____     |
- *    |     ----     |
- *    | ||        || |
- *    | ||        || |
+ *    |              |
+ *    |              |
+ *    | ||           |
+ *    | ||           |
  *    |              |
  *    |              |
  *    \--------------/
@@ -53,6 +53,7 @@ public class T265Localizer implements Localizer {
     public Pose2d getPoseEstimate() {
         T265Camera.CameraUpdate up = slamra.getLastReceivedCameraUpdate();
 
+        // convert from meter, to inches, and from degrees to radians
         Pose2d pose = new Pose2d(up.pose.getX() * 39.37, up.pose.getY() * 39.37, up.pose.getHeading() * 180/Math.PI);
 
         return pose;
@@ -92,16 +93,11 @@ public class T265Localizer implements Localizer {
         slamra.sendOdometry(velocity.getX(), velocity.getY());
     }
 
-
-    /**
-     * TODO: ADD THESE MANUALLY TO EVERY END OF OPMODE USING ROADRUNNER!!!!!!!!!!!!!
-     */
     public void stop(){
         slamra.stop();
     }
 
     public void start(HardwareMap hardwareMap){
-        //slamra = new T265Camera(new Transform2d(), 0.1, hardwareMap.appContext);
         slamra.start();
     }
 
