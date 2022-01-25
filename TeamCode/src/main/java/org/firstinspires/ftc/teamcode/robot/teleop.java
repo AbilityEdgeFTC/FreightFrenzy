@@ -11,6 +11,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.ElevatorThread;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.MultitaskingThreadTeleop;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
@@ -23,7 +24,7 @@ public class teleop extends LinearOpMode {
 
     carousel carousel;
     gamepad gamepad;
-    //SampleMecanumDriveCancelable drive;
+    SampleMecanumDriveCancelable drive;
 
     /**
      * Function runs once when pressed, and loops while active.
@@ -40,11 +41,11 @@ public class teleop extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         carousel = new carousel(hardwareMap); // carousel class functions
-        gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry/*, drive*/); // teleop(gamepad) class functions
+        gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry, drive); // teleop(gamepad) class functions
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
-        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad2);
+        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad1);
+        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2);
 
         // start the 2 threads
         ElevatorThread.start();

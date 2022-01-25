@@ -16,8 +16,9 @@ public class MultitaskingThreadTeleop extends Thread {
     Gamepad gamepad1;
     DcMotor mI;
     dip dip;
+    public static double powerIntake = 1;
 
-    public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1) throws InterruptedException {
+    public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException {
         mI = hw.get(DcMotor.class, "mI");
         mI.setDirection(DcMotor.Direction.REVERSE);
         intake = new intake(mI);
@@ -32,14 +33,23 @@ public class MultitaskingThreadTeleop extends Thread {
         try {
             dip.getFreight();
             while (!isInterrupted()) {
-                // TODO: change to gamepad2
-                if (gamepad1.left_trigger != 0) {
+                if (gamepad1.left_trigger != 0)
+                {
                     intake.powerIntake(-gamepad1.left_trigger);
                 }
-                // TODO: change to gamepad2
-                else if (gamepad1.right_trigger != 0) {
+                else if (gamepad1.right_trigger != 0)
+                {
                     intake.powerIntake(gamepad1.right_trigger);
-                } else {
+                }
+                else if (gamepad1.right_bumper)
+                {
+                    intake.powerIntake(powerIntake);
+                }
+                else if (gamepad1.left_bumper) {
+                    intake.powerIntake(-powerIntake);
+                }
+                else
+                {
                     intake.stop();
                 }
 
