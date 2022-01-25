@@ -29,8 +29,12 @@ import org.jetbrains.annotations.Nullable;
  */
 @Config
 public class T265Localizer implements Localizer {
-    public static double LATERAL_DISTANCE = 7.09; // in; offset of the camera from the left or right of the middle of the teleop.
-    public static double FORWARD_OFFSET = 0.59; // in; offset of the camera from the front or back of the middle of the teleop.
+    // TODO:
+    /**
+     * see what are the positive negative x,y cordinates of the bot with the camera when moving, and set the offset by them
+     */
+    public static double LATERAL_DISTANCE = 0; // in; offset of the camera from the left or right of the middle of the teleop.
+    public static double FORWARD_OFFSET = 0; // in; offset of the camera from the front or back of the middle of the teleop.
     public static double DIRECTION = 0;
 
     private static T265Camera slamra = null;
