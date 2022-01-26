@@ -36,7 +36,7 @@ public class teleop extends LinearOpMode {
      */
     @Override
     public void runOpMode() throws InterruptedException {
-        //initAll();
+        initAll();
         // classes of the gamepad++, functions like gamepad pressed once  and more
         cGamepad cGamepad1 = new cGamepad(gamepad1);
         cGamepad cGamepad2 = new cGamepad(gamepad2);
@@ -46,14 +46,14 @@ public class teleop extends LinearOpMode {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry, drive); // teleop(gamepad) class functions
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread myElevatorThread = new myElevatorThread(hardwareMap, gamepad2);
-        //Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
-        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2);
+        //Thread myElevatorThread = new myElevatorThread(hardwareMap, gamepad2);
+        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
+        //Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2);
 
         // start the 2 threads
-        myElevatorThread.start();
-        //ElevatorThread.start();
-        MultitaskingThread.start();
+        //myElevatorThread.start();
+        ElevatorThread.start();
+        //MultitaskingThread.start();
 
         // wait till after init
         waitForStart();
@@ -74,12 +74,19 @@ public class teleop extends LinearOpMode {
             else {
                 carousel.stop();
             }
+
+            telemetry.addData("mBL: ", gamepad.GetmBLPower());
+            telemetry.addData("mBR: ", gamepad.GetmBRPower());
+            telemetry.addData("mFL: ", gamepad.GetmFLPower());
+            telemetry.addData("mFR: ", gamepad.GetmFRPower());
+
+            telemetry.update();
         }
 
         // after we exist the opModeIsActive loop, the opmode stops so we have to interrupt the threads and stop them to make the opmode not crash
-        //ElevatorThread.interrupt();
-        myElevatorThread.interrupt();
-        MultitaskingThread.interrupt();
+        ElevatorThread.interrupt();
+       //myElevatorThread.interrupt();
+        //MultitaskingThread.interrupt();
     }
 
     void initAll() {
@@ -89,5 +96,7 @@ public class teleop extends LinearOpMode {
         // Velocity control per wheel is not necessary outside of motion profiled auto
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
+
 
 }

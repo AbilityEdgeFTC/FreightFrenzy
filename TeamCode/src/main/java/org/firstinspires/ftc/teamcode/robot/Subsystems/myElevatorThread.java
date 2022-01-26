@@ -18,11 +18,16 @@ public class myElevatorThread extends Thread{
     Gamepad gamepad1;
     dip dip;
 
-    public myElevatorThread(HardwareMap hw, Gamepad gamepad1)
-    {
+    public myElevatorThread(HardwareMap hw, Gamepad gamepad1) throws InterruptedException {
         elevator = new myElevator(hw);
         dip = new dip(hw);
         this.gamepad1 = gamepad1;
+        moveToMin = false;
+        moveToMid = false;
+        moveToMax = false;
+        moveToZero = false;
+        eliorPlaying = false;
+        dip.getFreight();
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -32,17 +37,9 @@ public class myElevatorThread extends Thread{
     {
         try
         {
-            moveToMin = false;
-            moveToMid = false;
-            moveToMax = false;
-            moveToZero = false;
-            eliorPlaying = false;
-
-            NanoClock clock = NanoClock.system();
 
             while (!isInterrupted())
             {
-                double startTime = clock.seconds();
                 checkLevel();
 
                 if(moveToMin)
