@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.ElevatorThread;
+import org.firstinspires.ftc.teamcode.robot.Subsystems.myElevatorThread;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.MultitaskingThreadTeleop;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.Subsystems.carousel;
@@ -46,11 +47,13 @@ public class teleop extends LinearOpMode {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry, drive); // teleop(gamepad) class functions
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad1);
+        Thread myElevatorThread = new myElevatorThread(hardwareMap, gamepad2);
+        //Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
         Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2);
 
         // start the 2 threads
-        ElevatorThread.start();
+        myElevatorThread.start();
+        //ElevatorThread.start();
         MultitaskingThread.start();
 
         // wait till after init
@@ -62,11 +65,6 @@ public class teleop extends LinearOpMode {
             cGamepad1.update();
             cGamepad2.update();
             gamepad.update();
-
-//            if(gamepad1.a)
-//            {
-//                gamepads.lockOnAngle = !gamepads.lockOnAngle;
-//            }
 
             if (gamepad2.dpad_right) {
                 carousel.spin();
@@ -80,7 +78,8 @@ public class teleop extends LinearOpMode {
         }
 
         // after we exist the opModeIsActive loop, the opmode stops so we have to interrupt the threads and stop them to make the opmode not crash
-        ElevatorThread.interrupt();
+        //ElevatorThread.interrupt();
+        myElevatorThread.interrupt();
         MultitaskingThread.interrupt();
     }
 

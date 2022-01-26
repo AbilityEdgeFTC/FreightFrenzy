@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class PIDController {
 
     double Kp, Ki, Kd;
+    double error = 0, derivative = 0, integralSum = 0, lastError = 0, max_i = 0.5;
     Telemetry telemetry;
 
     /**
@@ -60,7 +61,7 @@ public class PIDController {
      * @return the command to our motor, I.E. motor power
      */
     public double updatedPower(double target, double state) {
-        double error = 0, derivative = 0, integralSum = 0, lastError = 0;
+
         ElapsedTime timer = new ElapsedTime();
 
         // calculate the error
@@ -70,11 +71,15 @@ public class PIDController {
         derivative = (error - lastError) / timer.seconds();
 
         // sum of all error over time
-        integralSum = integralSum + (error * timer.seconds());
-
-        lastError = error;
-        // reset the timer for next time
-        timer.reset();
+        integralSum += (error * (timer.seconds()));
+        if(integralSum > max_i)
+        {
+            integralSum = max_i;
+        }
+        else if(integralSum < max_i)
+        {
+            integralSum = -max_i;
+        }
 
         if(telemetry != null)
         {
@@ -84,7 +89,10 @@ public class PIDController {
             telemetry.update();
         }
 
-        return (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+        lastError = error;
+        // reset the timer for next time
+        timer.reset();
 
+        return (Kp * error) + (Ki * integralSum) + (Kd * derivative);
     }
 }
