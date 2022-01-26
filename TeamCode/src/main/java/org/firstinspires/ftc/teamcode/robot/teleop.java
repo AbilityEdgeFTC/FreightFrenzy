@@ -44,7 +44,7 @@ public class teleop extends LinearOpMode {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry, drive); // teleop(gamepad) class functions
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad1);
+        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
         Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2);
 
         // start the 2 threads
