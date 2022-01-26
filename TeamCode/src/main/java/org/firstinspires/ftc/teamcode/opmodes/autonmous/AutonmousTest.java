@@ -82,7 +82,7 @@ public class AutonmousTest extends LinearOpMode {
                 .lineToLinearHeading(poseCollect)
                 .waitSeconds(1.5)
                 .lineToLinearHeading(poseEntrance)
-                .lineToLinearHeading(poseHubFront)//more left strange
+                .lineToLinearHeading(poseHubFront)
                 .waitSeconds(1.5)
                 .build();
 
