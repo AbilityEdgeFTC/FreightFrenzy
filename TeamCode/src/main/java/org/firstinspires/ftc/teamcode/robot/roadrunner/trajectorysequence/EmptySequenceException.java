@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot.RoadRunner.trajectorysequence;
+package org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence;
 
 
 public class EmptySequenceException extends RuntimeException { }
