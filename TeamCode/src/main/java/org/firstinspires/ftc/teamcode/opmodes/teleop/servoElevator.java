@@ -42,9 +42,13 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 @TeleOp(group="Tests")
 public class servoElevator extends LinearOpMode {
 
-    Servo sE = null;
-    public static double position = 0.1;
-
+    Servo servo1 = null;
+    Servo servo2 = null;
+    public static double position1 = 0;
+    public static double position2 = 0;
+    public static String servo1Name = "sE";
+    public static String servo2Name = "sE";
+    public static double time = 500;
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
@@ -52,7 +56,8 @@ public class servoElevator extends LinearOpMode {
 
         cGamepad cGamepad = new cGamepad(gamepad1);
 
-        sE = hardwareMap.get(Servo.class, "sE");
+        servo1 = hardwareMap.get(Servo.class, servo1Name);
+        servo2 = hardwareMap.get(Servo.class, servo2Name);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -61,21 +66,9 @@ public class servoElevator extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            cGamepad.update();
-
-            if(cGamepad.dpadUpOnce()){
-                position += 0.05;
-            }
-            else if(cGamepad.dpadDownOnce()){
-                position -= 0.05;
-            }
-            else if(cGamepad.AOnce())
-            {
-                position = 0;
-            }
-
-            sE.setPosition(position);
-            sleep(500);
+            servo1.setPosition(position1);
+            servo1.setPosition(position1);
+            sleep((long)time);
         }
     }
 }

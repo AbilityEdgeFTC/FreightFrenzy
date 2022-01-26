@@ -185,16 +185,12 @@ public class gamepad {
     public void centricDrive()
     {
         vectorDrive = new Vector2d(drive, strafe);
-        if (drive !=0 && strafe!=0)
-        {
-            vectorDrive.rotated(drivetrain.getPoseEstimate().getHeading());
-        }
-        //vectorDrive.rotated(-drivetrain.getPoseEstimate().getHeading());
+        vectorDrive.rotated(-drivetrain.getExternalHeading());
 
-        leftPower_f = Range.clip(vectorDrive.getX() + vectorDrive.angle() + vectorDrive.getY(), -power, power);
-        leftPower_b = Range.clip(vectorDrive.getX() + vectorDrive.angle() - vectorDrive.getY(), -power, power);
-        rightPower_f = Range.clip(vectorDrive.getX() - vectorDrive.angle() - vectorDrive.getY(), -power, power);
-        rightPower_b = Range.clip(vectorDrive.getX() - vectorDrive.angle() + vectorDrive.getY(), -power, power);
+        leftPower_f = Range.clip( vectorDrive.getX() + twist + vectorDrive.getY(), -power, power);
+        leftPower_b = Range.clip(vectorDrive.getX() + twist - vectorDrive.getY(), -power, power);
+        rightPower_f = Range.clip(vectorDrive.getX() - twist - vectorDrive.getY(), -power, power);
+        rightPower_b = Range.clip(vectorDrive.getX() - twist + vectorDrive.getY(), -power, power);
     }
 
     public double GetmFLPower()

@@ -414,8 +414,8 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
     }
 
     @Override
-    protected double getRawExternalHeading() {
-        return 0;
+    public double getRawExternalHeading() {
+        return imu.getAngularOrientation().firstAngle;
     }
     @Override
     public Double getExternalHeadingVelocity() {
