@@ -19,7 +19,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package org.firstinspires.ftc.teamcode.robot.RoadRunner.localizers;
+package org.firstinspires.ftc.teamcode.robot.roadrunner.localizers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,8 +29,8 @@ import com.acmerobotics.roadrunner.localization.Localizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
 
-import org.firstinspires.ftc.teamcode.robot.RoadRunner.util.PoseUtil;
-import org.firstinspires.ftc.teamcode.robot.RoadRunner.util.RealsenseLoader;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.util.PoseUtil;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.util.RealsenseLoader;
 
 /**
  * Localizer that implements Intel's T265 Realsense camera's VSLAM system
