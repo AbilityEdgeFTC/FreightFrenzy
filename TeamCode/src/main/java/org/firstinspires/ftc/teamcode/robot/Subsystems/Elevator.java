@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class Elevator {
     public static final double TICKS_PER_REV = 384.5;
-    public static final double MAX_RPM = 435;
+    public static final double MAX_RPM = 1150;
 
     public static double SPOOL_RADIUS = 0.75; // in
     public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed

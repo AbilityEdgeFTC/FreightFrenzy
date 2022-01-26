@@ -23,6 +23,7 @@ public class MultitaskingThreadTeleop extends Thread {
         mI.setDirection(DcMotor.Direction.REVERSE);
         intake = new intake(mI);
         dip = new dip(hw);
+        dip.getFreight();
         this.gamepad1 = gamepad1;
     }
 
@@ -31,7 +32,6 @@ public class MultitaskingThreadTeleop extends Thread {
     @Override
     public void run() {
         try {
-            dip.getFreight();
             while (!isInterrupted()) {
                 if (gamepad1.left_trigger != 0)
                 {
@@ -61,6 +61,7 @@ public class MultitaskingThreadTeleop extends Thread {
                 {
                     dip.getFreight();
                 }
+
                 if(gamepad1.right_bumper || gamepad1.left_bumper)
                 {
                     dip.releaseFreight();

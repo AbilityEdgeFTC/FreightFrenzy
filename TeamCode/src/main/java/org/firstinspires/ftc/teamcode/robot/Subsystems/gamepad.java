@@ -75,6 +75,11 @@ public class gamepad {
     public void update() {
         cGamepad1.update();
         cGamepad2.update();
+        telemetry.addData("Barcode Location:", mFL.getPower());
+        telemetry.addData("Barcode Location:", mBL.getPower());
+        telemetry.addData("Barcode Location:", mBR.getPower());
+        telemetry.addData("Barcode Location:", mFR.getPower());
+        telemetry.update();
 
         switch (currentMode) {
             case NORMAL_CONTROL:
@@ -180,7 +185,10 @@ public class gamepad {
     public void centricDrive()
     {
         vectorDrive = new Vector2d(drive, strafe);
-        vectorDrive.rotated(drivetrain.getPoseEstimate().getHeading());
+        if (drive !=0 && strafe!=0)
+        {
+            vectorDrive.rotated(drivetrain.getPoseEstimate().getHeading());
+        }
         //vectorDrive.rotated(-drivetrain.getPoseEstimate().getHeading());
 
         leftPower_f = Range.clip(vectorDrive.getX() + vectorDrive.angle() + vectorDrive.getY(), -power, power);
@@ -189,5 +197,23 @@ public class gamepad {
         rightPower_b = Range.clip(vectorDrive.getX() - vectorDrive.angle() + vectorDrive.getY(), -power, power);
     }
 
+    public double GetmFLPower()
+    {
+        return mFL.getPower();
+    }
 
+    public double GetmFRPower()
+    {
+        return mFR.getPower();
+    }
+
+    public double GetmBLPower()
+    {
+        return mBL.getPower();
+    }
+
+    public double GetmBRPower()
+    {
+        return mBR.getPower();
+    }
 }
