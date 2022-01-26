@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class ElevatorThread extends Thread{
 
-    public static boolean moveToMin = false, moveToMid = false, moveToMax = false, moveToZero = false;
+    public static boolean moveToMin = false, moveToMid = false, moveToMax = false, moveToZero = false, eliorPlaying = false;
     public static double timeTo = 2;
     Elevator elevator;
     Gamepad gamepad1;
@@ -38,6 +38,7 @@ public class ElevatorThread extends Thread{
             moveToMid = false;
             moveToMax = false;
             moveToZero = false;
+            eliorPlaying = false;
 
             NanoClock clock = NanoClock.system();
 
@@ -93,63 +94,60 @@ public class ElevatorThread extends Thread{
     }
 
     void checkLevel() throws InterruptedException {
-        /*if(gamepad1.a)
-        {
-            moveToMin = true;
-            moveToMid = false;
-            moveToMax = false;
-            moveToZero = false;
-        }
-        else if(gamepad1.b)
-        {
-            moveToMid = true;
-            moveToMin = false;
-            moveToMax = false;
-            moveToZero = false;
-        }
-        else if(gamepad1.y)
-        {
-            moveToMax = true;
-            moveToMin = false;
-            moveToMid = false;
-            moveToZero = false;
-        }
-        else if(gamepad1.x)
-        {
-            moveToZero = true;
-            moveToMin = false;
-            moveToMid = false;
-            moveToMax = false;
-        }*/
 
-
-        if(gamepad1.y)
-        {
-            moveToMin = true;
-            moveToMid = false;
-            moveToMax = false;
-            moveToZero = false;
+        if(eliorPlaying) {
+            if (gamepad1.a) {
+                moveToMin = true;
+                moveToMid = false;
+                moveToMax = false;
+                moveToZero = false;
+            } else if (gamepad1.b) {
+                moveToMid = true;
+                moveToMin = false;
+                moveToMax = false;
+                moveToZero = false;
+            } else if (gamepad1.y) {
+                moveToMax = true;
+                moveToMin = false;
+                moveToMid = false;
+                moveToZero = false;
+            } else if (gamepad1.x) {
+                moveToZero = true;
+                moveToMin = false;
+                moveToMid = false;
+                moveToMax = false;
+            }
         }
-        else if(gamepad1.b)
+        else
         {
-            moveToMid = true;
-            moveToMin = false;
-            moveToMax = false;
-            moveToZero = false;
-        }
-        else if(gamepad1.x)
-        {
-            moveToMax = true;
-            moveToMin = false;
-            moveToMid = false;
-            moveToZero = false;
-        }
-        else if(gamepad1.a)
-        {
-            moveToZero = true;
-            moveToMin = false;
-            moveToMid = false;
-            moveToMax = false;
+            if(gamepad1.y)
+            {
+                moveToMin = true;
+                moveToMid = false;
+                moveToMax = false;
+                moveToZero = false;
+            }
+            else if(gamepad1.b)
+            {
+                moveToMid = true;
+                moveToMin = false;
+                moveToMax = false;
+                moveToZero = false;
+            }
+            else if(gamepad1.x)
+            {
+                moveToMax = true;
+                moveToMin = false;
+                moveToMid = false;
+                moveToZero = false;
+            }
+            else if(gamepad1.a)
+            {
+                moveToZero = true;
+                moveToMin = false;
+                moveToMid = false;
+                moveToMax = false;
+            }
         }
 
     }
