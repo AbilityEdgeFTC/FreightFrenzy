@@ -11,6 +11,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.robot.subsystems.MultitaskingThreadTeleop;
+import org.firstinspires.ftc.teamcode.robot.subsystems.MultitaskingThreadTeleop2;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
@@ -38,10 +39,11 @@ public class teleop extends LinearOpMode {
         gamepad = new gamepad(hardwareMap, gamepad1, telemetry); // teleop(gamepad) class functions
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1);
-
+        Thread MultitaskingThreadTeleop = new MultitaskingThreadTeleop(hardwareMap, gamepad1);
+        Thread MultitaskingThreadTeleop2 = new MultitaskingThreadTeleop2(hardwareMap, gamepad1, gamepad2);
         // start the 2 threads
-        MultitaskingThread.start();
+        MultitaskingThreadTeleop.start();
+        MultitaskingThreadTeleop2.start();
 
         // wait till after init
         waitForStart();
@@ -52,10 +54,10 @@ public class teleop extends LinearOpMode {
             cGamepad1.update();
             gamepad.update();
 
-            if (gamepad2.dpad_right) {
+            if (gamepad1.dpad_right) {
                 carousel.spin(false);
             }
-            else if (gamepad2.dpad_left) {
+            else if (gamepad1.dpad_left) {
                 carousel.spin(true);
             }
             else {
@@ -70,7 +72,8 @@ public class teleop extends LinearOpMode {
         }
 
         // after we exist the opModeIsActive loop, the opmode stops so we have to interrupt the threads and stop them to make the opmode not crash
-        MultitaskingThread.interrupt();
+        MultitaskingThreadTeleop.interrupt();
+        MultitaskingThreadTeleop2.interrupt();
     }
 
 

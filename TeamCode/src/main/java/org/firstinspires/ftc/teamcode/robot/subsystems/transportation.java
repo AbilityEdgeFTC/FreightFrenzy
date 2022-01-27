@@ -18,6 +18,7 @@ public class transportation {
     public static double rightPos1 = 0, leftPos1 = 0;
     public static double rightPos2 = 0, leftPos2 = 0;
     public static double rightPos3 = 0, leftPos3 = 0;
+    public static double rightPos4 = 0, leftPos4 = 0;
     Telemetry telemetry;
     public static double time = 500;
 
@@ -50,6 +51,11 @@ public class transportation {
     public void moveToPos3() throws InterruptedException {
         sR.setPosition(rightPos3);
         sL.setPosition(leftPos3);
+        Thread.sleep((long)time);
+    }
+    public void moveToPos4() throws InterruptedException {
+        sR.setPosition(rightPos4);
+        sL.setPosition(leftPos4);
         Thread.sleep((long)time);
     }
     // display position of servo's.

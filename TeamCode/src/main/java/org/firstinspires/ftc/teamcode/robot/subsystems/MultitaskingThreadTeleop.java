@@ -16,22 +16,15 @@ public class MultitaskingThreadTeleop extends Thread {
 
     public static boolean reverseElevatorSpinner;
     intake intake;
-    transportation transportation;
     Gamepad gamepad1;
     DcMotor mI,mE,mS;
-    cGamepad gamepad;
     dip dip;
-    int counter = 1;
     public static double powerIntake = 1, powerSpinner = .2;
     private boolean toggleIntakeForward = false, toggleIntakeBackwards = false;
 
     public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1) throws InterruptedException {
-        mI = hw.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotor.Direction.REVERSE);
         mE = hw.get(DcMotor.class, "mE");
         mS = hw.get(DcMotor.class, "mS");
-        transportation = new transportation(hw);
-        gamepad = new cGamepad(gamepad1);
         if(reverseElevatorSpinner)
         {
             mS.setDirection(DcMotor.Direction.REVERSE);
@@ -41,7 +34,7 @@ public class MultitaskingThreadTeleop extends Thread {
         }
         mS.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intake = new intake(mI);
+        intake = new intake(hw);
         dip = new dip(hw);
         dip.getFreight();
         this.gamepad1 = gamepad1;
@@ -65,28 +58,6 @@ public class MultitaskingThreadTeleop extends Thread {
                 else if (gamepad1.left_bumper) {
                     toggleIntakeBackwards = true;
                     toggleIntakeForward = false;
-                }
-
-                if(gamepad.dpadUpOnce() && counter < 3)
-                {
-                    counter++;
-                }
-                else if(gamepad.dpadDown() && counter > 1)
-                {
-                    counter--;
-                }
-
-                switch (counter)
-                {
-                    case 1:
-                        transportation.moveToPos1();
-                        break;
-                    case 2:
-                        transportation.moveToPos2();
-                        break;
-                    case 3:
-                        transportation.moveToPos3();
-                        break;
                 }
 
                 if(gamepad1.b)
