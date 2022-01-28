@@ -6,6 +6,8 @@ package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.drivebase.RobotDrive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,7 +20,6 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveC
 @Config
 public class gamepad {
 
-    Orientation angles;
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
@@ -187,10 +188,56 @@ public class gamepad {
         vectorDrive = new Vector2d(drive, strafe);
         vectorDrive.rotated(-drivetrain.getExternalHeading());
 
-        leftPower_f = Range.clip( vectorDrive.getX() + twist + vectorDrive.getY(), -power, power);
-        leftPower_b = Range.clip(vectorDrive.getX() + twist - vectorDrive.getY(), -power, power);
-        rightPower_f = Range.clip(vectorDrive.getX() - twist - vectorDrive.getY(), -power, power);
-        rightPower_b = Range.clip(vectorDrive.getX() - twist + vectorDrive.getY(), -power, power);
+        double theta = vectorDrive.angle();
+
+        double[] wheelSpeeds = new double[4];
+        wheelSpeeds[0] = Math.sin(theta + Math.PI / 4); // 0: mFL
+        wheelSpeeds[1] = Math.sin(theta - Math.PI / 4); // 1: mFR
+        wheelSpeeds[2] = Math.sin(theta - Math.PI / 4); // 2: mBL
+        wheelSpeeds[3] = Math.sin(theta + Math.PI / 4); // 3: BR
+
+        normalize(wheelSpeeds, vectorDrive.norm());
+
+        wheelSpeeds[0] += twist;
+        wheelSpeeds[1] -= twist;
+        wheelSpeeds[2] += twist;
+        wheelSpeeds[3] -= twist;
+
+        normalize(wheelSpeeds);
+
+        leftPower_f = wheelSpeeds[0] * mainPower;
+        leftPower_b = wheelSpeeds[1] * mainPower;
+        rightPower_f = wheelSpeeds[2] * mainPower;
+        rightPower_b = wheelSpeeds[3] * mainPower;
+    }
+
+    protected void normalize(double[] wheelSpeeds, double magnitude) {
+        double maxMagnitude = Math.abs(wheelSpeeds[0]);
+        for (int i = 1; i < wheelSpeeds.length; i++) {
+            double temp = Math.abs(wheelSpeeds[i]);
+            if (maxMagnitude < temp) {
+                maxMagnitude = temp;
+            }
+        }
+        for (int i = 0; i < wheelSpeeds.length; i++) {
+            wheelSpeeds[i] = (wheelSpeeds[i] / maxMagnitude) * magnitude;
+        }
+    }
+
+    protected void normalize(double[] wheelSpeeds) {
+        double maxMagnitude = Math.abs(wheelSpeeds[0]);
+        for (int i = 1; i < wheelSpeeds.length; i++) {
+            double temp = Math.abs(wheelSpeeds[i]);
+            if (maxMagnitude < temp) {
+                maxMagnitude = temp;
+            }
+        }
+        if (maxMagnitude > 1) {
+            for (int i = 0; i < wheelSpeeds.length; i++) {
+                wheelSpeeds[i] = (wheelSpeeds[i] / maxMagnitude);
+            }
+        }
+
     }
 
     public double GetmFLPower()

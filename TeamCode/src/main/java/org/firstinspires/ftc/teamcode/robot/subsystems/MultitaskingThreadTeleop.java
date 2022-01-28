@@ -17,6 +17,10 @@ public class MultitaskingThreadTeleop extends Thread {
     DcMotor mI;
     dip dip;
     public static double powerIntake = 1;
+    myElevator elevator;
+    //Elevator elevator;
+    cGamepad cGamepad1;
+    boolean frontIntake = false, backIntake = false;
 
     public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException {
         mI = hw.get(DcMotor.class, "mI");
@@ -24,6 +28,9 @@ public class MultitaskingThreadTeleop extends Thread {
         intake = new intake(mI);
         dip = new dip(hw);
         dip.getFreight();
+        elevator = new myElevator(hw);
+        //elevator = new Elevator(hw);
+        cGamepad1 = new cGamepad(gamepad1);
         this.gamepad1 = gamepad1;
     }
 
@@ -41,23 +48,36 @@ public class MultitaskingThreadTeleop extends Thread {
                 {
                     intake.powerIntake(gamepad1.right_trigger);
                 }
-                else if (gamepad1.right_bumper)
+
+                if (cGamepad1.rightBumperOnce())
+                {
+                    frontIntake = !frontIntake;
+                    backIntake = false;
+                }
+                else if (cGamepad1.leftBumperOnce()) {
+                    backIntake = !backIntake;
+                    frontIntake = false;
+                }
+
+
+                if(frontIntake)
                 {
                     intake.powerIntake(powerIntake);
                 }
-                else if (gamepad1.left_bumper) {
-                    intake.powerIntake(-powerIntake);
+                else if(backIntake)
+                {
+                    intake.powerIntake(powerIntake);
                 }
                 else
                 {
                     intake.stop();
                 }
 
-                if(gamepad1.dpad_up)
+                if(gamepad1.dpad_up || elevator.moveToMax || elevator.moveToMid || elevator.moveToMin)
                 {
                     dip.releaseFreightPos();
                 }
-                else if(gamepad1.dpad_down)
+                else if(gamepad1.dpad_down || elevator.moveToZero)
                 {
                     dip.getFreight();
                 }

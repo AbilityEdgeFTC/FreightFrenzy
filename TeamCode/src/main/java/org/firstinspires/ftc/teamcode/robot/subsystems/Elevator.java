@@ -28,11 +28,11 @@ public class Elevator {
     public static double MIN_HEIGHT = 9;
     public static double ZERO_HEIGHT = 0;
 
-    public static PIDCoefficients PID = new PIDCoefficients(2.5, 2, 0);
+    public static PIDCoefficients PID = new PIDCoefficients(.4, 0, 0);
 
     public static double MAX_VEL = 80; // in/s
     public static double MAX_ACCEL = 80; // in/s^2
-    public static double MAX_JERK = 200; // in/s^3
+    public static double MAX_JERK = 0; // in/s^3
 
     public static double kV = 10;
     public static double kA = 10;

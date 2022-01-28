@@ -27,22 +27,14 @@ public class AutonmousTest extends LinearOpMode {
     public static double poseCarouselY = -58;
     public static double poseCarouselH = 135;
     public static double carouselHelp = 15;
-    public static double poseHubFrontX = -11.7;
-    public static double poseHubFrontY = -45;
-    public static double poseHubFrontH = 90;
-//    public static double poseHubBackX = -9.1;
-//    public static double poseHubBackY = -51.5;
-//    public static double poseHubBackH = 90;
-//    public static double poseHubRightX = -9.1;
-//    public static double poseHubRightY = -51.5;
-//    public static double poseHubRightH = 90;
-//    public static double poseHubLeftX = -9.1;
-//    public static double poseHubLeftY = -51.5;
-//    public static double poseHubLeftH = 90;
+    public static double poseHubLeftX = -33.1;
+    public static double poseHubLeftY = -39.5;
+    public static double poseHubLeftH = 0;
+    public static double hubHelp = 30;
     public static double poseEntranceX = 12;
     public static double poseEntranceY = -67;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 48.78;
+    public static double poseCollectX = 43;
     public static double poseCollectY = -67;
     public static double poseCollectH = 180;
 
@@ -54,10 +46,7 @@ public class AutonmousTest extends LinearOpMode {
 
          Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
          Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
-         Pose2d poseHubFront = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
-         Pose2d poseHubBack = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
-         Pose2d poseHubRight = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
-         Pose2d poseHubLeft = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
+         Pose2d poseHubLeft = new Pose2d(poseHubLeftX, poseHubLeftY, Math.toRadians(poseHubLeftH));
          Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
          Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
 
@@ -75,29 +64,14 @@ public class AutonmousTest extends LinearOpMode {
                 .lineToLinearHeading(poseCarousel, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .waitSeconds(1.5)
-                .lineToSplineHeading(poseHubFront, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(poseHubLeft, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .waitSeconds(1.5)
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .strafeRight(hubHelp)
+                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToLinearHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(34.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .waitSeconds(1.5)
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToLinearHeading(poseHubFront, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .waitSeconds(1.5)
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToLinearHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(34.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .waitSeconds(1.5)
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToLinearHeading(poseHubFront, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .waitSeconds(1.5)
                 .build();
 
         waitForStart();
@@ -113,6 +87,7 @@ public class AutonmousTest extends LinearOpMode {
             telemetry.addData("finalY", poseEstimate.getY());
             telemetry.addData("finalHeading", poseEstimate.getHeading());
             telemetry.update();
+            valueStorage.currentPose = poseEstimate;
         }
 
 

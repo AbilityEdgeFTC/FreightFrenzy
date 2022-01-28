@@ -18,7 +18,8 @@ public class carousel {
     //motor carousel
     DcMotor mC;
     Telemetry telemetry;
-    public static double powerCarousel = 0.3;
+    double i = 0;
+    public static double powerCarousel = 0.3, addBy = 0.05;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
@@ -36,12 +37,14 @@ public class carousel {
 
     // spin carousel motor with power.
     public void spin(){
-        mC.setPower(powerCarousel);
+        mC.setPower(powerCarousel + i * addBy);
+        i++;
     }
 
     // spin carousel motor with power for 8 seconds long.
     public void spin(double seconds) throws InterruptedException {
-        mC.setPower(powerCarousel);
+        mC.setPower(powerCarousel + i * addBy);
+        i++;
         Thread.sleep((long)seconds*1000);
         stop();
     }
@@ -49,20 +52,24 @@ public class carousel {
     // spin carousel motor with power, option for reversed is added.
     public void spin(boolean reverse){
         if(reverse){
-            mC.setPower(-powerCarousel);
+            mC.setPower(-powerCarousel + i * addBy);
+            i++;
         }else{
-            mC.setPower(powerCarousel);
+            mC.setPower(powerCarousel + i * addBy);
+            i++;
         }
     }
 
     // spin carousel motor with power, option for reversed is added, for seconds long.
     public void spin(double seconds, boolean reverse) throws InterruptedException {
         if(reverse){
-            mC.setPower(powerCarousel);
+            mC.setPower(-powerCarousel + i * addBy);
+            i++;
             Thread.sleep((long)seconds*1000);
             stop();
         }else{
-            mC.setPower(-powerCarousel);
+            mC.setPower(powerCarousel + i * addBy);
+            i++;
             Thread.sleep((long)seconds*1000);
             stop();
         }
