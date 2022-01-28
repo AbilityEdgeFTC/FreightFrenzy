@@ -37,7 +37,6 @@ public class AutonmousTest2 extends LinearOpMode {
     public static double poseCollectH = 180;
     public static int numOfCycles = 5;
 
-
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
