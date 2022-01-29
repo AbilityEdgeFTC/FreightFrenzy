@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto.ElevatorState;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.firstinspires.ftc.teamcode.robot.subsystems.myElevatorThreadAuto;
-import org.firstinspires.ftc.teamcode.robot.subsystems.myElevatorThreadAuto.ElevatorSate;
 import org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage;
 
 /*
@@ -45,7 +45,7 @@ public class AutonmousTest2 extends LinearOpMode {
     public static double waitSecTillTurnOnIntake = 3;
     public static double reverseIntakeFor = 1;
     Thread elevatorThread;
-    myElevatorThreadAuto elevator;
+    ElevatorThreadAuto elevator;
     intake intake;
     double delay;
 
@@ -60,8 +60,8 @@ public class AutonmousTest2 extends LinearOpMode {
          Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
          Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         drive.setPoseEstimate(startPoseRight);
-        elevatorThread = new myElevatorThreadAuto(hardwareMap);
-        elevator = new myElevatorThreadAuto(hardwareMap);
+        elevatorThread = new ElevatorThreadAuto(hardwareMap);
+        elevator = new ElevatorThreadAuto(hardwareMap);
         intake= new intake(hardwareMap);
         // "Collect And Place Additional Freight", "Number Of Freight To Collect";
         // "Place Freight In";
@@ -72,7 +72,7 @@ public class AutonmousTest2 extends LinearOpMode {
                 .lineToSplineHeading(poseHubFront, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(waitTillOpenElevatorFirst, () -> {
-                    elevator.elevatorSate = ElevatorSate.MAX;
+                    elevator.elevatorSate = ElevatorState.MAX;
                     delay += waitTillOpenElevatorFirst;
                 })
                 .build();
@@ -81,7 +81,7 @@ public class AutonmousTest2 extends LinearOpMode {
 
         TrajectorySequence collectAndPlaceFirst = drive.trajectorySequenceBuilder(placement.end())
                 .addTemporalMarker(waitTillCloseElevator, () -> {
-                    elevator.elevatorSate = ElevatorSate.ZERO;
+                    elevator.elevatorSate = ElevatorState.ZERO;
                     delay += waitTillCloseElevator;
                 })
                 .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -100,7 +100,7 @@ public class AutonmousTest2 extends LinearOpMode {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(delay + waitTillOpenElevatorFirst, () -> {
                     intake.stop();
-                    elevator.elevatorSate = ElevatorSate.MAX;
+                    elevator.elevatorSate = ElevatorState.MAX;
                     delay += waitTillOpenElevatorFirst;
                 })
                 .lineToLinearHeading(poseHubRight, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -111,7 +111,7 @@ public class AutonmousTest2 extends LinearOpMode {
 
         TrajectorySequence collectAndPlace = drive.trajectorySequenceBuilder(collectAndPlaceFirst.end())
                 .addTemporalMarker(delay + waitTillCloseElevator, () -> {
-                    elevator.elevatorSate = ElevatorSate.ZERO;
+                    elevator.elevatorSate = ElevatorState.ZERO;
                     delay += waitTillCloseElevator;
                 })
                 .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -130,7 +130,7 @@ public class AutonmousTest2 extends LinearOpMode {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(delay + waitTillOpenElevator, () -> {
                     intake.stop();
-                    elevator.elevatorSate = ElevatorSate.MAX;
+                    elevator.elevatorSate = ElevatorState.MAX;
                     delay += waitTillOpenElevator;
                 })
                 .lineToLinearHeading(poseHubRight, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),

@@ -15,7 +15,7 @@ public class MultitaskingThreadTeleop extends Thread {
     Gamepad gamepad1, gamepad2;
     dip dip;
     public static double powerIntake = 1;
-    myElevator elevator;
+    ElevatorThread elevator;
     //Elevator elevator;
     cGamepad cGamepad1;
     boolean frontIntake = false, backIntake = false;
@@ -24,8 +24,7 @@ public class MultitaskingThreadTeleop extends Thread {
         intake = new intake(hw);
         dip = new dip(hw);
         dip.getFreight();
-        elevator = new myElevator(hw);
-        //elevator = new Elevator(hw);
+        elevator = new ElevatorThread(hw, gamepad2);
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         cGamepad1 = new cGamepad(gamepad1);
@@ -37,6 +36,8 @@ public class MultitaskingThreadTeleop extends Thread {
     public void run() {
         try {
             while (!isInterrupted()) {
+                cGamepad1.update();
+
                 if (gamepad1.left_trigger != 0)
                 {
                     intake.powerIntake(-gamepad1.left_trigger);
@@ -65,21 +66,21 @@ public class MultitaskingThreadTeleop extends Thread {
                 {
                     intake.powerIntake(powerIntake);
                 }
-                else
+                else if(gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0)
                 {
                     intake.stop();
                 }
 
-                if(gamepad2.dpad_up || elevator.moveToMax || elevator.moveToMid || elevator.moveToMin)
+                if(gamepad2.dpad_up || (elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && !(gamepad1.right_bumper && gamepad1.left_bumper))
                 {
                     dip.releaseFreightPos();
                 }
-                else if(gamepad2.dpad_down || elevator.moveToZero)
+                else if(gamepad2.dpad_down || elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && !(gamepad1.right_bumper && gamepad1.left_bumper))
                 {
                     dip.getFreight();
                 }
 
-                if(gamepad2.right_bumper || gamepad1.left_bumper)
+                if(gamepad1.right_bumper || gamepad1.left_bumper)
                 {
                     dip.releaseFreight();
                 }

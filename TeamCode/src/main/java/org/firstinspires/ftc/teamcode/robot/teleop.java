@@ -15,11 +15,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.subsystems.MultitaskingThreadTeleop;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
-import org.firstinspires.ftc.teamcode.robot.subsystems.myElevatorThread;
-import org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage;
 
 @Config
 @TeleOp(group = "main")
@@ -47,13 +46,11 @@ public class teleop extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread myElevatorThread = new myElevatorThread(hardwareMap, gamepad2);
-        //Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
+        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
         Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2);
 
         // start the 2 threads
-        myElevatorThread.start();
-        //ElevatorThread.start();
+        ElevatorThread.start();
         MultitaskingThread.start();
 
         // wait till after init
@@ -90,9 +87,8 @@ public class teleop extends LinearOpMode {
         }
 
         // after we exist the opModeIsActive loop, the opmode stops so we have to interrupt the threads and stop them to make the opmode not crash
-        //ElevatorThread.interrupt();
-        //myElevatorThread.interrupt();
-        //MultitaskingThread.interrupt();
+        ElevatorThread.interrupt();
+        MultitaskingThread.interrupt();
     }
 
     void initAll() {

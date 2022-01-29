@@ -31,7 +31,7 @@ public class gamepad {
     public static double lockAngle = 90;
     public boolean  lockOnAngle = false;
     public static double mainPower = 1, slowPower = .6, multiplier = .9;
-    public static boolean isRegularDrive = false, slowMove = false;
+    public static boolean isRegularDrive = true, slowMove = false;
     SampleMecanumDriveCancelable drivetrain;
     cGamepad cGamepad1, cGamepad2;
     Vector2d vectorDrive, vectorTurn, vectorPower;
@@ -86,7 +86,7 @@ public class gamepad {
             case NORMAL_CONTROL:
                 getGamepadDirections(true);
 
-                if (cGamepad1.leftBumperOnce() || cGamepad1.rightBumperOnce()) {
+                if (cGamepad1.AOnce()) {
                     slowMove = !slowMove;
                 }
 

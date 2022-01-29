@@ -4,12 +4,13 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto.ElevatorState;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.myElevatorThreadAuto;
-import org.firstinspires.ftc.teamcode.robot.subsystems.myElevatorThreadAuto.ElevatorSate;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
@@ -46,7 +47,7 @@ public class AutonmousTest extends LinearOpMode {
     public static double waitSecTillTurnOffIntake = 2;
     carousel carousel;
     Thread elevatorThread;
-    myElevatorThreadAuto elevator;
+    ElevatorThreadAuto elevator;
     intake intake;
     double delay;
 
@@ -61,8 +62,8 @@ public class AutonmousTest extends LinearOpMode {
          Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
          Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
          carousel = new carousel(hardwareMap);
-         elevatorThread = new myElevatorThreadAuto(hardwareMap);
-         elevator = new myElevatorThreadAuto(hardwareMap);
+         elevatorThread = new ElevatorThreadAuto(hardwareMap);
+         elevator = new ElevatorThreadAuto(hardwareMap);
          intake= new intake(hardwareMap);
 
 
@@ -89,12 +90,12 @@ public class AutonmousTest extends LinearOpMode {
                 .lineToSplineHeading(poseHubLeft, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(delay + waitSecTillOpenElevator, () -> {
-                    elevator.elevatorSate = ElevatorSate.MAX;
+                    elevator.elevatorSate = ElevatorState.MAX;
                     delay += waitSecTillOpenElevator;
                 })
                 .strafeRight(hubHelp)
                 .addTemporalMarker(delay + waitSecTillCloseElevator, () -> {
-                    elevator.elevatorSate = ElevatorSate.ZERO;
+                    elevator.elevatorSate = ElevatorState.ZERO;
                     delay += waitSecTillCloseElevator;
                 })
                 .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),

@@ -10,12 +10,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
-public class ElevatorThread extends Thread{
+public class ElevatorThreadAuto extends Thread{
 
     public static boolean eliorPlaying = false;
     public static double timeTo = .5;
     Elevator elevator;
-    Gamepad gamepad1;
+    dip dip;
 
     public enum ElevatorState
     {
@@ -27,10 +27,12 @@ public class ElevatorThread extends Thread{
 
     public static ElevatorState elevatorSate = ElevatorState.ZERO;
 
-    public ElevatorThread(HardwareMap hw, Gamepad gamepad1) {
+    public ElevatorThreadAuto(HardwareMap hw) throws InterruptedException {
         elevator = new Elevator(hw);
-        this.gamepad1 = gamepad1;
+        dip = new dip(hw);
+
         eliorPlaying = false;
+        dip.getFreight();
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -45,7 +47,6 @@ public class ElevatorThread extends Thread{
             while (!isInterrupted())
             {
                 double startTime = clock.seconds();
-                checkLevel();
 
                 if(elevatorSate == ElevatorState.MIN)
                 {
@@ -67,53 +68,21 @@ public class ElevatorThread extends Thread{
                 while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.MIN)
                 {
                     elevator.update();
-                    checkLevel();
                 }
                 while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.MID)
                 {
                     elevator.update();
-                    checkLevel();
                 }
                 while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.MAX)
                 {
                     elevator.update();
-                    checkLevel();
                 }while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.ZERO)
                 {
                     elevator.update();
-                    checkLevel();
                 }
             }
         }
         // an error occurred in the run loop.
         catch (Exception e) {}
-    }
-
-    void checkLevel() throws InterruptedException {
-
-        if(eliorPlaying) {
-            if (gamepad1.a) {
-                elevatorSate = ElevatorState.MIN;
-            } else if (gamepad1.b) {
-                elevatorSate = ElevatorState.MID;
-            } else if (gamepad1.y) {
-                elevatorSate = ElevatorState.MAX;
-            } else if (gamepad1.x) {
-                elevatorSate = ElevatorState.ZERO;
-            }
-        }
-        else
-        {
-            if (gamepad1.y) {
-                elevatorSate = ElevatorState.MIN;
-            } else if (gamepad1.b) {
-                elevatorSate = ElevatorState.MID;
-            } else if (gamepad1.x) {
-                elevatorSate = ElevatorState.MAX;
-            } else if (gamepad1.a) {
-                elevatorSate = ElevatorState.ZERO;
-            }
-        }
-
     }
 }
