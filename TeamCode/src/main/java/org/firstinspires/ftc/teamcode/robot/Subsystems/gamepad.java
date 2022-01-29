@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.robot.RoadRunner.drive.SampleMecanumDriveCancelable;
 
 @Config
 public class gamepad {
@@ -31,7 +30,6 @@ public class gamepad {
     public boolean  lockOnAngle = false;
     public static double mainPower = 1, slowPower = .6, multiplier = .9;
     public static boolean isRegularDrive = true, slowMove = false;
-    SampleMecanumDriveCancelable drivetrain;
     cGamepad cGamepad1, cGamepad2;
     Vector2d vectorDrive;
 
@@ -53,7 +51,7 @@ public class gamepad {
      * @param telemetry the telemetry object from teleop
      * //@param drivetrain the SampleMecanumDriveCancable object from teleop
      */
-    public gamepad(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, SampleMecanumDriveCancelable drivetrain) {
+    public gamepad(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.mFL = hardwareMap.get(DcMotor.class, "mFL");
@@ -69,7 +67,6 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.drivetrain = drivetrain;
     }
 
     public void update() {
@@ -91,14 +88,7 @@ public class gamepad {
                     power = mainPower;
                 }
 
-                if (isRegularDrive)
-                {
-                    regularDrive();
-                }
-                else
-                {
-                    centricDrive();
-                }
+                regularDrive();
 
 
 //                if(gamepad1.a)
@@ -121,14 +111,7 @@ public class gamepad {
 
                 getGamepadDirections(false);
 
-                if (isRegularDrive)
-                {
-                    regularDrive();
-                }
-                else
-                {
-                    centricDrive();
-                }
+                regularDrive();
 
                 if(gamepad1.a)
                 {
@@ -162,8 +145,6 @@ public class gamepad {
             strafe = gamepad1.left_stick_x;
             twist = 0;
         }
-        vectorDrive = new Vector2d(drive, strafe);
-        vectorDrive.rotated(drivetrain.getExternalHeading());
     }
 
     public void regularDrive()
@@ -173,15 +154,6 @@ public class gamepad {
         rightPower_f = Range.clip(drive - twist - strafe, -power, power);
         rightPower_b = Range.clip(drive - twist + strafe, -power, power);
     }
-
-    public void centricDrive()
-    {
-        leftPower_f = Range.clip(vectorDrive.getX() + vectorDrive.angle() + vectorDrive.getY(), -power, power);
-        leftPower_b = Range.clip(vectorDrive.getX() + vectorDrive.angle() - vectorDrive.getY(), -power, power);
-        rightPower_f = Range.clip(vectorDrive.getX() - vectorDrive.angle() - vectorDrive.getY(), -power, power);
-        rightPower_b = Range.clip(vectorDrive.getX() - vectorDrive.angle() + vectorDrive.getY(), -power, power);
-    }
-
 
     public boolean isStoped()
     {
