@@ -5,7 +5,6 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -14,7 +13,6 @@ public class MultitaskingThreadTeleop extends Thread {
 
     intake intake;
     Gamepad gamepad1, gamepad2;
-    DcMotor mI;
     dip dip;
     public static double powerIntake = 1;
     myElevator elevator;
@@ -28,9 +26,9 @@ public class MultitaskingThreadTeleop extends Thread {
         dip.getFreight();
         elevator = new myElevator(hw);
         //elevator = new Elevator(hw);
-        cGamepad1 = new cGamepad(gamepad1);
-        this.gamepad2 = gamepad2;
         this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
+        cGamepad1 = new cGamepad(gamepad1);
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is

@@ -34,7 +34,7 @@ public class gamepad {
     public static boolean isRegularDrive = false, slowMove = false;
     SampleMecanumDriveCancelable drivetrain;
     cGamepad cGamepad1, cGamepad2;
-    Vector2d vectorDrive;
+    Vector2d vectorDrive, vectorTurn, vectorPower;
 
     // Define 2 states, driver control or alignment control
     enum Mode {
@@ -186,9 +186,13 @@ public class gamepad {
     public void centricDrive()
     {
         vectorDrive = new Vector2d(drive, strafe);
-        vectorDrive.rotated(-drivetrain.getExternalHeading());
+        vectorDrive.rotated(vectorDrive.angle() + drivetrain.getExternalHeading());
 
-        double theta = vectorDrive.angle();
+        leftPower_f = Range.clip(vectorDrive.getX() + twist + vectorDrive.getY(), -power, power);
+        leftPower_b = Range.clip(vectorDrive.getX() + twist - strafe, -vectorDrive.getY(), power);
+        rightPower_f = Range.clip(vectorDrive.getX() - twist - strafe, -vectorDrive.getY(), power);
+        rightPower_b = Range.clip(vectorDrive.getX() - twist + strafe, -vectorDrive.getY(), power);
+        /*double theta = vectorDrive.angle();
 
         double[] wheelSpeeds = new double[4];
         wheelSpeeds[0] = Math.sin(theta + Math.PI / 4); // 0: mFL
@@ -208,7 +212,9 @@ public class gamepad {
         leftPower_f = wheelSpeeds[0] * mainPower;
         leftPower_b = wheelSpeeds[1] * mainPower;
         rightPower_f = wheelSpeeds[2] * mainPower;
-        rightPower_b = wheelSpeeds[3] * mainPower;
+        rightPower_b = wheelSpeeds[3] * mainPower;*/
+
+
     }
 
     protected void normalize(double[] wheelSpeeds, double magnitude) {

@@ -42,9 +42,9 @@ public class teleop extends LinearOpMode {
         cGamepad cGamepad1 = new cGamepad(gamepad1);
         cGamepad cGamepad2 = new cGamepad(gamepad2);
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         carousel = new carousel(hardwareMap); // carousel class functions
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry, drive); // teleop(gamepad) class functions
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
         Thread myElevatorThread = new myElevatorThread(hardwareMap, gamepad2);
@@ -91,13 +91,13 @@ public class teleop extends LinearOpMode {
 
         // after we exist the opModeIsActive loop, the opmode stops so we have to interrupt the threads and stop them to make the opmode not crash
         //ElevatorThread.interrupt();
-        myElevatorThread.interrupt();
-        MultitaskingThread.interrupt();
+        //myElevatorThread.interrupt();
+        //MultitaskingThread.interrupt();
     }
 
     void initAll() {
         drive = new SampleMecanumDriveCancelable(hardwareMap);
-        drive.setPoseEstimate(valueStorage.currentPose);
+        drive.setPoseEstimate(new Pose2d(0,0,0));
         // We want to turn off velocity control for teleop
         // Velocity control per wheel is not necessary outside of motion profiled auto
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
