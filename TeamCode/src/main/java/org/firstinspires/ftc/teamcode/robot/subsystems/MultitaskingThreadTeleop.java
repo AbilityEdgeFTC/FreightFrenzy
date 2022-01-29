@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class MultitaskingThreadTeleop extends Thread {
 
     intake intake;
-    Gamepad gamepad1;
+    Gamepad gamepad1, gamepad2;
     DcMotor mI;
     dip dip;
     public static double powerIntake = 1;
@@ -23,14 +23,13 @@ public class MultitaskingThreadTeleop extends Thread {
     boolean frontIntake = false, backIntake = false;
 
     public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException {
-        mI = hw.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotor.Direction.REVERSE);
-        intake = new intake(mI);
+        intake = new intake(hw);
         dip = new dip(hw);
         dip.getFreight();
         elevator = new myElevator(hw);
         //elevator = new Elevator(hw);
         cGamepad1 = new cGamepad(gamepad1);
+        this.gamepad2 = gamepad2;
         this.gamepad1 = gamepad1;
     }
 
@@ -73,16 +72,16 @@ public class MultitaskingThreadTeleop extends Thread {
                     intake.stop();
                 }
 
-                if(gamepad1.dpad_up || elevator.moveToMax || elevator.moveToMid || elevator.moveToMin)
+                if(gamepad2.dpad_up || elevator.moveToMax || elevator.moveToMid || elevator.moveToMin)
                 {
                     dip.releaseFreightPos();
                 }
-                else if(gamepad1.dpad_down || elevator.moveToZero)
+                else if(gamepad2.dpad_down || elevator.moveToZero)
                 {
                     dip.getFreight();
                 }
 
-                if(gamepad1.right_bumper || gamepad1.left_bumper)
+                if(gamepad2.right_bumper || gamepad1.left_bumper)
                 {
                     dip.releaseFreight();
                 }

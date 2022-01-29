@@ -6,6 +6,7 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -17,20 +18,20 @@ public class intake {
 
     /**
      * constructor for intake
-     * @param mI the intake motor
      */
-    public intake(DcMotor mI) {
-        this.mI = mI;
+    public intake(HardwareMap hardwareMap) {
+        this.mI = hardwareMap.get(DcMotor.class, "mI");
+        this.mI.setDirection(DcMotor.Direction.REVERSE);
     }
 
     /**
      * constructor for intake
-     * @param mI the intake motor
      * @param power the power to give the motor
      */
-    public intake(DcMotor mI, double power) {
+    public intake(HardwareMap hardwareMap, double power) {
         this.power = power;
-        this.mI = mI;
+        this.mI = hardwareMap.get(DcMotor.class, "mI");
+        this.mI.setDirection(DcMotor.Direction.REVERSE);
     }
 
     /**
