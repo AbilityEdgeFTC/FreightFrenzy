@@ -76,17 +76,12 @@ public class gamepad {
     public void update() {
         cGamepad1.update();
         cGamepad2.update();
-        telemetry.addData("Barcode Location:", mFL.getPower());
-        telemetry.addData("Barcode Location:", mBL.getPower());
-        telemetry.addData("Barcode Location:", mBR.getPower());
-        telemetry.addData("Barcode Location:", mFR.getPower());
-        telemetry.update();
 
         switch (currentMode) {
             case NORMAL_CONTROL:
                 getGamepadDirections(true);
 
-                if (cGamepad1.AOnce()) {
+                if (cGamepad1.XOnce()) {
                     slowMove = !slowMove;
                 }
 
@@ -191,9 +186,9 @@ public class gamepad {
 
         scalar = Math.sqrt(drive * drive + twist * twist);
         GamepadAng = Math.atan(scalar);
-        FinalAng = currAng - GamepadAng;
+        FinalAng = currAng + GamepadAng;
         drive = scalar * Math.sin(FinalAng);
-        twist = scalar * Math.sin(FinalAng);
+        strafe = scalar * Math.sin(FinalAng);
 
         leftPower_f = Range.clip(drive + twist + strafe, -power, power);
         leftPower_b = Range.clip(drive + twist - strafe, -power, power);

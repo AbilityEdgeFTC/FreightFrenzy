@@ -46,8 +46,8 @@ public class teleop extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2);
-        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2);
+        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2, false);
+        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2, false);
 
         // start the 2 threads
         ElevatorThread.start();
@@ -55,6 +55,9 @@ public class teleop extends LinearOpMode {
 
         // wait till after init
         waitForStart();
+
+        ((org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread) ElevatorThread).activeOpMode = true;
+        ((org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread) MultitaskingThread).activeOpMode = true;
 
         while (opModeIsActive()) {
 

@@ -16,6 +16,7 @@ public class ElevatorThread extends Thread{
     public static double timeTo = .5;
     Elevator elevator;
     Gamepad gamepad1;
+    public static boolean activeOpMode;
 
     public enum ElevatorState
     {
@@ -27,10 +28,11 @@ public class ElevatorThread extends Thread{
 
     public static ElevatorState elevatorSate = ElevatorState.ZERO;
 
-    public ElevatorThread(HardwareMap hw, Gamepad gamepad1) {
+    public ElevatorThread(HardwareMap hw, Gamepad gamepad1, boolean activeOpMode) {
         elevator = new Elevator(hw);
         this.gamepad1 = gamepad1;
         eliorPlaying = false;
+        this.activeOpMode = activeOpMode;
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -42,7 +44,7 @@ public class ElevatorThread extends Thread{
         {
             NanoClock clock = NanoClock.system();
 
-            while (!isInterrupted())
+            while (!isInterrupted() && activeOpMode)
             {
                 double startTime = clock.seconds();
                 checkLevel();

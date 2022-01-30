@@ -49,7 +49,7 @@ public class dip {
     // spin holding servo to push position.
     public void releaseFreight() throws InterruptedException {
         sH.setPosition(pushingPosition);
-        Thread.sleep((long)time);
+        Thread.sleep((long)time*10);
     }
 
     // display position of servo's.
