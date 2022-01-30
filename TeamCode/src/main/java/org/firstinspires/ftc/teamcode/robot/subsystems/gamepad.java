@@ -181,7 +181,15 @@ public class gamepad {
     public void centricDrive()
     {
 
-        double GamepadAng ,currAng = drivetrain.getExternalHeading(), FinalAng = 0;
+        vectorDrive = new Vector2d(drive, strafe);
+        vectorDrive.rotated(-drivetrain.getExternalHeading());
+
+        leftPower_f = Range.clip(vectorDrive.getX() + twist + vectorDrive.getY(), -power, power);
+        leftPower_b = Range.clip(vectorDrive.getX() + twist - vectorDrive.getY(), -power, power);
+        rightPower_f = Range.clip(vectorDrive.getX() - twist - vectorDrive.getY(), -power, power);
+        rightPower_b = Range.clip(vectorDrive.getX() - twist + vectorDrive.getY(), -power, power);
+
+        /*double GamepadAng ,currAng = drivetrain.getExternalHeading(), FinalAng = 0;
         double scalar;
 
         scalar = Math.sqrt(drive * drive + twist * twist);
@@ -193,7 +201,8 @@ public class gamepad {
         leftPower_f = Range.clip(drive + twist + strafe, -power, power);
         leftPower_b = Range.clip(drive + twist - strafe, -power, power);
         rightPower_f = Range.clip(drive - twist - strafe, -power, power);
-        rightPower_b = Range.clip(drive - twist + strafe, -power, power);
+        rightPower_b = Range.clip(drive - twist + strafe, -power, power);*/
+
 
         /*
         vectorDrive = new Vector2d(drive, strafe);
