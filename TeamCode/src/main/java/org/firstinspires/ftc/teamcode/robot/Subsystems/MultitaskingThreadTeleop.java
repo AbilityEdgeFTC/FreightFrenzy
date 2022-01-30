@@ -2,10 +2,9 @@
  * Created by Ability Edge#18273
  * - Elior Yousefi
  */
-package org.firstinspires.ftc.teamcode.robot.Subsystems;
+package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -13,17 +12,22 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class MultitaskingThreadTeleop extends Thread {
 
     intake intake;
-    Gamepad gamepad1;
-    DcMotor mI;
+    Gamepad gamepad1, gamepad2;
     dip dip;
     public static double powerIntake = 1;
+    ElevatorThread elevator;
+    //Elevator elevator;
+    cGamepad cGamepad1;
+    boolean frontIntake = false, backIntake = false, activeOpMode;
 
-    public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1, Gamepad gamepad2) throws InterruptedException {
-        mI = hw.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotor.Direction.REVERSE);
-        intake = new intake(mI);
+    public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1, Gamepad gamepad2, boolean activeOpMode) throws InterruptedException {
+        intake = new intake(hw);
         dip = new dip(hw);
+        this.activeOpMode = activeOpMode;
+        elevator = new ElevatorThread(hw, gamepad2, activeOpMode);
         this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
+        cGamepad1 = new cGamepad(gamepad1);
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -32,7 +36,10 @@ public class MultitaskingThreadTeleop extends Thread {
     public void run() {
         try {
             dip.getFreight();
-            while (!isInterrupted()) {
+
+            while (!isInterrupted() && activeOpMode) {
+                cGamepad1.update();
+
                 if (gamepad1.left_trigger != 0)
                 {
                     intake.powerIntake(-gamepad1.left_trigger);
@@ -41,27 +48,41 @@ public class MultitaskingThreadTeleop extends Thread {
                 {
                     intake.powerIntake(gamepad1.right_trigger);
                 }
-                else if (gamepad1.right_bumper)
+
+                if (cGamepad1.rightBumperOnce())
+                {
+                    frontIntake = !frontIntake;
+                    backIntake = false;
+                }
+                else if (cGamepad1.leftBumperOnce()) {
+                    backIntake = !backIntake;
+                    frontIntake = false;
+                }
+
+
+                if(frontIntake)
                 {
                     intake.powerIntake(powerIntake);
                 }
-                else if (gamepad1.left_bumper) {
-                    intake.powerIntake(-powerIntake);
+                else if(backIntake)
+                {
+                    intake.powerIntake(powerIntake);
                 }
-                else
+                else if(gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0)
                 {
                     intake.stop();
                 }
 
-                if(gamepad1.dpad_up)
+                if(gamepad2.dpad_up || (elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && !(gamepad2.right_bumper && gamepad2.left_bumper))
                 {
                     dip.releaseFreightPos();
                 }
-                else if(gamepad1.dpad_down)
+                else if(gamepad2.dpad_down || elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && !(gamepad2.right_bumper && gamepad2.left_bumper))
                 {
                     dip.getFreight();
                 }
-                if(gamepad1.right_bumper || gamepad1.left_bumper)
+
+                if(gamepad2.right_bumper || gamepad2.left_bumper)
                 {
                     dip.releaseFreight();
                 }

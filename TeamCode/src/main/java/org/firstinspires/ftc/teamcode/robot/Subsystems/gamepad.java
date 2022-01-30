@@ -2,10 +2,12 @@
  * Created by Ability Edge#18273
  * - Elior Yousefi
  */
-package org.firstinspires.ftc.teamcode.robot.Subsystems;
+package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.drivebase.RobotDrive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,11 +15,11 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 
 @Config
 public class gamepad {
 
-    Orientation angles;
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
@@ -30,13 +32,14 @@ public class gamepad {
     public boolean  lockOnAngle = false;
     public static double mainPower = 1, slowPower = .6, multiplier = .9;
     public static boolean isRegularDrive = true, slowMove = false;
+    SampleMecanumDriveCancelable drivetrain;
     cGamepad cGamepad1, cGamepad2;
-    Vector2d vectorDrive;
+    Vector2d vectorDrive, vectorTurn, vectorPower;
 
     // Define 2 states, driver control or alignment control
     enum Mode {
         NORMAL_CONTROL,
-        ALIGN_TO_ANGLE
+        HOLD_ANGLE
     }
 
     private Mode currentMode = Mode.NORMAL_CONTROL;
@@ -51,7 +54,7 @@ public class gamepad {
      * @param telemetry the telemetry object from teleop
      * //@param drivetrain the SampleMecanumDriveCancable object from teleop
      */
-    public gamepad(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
+    public gamepad(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, SampleMecanumDriveCancelable drivetrain) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.mFL = hardwareMap.get(DcMotor.class, "mFL");
@@ -67,6 +70,7 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.drivetrain = drivetrain;
     }
 
     public void update() {
@@ -75,10 +79,9 @@ public class gamepad {
 
         switch (currentMode) {
             case NORMAL_CONTROL:
-                //drivetrain.cancelFollowing();
                 getGamepadDirections(true);
 
-                if (cGamepad1.leftBumperOnce() || cGamepad1.rightBumperOnce()) {
+                if (cGamepad1.XOnce()) {
                     slowMove = !slowMove;
                 }
 
@@ -88,41 +91,61 @@ public class gamepad {
                     power = mainPower;
                 }
 
-                regularDrive();
+                if (isRegularDrive)
+                {
+                    regularDrive();
+                }
+                else
+                {
+                    centricDrive();
+                }
 
-
-//                if(gamepad1.a)
-//                {
-//                    lockOnAngle = !lockOnAngle;
-//                }
-//
-//                if(gamepad1.a && lockOnAngle)
-//                {
-//                    currentMode = Mode.ALIGN_TO_ANGLE;
-//                }
+                if(lockOnAngle)
+                {
+                    currentMode = Mode.HOLD_ANGLE;
+                }
+                else
+                {
+                    currentMode = Mode.NORMAL_CONTROL;
+                }
 
                 mFL.setPower(leftPower_f);
                 mBL.setPower(leftPower_b);
                 mFR.setPower(rightPower_f);
                 mBR.setPower(rightPower_b);
                 break;
-            case ALIGN_TO_ANGLE:
-                //drivetrain.turnAsync(Angle.normDelta(Math.toRadians(lockAngle) - drivetrain.getExternalHeading()));
-
+            case HOLD_ANGLE:
                 getGamepadDirections(false);
 
-                regularDrive();
+                if (slowMove) {
+                    power = slowPower;
+                } else {
+                    power = mainPower;
+                }
+
+                if (isRegularDrive)
+                {
+                    regularDrive();
+                }
+                else
+                {
+                    centricDrive();
+                }
 
                 if(gamepad1.a)
                 {
-                    lockOnAngle = !lockOnAngle;
+                   lockOnAngle = !lockOnAngle;
                 }
 
-                if(gamepad1.a && !lockOnAngle)
+                if(lockOnAngle)
                 {
-                    lockOnAngle = !lockOnAngle;
-                    currentMode = Mode.NORMAL_CONTROL;
+                    currentMode = Mode.HOLD_ANGLE;
                 }
+                else
+                {
+                  currentMode = Mode.NORMAL_CONTROL;
+                }
+
                 mFL.setPower(leftPower_f);
                 mBL.setPower(leftPower_b);
                 mFR.setPower(rightPower_f);
@@ -155,17 +178,104 @@ public class gamepad {
         rightPower_b = Range.clip(drive - twist + strafe, -power, power);
     }
 
-    public boolean isStoped()
+    public void centricDrive()
     {
-        if(leftPower_f == 0 && leftPower_b == 0 && rightPower_f == 0 && rightPower_b == 0)
-        {
-            return true;
+
+        vectorDrive = new Vector2d(drive, strafe);
+        vectorDrive.rotated(-drivetrain.getExternalHeading());
+
+        leftPower_f = Range.clip(vectorDrive.getX() + twist + vectorDrive.getY(), -power, power);
+        leftPower_b = Range.clip(vectorDrive.getX() + twist - vectorDrive.getY(), -power, power);
+        rightPower_f = Range.clip(vectorDrive.getX() - twist - vectorDrive.getY(), -power, power);
+        rightPower_b = Range.clip(vectorDrive.getX() - twist + vectorDrive.getY(), -power, power);
+
+        /*double GamepadAng ,currAng = drivetrain.getExternalHeading(), FinalAng = 0;
+        double scalar;
+
+        scalar = Math.sqrt(drive * drive + twist * twist);
+        GamepadAng = Math.atan(scalar);
+        FinalAng = currAng + GamepadAng;
+        drive = scalar * Math.sin(FinalAng);
+        strafe = scalar * Math.sin(FinalAng);
+
+        leftPower_f = Range.clip(drive + twist + strafe, -power, power);
+        leftPower_b = Range.clip(drive + twist - strafe, -power, power);
+        rightPower_f = Range.clip(drive - twist - strafe, -power, power);
+        rightPower_b = Range.clip(drive - twist + strafe, -power, power);
+
+        */
+
+        /*double theta = vectorDrive.angle();
+
+        double[] wheelSpeeds = new double[4];
+        wheelSpeeds[0] = Math.sin(theta + Math.PI / 4); // 0: mFL
+        wheelSpeeds[1] = Math.sin(theta - Math.PI / 4); // 1: mFR
+        wheelSpeeds[2] = Math.sin(theta - Math.PI / 4); // 2: mBL
+        wheelSpeeds[3] = Math.sin(theta + Math.PI / 4); // 3: BR
+
+        normalize(wheelSpeeds, vectorDrive.norm());
+
+        wheelSpeeds[0] += twist;
+        wheelSpeeds[1] -= twist;
+        wheelSpeeds[2] += twist;
+        wheelSpeeds[3] -= twist;
+
+        normalize(wheelSpeeds);
+
+        leftPower_f = wheelSpeeds[0] * mainPower;
+        leftPower_b = wheelSpeeds[1] * mainPower;
+        rightPower_f = wheelSpeeds[2] * mainPower;
+        rightPower_b = wheelSpeeds[3] * mainPower;*/
+
+
+    }
+
+    protected void normalize(double[] wheelSpeeds, double magnitude) {
+        double maxMagnitude = Math.abs(wheelSpeeds[0]);
+        for (int i = 1; i < wheelSpeeds.length; i++) {
+            double temp = Math.abs(wheelSpeeds[i]);
+            if (maxMagnitude < temp) {
+                maxMagnitude = temp;
+            }
         }
-        else
-        {
-            return false;
+        for (int i = 0; i < wheelSpeeds.length; i++) {
+            wheelSpeeds[i] = (wheelSpeeds[i] / maxMagnitude) * magnitude;
         }
     }
 
+    protected void normalize(double[] wheelSpeeds) {
+        double maxMagnitude = Math.abs(wheelSpeeds[0]);
+        for (int i = 1; i < wheelSpeeds.length; i++) {
+            double temp = Math.abs(wheelSpeeds[i]);
+            if (maxMagnitude < temp) {
+                maxMagnitude = temp;
+            }
+        }
+        if (maxMagnitude > 1) {
+            for (int i = 0; i < wheelSpeeds.length; i++) {
+                wheelSpeeds[i] = (wheelSpeeds[i] / maxMagnitude);
+            }
+        }
 
+    }
+
+    public double GetmFLPower()
+    {
+        return mFL.getPower();
+    }
+
+    public double GetmFRPower()
+    {
+        return mFR.getPower();
+    }
+
+    public double GetmBLPower()
+    {
+        return mBL.getPower();
+    }
+
+    public double GetmBRPower()
+    {
+        return mBR.getPower();
+    }
 }
