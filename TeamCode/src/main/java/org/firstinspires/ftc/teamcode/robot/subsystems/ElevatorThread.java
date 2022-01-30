@@ -33,6 +33,7 @@ public class ElevatorThread extends Thread{
         this.gamepad1 = gamepad1;
         eliorPlaying = false;
         this.activeOpMode = activeOpMode;
+        elevatorSate = ElevatorState.ZERO;
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is

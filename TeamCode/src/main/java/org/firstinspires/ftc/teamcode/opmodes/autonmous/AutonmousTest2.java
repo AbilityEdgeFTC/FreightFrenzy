@@ -151,6 +151,7 @@ public class AutonmousTest2 extends LinearOpMode {
         {
             drive.followTrajectorySequence(collectAndPlace);
         }
+
         while (opModeIsActive())
         {
             Pose2d poseEstimate = drive.getPoseEstimate();
@@ -159,6 +160,7 @@ public class AutonmousTest2 extends LinearOpMode {
             telemetry.addData("finalHeading", poseEstimate.getHeading());
             telemetry.update();
             valueStorage.currentPose = poseEstimate;
+            elevatorThread.interrupt();
         }
 
         elevatorThread.interrupt();

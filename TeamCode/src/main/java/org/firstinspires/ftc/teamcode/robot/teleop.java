@@ -37,17 +37,14 @@ public class teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         initAll();
-        // classes of the gamepad++, functions like gamepad pressed once  and more
-        cGamepad cGamepad1 = new cGamepad(gamepad1);
-        cGamepad cGamepad2 = new cGamepad(gamepad2);
 
         carousel = new carousel(hardwareMap); // carousel class functions
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry, drive); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
 
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2, false);
-        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2, false);
+        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2, true);
+        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2, true);
 
         // start the 2 threads
         ElevatorThread.start();
@@ -55,15 +52,12 @@ public class teleop extends LinearOpMode {
 
         // wait till after init
         waitForStart();
-
-        ((org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread) ElevatorThread).activeOpMode = true;
-        ((org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread) MultitaskingThread).activeOpMode = true;
+        //ElevatorThread = new ElevatorThread(hardwareMap, gamepad2, true);
+        //MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2, true);
 
         while (opModeIsActive()) {
 
             // update the gamepads, see if there are new inputs or we need to run functions such as moving the bot
-            cGamepad1.update();
-            cGamepad2.update();
             gamepad.update();
 
             while (gamepad2.dpad_right)

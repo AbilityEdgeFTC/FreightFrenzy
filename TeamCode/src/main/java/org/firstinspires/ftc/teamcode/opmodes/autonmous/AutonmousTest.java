@@ -130,6 +130,7 @@ public class AutonmousTest extends LinearOpMode {
             telemetry.addData("finalHeading", poseEstimate.getHeading());
             telemetry.update();
             valueStorage.currentPose = poseEstimate;
+            elevatorThread.interrupt();
         }
 
         elevatorThread.interrupt();

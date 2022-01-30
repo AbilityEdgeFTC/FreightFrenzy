@@ -30,7 +30,7 @@ public class gamepad {
     double drive,  strafe, twist, power = mainPower;
     public static double lockAngle = 90;
     public boolean  lockOnAngle = false;
-    public static double mainPower = 1, slowPower = .6, multiplier = .9;
+    public static double mainPower = .9, slowPower = .6, multiplier = .9;
     public static boolean isRegularDrive = true, slowMove = false;
     SampleMecanumDriveCancelable drivetrain;
     cGamepad cGamepad1, cGamepad2;
@@ -81,8 +81,12 @@ public class gamepad {
             case NORMAL_CONTROL:
                 getGamepadDirections(true);
 
-                if (cGamepad1.XOnce()) {
-                    slowMove = !slowMove;
+                if (gamepad1.right_stick_button || gamepad1.left_stick_button) {
+                    slowMove = true;
+                }
+                else
+                {
+                    slowMove = false;
                 }
 
                 if (slowMove) {
@@ -182,7 +186,7 @@ public class gamepad {
     {
 
         vectorDrive = new Vector2d(drive, strafe);
-        vectorDrive.rotated(-drivetrain.getExternalHeading());
+        vectorDrive.rotated(Math.toDegrees(-drivetrain.getExternalHeading()));
 
         leftPower_f = Range.clip(vectorDrive.getX() + twist + vectorDrive.getY(), -power, power);
         leftPower_b = Range.clip(vectorDrive.getX() + twist - vectorDrive.getY(), -power, power);
