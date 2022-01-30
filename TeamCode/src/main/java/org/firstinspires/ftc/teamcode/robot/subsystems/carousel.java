@@ -26,12 +26,14 @@ public class carousel {
     public carousel(HardwareMap hardwareMap) {
         this.mC = hardwareMap.get(DcMotor.class, "mC");
         this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
     public carousel(HardwareMap hardwareMap, Telemetry telemetry) {
         this.mC = hardwareMap.get(DcMotor.class, "mC");
         this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.telemetry = telemetry;
     }
 
