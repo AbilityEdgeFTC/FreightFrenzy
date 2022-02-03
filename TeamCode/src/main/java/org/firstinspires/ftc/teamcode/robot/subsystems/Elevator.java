@@ -17,8 +17,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 @Config
 public class Elevator {
-    public static final double TICKS_PER_REV = 145.1;
-    public static final double MAX_RPM = 1150;
+    public static final double TICKS_PER_REV = 384.5;
+    public static final double MAX_RPM = 435;
 
     public static double SPOOL_RADIUS = 0.75; // in
     public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed
@@ -28,14 +28,14 @@ public class Elevator {
     public static double MIN_HEIGHT = 9;
     public static double ZERO_HEIGHT = 0;
 
-    public static PIDCoefficients PID = new PIDCoefficients(1, 0, 0);
+    public static PIDCoefficients PID = new PIDCoefficients(2, 0, 0);
 
     public static double MAX_VEL = 80; // in/s
     public static double MAX_ACCEL = 80; // in/s^2
     public static double MAX_JERK = 0; // in/s^3
 
-    public static double kV = 10;
-    public static double kA = 10;
+    public static double kV = 0;
+    public static double kA = 0;
     public static double kStatic = 0;
 
     private DcMotorEx motor;
@@ -132,6 +132,11 @@ public class Elevator {
     public void setPower(double power) {
         motor.setPower(power);
     }
+
+    public double getPower() {
+        return motor.getPower();
+    }
+
 
 
 }

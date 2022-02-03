@@ -13,26 +13,24 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class ElevatorThreadAuto extends Thread{
 
     public static boolean eliorPlaying = false;
-    public static double timeTo = .5;
+    public static double timeTo = 1;
     Elevator elevator;
-    dip dip;
+
 
     public enum ElevatorState
     {
         ZERO,
         MIN,
         MID,
-        MAX
+        MAX,
+        RELEASE
     }
 
-    public static ElevatorState elevatorSate = ElevatorState.ZERO;
+    public static ElevatorState elevatorState = ElevatorState.ZERO;
 
     public ElevatorThreadAuto(HardwareMap hw) throws InterruptedException {
         elevator = new Elevator(hw);
-        dip = new dip(hw);
-
         eliorPlaying = false;
-        dip.getFreight();
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -48,35 +46,35 @@ public class ElevatorThreadAuto extends Thread{
             {
                 double startTime = clock.seconds();
 
-                if(elevatorSate == ElevatorState.MIN)
+                if(elevatorState == ElevatorState.MIN || elevatorState == ElevatorState.RELEASE)
                 {
                     elevator.setHeight(Elevator.MIN_HEIGHT);
                 }
-                else if(elevatorSate == ElevatorState.MID)
+                else if(elevatorState == ElevatorState.MID || elevatorState == ElevatorState.RELEASE)
                 {
                     elevator.setHeight(Elevator.MID_HEIGHT);
                 }
-                else if(elevatorSate == ElevatorState.MAX)
+                else if(elevatorState == ElevatorState.MAX || elevatorState == ElevatorState.RELEASE)
                 {
                     elevator.setHeight(Elevator.MAX_HEIGHT);
                 }
-                else if(elevatorSate == ElevatorState.ZERO)
+                else if(elevatorState == ElevatorState.ZERO)
                 {
                     elevator.setHeight(Elevator.ZERO_HEIGHT);
                 }
 
-                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.MIN)
+                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MIN || elevatorState == ElevatorState.RELEASE))
                 {
                     elevator.update();
                 }
-                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.MID)
+                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MID || elevatorState == ElevatorState.RELEASE))
                 {
                     elevator.update();
                 }
-                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.MAX)
+                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MAX || elevatorState == ElevatorState.RELEASE))
                 {
                     elevator.update();
-                }while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.ZERO)
+                }while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorState == ElevatorState.ZERO)
                 {
                     elevator.update();
                 }

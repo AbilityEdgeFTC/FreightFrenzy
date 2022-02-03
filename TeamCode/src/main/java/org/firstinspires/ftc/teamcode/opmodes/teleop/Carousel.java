@@ -62,7 +62,7 @@ public class Carousel extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            carousel.spin();
+            carousel.spin(true, true);
 
             //carousel.spinCarouselMotor(time);
 

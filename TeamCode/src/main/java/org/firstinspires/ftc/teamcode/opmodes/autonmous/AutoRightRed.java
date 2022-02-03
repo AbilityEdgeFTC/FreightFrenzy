@@ -7,21 +7,26 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto.ElevatorState;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ServoThreadAuto;
+import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage;
+
 
 /*
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
 @Autonomous(group = "drive")
-public class AutonmousTest2 extends LinearOpMode {
+public class AutoRightRed extends LinearOpMode {
 
     public static double startPoseRightX = 12;
     public static double startPoseRightY = -64.24;
@@ -39,103 +44,77 @@ public class AutonmousTest2 extends LinearOpMode {
     public static double poseCollectY = -67;
     public static double poseCollectH = 180;
     public static int numOfCycles = 5;
-    public static double waitTillOpenElevatorFirst = .5;
-    public static double waitTillOpenElevator = 1;
-    public static double waitTillCloseElevator = 1;
-    public static double waitSecTillTurnOnIntake = 3;
-    public static double reverseIntakeFor = 1;
+    carousel carousel;
     Thread elevatorThread;
     ElevatorThreadAuto elevator;
-    intake intake;
-    double delay;
+    ServoThreadAuto multiTask;
+    Thread multiTaskThread;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
-         Pose2d poseHubFront = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
-         Pose2d poseHubRight = new Pose2d(poseHubRightX, poseHubRightY, Math.toRadians(poseHubRightH));
-         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
-         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
-        drive.setPoseEstimate(startPoseRight);
-        elevatorThread = new ElevatorThreadAuto(hardwareMap);
+        Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
+        Pose2d poseHubFront = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
+        Pose2d poseHubRight = new Pose2d(poseHubRightX, poseHubRightY, Math.toRadians(poseHubRightH));
+        Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
+        Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
+
+        carousel = new carousel(hardwareMap);
         elevator = new ElevatorThreadAuto(hardwareMap);
-        intake= new intake(hardwareMap);
-        // "Collect And Place Additional Freight", "Number Of Freight To Collect";
-        // "Place Freight In";
-        // "Park In";
-        // "Park Completely";
+        multiTask = new ServoThreadAuto(hardwareMap);
+        multiTaskThread = multiTask;
+        elevatorThread = elevator;
+
+        drive.setPoseEstimate(startPoseRight);
 
         Trajectory placement = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToSplineHeading(poseHubFront, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(waitTillOpenElevatorFirst, () -> {
-                    elevator.elevatorSate = ElevatorState.MAX;
-                    delay += waitTillOpenElevatorFirst;
+                .addTemporalMarker(0.5, 0, () -> {
+                    elevator.elevatorState = ElevatorState.MAX;
                 })
                 .build();
 
-        delay = 0;
 
-        TrajectorySequence collectAndPlaceFirst = drive.trajectorySequenceBuilder(placement.end())
-                .addTemporalMarker(waitTillCloseElevator, () -> {
-                    elevator.elevatorSate = ElevatorState.ZERO;
-                    delay += waitTillCloseElevator;
+        TrajectorySequence collectFirst = drive.trajectorySequenceBuilder(placement.end())
+                .addTemporalMarker(0.1, 0, () -> {
+                    elevator.elevatorState = ElevatorState.ZERO;
                 })
                 .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(delay + waitSecTillTurnOnIntake, () -> {
-                    intake.intakeForward();
-                    delay += waitSecTillTurnOnIntake;
+                .addDisplacementMarker(() -> {
+                    multiTask.intakeState = ServoThreadAuto.IntakeState.FORWARD;
+                })
+                .build();
+
+        TrajectorySequence cycle = drive.trajectorySequenceBuilder(collectFirst.end())
+                .addTemporalMarker(0.1, 0, () -> {
+                    elevator.elevatorState = ElevatorState.ZERO;
+                })
+                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .addDisplacementMarker(() -> {
+                    multiTask.intakeState = ServoThreadAuto.IntakeState.FORWARD;
                 })
                 .lineToLinearHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(34.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(delay + reverseIntakeFor, () -> {
-                    intake.intakeBackward();
-                    delay += reverseIntakeFor;
+                .addTemporalMarker(0.1, 0, () -> {
+                    multiTask.intakeState = ServoThreadAuto.IntakeState.REVERSE;
+                })
+                .addTemporalMarker(0.1, 3, () -> {
+                    multiTask.intakeState = ServoThreadAuto.IntakeState.STOP;
                 })
                 .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(delay + waitTillOpenElevatorFirst, () -> {
-                    intake.stop();
-                    elevator.elevatorSate = ElevatorState.MAX;
-                    delay += waitTillOpenElevatorFirst;
+                .addTemporalMarker(0.8, 0, () -> {
+                    elevator.elevatorState = ElevatorState.MAX;
                 })
                 .lineToLinearHeading(poseHubRight, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        delay = 0;
-
-        TrajectorySequence collectAndPlace = drive.trajectorySequenceBuilder(collectAndPlaceFirst.end())
-                .addTemporalMarker(delay + waitTillCloseElevator, () -> {
-                    elevator.elevatorSate = ElevatorState.ZERO;
-                    delay += waitTillCloseElevator;
-                })
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(delay + waitSecTillTurnOnIntake, () -> {
-                    intake.intakeForward();
-                    delay += waitSecTillTurnOnIntake;
-                })
-                .lineToLinearHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(34.5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(delay + reverseIntakeFor, () -> {
-                    intake.intakeBackward();
-                    delay += reverseIntakeFor;
-                })
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(delay + waitTillOpenElevator, () -> {
-                    intake.stop();
-                    elevator.elevatorSate = ElevatorState.MAX;
-                    delay += waitTillOpenElevator;
-                })
-                .lineToLinearHeading(poseHubRight, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
 
         elevatorThread.start();
 
@@ -145,12 +124,14 @@ public class AutonmousTest2 extends LinearOpMode {
 
 
         drive.followTrajectory(placement);
-        drive.followTrajectorySequence(collectAndPlaceFirst);
-
-        for(int i = 0; i < numOfCycles; i++)
-        {
-            drive.followTrajectorySequence(collectAndPlace);
-        }
+        elevator.elevatorState = ElevatorState.RELEASE;
+        drive.followTrajectorySequence(collectFirst);
+        drive.followTrajectorySequence(cycle);
+        elevator.elevatorState = ElevatorState.RELEASE;
+        drive.followTrajectorySequence(cycle);
+        elevator.elevatorState = ElevatorState.RELEASE;
+        drive.followTrajectorySequence(cycle);
+        elevator.elevatorState = ElevatorState.RELEASE;
 
         while (opModeIsActive())
         {
@@ -158,6 +139,7 @@ public class AutonmousTest2 extends LinearOpMode {
             telemetry.addData("finalX", poseEstimate.getX());
             telemetry.addData("finalY", poseEstimate.getY());
             telemetry.addData("finalHeading", poseEstimate.getHeading());
+            ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), String.valueOf(drive.getPoseEstimate().getHeading()));
             telemetry.update();
             valueStorage.currentPose = poseEstimate;
             elevatorThread.interrupt();

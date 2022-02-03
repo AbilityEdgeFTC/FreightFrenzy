@@ -5,6 +5,7 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.drivebase.RobotDrive;
@@ -12,9 +13,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 
 @Config
@@ -30,11 +33,12 @@ public class gamepad {
     double drive,  strafe, twist, power = mainPower;
     public static double lockAngle = 90;
     public boolean  lockOnAngle = false;
-    public static double mainPower = .9, slowPower = .6, multiplier = .9;
+    public static double mainPower = 1, slowPower = .6, multiplier = .9;
     public static boolean isRegularDrive = true, slowMove = false;
     SampleMecanumDriveCancelable drivetrain;
     cGamepad cGamepad1, cGamepad2;
     Vector2d vectorDrive, vectorTurn, vectorPower;
+    public static double startH = 0;
 
     // Define 2 states, driver control or alignment control
     enum Mode {
@@ -54,7 +58,7 @@ public class gamepad {
      * @param telemetry the telemetry object from teleop
      * //@param drivetrain the SampleMecanumDriveCancable object from teleop
      */
-    public gamepad(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, SampleMecanumDriveCancelable drivetrain) {
+    public gamepad(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.mFL = hardwareMap.get(DcMotor.class, "mFL");
@@ -70,7 +74,19 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.drivetrain = drivetrain;
+        if(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")) == null)
+        {
+            startH = 0;
+        }
+        else
+        {
+            startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
+        }
+        this.drivetrain = new SampleMecanumDriveCancelable(hardwareMap);
+        this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
+        // We want to turn off velocity control for teleop
+        // Velocity control per wheel is not necessary outside of motion profiled auto
+        this.drivetrain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void update() {
@@ -184,92 +200,20 @@ public class gamepad {
 
     public void centricDrive()
     {
+        double theta = drivetrain.getExternalHeading() - startH;
 
-        vectorDrive = new Vector2d(drive, strafe);
-        vectorDrive.rotated(Math.toDegrees(-drivetrain.getExternalHeading()));
-
-        leftPower_f = Range.clip(vectorDrive.getX() + twist + vectorDrive.getY(), -power, power);
-        leftPower_b = Range.clip(vectorDrive.getX() + twist - vectorDrive.getY(), -power, power);
-        rightPower_f = Range.clip(vectorDrive.getX() - twist - vectorDrive.getY(), -power, power);
-        rightPower_b = Range.clip(vectorDrive.getX() - twist + vectorDrive.getY(), -power, power);
-
-        /*double GamepadAng ,currAng = drivetrain.getExternalHeading(), FinalAng = 0;
-        double scalar;
-
-        scalar = Math.sqrt(drive * drive + twist * twist);
-        GamepadAng = Math.atan(scalar);
-        FinalAng = currAng + GamepadAng;
-        drive = scalar * Math.sin(FinalAng);
-        strafe = scalar * Math.sin(FinalAng);
+        drive = drive * Math.cos(theta) - strafe * Math.sin(theta);
+        strafe = drive * Math.sin(theta) + strafe * Math.cos(theta);
 
         leftPower_f = Range.clip(drive + twist + strafe, -power, power);
         leftPower_b = Range.clip(drive + twist - strafe, -power, power);
         rightPower_f = Range.clip(drive - twist - strafe, -power, power);
-        rightPower_b = Range.clip(drive - twist + strafe, -power, power);*/
+        rightPower_b = Range.clip(drive - twist + strafe, -power, power);
 
-
-        /*
-        vectorDrive = new Vector2d(drive, strafe);
-        vectorDrive.rotated(vectorDrive.angle() + drivetrain.getExternalHeading());
-
-        leftPower_f = Range.clip(vectorDrive.getX() + twist + vectorDrive.getY(), -power, power);
-        leftPower_b = Range.clip(vectorDrive.getX() + twist - strafe, -vectorDrive.getY(), power);
-        rightPower_f = Range.clip(vectorDrive.getX() - twist - strafe, -vectorDrive.getY(), power);
-        rightPower_b = Range.clip(vectorDrive.getX() - twist + strafe, -vectorDrive.getY(), power);
-        */
-
-        /*double theta = vectorDrive.angle();
-
-        double[] wheelSpeeds = new double[4];
-        wheelSpeeds[0] = Math.sin(theta + Math.PI / 4); // 0: mFL
-        wheelSpeeds[1] = Math.sin(theta - Math.PI / 4); // 1: mFR
-        wheelSpeeds[2] = Math.sin(theta - Math.PI / 4); // 2: mBL
-        wheelSpeeds[3] = Math.sin(theta + Math.PI / 4); // 3: BR
-
-        normalize(wheelSpeeds, vectorDrive.norm());
-
-        wheelSpeeds[0] += twist;
-        wheelSpeeds[1] -= twist;
-        wheelSpeeds[2] += twist;
-        wheelSpeeds[3] -= twist;
-
-        normalize(wheelSpeeds);
-
-        leftPower_f = wheelSpeeds[0] * mainPower;
-        leftPower_b = wheelSpeeds[1] * mainPower;
-        rightPower_f = wheelSpeeds[2] * mainPower;
-        rightPower_b = wheelSpeeds[3] * mainPower;*/
-
-
-    }
-
-    protected void normalize(double[] wheelSpeeds, double magnitude) {
-        double maxMagnitude = Math.abs(wheelSpeeds[0]);
-        for (int i = 1; i < wheelSpeeds.length; i++) {
-            double temp = Math.abs(wheelSpeeds[i]);
-            if (maxMagnitude < temp) {
-                maxMagnitude = temp;
-            }
-        }
-        for (int i = 0; i < wheelSpeeds.length; i++) {
-            wheelSpeeds[i] = (wheelSpeeds[i] / maxMagnitude) * magnitude;
-        }
-    }
-
-    protected void normalize(double[] wheelSpeeds) {
-        double maxMagnitude = Math.abs(wheelSpeeds[0]);
-        for (int i = 1; i < wheelSpeeds.length; i++) {
-            double temp = Math.abs(wheelSpeeds[i]);
-            if (maxMagnitude < temp) {
-                maxMagnitude = temp;
-            }
-        }
-        if (maxMagnitude > 1) {
-            for (int i = 0; i < wheelSpeeds.length; i++) {
-                wheelSpeeds[i] = (wheelSpeeds[i] / maxMagnitude);
-            }
-        }
-
+        telemetry.addData("leftFPower:", drive + twist + strafe);
+        telemetry.addData("leftBPower:", drive + twist - strafe);
+        telemetry.addData("rightFPower:", drive - twist - strafe);
+        telemetry.addData("rightBPower:", drive - twist + strafe);
     }
 
     public double GetmFLPower()
@@ -291,4 +235,10 @@ public class gamepad {
     {
         return mBR.getPower();
     }
+
+    public double getIMU()
+    {
+        return drivetrain.getExternalHeading();
+    }
+
 }

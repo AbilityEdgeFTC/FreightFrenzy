@@ -8,6 +8,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @Config
 public class MultitaskingThreadTeleop extends Thread {
 
@@ -19,12 +21,14 @@ public class MultitaskingThreadTeleop extends Thread {
     //Elevator elevator;
     cGamepad cGamepad1, cGamepad2;
     boolean frontIntake = false, backIntake = false, activeOpMode;
+    Telemetry telemetry;
 
-    public MultitaskingThreadTeleop(HardwareMap hw, Gamepad gamepad1, Gamepad gamepad2, boolean activeOpMode) throws InterruptedException {
+    public MultitaskingThreadTeleop(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, boolean activeOpMode) throws InterruptedException {
         intake = new intake(hw);
         dip = new dip(hw);
         this.activeOpMode = activeOpMode;
-        elevator = new ElevatorThread(hw, gamepad2, activeOpMode);
+        this.telemetry = telemetry;
+        elevator = new ElevatorThread(hw, telemetry, gamepad2, activeOpMode);
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         cGamepad1 = new cGamepad(gamepad1);
@@ -95,4 +99,7 @@ public class MultitaskingThreadTeleop extends Thread {
         }
     }
 
+    public void setActiveOpMode(boolean activeOpMode) {
+        this.activeOpMode = activeOpMode;
+    }
 }
