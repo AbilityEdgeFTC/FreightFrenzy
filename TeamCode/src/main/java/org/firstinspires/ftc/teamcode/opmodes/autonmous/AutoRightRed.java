@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake.IntakeState;
 @Autonomous(group = "drive")
 public class AutoRightRed extends LinearOpMode {
 
+
     public static double startPoseRightX = 12;
     public static double startPoseRightY = -64.24;
     public static double startPoseRightH = 0;
