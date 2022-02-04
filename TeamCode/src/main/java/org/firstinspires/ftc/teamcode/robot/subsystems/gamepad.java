@@ -203,7 +203,7 @@ public class gamepad {
         double theta = drivetrain.getExternalHeading() - startH;
 
         drive = drive * Math.cos(theta) - strafe * Math.sin(theta);
-        strafe = drive * Math.sin(theta) + strafe * Math.cos(theta);
+        strafe = -drive * Math.sin(theta) + strafe * Math.cos(theta);
 
         leftPower_f = Range.clip(drive + twist + strafe, -power, power);
         leftPower_b = Range.clip(drive + twist - strafe, -power, power);

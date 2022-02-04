@@ -12,10 +12,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class ElevatorThreadAuto extends Thread{
 
-    public static boolean eliorPlaying = false;
     public static double timeTo = 1;
     Elevator elevator;
-
 
     public enum ElevatorState
     {
@@ -28,9 +26,8 @@ public class ElevatorThreadAuto extends Thread{
 
     public static ElevatorState elevatorState = ElevatorState.ZERO;
 
-    public ElevatorThreadAuto(HardwareMap hw) throws InterruptedException {
+    public ElevatorThreadAuto(HardwareMap hw) {
         elevator = new Elevator(hw);
-        eliorPlaying = false;
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -46,15 +43,15 @@ public class ElevatorThreadAuto extends Thread{
             {
                 double startTime = clock.seconds();
 
-                if(elevatorState == ElevatorState.MIN || elevatorState == ElevatorState.RELEASE)
+                if(elevatorState == ElevatorState.MIN)
                 {
                     elevator.setHeight(Elevator.MIN_HEIGHT);
                 }
-                else if(elevatorState == ElevatorState.MID || elevatorState == ElevatorState.RELEASE)
+                else if(elevatorState == ElevatorState.MID)
                 {
                     elevator.setHeight(Elevator.MID_HEIGHT);
                 }
-                else if(elevatorState == ElevatorState.MAX || elevatorState == ElevatorState.RELEASE)
+                else if(elevatorState == ElevatorState.MAX)
                 {
                     elevator.setHeight(Elevator.MAX_HEIGHT);
                 }
@@ -63,15 +60,15 @@ public class ElevatorThreadAuto extends Thread{
                     elevator.setHeight(Elevator.ZERO_HEIGHT);
                 }
 
-                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MIN || elevatorState == ElevatorState.RELEASE))
+                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MIN))
                 {
                     elevator.update();
                 }
-                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MID || elevatorState == ElevatorState.RELEASE))
+                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MID))
                 {
                     elevator.update();
                 }
-                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MAX || elevatorState == ElevatorState.RELEASE))
+                while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && (elevatorState == ElevatorState.MAX))
                 {
                     elevator.update();
                 }while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorState == ElevatorState.ZERO)
@@ -82,5 +79,9 @@ public class ElevatorThreadAuto extends Thread{
         }
         // an error occurred in the run loop.
         catch (Exception e) {}
+    }
+
+    public static void setElevatorState(ElevatorState elevatorState) {
+        ElevatorThreadAuto.elevatorState = elevatorState;
     }
 }

@@ -19,7 +19,7 @@ public class carousel {
     DcMotor mC;
     Telemetry telemetry;
     double i = 0;
-    public static double powerCarousel = 0.1, addBy = 0.0001, powerCarouselNoAccel = 0.25;
+    public static double powerCarousel = 0.1, addBy = 0.0001, powerCarouselNoAccel = 0.325;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
@@ -47,7 +47,7 @@ public class carousel {
             }
             else
             {
-                mC.setPower(-(powerCarouselNoAccel));
+                mC.setPower(-powerCarouselNoAccel);
             }
 
         }else{
@@ -58,7 +58,7 @@ public class carousel {
             }
             else
             {
-                mC.setPower((powerCarouselNoAccel));
+                mC.setPower(powerCarouselNoAccel);
             }
         }
     }

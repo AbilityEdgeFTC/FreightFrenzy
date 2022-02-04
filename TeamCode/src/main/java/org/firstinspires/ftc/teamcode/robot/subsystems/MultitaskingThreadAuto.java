@@ -5,33 +5,20 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.Gamepad;
+import org.firstinspires.ftc.teamcode.robot.subsystems.intake.IntakeState;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto.ElevatorState;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.intake.intakeState;
 
 @Config
-public class ServoThreadAuto extends Thread {
+public class MultitaskingThreadAuto extends Thread {
 
     intake intake;
     dip dip;
     public static double powerIntake = 1;
     ElevatorThreadAuto elevator;
-    boolean frontIntake = false, backIntake = false;
+    public static boolean frontIntake = false, backIntake = false;
 
-    public ElevatorState elevatorSate = elevator.elevatorState;
-
-    public enum IntakeState
-    {
-        REVERSE,
-        FORWARD,
-        STOP
-    }
-
-    public static IntakeState intakeState = IntakeState.STOP;
-
-    public ServoThreadAuto(HardwareMap hw) throws InterruptedException {
+    public MultitaskingThreadAuto(HardwareMap hw) {
         intake = new intake(hw);
         dip = new dip(hw);
         elevator = new ElevatorThreadAuto(hw);
@@ -45,7 +32,6 @@ public class ServoThreadAuto extends Thread {
             dip.getFreight();
 
             while (!isInterrupted()) {
-                elevatorSate = elevator.elevatorState;
 
                 if (intakeState == IntakeState.FORWARD)
                 {
@@ -76,21 +62,23 @@ public class ServoThreadAuto extends Thread {
                     intake.stop();
                 }
 
-                if((elevatorSate == elevator.elevatorState.MIN) || (elevatorSate == elevator.elevatorState.MID) || (elevatorSate == elevator.elevatorState.MAX))
+                if((ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MIN) || (ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MID) || (ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MAX))
                 {
                     dip.releaseFreightPos();
+                    dip.handState = dip.handState.HOLD;
                 }
-                else if((elevatorSate == elevator.elevatorState.ZERO))
+                else if(ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.ZERO)
                 {
                     dip.getFreight();
+                    dip.handState = dip.handState.HOLD;
                 }
 
-                if((elevatorSate == elevator.elevatorState.RELEASE))
+                if(dip.handState == dip.handState.RELEASE)
                 {
                     dip.releaseFreight();
                 }
-            }
-            catch (Exception e) {
-            }
+            } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
+        }
     }
 }

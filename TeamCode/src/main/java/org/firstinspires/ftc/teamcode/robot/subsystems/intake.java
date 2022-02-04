@@ -16,6 +16,14 @@ public class intake {
     double power;
     Telemetry telemetry;
 
+    public enum IntakeState
+    {
+        REVERSE,
+        FORWARD,
+        STOP
+    }
+
+    public static IntakeState intakeState = IntakeState.STOP;
     /**
      * constructor for intake
      */

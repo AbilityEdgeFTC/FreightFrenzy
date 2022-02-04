@@ -20,15 +20,14 @@ public class MultitaskingThreadTeleop extends Thread {
     ElevatorThread elevator;
     //Elevator elevator;
     cGamepad cGamepad1, cGamepad2;
-    boolean frontIntake = false, backIntake = false, activeOpMode;
+    boolean frontIntake = false, backIntake = false;
     Telemetry telemetry;
 
-    public MultitaskingThreadTeleop(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, boolean activeOpMode) throws InterruptedException {
+    public MultitaskingThreadTeleop(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new intake(hw);
         dip = new dip(hw);
-        this.activeOpMode = activeOpMode;
         this.telemetry = telemetry;
-        elevator = new ElevatorThread(hw, telemetry, gamepad2, activeOpMode);
+        elevator = new ElevatorThread(hw, telemetry, gamepad2);
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         cGamepad1 = new cGamepad(gamepad1);
@@ -42,17 +41,22 @@ public class MultitaskingThreadTeleop extends Thread {
         try {
             dip.getFreight();
 
-            while (!isInterrupted() && activeOpMode) {
+            while (!isInterrupted()) {
                 cGamepad1.update();
                 cGamepad2.update();
 
-                if (gamepad1.left_trigger != 0)
+                if (gamepad1.left_trigger != 0 || gamepad2.left_trigger != 0)
                 {
-                    intake.powerIntake(-gamepad1.left_trigger);
-                }
-                else if (gamepad1.right_trigger != 0)
+                    intake.powerIntake(-gamepad1.right_trigger);
+                    intake.powerIntake(-gamepad2.right_trigger);
+                    frontIntake = false;
+                    backIntake = false;                }
+                else if (gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0)
                 {
                     intake.powerIntake(gamepad1.right_trigger);
+                    intake.powerIntake(gamepad2.right_trigger);
+                    frontIntake = false;
+                    backIntake = false;
                 }
 
                 if (cGamepad1.rightBumperOnce())
@@ -97,9 +101,5 @@ public class MultitaskingThreadTeleop extends Thread {
         // an error occurred in the run loop.
         catch (Exception e) {
         }
-    }
-
-    public void setActiveOpMode(boolean activeOpMode) {
-        this.activeOpMode = activeOpMode;
     }
 }

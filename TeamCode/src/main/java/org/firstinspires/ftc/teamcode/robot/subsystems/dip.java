@@ -15,9 +15,17 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class dip {
 
     Servo sD, sH;
-    public static double intakePosition = .42, releasingPosition = .25, holdingPosition = 1, pushingPosition = .4;
+    public static double intakePosition = .65, releasingPosition = .42, holdingPosition = 1, pushingPosition = .4;
     Telemetry telemetry;
     public static double time = 100;
+
+    public enum HandState
+    {
+        HOLD,
+        RELEASE
+    }
+
+    public static HandState handState = HandState.HOLD;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
