@@ -38,11 +38,11 @@ public class Elevator {
     public static double kA = 0;
     public static double kStatic = 0;
 
-    private DcMotorEx motor;
+    public static DcMotorEx motor;
     private MotionProfile profile;
     private NanoClock clock = NanoClock.system();
     private double profileStartTime, desiredHeight = 0;
-    private int offset;
+    public static int offset;
     PIDFController controller;
     double power;
 

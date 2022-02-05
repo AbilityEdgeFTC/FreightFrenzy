@@ -18,7 +18,7 @@ public class ElevatorThread extends Thread{
     public static double timeTo = 1;
     Elevator elevator;
     Gamepad gamepad1;
-    public static double power;
+    public static double powerElevator = .5;
     Telemetry telemetry;
 
     public enum ElevatorState
@@ -70,6 +70,17 @@ public class ElevatorThread extends Thread{
                     elevator.setHeight(Elevator.ZERO_HEIGHT);
                 }
 
+                if(gamepad1.right_bumper && (gamepad1.dpad_right || gamepad1.dpad_left || gamepad1.dpad_up || gamepad1.dpad_down))
+                {
+                    elevator.motor.setPower(powerElevator);
+                    elevator.offset = elevator.motor.getCurrentPosition();
+                }
+                else if(gamepad1.left_bumper && (gamepad1.dpad_right || gamepad1.dpad_left || gamepad1.dpad_up || gamepad1.dpad_down))
+                {
+                    elevator.motor.setPower(-powerElevator);
+                    elevator.offset = elevator.motor.getCurrentPosition();
+                }
+
                 while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.MIN)
                 {
                     elevator.update();
@@ -108,6 +119,8 @@ public class ElevatorThread extends Thread{
                 elevatorSate = ElevatorState.ZERO;
             }
         }
+
+        elevator.setHeight();
         else
         {
             if (gamepad1.y) {
