@@ -200,7 +200,8 @@ public class gamepad {
 
     public void centricDrive()
     {
-        double theta = drivetrain.getExternalHeading() - startH;
+        double theta = (drivetrain.getExternalHeading() - startH) + (Math.PI/2); // when starting in red
+        //double theta = (drivetrain.getExternalHeading() - startH) - (Math.PI/2); // when starting in blue
 
         drive = drive * Math.cos(theta) - strafe * Math.sin(theta);
         strafe = -drive * Math.sin(theta) + strafe * Math.cos(theta);
