@@ -39,6 +39,8 @@ public class trajectoryObject {
         this.drive = drive;
         elevatorThreadAuto = new ElevatorThreadAuto(hardwareMap);
         dip = new dip(hardwareMap);
+        carousel = new carousel(hardwareMap);
+        intake = new intake(hardwareMap);
     }
 
     public void generateTrajectory(Pose2d startPose, Pose2d point, TrajectoryType trajectoryType)

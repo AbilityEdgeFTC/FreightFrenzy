@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ReadWriteFile;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto.ElevatorState;
 import org.firstinspires.ftc.teamcode.robot.subsystems.MultitaskingThreadAuto;
@@ -46,12 +48,11 @@ public class AutoLeftRed extends LinearOpMode {
     public static double runCarouselFor = 4;
     public static double helpPark = 5;
     carousel carousel;
-    Thread elevatorThread;
-    ElevatorThreadAuto elevator;
-    MultitaskingThreadAuto multiTask;
-    Thread multiTaskThread;
+    Elevator elevator;
     intake intake;
-    public static double reverseIntakeFor = 3;
+    dip dip;
+    public static double timeTo = 1;
+    public static double reverseIntakeFor = 2;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -65,11 +66,9 @@ public class AutoLeftRed extends LinearOpMode {
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
 
         carousel = new carousel(hardwareMap);
-        elevator = new ElevatorThreadAuto(hardwareMap);
-        multiTask = new MultitaskingThreadAuto(hardwareMap);
-        multiTaskThread = multiTask;
-        elevatorThread = elevator;
+        elevator = new Elevator(hardwareMap);
         intake = new intake(hardwareMap);
+        dip = new dip(hardwareMap);
 
         drive.setPoseEstimate(startPoseLeft);
 
@@ -97,38 +96,20 @@ public class AutoLeftRed extends LinearOpMode {
                 .strafeLeft(helpPark)
                 .build();
 
-        elevatorThread.start();
-        multiTaskThread.start();
-
-        if (isStopRequested())
-        {
-            elevatorThread.interrupt();
-            multiTaskThread.interrupt();
-        }
+        NanoClock clock = NanoClock.system();
 
         waitForStart();
 
-        if (isStopRequested())
-        {
-            elevatorThread.interrupt();
-            multiTaskThread.interrupt();
-        }
+        double startTime = clock.seconds();
 
         drive.followTrajectorySequence(carouselGo);
-        carousel.spin(true, false);
-        Thread.sleep((long)(runCarouselFor * 1000));
-        carousel.stop();
+        runCarousel();
         drive.followTrajectorySequence(hub);
-        elevator.setElevatorState(ElevatorState.MAX);
-        dip.handState = dip.HandState.RELEASE;
-        elevator.setElevatorState(ElevatorState.ZERO);
-        dip.handState = dip.HandState.HOLD;
+        goToMax(clock, startTime);
         drive.followTrajectorySequence(entrance);
-        intake.intakeState = IntakeState.FORWARD;
+        intake.intakeForward();
         drive.followTrajectorySequence(collect);
-        intake.intakeState = IntakeState.REVERSE;
-        Thread.sleep((long)(reverseIntakeFor * 1000));
-        intake.intakeState = IntakeState.STOP;
+        fixIntake();
         drive.followTrajectorySequence(park);
 
         while (opModeIsActive())
@@ -142,14 +123,33 @@ public class AutoLeftRed extends LinearOpMode {
             ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), String.valueOf(drive.getPoseEstimate().getHeading()));
         }
 
-        elevatorThread.interrupt();
-        multiTaskThread.interrupt();
+    }
 
-        if(isStopRequested())
+    void goToMax(NanoClock clock, double startTime) throws InterruptedException {
+        elevator.setHeight(Elevator.MAX_HEIGHT);
+        while (isStopRequested() && (clock.seconds() - startTime) < timeTo)
         {
-            elevatorThread.interrupt();
-            multiTaskThread.interrupt();
+            elevator.update();
         }
+        dip.releaseFreightPos();
+        dip.releaseFreight();
+        elevator.setHeight(Elevator.ZERO_HEIGHT);
+        dip.getFreight();
+        while (isStopRequested() && (clock.seconds() - startTime) < timeTo)
+        {
+            elevator.update();
+        }
+    }
 
+    void fixIntake() throws InterruptedException {
+        intake.intakeBackward();
+        Thread.sleep((long)(reverseIntakeFor * 1000));
+        intake.stop();
+    }
+
+    void runCarousel() throws InterruptedException {
+        carousel.spin(true, false);
+        Thread.sleep((long)(runCarouselFor * 1000));
+        carousel.stop();
     }
 }
