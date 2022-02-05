@@ -60,6 +60,22 @@ public class dip {
         Thread.sleep((long)time*10);
     }
 
+    // spin dip servo to intake positions, and holding servo to hold position.
+    public void getFreightAUTO() {
+        sD.setPosition(intakePosition);
+        sH.setPosition(holdingPosition);
+    }
+    // spin dip servo to releasing positions, and holding servo to hold position.
+    public void releaseFreightPosAUTO() {
+        sD.setPosition(releasingPosition);
+        sH.setPosition(holdingPosition);
+    }
+
+    // spin holding servo to push position.
+    public void releaseFreightAUTO() {
+        sH.setPosition(pushingPosition);
+    }
+
     // display position of servo's.
     public void displayTelemetry(){
         telemetry.addLine("Servo Dip at: " + sD.getPosition());

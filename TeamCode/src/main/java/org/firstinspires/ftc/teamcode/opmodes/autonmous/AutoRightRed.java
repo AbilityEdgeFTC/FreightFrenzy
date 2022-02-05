@@ -67,13 +67,11 @@ public class AutoRightRed extends LinearOpMode {
         drive.setPoseEstimate(startPoseRight);
 
         TrajectorySequence placement = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToSplineHeading(poseHubFront, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(poseHubFront)
                 .build();
 
         TrajectorySequence entranceFirst = drive.trajectorySequenceBuilder(placement.end())
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToLinearHeading(poseEntrance)
                 .build();
 
         TrajectorySequence collect = drive.trajectorySequenceBuilder(entranceFirst.end())
@@ -82,15 +80,12 @@ public class AutoRightRed extends LinearOpMode {
                 .build();
 
         TrajectorySequence cycle = drive.trajectorySequenceBuilder(collect.end())
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToLinearHeading(poseHubFront, SampleMecanumDrive.getVelocityConstraint(38.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToLinearHeading(poseEntrance)
+                .lineToLinearHeading(poseHubFront)
                 .build();
 
         TrajectorySequence entrance = drive.trajectorySequenceBuilder(cycle.end())
-                .lineToLinearHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(39, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToLinearHeading(poseEntrance)
                 .build();
 
         elevatorThread.start();

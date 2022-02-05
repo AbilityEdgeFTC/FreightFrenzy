@@ -12,19 +12,19 @@ public class MenuOpModeLeagueMid extends LinearOpMode
 {
     //TODO: ADD TASKS WITH OPTIONS
     static taskObject autonomus =
-            new taskObject(new String[]{"On","Off"},"Run Autonomous");
+            new taskObject(new String[]{"YES","NO"},"Run Autonomous");
     static taskObject side =
-            new taskObject(new String[]{"Left","Right"},"Alliance Side");
+            new taskObject(new String[]{"LEFT","RIGHT"},"Alliance Side");
     static taskObject color =
-            new taskObject(new String[]{"Red", "Blue"},"Alliance Color");
+            new taskObject(new String[]{"RED", "BLUE"},"Alliance Color");
     static taskObject vision =
-            new taskObject(new String[]{"Duck","TSE","None"},"Vision");
+            new taskObject(new String[]{"DUCK","TSE","NINE"},"Vision Detection");
     static taskObject delay =
             new taskObject(new String[]{"2","4","6","8","10","12","14","16","18","20","22","24","26"},"Start Delay");
     static taskObject numOfCycles =
             new taskObject(new String[]{"1","2","3","4","5"},"Num Of Cycles");
     static taskObject park =
-            new taskObject(new String[]{"warehouse(full left)","warehouse(full right)","warehouse(half right)","alliance shipping unit"},"Park");
+            new taskObject(new String[]{"Warehouse Left","Warehouse Right","Warehouse Half","Alliance Shipping Unit"},"Park In");
 
     //all tasks taskObject array:
     public static taskObject[] tasks = {autonomus,side,color,vision,delay,numOfCycles,park};

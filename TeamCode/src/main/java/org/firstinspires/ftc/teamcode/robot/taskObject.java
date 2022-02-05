@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 public class taskObject {
     private static String[] options = {};
     private static String name;
     private static trajectoryObject trajectory;
+    Pose2d pose2d;
 
     public taskObject(String[] options, String name) {
         this.options = options;
         this.name = name;
     }
 
-    public taskObject(String[] options, String name,trajectoryObject trajectory) {
+    public taskObject(String[] options, String name, Pose2d[] points) {
         this.options = options;
         this.name = name;
         this.trajectory = trajectory;
