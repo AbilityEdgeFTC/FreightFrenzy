@@ -119,8 +119,6 @@ public class ElevatorThread extends Thread{
                 elevatorSate = ElevatorState.ZERO;
             }
         }
-
-        elevator.setHeight();
         else
         {
             if (gamepad1.y) {

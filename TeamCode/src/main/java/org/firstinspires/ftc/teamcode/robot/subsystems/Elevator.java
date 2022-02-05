@@ -61,7 +61,6 @@ public class Elevator {
     public Elevator(HardwareMap hardwareMap) {
         motor = hardwareMap.get(DcMotorEx.class, "mE");
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // if necessary, reverse the motor so "up" is positive
         // motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
