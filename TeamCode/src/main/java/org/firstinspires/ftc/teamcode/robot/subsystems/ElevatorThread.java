@@ -14,11 +14,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class ElevatorThread extends Thread{
 
-    public static boolean eliorPlaying = false;
+    public static boolean eliorPlaying = true;
     public static double timeTo = 1;
     Elevator elevator;
     Gamepad gamepad1;
-    public static double powerElevator = .5;
     Telemetry telemetry;
 
     public enum ElevatorState

@@ -23,7 +23,7 @@ public class MultitaskingThreadTeleop extends Thread {
     cGamepad cGamepad1, cGamepad2;
     boolean frontIntake = false, backIntake = false;
     Telemetry telemetry;
-    hand tse;
+    //hand tse;
 
      public static double handPos = 0;
 
@@ -36,7 +36,7 @@ public class MultitaskingThreadTeleop extends Thread {
         this.gamepad2 = gamepad2;
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
-        tse = new hand(hw);
+        //tse = new hand(hw);
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -71,18 +71,6 @@ public class MultitaskingThreadTeleop extends Thread {
                     frontIntake = false;
                 }
 
-                if(gamepad2.right_trigger != 0 && gamepad2.right_trigger > threshold)
-                {
-        //            tse.moveHand(gamepad2.right_trigger);
-                    threshold = gamepad2.right_trigger;
-                }
-                else if(gamepad2.left_trigger != 0 && gamepad2.left_trigger < threshold)
-                {
-        //            tse.moveHand(goBackPos - gamepad2.left_trigger);
-                    threshold = goBackPos - gamepad2.left_trigger;
-                }
-
-
                 if(frontIntake)
                 {
                     intake.powerIntake(powerIntake);
@@ -105,7 +93,7 @@ public class MultitaskingThreadTeleop extends Thread {
                     dip.getFreight();
                 }
 
-                if(cGamepad2.dpadUpOnce())
+                /*if(cGamepad2.dpadUpOnce())
                 {
                     handPos+=0.05;
                     tse.moveHand(handPos);
@@ -114,7 +102,7 @@ public class MultitaskingThreadTeleop extends Thread {
                 {
                     handPos-=0.05;
                     tse.moveHand(handPos);
-                }
+                }*/
 
                 if(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce())
                 {
