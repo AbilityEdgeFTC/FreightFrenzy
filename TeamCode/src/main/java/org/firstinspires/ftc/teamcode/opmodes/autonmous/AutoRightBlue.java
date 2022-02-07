@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
@@ -38,16 +39,15 @@ public class AutoRightBlue extends LinearOpMode {
     public static double poseEntranceX = 12;
     public static double poseEntranceY = 67;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 43;
+    public static double poseCollectX = 50;
     public static double poseCollectY = 67;
     public static double poseCollectH = 180;
     public static double runCarouselFor = 4;
-    public static double helpPark = 5;
+    public static double helpPark = 8;
     carousel carousel;
-    Elevator elevator;
     intake intake;
     dip dip;
-    public static double timeTo = 1;
+    ElevatorThreadAuto threadAuto;
     public static double reverseIntakeFor = 2;
 
     @Override
@@ -62,9 +62,9 @@ public class AutoRightBlue extends LinearOpMode {
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
 
         carousel = new carousel(hardwareMap);
-        elevator = new Elevator(hardwareMap);
         intake = new intake(hardwareMap);
         dip = new dip(hardwareMap);
+        threadAuto = new ElevatorThreadAuto(hardwareMap);
 
         drive.setPoseEstimate(startPoseLeft);
 
@@ -83,25 +83,34 @@ public class AutoRightBlue extends LinearOpMode {
                 .build();
 
         TrajectorySequence collect = drive.trajectorySequenceBuilder(entrance.end())
-                .lineToLinearHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()-20,poseCollect.getY(),poseCollect.getHeading()))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()-15,poseCollect.getY(),poseCollect.getHeading()))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()-10,poseCollect.getY(),poseCollect.getHeading() - Math.PI / 8), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()-5,poseCollect.getY(),poseCollect.getHeading() + Math.PI / 8), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()-2,poseCollect.getY(),poseCollect.getHeading() - Math.PI / 8), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(),poseCollect.getY(),poseCollect.getHeading() + Math.PI / 8), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         TrajectorySequence park = drive.trajectorySequenceBuilder(collect.end())
-                .strafeTo(new Vector2d(poseCollect.getX() - helpPark, poseCollect.getY() - helpPark))
-                .strafeRight(helpPark)
+                .strafeTo(new Vector2d(poseCollect.getX() - helpPark, poseCollect.getY() + helpPark))
+                .strafeLeft(helpPark)
                 .build();
 
-        NanoClock clock = NanoClock.system();
+        threadAuto.start();
+        dip.getFreight();
 
         waitForStart();
 
-        double startTime = clock.seconds();
+        if (isStopRequested())  threadAuto.interrupt();
 
         drive.followTrajectorySequence(carouselGo);
         runCarousel();
         drive.followTrajectorySequence(hub);
-        goToMax(clock, startTime);
+        goToMax();
         drive.followTrajectorySequence(entrance);
         intake.intakeForward();
         drive.followTrajectorySequence(collect);
@@ -118,23 +127,18 @@ public class AutoRightBlue extends LinearOpMode {
             valueStorage.currentPose = poseEstimate;
             ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), String.valueOf(drive.getPoseEstimate().getHeading()));
         }
+        threadAuto.interrupt();
 
     }
 
-    void goToMax(NanoClock clock, double startTime) throws InterruptedException {
-        elevator.setHeight(Elevator.MAX_HEIGHT);
-        while (isStopRequested() && (clock.seconds() - startTime) < timeTo)
-        {
-            elevator.update();
-        }
+    void goToMax() throws InterruptedException {
+        threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX);
+        Thread.sleep(1000);
         dip.releaseFreightPos();
         dip.releaseFreight();
-        elevator.setHeight(Elevator.ZERO_HEIGHT);
+        threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN);
+        Thread.sleep(3000);
         dip.getFreight();
-        while (isStopRequested() && (clock.seconds() - startTime) < timeTo)
-        {
-            elevator.update();
-        }
     }
 
     void fixIntake() throws InterruptedException {
@@ -145,7 +149,7 @@ public class AutoRightBlue extends LinearOpMode {
 
     void runCarousel() throws InterruptedException {
         carousel.spin(true, false);
-        Thread.sleep((long)(runCarouselFor * 1000));
+        Thread.sleep((long)runCarouselFor*1000);
         carousel.stop();
     }
 }

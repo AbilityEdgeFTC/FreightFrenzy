@@ -18,21 +18,19 @@ public class carousel {
     //motor carousel
     DcMotor mC;
     Telemetry telemetry;
-    double i = 0;
+    int i = 0;
     public static double powerCarousel = 0.1, addBy = 0.0001, powerCarouselNoAccel = 0.325;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
     public carousel(HardwareMap hardwareMap) {
         this.mC = hardwareMap.get(DcMotor.class, "mC");
-        this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
         this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
     public carousel(HardwareMap hardwareMap, Telemetry telemetry) {
         this.mC = hardwareMap.get(DcMotor.class, "mC");
-        this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
         this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.telemetry = telemetry;
     }
@@ -66,6 +64,7 @@ public class carousel {
     // stop carousel motor.
     public void stop(){
         mC.setPower(0);
+        i=0;
     }
 
     // display power of motor.

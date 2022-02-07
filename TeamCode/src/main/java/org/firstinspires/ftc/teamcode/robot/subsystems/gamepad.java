@@ -74,14 +74,15 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        if(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")) == null)
+
+        try
+        {
+            startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
+        }catch (NumberFormatException e)
         {
             startH = 0;
         }
-        else
-        {
-            startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
-        }
+
         this.drivetrain = new SampleMecanumDriveCancelable(hardwareMap);
         this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
         // We want to turn off velocity control for teleop

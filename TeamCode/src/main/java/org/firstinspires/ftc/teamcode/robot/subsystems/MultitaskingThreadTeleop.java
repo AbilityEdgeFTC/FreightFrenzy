@@ -25,6 +25,8 @@ public class MultitaskingThreadTeleop extends Thread {
     Telemetry telemetry;
     hand tse;
 
+     public static double handPos = 0;
+
     public MultitaskingThreadTeleop(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new intake(hw);
         dip = new dip(hw);
@@ -48,36 +50,35 @@ public class MultitaskingThreadTeleop extends Thread {
                 cGamepad1.update();
                 cGamepad2.update();
 
-                if (gamepad1.left_trigger != 0)
+                if (gamepad1.left_trigger != 0 || gamepad2.left_trigger != 0)
                 {
-                    intake.powerIntake(-gamepad1.left_trigger);
                     frontIntake = false;
                     backIntake = false;                }
-                else if (gamepad1.right_trigger != 0)
+                else if (gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0)
                 {
-                    intake.powerIntake(gamepad2.right_trigger);
+                    intake.powerIntake(gamepad1.right_trigger);
                     frontIntake = false;
                     backIntake = false;
                 }
 
-                if (cGamepad1.rightBumperOnce() || cGamepad2.rightBumperOnce())
+                if (cGamepad1.rightBumperOnce() )
                 {
                     frontIntake = !frontIntake;
                     backIntake = false;
                 }
-                else if (cGamepad1.leftBumperOnce() || cGamepad2.leftBumperOnce()) {
+                else if (cGamepad1.leftBumperOnce() ) {
                     backIntake = !backIntake;
                     frontIntake = false;
                 }
 
                 if(gamepad2.right_trigger != 0 && gamepad2.right_trigger > threshold)
                 {
-                    tse.moveHand(gamepad2.right_trigger);
+        //            tse.moveHand(gamepad2.right_trigger);
                     threshold = gamepad2.right_trigger;
                 }
                 else if(gamepad2.left_trigger != 0 && gamepad2.left_trigger < threshold)
                 {
-                    tse.moveHand(goBackPos - gamepad2.left_trigger);
+        //            tse.moveHand(goBackPos - gamepad2.left_trigger);
                     threshold = goBackPos - gamepad2.left_trigger;
                 }
 
@@ -95,13 +96,24 @@ public class MultitaskingThreadTeleop extends Thread {
                     intake.stop();
                 }
 
-                if(gamepad2.dpad_up || (elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
+                if((elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
                     dip.releaseFreightPos();
                 }
-                else if(gamepad2.dpad_down || elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
+                else if(elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
                     dip.getFreight();
+                }
+
+                if(cGamepad2.dpadUpOnce())
+                {
+                    handPos+=0.05;
+                    tse.moveHand(handPos);
+                }
+                if(cGamepad2.dpadUpOnce())
+                {
+                    handPos-=0.05;
+                    tse.moveHand(handPos);
                 }
 
                 if(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce())
