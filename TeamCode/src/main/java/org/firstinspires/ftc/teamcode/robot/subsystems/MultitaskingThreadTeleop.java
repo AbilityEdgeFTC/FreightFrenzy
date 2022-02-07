@@ -19,9 +19,11 @@ public class MultitaskingThreadTeleop extends Thread {
     public static double powerIntake = 1;
     ElevatorThread elevator;
     //Elevator elevator;
+    double threshold, goBackPos = 1;
     cGamepad cGamepad1, cGamepad2;
     boolean frontIntake = false, backIntake = false;
     Telemetry telemetry;
+    hand tse;
 
     public MultitaskingThreadTeleop(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new intake(hw);
@@ -32,6 +34,7 @@ public class MultitaskingThreadTeleop extends Thread {
         this.gamepad2 = gamepad2;
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
+        tse = new hand(hw);
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -45,28 +48,37 @@ public class MultitaskingThreadTeleop extends Thread {
                 cGamepad1.update();
                 cGamepad2.update();
 
-                if (gamepad1.left_trigger != 0 || gamepad2.left_trigger != 0)
+                if (gamepad1.left_trigger != 0)
                 {
-                    intake.powerIntake(-gamepad1.right_trigger);
-                    intake.powerIntake(-gamepad2.right_trigger);
+                    intake.powerIntake(-gamepad1.left_trigger);
                     frontIntake = false;
                     backIntake = false;                }
-                else if (gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0)
+                else if (gamepad1.right_trigger != 0)
                 {
-                    intake.powerIntake(gamepad1.right_trigger);
                     intake.powerIntake(gamepad2.right_trigger);
                     frontIntake = false;
                     backIntake = false;
                 }
 
-                if (cGamepad1.rightBumperOnce())
+                if (cGamepad1.rightBumperOnce() || cGamepad2.rightBumperOnce())
                 {
                     frontIntake = !frontIntake;
                     backIntake = false;
                 }
-                else if (cGamepad1.leftBumperOnce()) {
+                else if (cGamepad1.leftBumperOnce() || cGamepad2.leftBumperOnce()) {
                     backIntake = !backIntake;
                     frontIntake = false;
+                }
+
+                if(gamepad2.right_trigger != 0 && gamepad2.right_trigger > threshold)
+                {
+                    tse.moveHand(gamepad2.right_trigger);
+                    threshold = gamepad2.right_trigger;
+                }
+                else if(gamepad2.left_trigger != 0 && gamepad2.left_trigger < threshold)
+                {
+                    tse.moveHand(goBackPos - gamepad2.left_trigger);
+                    threshold = goBackPos - gamepad2.left_trigger;
                 }
 
 
