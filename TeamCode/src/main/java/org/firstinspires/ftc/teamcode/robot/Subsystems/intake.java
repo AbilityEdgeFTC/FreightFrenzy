@@ -5,17 +5,26 @@
 
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+@Config
 public class intake {
 
     DcMotor mI;
-    double power;
+    public static double power = 1;
     Telemetry telemetry;
 
+    public enum IntakeState
+    {
+        REVERSE,
+        FORWARD,
+        STOP
+    }
+
+    public static IntakeState intakeState = IntakeState.STOP;
     /**
      * constructor for intake
      */

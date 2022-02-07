@@ -26,7 +26,8 @@ public class teleop extends LinearOpMode {
 
     carousel carousel;
     gamepad gamepad;
-    SampleMecanumDriveCancelable drive;
+    ElevatorThread elevatorThread;
+    MultitaskingThreadTeleop multitaskingThreadTeleop;
 
     /**
      * Function runs once when pressed, and loops while active.
@@ -36,18 +37,15 @@ public class teleop extends LinearOpMode {
      */
     @Override
     public void runOpMode() throws InterruptedException {
-        initAll();
-        // classes of the gamepad++, functions like gamepad pressed once  and more
-        cGamepad cGamepad1 = new cGamepad(gamepad1);
-        cGamepad cGamepad2 = new cGamepad(gamepad2);
-
         carousel = new carousel(hardwareMap); // carousel class functions
-        gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry, drive); // teleop(gamepad) class functions
+        gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
 
+        elevatorThread = new ElevatorThread(hardwareMap, telemetry, gamepad2);
+        multitaskingThreadTeleop = new MultitaskingThreadTeleop(hardwareMap, telemetry, gamepad1, gamepad2);
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread ElevatorThread = new ElevatorThread(hardwareMap, gamepad2, false);
-        Thread MultitaskingThread = new MultitaskingThreadTeleop(hardwareMap, gamepad1, gamepad2, false);
+        Thread ElevatorThread = elevatorThread;
+        Thread MultitaskingThread = multitaskingThreadTeleop;
 
         // start the 2 threads
         ElevatorThread.start();
@@ -56,24 +54,20 @@ public class teleop extends LinearOpMode {
         // wait till after init
         waitForStart();
 
-        ((org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread) ElevatorThread).activeOpMode = true;
-        ((org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread) MultitaskingThread).activeOpMode = true;
-
         while (opModeIsActive()) {
 
             // update the gamepads, see if there are new inputs or we need to run functions such as moving the bot
-            cGamepad1.update();
-            cGamepad2.update();
             gamepad.update();
 
             while (gamepad2.dpad_right)
             {
-                carousel.spin();
+                carousel.spin(false, true);
             }
 
             while (gamepad2.dpad_left)
             {
-                carousel.spin(true);
+
+                carousel.spin(true, true);
             }
 
             if(!gamepad2.dpad_right && !gamepad2.dpad_left)
@@ -85,7 +79,7 @@ public class teleop extends LinearOpMode {
             telemetry.addData("mBR: ", gamepad.GetmBRPower());
             telemetry.addData("mFL: ", gamepad.GetmFLPower());
             telemetry.addData("mFR: ", gamepad.GetmFRPower());
-            telemetry.addData("IMU:", drive.getExternalHeading());
+            telemetry.addData("IMU:", gamepad.getIMU());
             telemetry.update();
         }
 
@@ -93,15 +87,5 @@ public class teleop extends LinearOpMode {
         ElevatorThread.interrupt();
         MultitaskingThread.interrupt();
     }
-
-    void initAll() {
-        drive = new SampleMecanumDriveCancelable(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(0,0,0));
-        // We want to turn off velocity control for teleop
-        // Velocity control per wheel is not necessary outside of motion profiled auto
-        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-
 
 }

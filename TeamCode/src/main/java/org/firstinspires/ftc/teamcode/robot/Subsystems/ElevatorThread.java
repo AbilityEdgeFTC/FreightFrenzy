@@ -9,14 +9,16 @@ import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @Config
 public class ElevatorThread extends Thread{
 
-    public static boolean eliorPlaying = false;
-    public static double timeTo = .5;
+    public static boolean eliorPlaying = true;
+    public static double timeTo = 1;
     Elevator elevator;
     Gamepad gamepad1;
-    public static boolean activeOpMode;
+    Telemetry telemetry;
 
     public enum ElevatorState
     {
@@ -28,11 +30,12 @@ public class ElevatorThread extends Thread{
 
     public static ElevatorState elevatorSate = ElevatorState.ZERO;
 
-    public ElevatorThread(HardwareMap hw, Gamepad gamepad1, boolean activeOpMode) {
+    public ElevatorThread(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1) {
         elevator = new Elevator(hw);
         this.gamepad1 = gamepad1;
         eliorPlaying = false;
-        this.activeOpMode = activeOpMode;
+        elevatorSate = ElevatorState.ZERO;
+        this.telemetry = telemetry;
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -44,7 +47,7 @@ public class ElevatorThread extends Thread{
         {
             NanoClock clock = NanoClock.system();
 
-            while (!isInterrupted() && activeOpMode)
+            while (!isInterrupted())
             {
                 double startTime = clock.seconds();
                 checkLevel();
@@ -65,6 +68,17 @@ public class ElevatorThread extends Thread{
                 {
                     elevator.setHeight(Elevator.ZERO_HEIGHT);
                 }
+
+//                if(gamepad1.right_bumper && (gamepad1.dpad_right || gamepad1.dpad_left || gamepad1.dpad_up || gamepad1.dpad_down))
+//                {
+//                    elevator.motor.setPower(powerElevator);
+//                    elevator.offset = elevator.motor.getCurrentPosition();
+//                }
+//                else if(gamepad1.left_bumper && (gamepad1.dpad_right || gamepad1.dpad_left || gamepad1.dpad_up || gamepad1.dpad_down))
+//                {
+//                    elevator.motor.setPower(-powerElevator);
+//                    elevator.offset = elevator.motor.getCurrentPosition();
+//                }
 
                 while (!isInterrupted() && (clock.seconds() - startTime) < timeTo && elevatorSate == ElevatorState.MIN)
                 {
@@ -117,5 +131,7 @@ public class ElevatorThread extends Thread{
             }
         }
 
+        telemetry.addData("Power: ", elevator.getPower());
     }
+
 }
