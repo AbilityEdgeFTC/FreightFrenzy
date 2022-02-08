@@ -81,6 +81,12 @@ public class ElevatorThreadAuto extends Thread{
         catch (Exception e) {}
     }
 
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        elevator.setPower(0);
+    }
+
     public static void setElevatorState(ElevatorState elevatorState) {
         ElevatorThreadAuto.elevatorState = elevatorState;
     }

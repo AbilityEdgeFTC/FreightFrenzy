@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -30,26 +32,26 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake.IntakeState;
 @Autonomous(group = "drive")
 public class AutoRightRed extends LinearOpMode {
 
-    public static double timeTo = 1;
     public static double startPoseRightX = 12;
     public static double startPoseRightY = -64.24;
     public static double startPoseRightH = 0;
-    public static double poseHubFrontX = -11.7;
-    public static double poseHubFrontY = -45;
+    public static double poseHubFrontX = -12;
+    public static double poseHubFrontY = -42;
     public static double poseHubFrontH = 90;
     public static double poseEntranceX = 12;
-    public static double poseEntranceY = -65;
+    public static double poseEntranceY = -64;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 50;
-    public static double poseCollectY = -67;
+    public static double poseCollectX = 60;
+    public static double poseCollectY = -64;
+    public static double entranceHelp = 2;
     public static double poseCollectH = 180;
-    public static double runCarouselFor = 5;
     carousel carousel;
     intake intake;
     dip dip;
-    ElevatorThreadAuto threadAuto;
-    public static double reverseIntakeFor = 2;
+    //ElevatorThreadAuto threadAuto;
+    public static double reverseIntakeFor = .8;
 
+    //TrajectorySequence collect, placement, collect2, collect3, entrance, entrance2, entrance3, cycle, cycle2;
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -63,64 +65,86 @@ public class AutoRightRed extends LinearOpMode {
         carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
         dip = new dip(hardwareMap);
-        threadAuto = new ElevatorThreadAuto(hardwareMap);
+        //threadAuto = new ElevatorThreadAuto(hardwareMap);
 
         drive.setPoseEstimate(startPoseRight);
 
+        //, SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+        //                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+
         TrajectorySequence placement = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToSplineHeading(poseHubFront)
+                .lineToLinearHeading(poseHubFront)
                 .build();
 
-        TrajectorySequence entranceFirst = drive.trajectorySequenceBuilder(placement.end())
+        TrajectorySequence entrance = drive.trajectorySequenceBuilder(placement.end())
                 .lineToLinearHeading(poseEntrance)
                 .build();
 
-        TrajectorySequence collect = drive.trajectorySequenceBuilder(entranceFirst.end())
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()-20,poseCollect.getY(),poseCollect.getHeading()))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()-15,poseCollect.getY(),poseCollect.getHeading()))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()-10,poseCollect.getY(),poseCollect.getHeading()))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()-5,poseCollect.getY(),poseCollect.getHeading() + Math.toRadians(3)), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()-2,poseCollect.getY(),poseCollect.getHeading() - Math.toRadians(3)), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(),poseCollect.getY(),poseCollect.getHeading() + Math.toRadians(3)), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+        TrajectorySequence collect = drive.trajectorySequenceBuilder(entrance.end())
+                .lineToLinearHeading(new Pose2d(poseCollect.getX()-15,poseCollect.getY(),poseCollect.getHeading() - Math.toRadians(1.5)))
+                .lineToLinearHeading(new Pose2d(poseCollect.getX()-10,poseCollect.getY(),poseCollect.getHeading() + Math.toRadians(1.5)))
                 .build();
+
         TrajectorySequence cycle = drive.trajectorySequenceBuilder(collect.end())
                 .lineToLinearHeading(poseEntrance)
                 .lineToLinearHeading(poseHubFront)
                 .build();
 
-        TrajectorySequence entrance = drive.trajectorySequenceBuilder(cycle.end())
+        TrajectorySequence entrance2 = drive.trajectorySequenceBuilder(cycle.end())
                 .lineToLinearHeading(poseEntrance)
                 .build();
 
-        threadAuto.start();
+        TrajectorySequence collect2 = drive.trajectorySequenceBuilder(entrance2.end())
+                .lineToLinearHeading(new Pose2d(poseCollect.getX()-10,poseCollect.getY()-2,poseCollect.getHeading() - Math.toRadians(2)))
+                .lineToLinearHeading(new Pose2d(poseCollect.getX()-5,poseCollect.getY()-2,poseCollect.getHeading() + Math.toRadians(2)))
+                .build();
+
+        TrajectorySequence cycle2 = drive.trajectorySequenceBuilder(collect2.end())
+                .lineToLinearHeading(poseEntrance)
+                .lineToLinearHeading(poseHubFront)
+                .build();
+
+        TrajectorySequence entrance3 = drive.trajectorySequenceBuilder(cycle2.end())
+                .lineToLinearHeading(poseEntrance)
+                .strafeLeft(entranceHelp)
+                .build();
+
+        TrajectorySequence collect3 = drive.trajectorySequenceBuilder(entrance3.end())
+                .lineToLinearHeading(new Pose2d(poseCollect.getX()-5,poseCollect.getY(),poseCollect.getHeading() - Math.toRadians(2.5)))
+                .lineToLinearHeading(new Pose2d(poseCollect.getX()-2,poseCollect.getY(),poseCollect.getHeading() + Math.toRadians(2.5)))
+                .build();
+
+
+        //threadAuto.start();
         dip.getFreight();
 
         waitForStart();
 
-        if (isStopRequested())  threadAuto.interrupt();
+        //if (isStopRequested())  threadAuto.interrupt();
 
 
         drive.followTrajectorySequence(placement);
-        goToMax();
-        drive.followTrajectorySequence(entranceFirst);
-        intake.intakeForward();
-        drive.followTrajectorySequence(collect);
-        fixIntake();
-        drive.followTrajectorySequence(cycle);
-        goToMax();
+        //goToMax();
         drive.followTrajectorySequence(entrance);
         intake.intakeForward();
         drive.followTrajectorySequence(collect);
+        Thread.sleep(1500);
         fixIntake();
         drive.followTrajectorySequence(cycle);
-        goToMax();
-        drive.followTrajectorySequence(entrance);
+        //goToMax();
+        drive.followTrajectorySequence(entrance2);
         intake.intakeForward();
-        drive.followTrajectorySequence(collect);
+        drive.followTrajectorySequence(collect2);
+        Thread.sleep(1500);
         fixIntake();
+        drive.followTrajectorySequence(cycle2);
+        //goToMax();
+        drive.followTrajectorySequence(entrance3);
+        intake.intakeForward();
+        drive.followTrajectorySequence(collect3);
+        Thread.sleep(1500);
+        fixIntake();
+        //threadAuto.interrupt();
 
         while (opModeIsActive())
         {
@@ -132,19 +156,18 @@ public class AutoRightRed extends LinearOpMode {
             telemetry.update();
             valueStorage.currentPose = poseEstimate;
         }
-        threadAuto.interrupt();
+        //threadAuto.interrupt();
 
     }
 
-    void goToMax() throws InterruptedException {
+    /*void goToMax() throws InterruptedException {
         threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX);
-        Thread.sleep(1000);
+        Thread.sleep(800);
         dip.releaseFreightPos();
         dip.releaseFreight();
-        threadAuto.setElevatorState(ElevatorState.ZERO);
-        Thread.sleep(1000);
         dip.getFreight();
-    }
+        threadAuto.setElevatorState(ElevatorState.ZERO);
+    }*/
 
     void fixIntake() throws InterruptedException {
         intake.intakeBackward();
@@ -152,9 +175,4 @@ public class AutoRightRed extends LinearOpMode {
         intake.stop();
     }
 
-    void runCarousel() throws InterruptedException {
-        carousel.spin(true, false);
-        Thread.sleep((long)(runCarouselFor * 1000));
-        carousel.stop();
-    }
 }
