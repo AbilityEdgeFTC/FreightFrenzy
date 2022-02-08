@@ -43,6 +43,7 @@ public class AutoRightRed extends LinearOpMode {
     public static double poseCollectX = 50;
     public static double poseCollectY = -67;
     public static double poseCollectH = 180;
+    public static double runCarouselFor = 5;
     carousel carousel;
     intake intake;
     dip dip;
@@ -77,13 +78,12 @@ public class AutoRightRed extends LinearOpMode {
         TrajectorySequence collect = drive.trajectorySequenceBuilder(entranceFirst.end())
                 .lineToSplineHeading(new Pose2d(poseCollect.getX()-20,poseCollect.getY(),poseCollect.getHeading()))
                 .lineToSplineHeading(new Pose2d(poseCollect.getX()-15,poseCollect.getY(),poseCollect.getHeading()))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()-10,poseCollect.getY(),poseCollect.getHeading() - Math.PI / 8), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()-10,poseCollect.getY(),poseCollect.getHeading()))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()-5,poseCollect.getY(),poseCollect.getHeading() + Math.toRadians(3)), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()-5,poseCollect.getY(),poseCollect.getHeading() + Math.PI / 8), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()-2,poseCollect.getY(),poseCollect.getHeading() - Math.toRadians(3)), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()-2,poseCollect.getY(),poseCollect.getHeading() - Math.PI / 8), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(),poseCollect.getY(),poseCollect.getHeading() + Math.PI / 8), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(),poseCollect.getY(),poseCollect.getHeading() + Math.toRadians(3)), SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         TrajectorySequence cycle = drive.trajectorySequenceBuilder(collect.end())
@@ -141,8 +141,8 @@ public class AutoRightRed extends LinearOpMode {
         Thread.sleep(1000);
         dip.releaseFreightPos();
         dip.releaseFreight();
-        threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN);
-        Thread.sleep(3000);
+        threadAuto.setElevatorState(ElevatorState.ZERO);
+        Thread.sleep(1000);
         dip.getFreight();
     }
 
@@ -150,5 +150,11 @@ public class AutoRightRed extends LinearOpMode {
         intake.intakeBackward();
         Thread.sleep((long)(reverseIntakeFor * 1000));
         intake.stop();
+    }
+
+    void runCarousel() throws InterruptedException {
+        carousel.spin(true, false);
+        Thread.sleep((long)(runCarouselFor * 1000));
+        carousel.stop();
     }
 }
