@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -19,13 +20,14 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraException;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
 @Autonomous(name = "Right Blue FULL", group = "blue")
-public class AutoRightBlue extends LinearOpMode {
+public class AutoRightBlue extends OpMode {
 
     public static double startPoseLeftX = -36;
     public static double startPoseLeftY = 64.24;
@@ -45,7 +47,10 @@ public class AutoRightBlue extends LinearOpMode {
     dip dip;
     ElevatorThreadAuto threadAuto;
     OpenCvWebcam webcam;
+    GreenLanternPipeline pipeline;
+    MecanumLocalizer drive;
 
+    TrajectorySequence carouselGo,hub,parking;
     enum levels
     {
         MIN,
@@ -56,15 +61,16 @@ public class AutoRightBlue extends LinearOpMode {
     levels placeFreightIn = levels.MAX;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+    public void init()
+    {
+        pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
         pipeline.TSE = true;
         pipeline.startingFromRight = true;
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        MecanumLocalizer drive = new MecanumLocalizer(hardwareMap);
+        drive = new MecanumLocalizer(hardwareMap);
 
         Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
@@ -80,84 +86,104 @@ public class AutoRightBlue extends LinearOpMode {
 
         drive.setPoseEstimate(startPoseLeft);
 
-        TrajectorySequence carouselGo = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+        carouselGo = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .strafeRight(carouselHelp)
                 .lineToLinearHeading(poseCarousel)
                 .build();
 
-        TrajectorySequence hub = drive.trajectorySequenceBuilder(carouselGo.end())
+        hub = drive.trajectorySequenceBuilder(carouselGo.end())
                 .lineToSplineHeading(poseHubLeft)
                 .build();
 
-        TrajectorySequence parking = drive.trajectorySequenceBuilder(hub.end())
+        parking = drive.trajectorySequenceBuilder(hub.end())
                 .back(parkBack)
                 .strafeLeft(parkRight)
                 .build();
 
         threadAuto.start();
-        dip.getFreight();
 
-        while (!opModeIsActive()) {
-
-            switch (pipeline.getLocation()){
-                case Left:
-                    //IF BARCODE IS ON LEFT SIDE
-                    placeFreightIn = levels.MIN;
-                    break;
-                case Center:
-                    //IF BARCODE IS ON CENTER SIDE
-                    placeFreightIn = levels.MID;
-                    break;
-                case Right:
-                    //IF BARCODE IS ON RIGHT SIDE
-                    placeFreightIn = levels.MAX;
-                    break;
-                default:
-                    placeFreightIn = levels.MAX;
-                    break;
-            }
-
-            telemetry.addData("Barcode Location:",pipeline.getLocation());
-            telemetry.update();
+        try {
+            dip.getFreight();
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
         }
-
-        waitForStart();
-
-        if (isStopRequested())  threadAuto.interrupt();
-        webcam.stopStreaming();
-
-        drive.followTrajectorySequence(carouselGo);
-        runCarousel();
-        drive.followTrajectorySequence(hub);
-        switch (placeFreightIn)
-        {
-            case MIN:
-                goToMin();
-                break;
-            case MID:
-                goToMid();
-                break;
-            case MAX:
-                goToMax();
-                break;
-        }
-        drive.followTrajectorySequence(parking);
-        threadAuto.interrupt();
-
-        while (opModeIsActive())
-        {
-            Pose2d poseEstimate = drive.getPoseEstimate();
-            telemetry.addData("finalX", poseEstimate.getX());
-            telemetry.addData("finalY", poseEstimate.getY());
-            telemetry.addData("finalHeading", poseEstimate.getHeading());
-            telemetry.update();
-        }
-
-
-        threadAuto.interrupt();
     }
 
-    void goToMin() throws InterruptedException {
+    public void init_loop()
+    {
+        switch (pipeline.getLocation()){
+            case Left:
+                //IF BARCODE IS ON LEFT SIDE
+                placeFreightIn = levels.MIN;
+                break;
+            case Center:
+                //IF BARCODE IS ON CENTER SIDE
+                placeFreightIn = levels.MID;
+                break;
+            case Right:
+                //IF BARCODE IS ON RIGHT SIDE
+                placeFreightIn = levels.MAX;
+                break;
+            default:
+                placeFreightIn = levels.MAX;
+            break;
+        }
+
+        telemetry.addData("Barcode Location:",pipeline.getLocation());
+        telemetry.update();
+    }
+
+    @Override
+    public void start()
+    {
+        try
+        {
+            webcam.stopStreaming();
+            drive.followTrajectorySequence(carouselGo);
+            runCarousel();
+            drive.followTrajectorySequence(hub);
+            switch (placeFreightIn)
+            {
+                case MIN:
+                    goToMin();
+                    break;
+                case MID:
+                    goToMid();
+                    break;
+                case MAX:
+                    goToMax();
+                    break;
+            }
+            drive.followTrajectorySequence(parking);
+            threadAuto.interrupt();
+        }
+        catch(InterruptedException exception)
+        {
+
+        }
+    }
+
+    @Override
+    public void loop()
+    {
+        Pose2d poseEstimate = drive.getPoseEstimate();
+        telemetry.addData("finalX", poseEstimate.getX());
+        telemetry.addData("finalY", poseEstimate.getY());
+        telemetry.addData("finalHeading", poseEstimate.getHeading());
+        telemetry.update();
+    }
+
+    @Override
+    public void stop() {
+        threadAuto.interrupt();
+        try {
+            webcam.stopStreaming();
+        }
+        catch (OpenCvCameraException e) { }
+    }
+
+    void goToMin() throws InterruptedException
+    {
         threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN);
         Thread.sleep(800);
         dip.releaseFreightPos();
@@ -166,7 +192,8 @@ public class AutoRightBlue extends LinearOpMode {
         threadAuto.setElevatorState(ElevatorState.ZERO);
     }
 
-    void goToMid() throws InterruptedException {
+    void goToMid() throws InterruptedException
+    {
         threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MID);
         Thread.sleep(800);
         dip.releaseFreightPos();
@@ -175,7 +202,8 @@ public class AutoRightBlue extends LinearOpMode {
         threadAuto.setElevatorState(ElevatorState.ZERO);
     }
 
-    void goToMax() throws InterruptedException {
+    void goToMax() throws InterruptedException
+    {
         threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX);
         Thread.sleep(800);
         dip.releaseFreightPos();

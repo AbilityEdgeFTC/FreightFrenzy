@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto.ElevatorState;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraException;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
@@ -28,7 +30,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  */
 @Config
 @Autonomous(group = "drive")
-public class AutoLeftBlue extends LinearOpMode {
+public class AutoLeftBlue extends OpMode {
 
     public static double startPoseRightX = 12;
     public static double startPoseRightY = 64.24;
@@ -58,23 +60,26 @@ public class AutoLeftBlue extends LinearOpMode {
     }
 
     levels placeFreightIn = levels.MAX;
+    GreenLanternPipeline pipeline;
+    MecanumLocalizer drive;
 
-    //TrajectorySequence collect, placement, collect2, collect3, entrance, entrance2, entrance3, cycle, cycle2;
+    Pose2d startPoseRight, poseHubFront, poseEntrance, poseCollect;
+    TrajectorySequence placement, entrance, collect, cycle, entrance2, collect2, cycle2, entrance3, collect3;
     @Override
-    public void runOpMode() throws InterruptedException {
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+    public void init() {
+        pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
         pipeline.TSE = true;
         pipeline.startingFromRight = false;
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        MecanumLocalizer drive = new MecanumLocalizer(hardwareMap);
+        drive = new MecanumLocalizer(hardwareMap);
 
-        Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
-        Pose2d poseHubFront = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
-        Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
-        Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
+        startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
+        poseHubFront = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
+        poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
+        poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
 
         carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
@@ -89,124 +94,142 @@ public class AutoLeftBlue extends LinearOpMode {
         //, MecanumLocalizer.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
         //                        MecanumLocalizer.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
 
-        TrajectorySequence placement = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+        placement = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(poseHubFront)
                 .build();
 
-        TrajectorySequence entrance = drive.trajectorySequenceBuilder(placement.end())
+        entrance = drive.trajectorySequenceBuilder(placement.end())
                 .lineToLinearHeading(poseEntrance)
                 .build();
 
-        TrajectorySequence collect = drive.trajectorySequenceBuilder(entrance.end())
+        collect = drive.trajectorySequenceBuilder(entrance.end())
                 .lineToLinearHeading(new Pose2d(poseCollect.getX()-15,poseCollect.getY(),poseCollect.getHeading() - Math.toRadians(1.5)))
                 .lineToLinearHeading(new Pose2d(poseCollect.getX()-10,poseCollect.getY(),poseCollect.getHeading() + Math.toRadians(1.5)))
                 .build();
 
-        TrajectorySequence cycle = drive.trajectorySequenceBuilder(collect.end())
+        cycle = drive.trajectorySequenceBuilder(collect.end())
                 .lineToLinearHeading(poseEntrance)
                 .lineToLinearHeading(poseHubFront)
                 .build();
 
-        TrajectorySequence entrance2 = drive.trajectorySequenceBuilder(cycle.end())
+        entrance2 = drive.trajectorySequenceBuilder(cycle.end())
                 .lineToLinearHeading(poseEntrance)
                 .build();
 
-        TrajectorySequence collect2 = drive.trajectorySequenceBuilder(entrance2.end())
+        collect2 = drive.trajectorySequenceBuilder(entrance2.end())
                 .lineToLinearHeading(new Pose2d(poseCollect.getX()-10,poseCollect.getY()+2,poseCollect.getHeading() - Math.toRadians(2)))
                 .lineToLinearHeading(new Pose2d(poseCollect.getX()-5,poseCollect.getY()+2,poseCollect.getHeading() + Math.toRadians(2)))
                 .build();
 
-        TrajectorySequence cycle2 = drive.trajectorySequenceBuilder(collect2.end())
+        cycle2 = drive.trajectorySequenceBuilder(collect2.end())
                 .lineToLinearHeading(poseEntrance)
                 .lineToLinearHeading(poseHubFront)
                 .build();
 
-        TrajectorySequence entrance3 = drive.trajectorySequenceBuilder(cycle2.end())
+        entrance3 = drive.trajectorySequenceBuilder(cycle2.end())
                 .lineToLinearHeading(poseEntrance)
                 .strafeRight(entranceHelp)
                 .build();
 
-        TrajectorySequence collect3 = drive.trajectorySequenceBuilder(entrance3.end())
+        collect3 = drive.trajectorySequenceBuilder(entrance3.end())
                 .lineToLinearHeading(new Pose2d(poseCollect.getX()-5,poseCollect.getY(),poseCollect.getHeading() - Math.toRadians(2.5)))
                 .lineToLinearHeading(new Pose2d(poseCollect.getX()-2,poseCollect.getY(),poseCollect.getHeading() + Math.toRadians(2.5)))
                 .build();
 
         threadAuto.start();
-        dip.getFreight();
+        try {
+            dip.getFreight();
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
+        }
+    }
 
-        while (!opModeIsActive()) {
+    @Override
+    public void start()
+    {
+        try
+        {
+            webcam.stopStreaming();
 
-            switch (pipeline.getLocation()){
-                case Left:
-                    //IF BARCODE IS ON LEFT SIDE
-                    placeFreightIn = levels.MIN;
+            drive.followTrajectorySequence(placement);
+            switch (placeFreightIn)
+            {
+                case MIN:
+                    goToMin();
                     break;
-                case Center:
-                    //IF BARCODE IS ON CENTER SIDE
-                    placeFreightIn = levels.MID;
+                case MID:
+                    goToMid();
                     break;
-                case Right:
-                    //IF BARCODE IS ON RIGHT SIDE
-                    placeFreightIn = levels.MAX;
-                    break;
-                default:
-                    placeFreightIn = levels.MAX;
+                case MAX:
+                    goToMax();
                     break;
             }
+            drive.followTrajectorySequence(entrance);
+            intake.intakeForward();
+            drive.followTrajectorySequence(collect);
+            Thread.sleep(1500);
+            fixIntake();
+            drive.followTrajectorySequence(cycle);
+            goToMax();
+            drive.followTrajectorySequence(entrance2);
+            intake.intakeForward();
+            drive.followTrajectorySequence(collect2);
+            Thread.sleep(1500);
+            fixIntake();
+            drive.followTrajectorySequence(cycle2);
+            goToMax();
+            drive.followTrajectorySequence(entrance3);
+            intake.intakeForward();
+            drive.followTrajectorySequence(collect3);
+            Thread.sleep(1500);
+            fixIntake();
+            threadAuto.interrupt();
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
+        }
+    }
 
-            telemetry.addData("Barcode Location:",pipeline.getLocation());
-            telemetry.update();
+    @Override
+    public void init_loop()
+    {
+        switch (pipeline.getLocation()){
+            case Left:
+                //IF BARCODE IS ON LEFT SIDE
+                placeFreightIn = levels.MIN;
+                break;
+            case Center:
+                //IF BARCODE IS ON CENTER SIDE
+                placeFreightIn = levels.MID;
+                break;
+            case Right:
+                //IF BARCODE IS ON RIGHT SIDE
+                placeFreightIn = levels.MAX;
+                break;
+            default:
+                placeFreightIn = levels.MAX;
+                break;
         }
 
-        waitForStart();
+        telemetry.addData("Barcode Location:",pipeline.getLocation());
+        telemetry.update();
+    }
 
-        if (isStopRequested())  threadAuto.interrupt();
+    @Override
+    public void loop() {
+        Pose2d poseEstimate = drive.getPoseEstimate();
+        telemetry.addData("finalX", poseEstimate.getX());
+        telemetry.addData("finalY", poseEstimate.getY());
+        telemetry.addData("finalHeading", poseEstimate.getHeading());
+        telemetry.update();
+    }
 
-        webcam.stopStreaming();
-        drive.followTrajectorySequence(placement);
-        switch (placeFreightIn)
-        {
-            case MIN:
-                goToMin();
-                break;
-            case MID:
-                goToMid();
-                break;
-            case MAX:
-                goToMax();
-                break;
-        }
-        drive.followTrajectorySequence(entrance);
-        intake.intakeForward();
-        drive.followTrajectorySequence(collect);
-        Thread.sleep(1500);
-        fixIntake();
-        drive.followTrajectorySequence(cycle);
-        goToMax();
-        drive.followTrajectorySequence(entrance2);
-        intake.intakeForward();
-        drive.followTrajectorySequence(collect2);
-        Thread.sleep(1500);
-        fixIntake();
-        drive.followTrajectorySequence(cycle2);
-        goToMax();
-        drive.followTrajectorySequence(entrance3);
-        intake.intakeForward();
-        drive.followTrajectorySequence(collect3);
-        Thread.sleep(1500);
-        fixIntake();
+    @Override
+    public void stop() {
         threadAuto.interrupt();
-
-        while (opModeIsActive())
-        {
-            Pose2d poseEstimate = drive.getPoseEstimate();
-            telemetry.addData("finalX", poseEstimate.getX());
-            telemetry.addData("finalY", poseEstimate.getY());
-            telemetry.addData("finalHeading", poseEstimate.getHeading());
-            telemetry.update();
+        try {
+            webcam.stopStreaming();
         }
-        threadAuto.interrupt();
-
+        catch (OpenCvCameraException e) { }
     }
 
     void goToMin() throws InterruptedException {
