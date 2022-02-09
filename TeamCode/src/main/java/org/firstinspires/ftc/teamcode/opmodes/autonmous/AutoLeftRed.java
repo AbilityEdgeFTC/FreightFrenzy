@@ -46,7 +46,6 @@ public class AutoLeftRed extends LinearOpMode {
     intake intake;
     dip dip;
     ElevatorThreadAuto threadAuto;
-    public static double reverseIntakeFor = 2;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -88,7 +87,7 @@ public class AutoLeftRed extends LinearOpMode {
         drive.followTrajectorySequence(carouselGo);
         runCarousel();
         drive.followTrajectorySequence(hub);
-        //goToMax();
+        goToMax();
         drive.followTrajectorySequence(parking);
         threadAuto.interrupt();
 
@@ -118,12 +117,6 @@ public class AutoLeftRed extends LinearOpMode {
         threadAuto.setElevatorState(ElevatorState.ZERO);
         Thread.sleep(1000);
         dip.getFreight();
-    }
-
-    void fixIntake() throws InterruptedException {
-        intake.intakeBackward();
-        Thread.sleep((long)(reverseIntakeFor * 1000));
-        intake.stop();
     }
 
     void runCarousel() throws InterruptedException {

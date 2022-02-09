@@ -48,7 +48,7 @@ public class AutoRightRed extends LinearOpMode {
     carousel carousel;
     intake intake;
     dip dip;
-    //ElevatorThreadAuto threadAuto;
+    ElevatorThreadAuto threadAuto;
     public static double reverseIntakeFor = .8;
 
     //TrajectorySequence collect, placement, collect2, collect3, entrance, entrance2, entrance3, cycle, cycle2;
@@ -65,7 +65,7 @@ public class AutoRightRed extends LinearOpMode {
         carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
         dip = new dip(hardwareMap);
-        //threadAuto = new ElevatorThreadAuto(hardwareMap);
+        threadAuto = new ElevatorThreadAuto(hardwareMap);
 
         drive.setPoseEstimate(startPoseRight);
 
@@ -115,36 +115,36 @@ public class AutoRightRed extends LinearOpMode {
                 .build();
 
 
-        //threadAuto.start();
+        threadAuto.start();
         dip.getFreight();
 
         waitForStart();
 
-        //if (isStopRequested())  threadAuto.interrupt();
+        if (isStopRequested())  threadAuto.interrupt();
 
 
         drive.followTrajectorySequence(placement);
-        //goToMax();
+        goToMax();
         drive.followTrajectorySequence(entrance);
         intake.intakeForward();
         drive.followTrajectorySequence(collect);
         Thread.sleep(1500);
         fixIntake();
         drive.followTrajectorySequence(cycle);
-        //goToMax();
+        goToMax();
         drive.followTrajectorySequence(entrance2);
         intake.intakeForward();
         drive.followTrajectorySequence(collect2);
         Thread.sleep(1500);
         fixIntake();
         drive.followTrajectorySequence(cycle2);
-        //goToMax();
+        goToMax();
         drive.followTrajectorySequence(entrance3);
         intake.intakeForward();
         drive.followTrajectorySequence(collect3);
         Thread.sleep(1500);
         fixIntake();
-        //threadAuto.interrupt();
+        threadAuto.interrupt();
 
         while (opModeIsActive())
         {
@@ -156,18 +156,18 @@ public class AutoRightRed extends LinearOpMode {
             telemetry.update();
             valueStorage.currentPose = poseEstimate;
         }
-        //threadAuto.interrupt();
+        threadAuto.interrupt();
 
     }
 
-    /*void goToMax() throws InterruptedException {
+    void goToMax() throws InterruptedException {
         threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX);
         Thread.sleep(800);
         dip.releaseFreightPos();
         dip.releaseFreight();
         dip.getFreight();
         threadAuto.setElevatorState(ElevatorState.ZERO);
-    }*/
+    }
 
     void fixIntake() throws InterruptedException {
         intake.intakeBackward();
