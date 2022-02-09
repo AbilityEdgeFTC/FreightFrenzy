@@ -4,6 +4,8 @@
  */
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -13,36 +15,46 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+@Config
 public class GreenLanternPipeline extends OpenCvPipeline
 {
+    public static double lowValuesTSEH = 80;
+    public static double lowValuesTSES = 43;
+    public static double lowValuesTSEV = 14;
 
-    // HSV low and high values for our team shipping element.
-    Scalar lowValuesTSE = new Scalar(86, 102, 11);
-    Scalar highValuesTSE = new Scalar(108, 203, 102);
+    public static double highValuesTSEH = 111;
+    public static double highValuesTSES = 173;
+    public static double highValuesTSEV = 92;
 
-    Scalar lowValuesDUCK = new Scalar(86, 102, 11);
-    Scalar highValuesDUCK = new Scalar(108, 203, 102);
+    public static double lowValuesDUCKH = 21;
+    public static double lowValuesDUCKS = 158;
+    public static double lowValuesDUCKV = 125;
+
+    public static double highValuesDUCKH = 112;
+    public static double highValuesDUCKS = 228;
+    public static double highValuesDUCKV = 253;
 
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
+    Mat inputHSV = new Mat(1280,720,0);
 
     // creating 3 rectangles(sections) for checking the colors inside them.
     final Rect LEFT_SEC = new Rect(
-            new Point(426.666667,720),//mask.cols()/7, mask.rows()/5 * 2
+            new Point(226.666667,720),//mask.cols()/7, mask.rows()/5 * 2
             new Point(0,0));//mask.cols()/7 * 2, mask.rows()/5 * 4)
 
 
     final Rect CENTER_SEC = new Rect(
-            new Point(853.333334,720),
-            new Point(426.666667,0));
+            new Point(653.333334,720),
+            new Point(226.666667,0));
 
     final Rect RIGHT_SEC = new Rect(
-            new Point(1280,720 ),
-            new Point(853.333334,0 ));
+            new Point(1080,720 ),
+            new Point(653.333334,0 ));
 
-    public boolean DEBUG;
+    public static boolean DEBUG = true;
 
-    double threshold_percentage = 0.01; // 1% of the element color
+    public static double threshold_percentage = 0.01; // 1% of the element color
 
     // the list of locations that can be
     public enum Location{
@@ -59,21 +71,31 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
     public Telemetry telemetry;
 
-    public boolean TSE = true;
+    public static boolean TSE = true;
 
     boolean barcodeLeft, barcodeCenter, barcodeRight;
 
     @Override
     public Mat processFrame(Mat input) {
-        Imgproc.cvtColor(input, mask, Imgproc.COLOR_RGB2HSV);
+        // HSV low and high values for our team shipping element.
+        Scalar lowValuesTSE = new Scalar(lowValuesTSEH, lowValuesTSES, lowValuesTSEV);
+        Scalar highValuesTSE = new Scalar(highValuesTSEH, highValuesTSES, highValuesTSEV);
+
+        Scalar lowValuesDUCK = new Scalar(lowValuesDUCKH, lowValuesDUCKS, lowValuesDUCKV);
+        Scalar highValuesDUCK = new Scalar(highValuesDUCKH, highValuesDUCKS, highValuesDUCKV);
+
+        Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2HSV);
 
         // turning all colors not between the low and high values to black and the rest white.
         if(TSE){
-            Core.inRange(mask, lowValuesTSE, highValuesTSE, mask);
+            Core.inRange(inputHSV, lowValuesTSE, highValuesTSE, mask);
+            telemetry.addLine("Using: TSE");
         }else if(!TSE){
-            Core.inRange(mask, lowValuesDUCK, highValuesDUCK, mask);
+            Core.inRange(inputHSV, lowValuesDUCK, highValuesDUCK, mask);
+            telemetry.addLine("Using: DUCKS");
         }else{
-            Core.inRange(mask, lowValuesTSE, highValuesTSE, mask);
+            Core.inRange(inputHSV, lowValuesDUCK, highValuesDUCK, mask);
+            telemetry.addLine("Using: NONE");
         }
 
         // taking sections from the mask to another mat

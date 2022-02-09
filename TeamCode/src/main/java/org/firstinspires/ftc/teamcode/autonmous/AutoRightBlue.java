@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.subsystems.valueStorage;
 
 @Config
-@Autonomous(group = "drive")
+@Autonomous(name = "Right Blue FULL", group = "blue")
 public class AutoRightBlue extends LinearOpMode {
 
     public static double startPoseLeftX = -36;

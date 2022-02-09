@@ -27,10 +27,9 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake.IntakeState;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(group = "drive")
+@Autonomous(name = "Right Red FULL", group = "red")
 public class AutoRightRed extends LinearOpMode {
 
-    public static double timeTo = 1;
     public static double startPoseRightX = 12;
     public static double startPoseRightY = -64.24;
     public static double startPoseRightH = 0;
