@@ -38,20 +38,6 @@ public class GreenLanternPipeline extends OpenCvPipeline
     Mat mask = new Mat(1280,720,0);//
     Mat inputHSV = new Mat(1280,720,0);
 
-    // creating 3 rectangles(sections) for checking the colors inside them.
-    final Rect LEFT_SEC = new Rect(
-            new Point(226.666667,720),//mask.cols()/7, mask.rows()/5 * 2
-            new Point(0,0));//mask.cols()/7 * 2, mask.rows()/5 * 4)
-
-
-    final Rect CENTER_SEC = new Rect(
-            new Point(653.333334,720),
-            new Point(226.666667,0));
-
-    final Rect RIGHT_SEC = new Rect(
-            new Point(1080,720 ),
-            new Point(653.333334,0 ));
-
     public static boolean DEBUG = true;
 
     public static double threshold_percentage = 0.01; // 1% of the element color
@@ -72,11 +58,47 @@ public class GreenLanternPipeline extends OpenCvPipeline
     public Telemetry telemetry;
 
     public static boolean TSE = true;
+    public static boolean startingFromRight = true;
 
     boolean barcodeLeft, barcodeCenter, barcodeRight;
 
+    Rect LEFT_SEC, CENTER_SEC, RIGHT_SEC;
+
     @Override
     public Mat processFrame(Mat input) {
+
+        if(startingFromRight)
+        {
+            // creating 3 rectangles(sections) for checking the colors inside them.
+            LEFT_SEC = new Rect(
+                    new Point(226.666667,720),//mask.cols()/7, mask.rows()/5 * 2
+                    new Point(0,0));//mask.cols()/7 * 2, mask.rows()/5 * 4)
+
+
+            CENTER_SEC = new Rect(
+                    new Point(653.333334,720),
+                    new Point(226.666667,0));
+
+            RIGHT_SEC = new Rect(
+                    new Point(1080,720 ),
+                    new Point(653.333334,0 ));
+        }
+        else
+        {
+            // creating 3 rectangles(sections) for checking the colors inside them.
+            LEFT_SEC = new Rect(
+                    new Point(626.666667,720),//mask.cols()/7, mask.rows()/5 * 2
+                    new Point(0,0));//mask.cols()/7 * 2, mask.rows()/5 * 4)
+
+
+            CENTER_SEC = new Rect(
+                    new Point(1053.333334,720),
+                    new Point(626.666667,0));
+
+            RIGHT_SEC = new Rect(
+                    new Point(1280,720 ),
+                    new Point(1053.333334,0 ));
+        }
         // HSV low and high values for our team shipping element.
         Scalar lowValuesTSE = new Scalar(lowValuesTSEH, lowValuesTSES, lowValuesTSEV);
         Scalar highValuesTSE = new Scalar(highValuesTSEH, highValuesTSES, highValuesTSEV);
