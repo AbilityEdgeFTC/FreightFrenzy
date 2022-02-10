@@ -32,7 +32,7 @@ public class teleop extends LinearOpMode {
      * @throws InterruptedException, thread.sleep
      */
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         carousel = new carousel(hardwareMap); // carousel class functions
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry

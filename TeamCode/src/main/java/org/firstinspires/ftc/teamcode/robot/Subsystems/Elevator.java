@@ -23,7 +23,7 @@ public class Elevator {
     public static double SPOOL_RADIUS = 0.75; // in
     public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed
 
-    public static double MAX_HEIGHT = 20;
+    public static double MAX_HEIGHT = 19.3;
     public static double MID_HEIGHT = 13;
     public static double MIN_HEIGHT = 9;
     public static double ZERO_HEIGHT = 0;
@@ -39,12 +39,12 @@ public class Elevator {
     public static double kStatic = 0;
 
     public static DcMotorEx motor;
-    private MotionProfile profile;
+    public static MotionProfile profile;
     private NanoClock clock = NanoClock.system();
     private double profileStartTime, desiredHeight = 0;
     public static int offset;
-    PIDFController controller;
-    double power;
+    public static PIDFController controller;
+    public static double power;
 
     private static double encoderTicksToInches(int ticks) {
         return SPOOL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
@@ -72,15 +72,22 @@ public class Elevator {
         offset = motor.getCurrentPosition();
     }
 
-    public boolean isBusy() {
-        return profile != null && (clock.seconds() - profileStartTime) <= profile.duration();
+    public boolean isBusy(boolean setTrue) {
+        if(setTrue)
+        {
+            return true;
+        }
+        else
+        {
+            return profile != null && (clock.seconds() - profileStartTime) <= profile.duration();
+        }
     }
 
     public void setHeight(double height) {
         height = Math.min(Math.max(0, height), MAX_HEIGHT);
 
         double time = clock.seconds() - profileStartTime;
-        MotionState start = isBusy() ? profile.get(time) : new MotionState(desiredHeight, 0, 0, 0);
+        MotionState start = isBusy(false) ? profile.get(time) : new MotionState(desiredHeight, 0, 0, 0);
         MotionState goal = new MotionState(height, 0, 0, 0);
         profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 start, goal, MAX_VEL, MAX_ACCEL, MAX_JERK
@@ -97,7 +104,7 @@ public class Elevator {
 
     public void update() {
         double currentHeight = getCurrentHeight();
-        if (isBusy()) {
+        if (isBusy(false)) {
             // following a profile
             double time = clock.seconds() - profileStartTime;
             MotionState state = profile.get(time);
@@ -113,7 +120,7 @@ public class Elevator {
 
     public double getVelocity()
     {
-        if (isBusy()) {
+        if (isBusy(false)) {
             // following a profile
             double time = clock.seconds() - profileStartTime;
             MotionState state = profile.get(time);

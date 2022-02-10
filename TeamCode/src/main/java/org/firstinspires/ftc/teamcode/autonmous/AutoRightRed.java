@@ -7,11 +7,13 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.MecanumLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
@@ -30,20 +32,19 @@ import org.openftc.easyopencv.OpenCvWebcam;
  */
 @Config
 @Autonomous(name = "Right Red FULL", group = "red")
-public class AutoRightRed extends OpMode {
+public class AutoRightRed extends LinearOpMode {
 
     public static double startPoseRightX = 12;
-    public static double startPoseRightY = -64.24;
+    public static double startPoseRightY = -64.04;
     public static double startPoseRightH = 0;
-    public static double poseHubFrontX = -12;
-    public static double poseHubFrontY = -42;
+    public static double poseHubFrontX = -11;
+    public static double poseHubFrontY = -41.5;
     public static double poseHubFrontH = 90;
     public static double poseEntranceX = 12;
     public static double poseEntranceY = -64;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 60;
     public static double poseCollectY = -64;
-    public static double entranceHelp = 2;
     public static double poseCollectH = 180;
     carousel carousel;
     intake intake;
@@ -52,9 +53,12 @@ public class AutoRightRed extends OpMode {
     public static double reverseIntakeFor = .8;
     OpenCvWebcam webcam;
     GreenLanternPipeline pipeline;
-    MecanumLocalizer drive;
+    SampleMecanumDriveCancelable drive;
 
-    TrajectorySequence placement,entrance,collect,cycle,entrance2,collect2,cycle2,entrance3,collect3;
+    TrajectorySequence placement,entrance,collect,cycle,entrance2,collect2;
+
+    public static boolean withVision = true;
+
     enum levels
     {
         MIN,
@@ -64,17 +68,15 @@ public class AutoRightRed extends OpMode {
 
     levels placeFreightIn = levels.MAX;
 
-    //TrajectorySequence collect, placement, collect2, collect3, entrance, entrance2, entrance3, cycle, cycle2;
     @Override
-    public void init() {
+    public void runOpMode() throws InterruptedException {
         pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
         pipeline.TSE = true;
-        pipeline.startingFromRight = true;
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        drive = new MecanumLocalizer(hardwareMap);
+        drive = new SampleMecanumDriveCancelable(hardwareMap);
 
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         Pose2d poseHubFront = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
@@ -114,147 +116,113 @@ public class AutoRightRed extends OpMode {
 
         collect2 = drive.trajectorySequenceBuilder(entrance2.end())
                 .lineToLinearHeading(new Pose2d(poseCollect.getX() - 10, poseCollect.getY() - 2, poseCollect.getHeading() - Math.toRadians(2)))
-                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 5, poseCollect.getY() - 2, poseCollect.getHeading() + Math.toRadians(2)))
+                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 7.5, poseCollect.getY() - 2, poseCollect.getHeading() + Math.toRadians(3)))
+                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 5, poseCollect.getY() - 2, poseCollect.getHeading() + Math.toRadians(3)))
                 .build();
-
-         cycle2 = drive.trajectorySequenceBuilder(collect2.end())
-                .lineToLinearHeading(poseEntrance)
-                .lineToLinearHeading(poseHubFront)
-                .build();
-
-        entrance3 = drive.trajectorySequenceBuilder(cycle2.end())
-                .lineToLinearHeading(poseEntrance)
-                .strafeLeft(entranceHelp)
-                .build();
-
-        collect3 = drive.trajectorySequenceBuilder(entrance3.end())
-                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 5, poseCollect.getY(), poseCollect.getHeading() - Math.toRadians(2.5)))
-                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 2, poseCollect.getY(), poseCollect.getHeading() + Math.toRadians(2.5)))
-                .build();
-
 
         threadAuto.start();
-        try {
-            dip.getFreight();
-        } catch (InterruptedException exception) {
-            exception.printStackTrace();
-        }
-    }
+        dip.getFreight();
 
-    public void init_loop()
-    {
-
-        switch (pipeline.getLocation())
+        while (!opModeIsActive())
         {
-            case Left:
-                //IF BARCODE IS ON LEFT SIDE
-                placeFreightIn = levels.MAX;
-                break;
-            case Center:
-                //IF BARCODE IS ON CENTER SIDE
-                placeFreightIn = levels.MID;
-                break;
-            case Right:
-                //IF BARCODE IS ON RIGHT SIDE
-                placeFreightIn = levels.MIN;
-                break;
-            default:
-                placeFreightIn = levels.MAX;
-                break;
-        }
-
-        telemetry.addData("Barcode Location:",pipeline.getLocation());
-        telemetry.update();
-    }
-
-    @Override
-    public void start()
-    {
-        try
-        {
-            webcam.stopStreaming();
-
-            drive.followTrajectorySequence(placement);
-            switch (placeFreightIn) {
-                case MIN:
-                    goToMin();
+            switch (pipeline.getLocation())
+            {
+                case Left:
+                    //IF BARCODE IS ON LEFT SIDE
+                    placeFreightIn = levels.MIN;
                     break;
-                case MID:
-                    goToMid();
+                case Center:
+                    //IF BARCODE IS ON CENTER SIDE
+                    placeFreightIn = levels.MID;
                     break;
-                case MAX:
-                    goToMax();
+                case Right:
+                    //IF BARCODE IS ON RIGHT SIDE
+                    placeFreightIn = levels.MAX;
+                    break;
+                default:
+                    placeFreightIn = levels.MAX;
                     break;
             }
-            drive.followTrajectorySequence(entrance);
-            intake.intakeForward();
-            drive.followTrajectorySequence(collect);
-            Thread.sleep(1500);
-            fixIntake();
-            drive.followTrajectorySequence(cycle);
-            goToMax();
-            drive.followTrajectorySequence(entrance2);
-            intake.intakeForward();
-            drive.followTrajectorySequence(collect2);
-            Thread.sleep(1500);
-            fixIntake();
-            drive.followTrajectorySequence(cycle2);
-            goToMax();
-            drive.followTrajectorySequence(entrance3);
-            intake.intakeForward();
-            drive.followTrajectorySequence(collect3);
-            Thread.sleep(1500);
-            fixIntake();
-            threadAuto.interrupt();
-        } catch (InterruptedException exception) {
-
+            telemetry.addData("Barcode Location:", pipeline.getLocation());
+            telemetry.update();
         }
-    }
 
-    @Override
-    public void loop()
-    {
-        Pose2d poseEstimate = drive.getPoseEstimate();
-        telemetry.addData("finalX", poseEstimate.getX());
-        telemetry.addData("finalY", poseEstimate.getY());
-        telemetry.addData("finalHeading", poseEstimate.getHeading());
-        telemetry.update();
-    }
+        waitForStart();
 
-    @Override
-    public void stop() {
-        threadAuto.interrupt();
-        try {
+        if(withVision){
             webcam.stopStreaming();
         }
-        catch (OpenCvCameraException e) { }
+
+        drive.followTrajectorySequence(placement);
+        switch (placeFreightIn) {
+            case MIN:
+                goToMin();
+                break;
+            case MID:
+                goToMid();
+                break;
+            case MAX:
+                goToMax();
+                break;
+        }
+        drive.followTrajectorySequence(entrance);
+        intake.intakeForward();
+        drive.followTrajectorySequence(collect);
+        Thread.sleep(1500);
+        fixIntake();
+        drive.followTrajectorySequence(cycle);
+        goToMax();
+        drive.followTrajectorySequence(entrance2);
+        intake.intakeForward();
+        drive.followTrajectorySequence(collect2);
+        Thread.sleep(1500);
+        fixIntake();
+        threadAuto.interrupt();
+        drive.breakFollowing();
+        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        drive.setMotorPowers(0, 0, 0, 0);
     }
 
-    void goToMin() throws InterruptedException {
-        threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN);
-        Thread.sleep(800);
-        dip.releaseFreightPos();
-        dip.releaseFreight();
-        dip.getFreight();
-        threadAuto.setElevatorState(ElevatorState.ZERO);
+    void goToMin() throws InterruptedException
+    {
+        if(opModeIsActive())
+        {
+            threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN);
+            sleep(800);
+            dip.releaseFreightPos();
+            sleep(1000);
+            dip.releaseFreight();
+            dip.getFreight();
+            threadAuto.setElevatorState(ElevatorState.ZERO);
+        }
     }
 
-    void goToMid() throws InterruptedException {
-        threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MID);
-        Thread.sleep(800);
-        dip.releaseFreightPos();
-        dip.releaseFreight();
-        dip.getFreight();
-        threadAuto.setElevatorState(ElevatorState.ZERO);
+    void goToMid() throws InterruptedException
+    {
+        if(opModeIsActive())
+        {
+            threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MID);
+            sleep(800);
+            dip.releaseFreightPos();
+            sleep(1000);
+            dip.releaseFreight();
+            dip.getFreight();
+            threadAuto.setElevatorState(ElevatorState.ZERO);
+        }
     }
 
-    void goToMax() throws InterruptedException {
-        threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX);
-        Thread.sleep(800);
-        dip.releaseFreightPos();
-        dip.releaseFreight();
-        dip.getFreight();
-        threadAuto.setElevatorState(ElevatorState.ZERO);
+    void goToMax() throws InterruptedException
+    {
+        if(opModeIsActive())
+        {
+            threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX);
+            sleep(800);
+            dip.releaseFreightPos();
+            sleep(1000);
+            dip.releaseFreight();
+            dip.getFreight();
+            threadAuto.setElevatorState(ElevatorState.ZERO);
+        }
     }
 
     void initPipeline()
