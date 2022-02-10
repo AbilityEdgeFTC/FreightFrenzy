@@ -178,11 +178,13 @@ public class AutoLeftBlue extends LinearOpMode {
         drive.followTrajectorySequence(collect2);
         Thread.sleep(1500);
         fixIntake();
-
-        threadAuto.interrupt();
-        drive.breakFollowing();
-        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        drive.setMotorPowers(0, 0, 0, 0);
+        if(isStopRequested())
+        {
+            threadAuto.interrupt();
+            drive.breakFollowing();
+            drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            drive.setMotorPowers(0, 0, 0, 0);
+        }
 
 
     }

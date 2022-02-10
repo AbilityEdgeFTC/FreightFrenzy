@@ -50,32 +50,37 @@ public class teleop extends LinearOpMode {
         // wait till after init
         waitForStart();
 
-        while (opModeIsActive()) {
+        try{
+            while (opModeIsActive()) {
 
-            // update the gamepads, see if there are new inputs or we need to run functions such as moving the bot
-            gamepad.update();
+                // update the gamepads, see if there are new inputs or we need to run functions such as moving the bot
+                gamepad.update();
 
-            while (gamepad2.dpad_right)
-            {
-                carousel.spin(false, true);
+                while (gamepad2.dpad_right)
+                {
+                    carousel.spin(false, true);
+                }
+
+                while (gamepad2.dpad_left)
+                {
+
+                    carousel.spin(true, true);
+                }
+
+                if(!gamepad2.dpad_right && !gamepad2.dpad_left)
+                {
+                    carousel.stop();
+                }
+
+                telemetry.addData("mBL: ", gamepad.GetmBLPower());
+                telemetry.addData("mBR: ", gamepad.GetmBRPower());
+                telemetry.addData("mFL: ", gamepad.GetmFLPower());
+                telemetry.addData("mFR: ", gamepad.GetmFRPower());
+                telemetry.update();
             }
+        }catch (NullPointerException e)
+        {
 
-            while (gamepad2.dpad_left)
-            {
-
-                carousel.spin(true, true);
-            }
-
-            if(!gamepad2.dpad_right && !gamepad2.dpad_left)
-            {
-                carousel.stop();
-            }
-
-            telemetry.addData("mBL: ", gamepad.GetmBLPower());
-            telemetry.addData("mBR: ", gamepad.GetmBRPower());
-            telemetry.addData("mFL: ", gamepad.GetmFLPower());
-            telemetry.addData("mFR: ", gamepad.GetmFRPower());
-            telemetry.update();
         }
 
         // after we exist the opModeIsActive loop, the opmode stops so we have to interrupt the threads and stop them to make the opmode not crash

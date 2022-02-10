@@ -113,7 +113,7 @@ public class MultitaskingThreadTeleop extends Thread {
                 }
                 else
                 {
-                    tse.moveHand(handPos);
+                    //tse.moveHand(handPos);
                 }
 
                 if(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce())

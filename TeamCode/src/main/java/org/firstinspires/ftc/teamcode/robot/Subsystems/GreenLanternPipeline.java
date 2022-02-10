@@ -53,7 +53,8 @@ public class GreenLanternPipeline extends OpenCvPipeline
     public Location location;
 
     // color for the rectangles to show on the screen
-    Scalar colorBarcodeRect = new Scalar(0, 255, 0);
+    Scalar colorBarcodeRectGREEN = new Scalar(0, 255, 0);
+    Scalar colorBarcodeRectRED = new Scalar(255, 0, 0);
 
     public Telemetry telemetry;
 
@@ -68,21 +69,21 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
         // creating 3 rectangles(sections) for checking the colors inside them.
         LEFT_SEC = new Rect(
-                new Point(626.666667,720),//mask.cols()/7, mask.rows()/5 * 2
-                new Point(426.666667,720));//mask.cols()/7, mask.rows()/5 * 2
+                new Point(0,720),//mask.cols()/7, mask.rows()/5 * 2
+                new Point(200,720));//mask.cols()/7, mask.rows()/5 * 2
 
         CENTER_SEC = new Rect(
-                new Point(853.333334,720),
-                new Point(626.666667,0));
+                new Point(800,720),
+                new Point(556.666667,0));
 
         RIGHT_SEC = new Rect(
-                new Point(1080,720 ),
-                new Point(853.333334,0 ));
+                new Point(1280,720 ),
+                new Point(800,0 ));
 
 
-        // HSV low and high values for our team shipping element.
-        Scalar lowValuesTSE = new Scalar(lowValuesTSEH, lowValuesTSES, lowValuesTSEV);
-        Scalar highValuesTSE = new Scalar(highValuesTSEH, highValuesTSES, highValuesTSEV);
+//        // HSV low and high values for our team shipping element.
+//        Scalar lowValuesTSE = new Scalar(lowValuesTSEH, lowValuesTSES, lowValuesTSEV);
+//        Scalar highValuesTSE = new Scalar(highValuesTSEH, highValuesTSES, highValuesTSEV);
 
         Scalar lowValuesDUCK = new Scalar(lowValuesDUCKH, lowValuesDUCKS, lowValuesDUCKV);
         Scalar highValuesDUCK = new Scalar(highValuesDUCKH, highValuesDUCKS, highValuesDUCKV);
@@ -90,16 +91,8 @@ public class GreenLanternPipeline extends OpenCvPipeline
         Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2HSV);
 
         // turning all colors not between the low and high values to black and the rest white.
-        if(TSE){
-            Core.inRange(inputHSV, lowValuesTSE, highValuesTSE, mask);
-            telemetry.addLine("Using: TSE");
-        }else if(!TSE){
-            Core.inRange(inputHSV, lowValuesDUCK, highValuesDUCK, mask);
-            telemetry.addLine("Using: DUCKS");
-        }else{
-            Core.inRange(inputHSV, lowValuesDUCK, highValuesDUCK, mask);
-            telemetry.addLine("Using: NONE");
-        }
+        Core.inRange(inputHSV, lowValuesDUCK, highValuesDUCK, mask);
+        telemetry.addLine("Using: DUCKS/TSE");
 
         // taking sections from the mask to another mat
         Mat left = mask.submat(LEFT_SEC);
@@ -138,7 +131,8 @@ public class GreenLanternPipeline extends OpenCvPipeline
         //checking which barcode is found.
         if(barcodeLeft && barcodeCenter && barcodeRight){
             // NOT FOUND
-            location = Location.Not_Found;
+            //location = Location.Not_Found;
+            location = Location.Left;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }else if(barcodeLeft){
             location = Location.Left;
@@ -151,17 +145,41 @@ public class GreenLanternPipeline extends OpenCvPipeline
             //telemetry.addData("Barcode Location:","RIGHT Barcode.");
         }else{
             // NOT FOUND
-            location = Location.Not_Found;
+            //location = Location.Not_Found;
+            location = Location.Left;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }
         telemetry.update();
 
         Imgproc.cvtColor(mask, mask, Imgproc.COLOR_GRAY2RGB);
 
-        // creating 3 rectangles at the mask mat with the color @colorBarcodeRect@ and the rectangle points LEFT/CENTER/RIGHT.
-        Imgproc.rectangle(mask, LEFT_SEC, colorBarcodeRect);
-        Imgproc.rectangle(mask, CENTER_SEC, colorBarcodeRect);
-        Imgproc.rectangle(mask, RIGHT_SEC, colorBarcodeRect);
+        switch (location)
+        {
+            case Left:
+                // creating 3 rectangles at the mask mat with the color @colorBarcodeRect@ and the rectangle points LEFT/CENTER/RIGHT.
+                Imgproc.rectangle(mask, LEFT_SEC, colorBarcodeRectGREEN);
+                Imgproc.rectangle(mask, CENTER_SEC, colorBarcodeRectRED);
+                Imgproc.rectangle(mask, RIGHT_SEC, colorBarcodeRectRED);
+                break;
+            case Center:
+                // creating 3 rectangles at the mask mat with the color @colorBarcodeRect@ and the rectangle points LEFT/CENTER/RIGHT.
+                Imgproc.rectangle(mask, LEFT_SEC, colorBarcodeRectRED);
+                Imgproc.rectangle(mask, CENTER_SEC, colorBarcodeRectGREEN);
+                Imgproc.rectangle(mask, RIGHT_SEC, colorBarcodeRectRED);
+                break;
+            case Right:
+                // creating 3 rectangles at the mask mat with the color @colorBarcodeRect@ and the rectangle points LEFT/CENTER/RIGHT.
+                Imgproc.rectangle(mask, LEFT_SEC, colorBarcodeRectRED);
+                Imgproc.rectangle(mask, CENTER_SEC, colorBarcodeRectRED);
+                Imgproc.rectangle(mask, RIGHT_SEC, colorBarcodeRectGREEN);
+                break;
+            default:
+                // creating 3 rectangles at the mask mat with the color @colorBarcodeRect@ and the rectangle points LEFT/CENTER/RIGHT.
+                Imgproc.rectangle(mask, LEFT_SEC, colorBarcodeRectRED);
+                Imgproc.rectangle(mask, CENTER_SEC, colorBarcodeRectRED);
+                Imgproc.rectangle(mask, RIGHT_SEC, colorBarcodeRectRED);
+                break;
+        }
 
         return mask;
     }
@@ -172,7 +190,8 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
         if(barcodeLeft && barcodeCenter && barcodeRight){
             // NOT FOUND
-            location = Location.Not_Found;
+            //location = Location.Not_Found;
+            location = Location.Left;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }else if(barcodeLeft){
             location = Location.Left;
@@ -185,7 +204,8 @@ public class GreenLanternPipeline extends OpenCvPipeline
             //telemetry.addData("Barcode Location:","RIGHT Barcode.");
         }else{
             // NOT FOUND
-            location = Location.Not_Found;
+            //location = Location.Not_Found;
+            location = Location.Left;
             //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }
 

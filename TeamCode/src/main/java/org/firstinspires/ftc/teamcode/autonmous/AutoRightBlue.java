@@ -43,7 +43,7 @@ public class AutoRightBlue extends LinearOpMode {
     public static double poseHubLeftH = 0;
     public static double parkBack = 28;
     public static double parkRight = 12;
-    public static double runCarouselFor = 5;
+    public static double runCarouselFor = 10;
     carousel carousel;
     intake intake;
     dip dip;
@@ -152,11 +152,13 @@ public class AutoRightBlue extends LinearOpMode {
                 break;
         }
         drive.followTrajectorySequence(parking);
-
-        threadAuto.interrupt();
-        drive.breakFollowing();
-        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        drive.setMotorPowers(0, 0, 0, 0);
+        if(isStopRequested())
+        {
+            threadAuto.interrupt();
+            drive.breakFollowing();
+            drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            drive.setMotorPowers(0, 0, 0, 0);
+        }
     }
 
     void goToMin() throws InterruptedException
