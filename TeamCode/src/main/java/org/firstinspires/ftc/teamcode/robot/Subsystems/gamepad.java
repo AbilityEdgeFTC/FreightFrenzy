@@ -27,7 +27,7 @@ public class gamepad {
     double rightPower_f;
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
-    public static double mainPower = 1, slowPower = .6, multiplier = .9;
+    public static double mainPower = .85, slowPower = .6, multiplier = .9;
     public static boolean slowMove = false;
     cGamepad cGamepad1, cGamepad2;
 

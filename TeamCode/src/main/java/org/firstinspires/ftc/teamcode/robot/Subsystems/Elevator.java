@@ -30,8 +30,8 @@ public class Elevator {
 
     public static PIDCoefficients PID = new PIDCoefficients(2, 0, 0);
 
-    public static double MAX_VEL = 80; // in/s
-    public static double MAX_ACCEL = 80; // in/s^2
+    public static double MAX_VEL = 75; // in/s
+    public static double MAX_ACCEL = 75; // in/s^2
     public static double MAX_JERK = 0; // in/s^3
 
     public static double kV = 0;

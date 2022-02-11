@@ -21,9 +21,6 @@ public class MultitaskingThreadTeleop extends Thread {
     cGamepad cGamepad1, cGamepad2;
     boolean frontIntake = false, backIntake = false;
     Telemetry telemetry;
-    hand tse;
-    public static double handPos = 0;
-    public static double addBy = .05;
 
     public MultitaskingThreadTeleop(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new intake(hw);
@@ -34,7 +31,6 @@ public class MultitaskingThreadTeleop extends Thread {
         this.gamepad2 = gamepad2;
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
-        tse = new hand(hw);
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -97,23 +93,12 @@ public class MultitaskingThreadTeleop extends Thread {
                 if((elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
                     dip.releaseFreightPos();
+                    frontIntake = false;
+                    backIntake = false;
                 }
                 else if(elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
                     dip.getFreight();
-                }
-
-                if(cGamepad2.dpadUpOnce() && handPos <= 0.95)
-                {
-                    handPos+=addBy;
-                }
-                if(cGamepad2.dpadUpOnce() && handPos >= addBy)
-                {
-                    handPos-=addBy;
-                }
-                else
-                {
-                    //tse.moveHand(handPos);
                 }
 
                 if(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce())
@@ -122,6 +107,8 @@ public class MultitaskingThreadTeleop extends Thread {
                 }
 
             }
+
+            Thread.currentThread().interrupt();
         }
         // an error occurred in the run loop.
         catch (Exception e) {

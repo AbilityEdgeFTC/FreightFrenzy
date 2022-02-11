@@ -27,12 +27,12 @@ public class GreenLanternPipeline extends OpenCvPipeline
     public static double highValuesTSEV = 92;
 
     public static double lowValuesDUCKH = 21;
-    public static double lowValuesDUCKS = 158;
-    public static double lowValuesDUCKV = 125;
+    public static double lowValuesDUCKS = 105;
+    public static double lowValuesDUCKV = 80;
 
-    public static double highValuesDUCKH = 112;
-    public static double highValuesDUCKS = 228;
-    public static double highValuesDUCKV = 253;
+    public static double highValuesDUCKH = 86;
+    public static double highValuesDUCKS = 216;
+    public static double highValuesDUCKV = 167;
 
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
@@ -73,12 +73,12 @@ public class GreenLanternPipeline extends OpenCvPipeline
                 new Point(200,720));//mask.cols()/7, mask.rows()/5 * 2
 
         CENTER_SEC = new Rect(
-                new Point(800,720),
-                new Point(556.666667,0));
+                new Point(900,720),
+                new Point(456.666667,0));
 
         RIGHT_SEC = new Rect(
                 new Point(1280,720 ),
-                new Point(800,0 ));
+                new Point(900,0 ));
 
 
 //        // HSV low and high values for our team shipping element.

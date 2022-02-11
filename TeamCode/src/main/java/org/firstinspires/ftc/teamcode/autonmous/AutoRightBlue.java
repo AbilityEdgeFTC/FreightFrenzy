@@ -38,7 +38,7 @@ public class AutoRightBlue extends LinearOpMode {
     public static double poseCarouselY = 57.5;
     public static double poseCarouselH = 45;
     public static double carouselHelp = 15;
-    public static double poseHubLeftX = -32;
+    public static double poseHubLeftX = -32.7;
     public static double poseHubLeftY = 21;
     public static double poseHubLeftH = 0;
     public static double parkBack = 28;
@@ -106,7 +106,7 @@ public class AutoRightBlue extends LinearOpMode {
         threadAuto.start();
         dip.getFreight();
 
-        while (!opModeIsActive())
+        while (!opModeIsActive() && !isStopRequested())
         {
             switch (pipeline.getLocation())
             {
@@ -152,13 +152,9 @@ public class AutoRightBlue extends LinearOpMode {
                 break;
         }
         drive.followTrajectorySequence(parking);
-        if(isStopRequested())
-        {
-            threadAuto.interrupt();
-            drive.breakFollowing();
-            drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.setMotorPowers(0, 0, 0, 0);
-        }
+        threadAuto.interrupt();
+        threadAuto = null;
+
     }
 
     void goToMin() throws InterruptedException

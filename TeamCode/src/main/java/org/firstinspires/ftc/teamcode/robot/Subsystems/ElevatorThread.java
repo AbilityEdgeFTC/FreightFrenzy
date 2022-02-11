@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class ElevatorThread extends Thread{
 
-    public static boolean eliorPlaying = false;
+    public static boolean eliorPlaying = true;
     public static double timeTo = 1;
     Elevator elevator;
     Gamepad gamepad1;
@@ -101,6 +101,8 @@ public class ElevatorThread extends Thread{
                 }
 
             }
+
+            Thread.currentThread().interrupt();
         }
         // an error occurred in the run loop.
         catch (Exception e) {}

@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.MultitaskingThreadTeleop;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread.ElevatorState;
 
 @Config
 @TeleOp(group = "main")
@@ -39,13 +40,14 @@ public class teleop extends LinearOpMode {
 
         elevatorThread = new ElevatorThread(hardwareMap, telemetry, gamepad2);
         multitaskingThreadTeleop = new MultitaskingThreadTeleop(hardwareMap, telemetry, gamepad1, gamepad2);
+        elevatorThread.elevatorSate = ElevatorState.ZERO;
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
         Thread ElevatorThread = elevatorThread;
         Thread MultitaskingThread = multitaskingThreadTeleop;
-
         // start the 2 threads
         ElevatorThread.start();
         MultitaskingThread.start();
+
 
         // wait till after init
         waitForStart();
@@ -56,18 +58,16 @@ public class teleop extends LinearOpMode {
                 // update the gamepads, see if there are new inputs or we need to run functions such as moving the bot
                 gamepad.update();
 
-                while (gamepad2.dpad_right)
+                if (gamepad2.dpad_right)
                 {
                     carousel.spin(false, true);
                 }
-
-                while (gamepad2.dpad_left)
+                else if (gamepad2.dpad_left)
                 {
 
                     carousel.spin(true, true);
                 }
-
-                if(!gamepad2.dpad_right && !gamepad2.dpad_left)
+                else
                 {
                     carousel.stop();
                 }
@@ -77,6 +77,9 @@ public class teleop extends LinearOpMode {
                 telemetry.addData("mFL: ", gamepad.GetmFLPower());
                 telemetry.addData("mFR: ", gamepad.GetmFRPower());
                 telemetry.update();
+
+                // TODO: check if it really helps the code or just shittier
+                idle();
             }
         }catch (NullPointerException e)
         {

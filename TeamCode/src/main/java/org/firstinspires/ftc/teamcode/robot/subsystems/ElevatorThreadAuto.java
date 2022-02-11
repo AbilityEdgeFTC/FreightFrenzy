@@ -77,6 +77,8 @@ public class ElevatorThreadAuto extends Thread{
                     elevator.update();
                 }
             }
+
+            Thread.currentThread().interrupt();
         }catch (Exception e){}
     }
 

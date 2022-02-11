@@ -16,9 +16,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class dip {
 
     Servo sD, sH;
-    public static double intakePosition = .65, releasingPosition = .42, holdingPosition = 1, pushingPosition = .4;
+    public static double intakePosition = 0.55, releasingPosition = .3, holdingPosition = 1, pushingPosition = .3;
     Telemetry telemetry;
-    public static double time = 100;
 
     public enum HandState
     {
@@ -46,19 +45,16 @@ public class dip {
     public void getFreight() throws InterruptedException {
         sD.setPosition(intakePosition);
         sH.setPosition(holdingPosition);
-        Thread.sleep((long)time);
     }
     // spin dip servo to releasing positions, and holding servo to hold position.
     public void releaseFreightPos() throws InterruptedException {
         sD.setPosition(releasingPosition);
         sH.setPosition(holdingPosition);
-        Thread.sleep((long)time);
     }
 
     // spin holding servo to push position.
     public void releaseFreight() throws InterruptedException {
         sH.setPosition(pushingPosition);
-        Thread.sleep((long)time*10);
     }
 
     // spin dip servo to intake positions, and holding servo to hold position.

@@ -122,7 +122,7 @@ public class AutoLeftBlue extends LinearOpMode {
         dip.getFreight();
         threadAuto.start();
 
-        while (!opModeIsActive())
+        while (!opModeIsActive() && !isStopRequested())
         {
             switch (pipeline.getLocation()) {
                 case Left:
@@ -178,15 +178,8 @@ public class AutoLeftBlue extends LinearOpMode {
         drive.followTrajectorySequence(collect2);
         Thread.sleep(1500);
         fixIntake();
-        if(isStopRequested())
-        {
-            threadAuto.interrupt();
-            drive.breakFollowing();
-            drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.setMotorPowers(0, 0, 0, 0);
-        }
-
-
+        threadAuto.interrupt();
+        Thread.currentThread().interrupt();
     }
 
     void goToMin() throws InterruptedException

@@ -108,7 +108,7 @@ public class AutoLeftRed extends LinearOpMode {
         threadAuto.start();
         dip.getFreight();
 
-        while (!opModeIsActive()) {
+        while (!opModeIsActive() && !isStopRequested()) {
             switch (pipeline.getLocation())
             {
                 case Left:
@@ -152,13 +152,8 @@ public class AutoLeftRed extends LinearOpMode {
                 break;
         }
         drive.followTrajectorySequence(parking);
-        if(isStopRequested())
-        {
-            threadAuto.interrupt();
-            drive.breakFollowing();
-            drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.setMotorPowers(0, 0, 0, 0);
-        }
+        threadAuto.interrupt();
+        threadAuto = null;
     }
 
     void runCarousel() throws InterruptedException

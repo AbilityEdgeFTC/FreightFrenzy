@@ -123,7 +123,7 @@ public class AutoRightRed extends LinearOpMode {
         threadAuto.start();
         dip.getFreight();
 
-        while (!opModeIsActive())
+        while (!opModeIsActive() && !isStopRequested())
         {
             switch (pipeline.getLocation())
             {
@@ -177,13 +177,8 @@ public class AutoRightRed extends LinearOpMode {
         drive.followTrajectorySequence(collect2);
         Thread.sleep(1500);
         fixIntake();
-        if(isStopRequested())
-        {
-            threadAuto.interrupt();
-            drive.breakFollowing();
-            drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            drive.setMotorPowers(0, 0, 0, 0);
-        }
+        threadAuto.interrupt();
+        threadAuto = null;
     }
 
     void goToMin() throws InterruptedException
