@@ -1,14 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
-import com.acmerobotics.roadrunner.profile.MotionProfile;
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
-import com.acmerobotics.roadrunner.profile.MotionState;
-import com.acmerobotics.roadrunner.util.NanoClock;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 @Config
 public class myElevator {
-    PIDController controller;
+    ElevatorController controller;
 
     public static double MAX_HEIGHT = 20;
     public static double MID_HEIGHT = 13;
@@ -40,7 +32,7 @@ public class myElevator {
 
     public myElevator(HardwareMap hardwareMap, Gamepad gamepad)
     {
-        controller = new PIDController(hardwareMap);
+        controller = new ElevatorController(hardwareMap);
         this.gamepad = gamepad;
     }
 

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import static com.acmerobotics.roadrunner.util.Angle.normDelta;
 
 @Config
-public class PIDController {
+public class ElevatorController {
 
     public static double TICKS_PER_REV = 537.7;
     public static double SPOOL_RADIUS = 0.75; // in
@@ -21,7 +21,7 @@ public class PIDController {
     double error = 0, derivative, lastError, integralSum, errorChange, previousFilterEstimate = 0, currentFilterEstimate = 0, lastTarget;
     public static double integralSumLimit = 0.25, a = 0.8;
 
-    public PIDController(HardwareMap hardwareMap) {
+    public ElevatorController(HardwareMap hardwareMap) {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
