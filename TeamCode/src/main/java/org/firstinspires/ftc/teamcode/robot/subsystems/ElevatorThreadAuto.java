@@ -5,6 +5,7 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,15 +14,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class ElevatorThreadAuto extends Thread{
 
     public static double timeTo = 1;
-    Elevator elevator;
+    public static Elevator elevator;
 
     public enum ElevatorState
     {
         ZERO,
         MIN,
         MID,
-        MAX,
-        RELEASE
+        MAX
     }
 
     public static ElevatorState elevatorState = ElevatorState.ZERO;
@@ -38,6 +38,7 @@ public class ElevatorThreadAuto extends Thread{
         try
         {
             NanoClock clock = NanoClock.system();
+            elevatorState = ElevatorState.ZERO;
 
             while (!isInterrupted())
             {
@@ -76,15 +77,9 @@ public class ElevatorThreadAuto extends Thread{
                     elevator.update();
                 }
             }
-        }
-        // an error occurred in the run loop.
-        catch (Exception e) {}
-    }
 
-    @Override
-    public void interrupt() {
-        super.interrupt();
-        elevator.setPower(0);
+            Thread.currentThread().interrupt();
+        }catch (Exception e){}
     }
 
     public static void setElevatorState(ElevatorState elevatorState) {

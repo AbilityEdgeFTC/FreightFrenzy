@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.robot.subsystems.menu;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThreadAuto;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
@@ -17,7 +17,7 @@ import java.util.Queue;
 public class trajectoryObject {
     Queue<TrajectorySequence> trajectorySequenceQueue = null;
     ArrayList<TrajectorySequence> trajectories;
-    SampleMecanumDrive drive;
+    MecanumLocalizer drive;
     carousel carousel;
     ElevatorThreadAuto elevatorThreadAuto;
     dip dip;
@@ -35,7 +35,7 @@ public class trajectoryObject {
 
     public static TrajectoryType trajectoryType;
 
-    public trajectoryObject(SampleMecanumDrive drive, HardwareMap hardwareMap) {
+    public trajectoryObject(MecanumLocalizer drive, HardwareMap hardwareMap) {
         this.drive = drive;
         elevatorThreadAuto = new ElevatorThreadAuto(hardwareMap);
         dip = new dip(hardwareMap);
@@ -87,8 +87,8 @@ public class trajectoryObject {
 
             case INTAKE:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
-                        .lineToLinearHeading(point, SampleMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                        .lineToLinearHeading(point, MecanumLocalizer.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                MecanumLocalizer.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                         .UNSTABLE_addTemporalMarkerOffset(-(trajectorySequence.duration()), () -> intake.intakeForward())
                         .UNSTABLE_addTemporalMarkerOffset(0, () -> intake.intakeBackward())
                         .UNSTABLE_addTemporalMarkerOffset(1.5, () -> intake.stop())
@@ -105,11 +105,11 @@ public class trajectoryObject {
         trajectorySequenceQueue.add(trajectorySequence);
     }
 
-    public SampleMecanumDrive getDrive() {
+    public MecanumLocalizer getDrive() {
         return drive;
     }
 
-    public void setDrive(SampleMecanumDrive drive) {
+    public void setDrive(MecanumLocalizer drive) {
         this.drive = drive;
     }
 

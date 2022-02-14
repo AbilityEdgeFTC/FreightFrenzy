@@ -60,8 +60,6 @@ public class ColorTuning extends LinearOpMode {
     Mat mask = new Mat(1280,720,0);//
     Mat inputHSV = new Mat(1280,720,0);
 
-
-
     public static VisionObject[] typeTuning ={tseH,tseS,tseV};
 
 
@@ -72,9 +70,6 @@ public class ColorTuning extends LinearOpMode {
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
         pipeline.TSE = true;
-
-
-
 
         int curentType =0;
 

@@ -3,7 +3,7 @@
  * - Elior Yousefi
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -45,7 +45,6 @@ public class teleopOwl extends LinearOpMode {
             telemetry.addData("mBR: ", gamepad.GetmBRPower());
             telemetry.addData("mFL: ", gamepad.GetmFLPower());
             telemetry.addData("mFR: ", gamepad.GetmFRPower());
-            telemetry.addData("IMU:", gamepad.getIMU());
             telemetry.update();
         }
 

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleTankDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.MecanumLocalizer;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -21,7 +21,7 @@ public class StraightTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        SampleTankDrive drive = new SampleTankDrive(hardwareMap);
+        MecanumLocalizer drive = new MecanumLocalizer(hardwareMap);
 
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

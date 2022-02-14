@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.robot.subsystems.menu;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -169,7 +169,7 @@ public class MenuOpMode extends LinearOpMode
         autoTask[1] = "NO";
 
         localizerTask[0] = "Mecanum ONLY";
-        //localizerTask[1] = "Mecanum AND RealSense";
+        localizerTask[1] = "Mecanum AND RealSense";
         //localizerTask[2] = "RealSense ONLY";
 
         allianceTask[0] = "Red";

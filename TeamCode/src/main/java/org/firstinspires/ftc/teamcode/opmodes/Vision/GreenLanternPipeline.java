@@ -116,8 +116,6 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
         // if debugging so we display more values in telemetry.
         if(DEBUG){
-            threshold_percentage = 0;
-
             telemetry.addData("Left raw value", Core.sumElems(left).val[0]);
             telemetry.addData("Center raw value", Core.sumElems(center).val[0]);
             telemetry.addData("Right raw value", Core.sumElems(right).val[0]);
@@ -137,20 +135,15 @@ public class GreenLanternPipeline extends OpenCvPipeline
         if(barcodeLeft && barcodeCenter && barcodeRight){
             // NOT FOUND
             location = Location.Not_Found;
-            //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }else if(barcodeLeft){
             location = Location.Left;
-            //telemetry.addData("Barcode Location:","LEFT Barcode.");
         }else if(barcodeCenter){
             location = Location.Center;
-            //telemetry.addData("Barcode Location:","CENTER Barcode.");
         }else if(barcodeRight){
             location = Location.Right;
-            //telemetry.addData("Barcode Location:","RIGHT Barcode.");
         }else{
             // NOT FOUND
             location = Location.Not_Found;
-            //telemetry.addData("Barcode Location:","Unknown Barcode.");
         }
         telemetry.update();
 
@@ -166,27 +159,6 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
     // getting location of the team shipping element.
     public Location getLocation() {
-        Location location;
-
-        if(barcodeLeft && barcodeCenter && barcodeRight){
-            // NOT FOUND
-            location = Location.Not_Found;
-            //telemetry.addData("Barcode Location:","Unknown Barcode.");
-        }else if(barcodeLeft){
-            location = Location.Left;
-            //telemetry.addData("Barcode Location:","LEFT Barcode.");
-        }else if(barcodeCenter){
-            location = Location.Center;
-            //telemetry.addData("Barcode Location:","CENTER Barcode.");
-        }else if(barcodeRight){
-            location = Location.Right;
-            //telemetry.addData("Barcode Location:","RIGHT Barcode.");
-        }else{
-            // NOT FOUND
-            location = Location.Not_Found;
-            //telemetry.addData("Barcode Location:","Unknown Barcode.");
-        }
-
         return location;
     }
 

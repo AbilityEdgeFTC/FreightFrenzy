@@ -14,9 +14,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class hand {
 
-    Servo sT;
+    public static Servo sT;
     Telemetry telemetry;
-    public static double time = 100;
+    public static double down = 0., mid = 0.5, up = 1;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
@@ -31,13 +31,19 @@ public class hand {
     }
 
     // spin dip servo to intake positions, and holding servo to hold position.
-    public void moveHand(double position) throws InterruptedException {
-        sT.setPosition(position);
-        Thread.sleep((long)time);
+    public static void moveHand1() throws InterruptedException {
+        sT.setPosition(up);
     }
 
-    // spin dip servo to intake positions, and holding servo to hold position.
-    public void moveHandAUTO(double position) {
+    public static void moveHand2() throws InterruptedException {
+        sT.setPosition(mid);
+    }
+
+    public static void moveHand3() throws InterruptedException {
+        sT.setPosition(down);
+    }
+
+    public static void moveHand(double position) throws InterruptedException {
         sT.setPosition(position);
     }
 

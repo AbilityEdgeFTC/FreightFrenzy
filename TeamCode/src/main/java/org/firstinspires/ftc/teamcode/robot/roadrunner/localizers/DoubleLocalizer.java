@@ -29,7 +29,7 @@ import com.acmerobotics.roadrunner.localization.Localizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.PoseUtil;
 
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class DoubleLocalizer implements Localizer {
     private final T265Localizer realsenseLocalizer;
-    private SampleMecanumDrive mecanumLocalizer;
+    private MecanumLocalizer mecanumLocalizer;
 
     private ConfidenceTracker confidenceTracker = ConfidenceTracker.HIGH;
 
@@ -59,7 +59,7 @@ public class DoubleLocalizer implements Localizer {
     public DoubleLocalizer(HardwareMap hardwareMap) {
         super();
         realsenseLocalizer = new T265Localizer(hardwareMap);
-        mecanumLocalizer = new SampleMecanumDrive(hardwareMap);
+        mecanumLocalizer = new MecanumLocalizer(hardwareMap);
     }
 
     /**

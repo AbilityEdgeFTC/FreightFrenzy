@@ -99,7 +99,10 @@ public class ElevatorThread extends Thread{
                     elevator.update();
                     checkLevel();
                 }
+
             }
+
+            Thread.currentThread().interrupt();
         }
         // an error occurred in the run loop.
         catch (Exception e) {}
@@ -133,5 +136,7 @@ public class ElevatorThread extends Thread{
 
         telemetry.addData("Power: ", elevator.getPower());
     }
+
+
 
 }

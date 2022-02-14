@@ -18,14 +18,9 @@ public class MultitaskingThreadTeleop extends Thread {
     dip dip;
     public static double powerIntake = 1;
     ElevatorThread elevator;
-    //Elevator elevator;
-    double threshold, goBackPos = 1;
     cGamepad cGamepad1, cGamepad2;
-    boolean frontIntake = false, backIntake = false;
+    boolean runFrontIntake = false, runBackIntake = false, canFrontIntake = false, canBackIntake = false;
     Telemetry telemetry;
-    //hand tse;
-
-     public static double handPos = 0;
 
     public MultitaskingThreadTeleop(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new intake(hw);
@@ -36,7 +31,6 @@ public class MultitaskingThreadTeleop extends Thread {
         this.gamepad2 = gamepad2;
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
-        //tse = new hand(hw);
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -50,36 +44,50 @@ public class MultitaskingThreadTeleop extends Thread {
                 cGamepad1.update();
                 cGamepad2.update();
 
-                if (gamepad1.left_trigger != 0 || gamepad2.left_trigger != 0)
+                if (gamepad1.left_trigger != 0 && canBackIntake)
                 {
-                    frontIntake = false;
-                    backIntake = false;                }
-                else if (gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0)
+                    intake.powerIntake(-gamepad1.left_trigger);
+                    runBackIntake = false;
+                    runFrontIntake = false;
+                }
+                else if (gamepad1.right_trigger != 0 && canFrontIntake)
                 {
                     intake.powerIntake(gamepad1.right_trigger);
-                    frontIntake = false;
-                    backIntake = false;
+                    runBackIntake = false;
+                    runFrontIntake = true;
+                }
+                else if (gamepad2.left_trigger != 0 && canBackIntake)
+                {
+                    intake.powerIntake(-gamepad2.left_trigger);
+                    runBackIntake = false;
+                    runFrontIntake = false;
+                }
+                else if (gamepad2.right_trigger != 0 && canFrontIntake)
+                {
+                    intake.powerIntake(gamepad2.right_trigger);
+                    runBackIntake = false;
+                    runFrontIntake = false;
                 }
 
                 if (cGamepad1.rightBumperOnce() )
                 {
-                    frontIntake = !frontIntake;
-                    backIntake = false;
+                    runFrontIntake = !runFrontIntake;
+                    runBackIntake = false;
                 }
                 else if (cGamepad1.leftBumperOnce() ) {
-                    backIntake = !backIntake;
-                    frontIntake = false;
+                    runBackIntake = !runBackIntake;
+                    runFrontIntake = false;
                 }
 
-                if(frontIntake)
+                if(runFrontIntake && canFrontIntake)
                 {
                     intake.powerIntake(powerIntake);
                 }
-                else if(backIntake)
+                else if(runBackIntake && canBackIntake)
                 {
                     intake.powerIntake(-powerIntake);
                 }
-                else if(gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0)
+                else if(gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0 && gamepad2.right_trigger == 0 && gamepad2.left_trigger == 0)
                 {
                     intake.stop();
                 }
@@ -87,28 +95,24 @@ public class MultitaskingThreadTeleop extends Thread {
                 if((elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
                     dip.releaseFreightPos();
+                    canFrontIntake = false;
+                    canBackIntake = false;
                 }
                 else if(elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
                     dip.getFreight();
+                    canFrontIntake = true;
+                    canBackIntake = true;
                 }
-
-                /*if(cGamepad2.dpadUpOnce())
-                {
-                    handPos+=0.05;
-                    tse.moveHand(handPos);
-                }
-                if(cGamepad2.dpadUpOnce())
-                {
-                    handPos-=0.05;
-                    tse.moveHand(handPos);
-                }*/
 
                 if(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce())
                 {
                     dip.releaseFreight();
                 }
+
             }
+
+            Thread.currentThread().interrupt();
         }
         // an error occurred in the run loop.
         catch (Exception e) {
