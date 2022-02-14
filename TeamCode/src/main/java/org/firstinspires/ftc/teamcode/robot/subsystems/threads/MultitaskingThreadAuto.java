@@ -2,9 +2,12 @@
  * Created by Ability Edge#18273
  * - Elior Yousefi
  */
-package org.firstinspires.ftc.teamcode.robot.subsystems;
+package org.firstinspires.ftc.teamcode.robot.subsystems.threads;
 
 import com.acmerobotics.dashboard.config.Config;
+
+import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
+import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake.IntakeState;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.intake.intakeState;
@@ -12,8 +15,8 @@ import static org.firstinspires.ftc.teamcode.robot.subsystems.intake.intakeState
 @Config
 public class MultitaskingThreadAuto extends Thread {
 
-    intake intake;
-    dip dip;
+    org.firstinspires.ftc.teamcode.robot.subsystems.intake intake;
+    org.firstinspires.ftc.teamcode.robot.subsystems.dip dip;
     public static double powerIntake = 1;
     ElevatorThreadAuto elevator;
     public static boolean frontIntake = false, backIntake = false;

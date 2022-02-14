@@ -11,9 +11,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorThread;
-import org.firstinspires.ftc.teamcode.robot.subsystems.MultitaskingThreadTeleop;
-import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 
 @Config

@@ -29,6 +29,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceRunnerCancelable;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.AxisDirection;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.LynxModuleUtil;

@@ -2,20 +2,23 @@
  * Created by Ability Edge#18273
  * - Elior Yousefi
  */
-package org.firstinspires.ftc.teamcode.robot.subsystems;
+package org.firstinspires.ftc.teamcode.robot.subsystems.threads;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
+import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
+import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 @Config
 public class MultitaskingThreadTeleop extends Thread {
 
-    intake intake;
+    org.firstinspires.ftc.teamcode.robot.subsystems.intake intake;
     Gamepad gamepad1, gamepad2;
-    dip dip;
+    org.firstinspires.ftc.teamcode.robot.subsystems.dip dip;
     public static double powerIntake = 1;
     ElevatorThread elevator;
     cGamepad cGamepad1, cGamepad2;

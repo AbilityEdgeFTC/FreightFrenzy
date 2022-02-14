@@ -2,7 +2,7 @@
  * Created by Ability Edge#18273
  * - Elior Yousefi
  */
-package org.firstinspires.ftc.teamcode.robot.subsystems;
+package org.firstinspires.ftc.teamcode.robot.subsystems.threads;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.util.NanoClock;
@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
 
 @Config
 public class ElevatorThread extends Thread{
