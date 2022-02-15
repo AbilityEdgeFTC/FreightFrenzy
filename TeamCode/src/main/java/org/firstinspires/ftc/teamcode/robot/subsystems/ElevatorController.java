@@ -16,12 +16,13 @@ public class ElevatorController {
     public static double TICKS_PER_REV = 537.7;
     public static double SPOOL_RADIUS = 0.75; // in
     DcMotorEx motor;
-    PIDCoefficients coefficients = new PIDCoefficients(0,0,0);
+    public static PIDCoefficients coefficients;
     double encoderPosition = 0;
     double error = 0, derivative, lastError, integralSum, errorChange, previousFilterEstimate = 0, currentFilterEstimate = 0, lastTarget;
     public static double integralSumLimit = 0.25, a = 0.8;
 
-    public ElevatorController(HardwareMap hardwareMap) {
+    public ElevatorController(HardwareMap hardwareMap, PIDCoefficients coefficients) {
+        this.coefficients = coefficients;
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -37,7 +38,7 @@ public class ElevatorController {
         // obtain the encoder position
         encoderPosition = motor.getCurrentPosition();
         // calculate the error
-        error = target - encoderPosition;
+        error = inchesToEncoderTicks(target) - encoderPosition;
 
         errorChange = (error - lastError);
 
@@ -61,14 +62,14 @@ public class ElevatorController {
         }
 
         // reset integral sum upon setpoint changes
-        if (target != lastTarget) {
+        if (inchesToEncoderTicks(target) != lastTarget) {
             integralSum = 0;
         }
 
         motor.setPower((coefficients.kP * error) + (coefficients.kI * integralSum) + (coefficients.kD * derivative));
 
         lastError = error;
-        lastTarget = target;
+        lastTarget = inchesToEncoderTicks(target);
 
         // reset the timer for next time
         time.reset();

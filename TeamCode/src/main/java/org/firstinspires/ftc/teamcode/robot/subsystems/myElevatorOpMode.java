@@ -34,6 +34,10 @@ public class myElevatorOpMode extends LinearOpMode {
         while (opModeIsActive())
         {
             elevator.update(time);
+
+            //telemetry.addData("Target", myElevator);
+            //telemetry.addData("Error", );
+            telemetry.update();
         }
 
 

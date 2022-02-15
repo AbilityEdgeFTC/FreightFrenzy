@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.Vision;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -45,120 +46,133 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-
+@Config
 @TeleOp(group="Tests")
 public class ColorTuning extends LinearOpMode {
 
     OpenCvWebcam webcam;
     cGamepad cGamepad1;
+    cGamepad cGamepad2;
     public static boolean TSE = true;
 
-    static VisionObject tseH = new VisionObject(255,0,"H");
-    static VisionObject tseS = new VisionObject(255,0,"S");
-    static VisionObject tseV = new VisionObject(255,0,"V");
+    public static int hMax = 255;
+    public static int sMax = 255;
+    public static int vMax = 255;
 
-    Mat mask = new Mat(1280,720,0);//
-    Mat inputHSV = new Mat(1280,720,0);
+    public static int hMin = 0;
+    public static int sMin = 0;
+    public static int vMin = 0;
 
-    public static VisionObject[] typeTuning ={tseH,tseS,tseV};
+    public static int[] max ={hMax,sMax,vMax};
+    public static int[] min ={hMin,sMin,vMin};
+    MenuPipeline pipeline;
 
+    public static boolean isMax = false;
 
     @Override
     public void runOpMode() {
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
-        pipeline.telemetry = telemetry;
-        pipeline.DEBUG = false;
-        pipeline.TSE = true;
+
+        //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
+        pipeline = new MenuPipeline();
 
         int curentType =0;
 
         initPipeline();
-        webcam.setPipeline(pipeline);
         cGamepad1 = new cGamepad(gamepad1);
+        cGamepad2 = new cGamepad(gamepad2);
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            /**min or max **/
-            //max
+            cGamepad1.update();
+
+            if (cGamepad1.XOnce())
+            {
+                isMax = false;
+            }
             if (cGamepad1.BOnce())
             {
+                isMax = true;
+            }
+
+            /**min or max **/
+            //max
+            if(isMax) {
                 /**the type changed **/
                 //down
-                if(cGamepad1.dpadDownOnce() && curentType > 0)
-                {
-                    curentType -=1;
+                if (cGamepad2.dpadDownOnce() && curentType > 0) {
+                    curentType--;
                 }
-                else if(cGamepad1.dpadUpOnce() && curentType<typeTuning.length)
-                {
-                    curentType +=1;
+                if (cGamepad2.dpadUpOnce() && curentType<max.length -1) {
+                    curentType++;
                 }
                 //up
                 /**the value change byu 1 **/
                 //-1
-                if (cGamepad1.dpadLeftOnce() && typeTuning[curentType].getHighValueTSE()>1)
-                {
-                    typeTuning[curentType].setHighValueTSE(typeTuning[curentType].getHighValueTSE()-1);
+                if (cGamepad2.dpadLeftOnce() && max[curentType]>1) {
+                    max[curentType]--;
                 }
                 //+1
-                else if(cGamepad1.dpadRightOnce() && typeTuning[curentType].getHighValueTSE()<254)
-                {
-                    typeTuning[curentType].setHighValueTSE(typeTuning[curentType].getHighValueTSE()+1);
+                if (cGamepad2.dpadRightOnce() && max[curentType]<254) {
+                    max[curentType]++;
                 }
                 /**the value change byu 10 **/
                 //-10
-                if(cGamepad1.leftBumperOnce() && typeTuning[curentType].getHighValueTSE()>10)
-                {
-                    typeTuning[curentType].setHighValueTSE(typeTuning[curentType].getHighValueTSE()-10);
+                if (cGamepad2.leftBumperOnce() && max[curentType]>10) {
+                    max[curentType] -= 10;
                 }
                 //+10
-                else if(cGamepad1.rightBumperOnce() && typeTuning[curentType].getHighValueTSE()<245)
-                {
-                    typeTuning[curentType].setHighValueTSE(typeTuning[curentType].getHighValueTSE()+10);
+                if (cGamepad2.rightBumperOnce() && max[curentType]<245) {
+                    max[curentType] += 10;
                 }
+
             }
             //min
-            else if(cGamepad1.XOnce())
-            {
+            else {
                 /**the type changed **/
                 //down
-                if(cGamepad1.dpadDownOnce() && curentType > 0)
-                {
-                    curentType -=1;
+                if (cGamepad1.dpadDownOnce() && curentType > 0) {
+                    curentType--;
                 }
-                else if(cGamepad1.dpadUpOnce() && curentType<typeTuning.length)
-                {
-                    curentType +=1;
+                if (cGamepad1.dpadUpOnce() && curentType < min.length-1) {
+                    curentType++;
                 }
                 //up
                 /**the value change byu 1 **/
                 //-1
-                if (cGamepad1.dpadLeftOnce() && typeTuning[curentType].getLowValueTSE()>1)
-                {
-                    typeTuning[curentType].setLowValueTSE(typeTuning[curentType].getLowValueTSE()-1);
+                if (cGamepad1.dpadLeftOnce() && min[curentType] > 1) {
+                    min[curentType]--;
                 }
                 //+1
-                else if(cGamepad1.dpadRightOnce() && typeTuning[curentType].getLowValueTSE()<254)
-                {
-                    typeTuning[curentType].setLowValueTSE(typeTuning[curentType].getLowValueTSE()+1);
+                if (cGamepad1.dpadRightOnce() && min[curentType] < 254) {
+                    min[curentType]++;
                 }
                 /**the value change byu 10 **/
                 //-10
-                if(cGamepad1.leftBumperOnce() && typeTuning[curentType].getLowValueTSE()>10)
-                {
-                    typeTuning[curentType].setLowValueTSE(typeTuning[curentType].getLowValueTSE()-10);
+                if (cGamepad1.leftBumperOnce() && min[curentType] > 10) {
+                    min[curentType] -= 10;
                 }
                 //+10
-                else if(cGamepad1.rightBumperOnce() && typeTuning[curentType].getLowValueTSE()<245)
-                {
-                    typeTuning[curentType].setLowValueTSE(typeTuning[curentType].getLowValueTSE()+10);
+                if (cGamepad1.rightBumperOnce() && min[curentType] < 245) {
+                    min[curentType] += 10;
                 }
+
             }
 
+            telemetry.addLine("(h) " +  ": " +min[0] + " " + max[0]);
+            telemetry.addLine("(s) " +  ": " +min[1] + " " + max[1]);
+            telemetry.addLine("(v) " +  ": " +min[2] + " " + max[2]);
 
-            telemetry.addData("Barcode Location:",pipeline.getLocation());
+            //}
+
+            if(cGamepad1.AOnce())
+            {
+                pipeline.setMax(max);
+                pipeline.setMin(min);
+            }
+            //telemetry.addData("Barcode Location:",pipeline.getLocation());
             telemetry.update();
         }
 
@@ -171,15 +185,11 @@ public class ColorTuning extends LinearOpMode {
         //setting up webcam from config, and displaying it in the teleop controller.
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-
-        //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
         pipeline.TSE = true;
 
         webcam.setPipeline(pipeline);
-
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -214,26 +224,5 @@ public class ColorTuning extends LinearOpMode {
                  */
             }
         });
-    }
-    public Mat processFrame(Mat input)  {
-        // HSV low and high values for our team shipping element.
-        Scalar lowValuesTSE = new Scalar(tseH.getLowValueTSE(), tseS.getLowValueTSE(), tseV.getLowValueTSE());
-        Scalar highValuesTSE = new Scalar(tseH.getHighValueTSE(), tseS.getHighValueTSE(), tseV.getHighValueTSE());
-        Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2HSV);
-
-
-
-        Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2HSV);
-
-        // turning all colors not between the low and high values to black and the rest white.
-        if (TSE) {
-            Core.inRange(inputHSV, lowValuesTSE, highValuesTSE, mask);
-            telemetry.addLine("Using: TSE");
-        } else {
-            Core.inRange(inputHSV, lowValuesTSE, highValuesTSE, mask);
-            telemetry.addLine("Using: NONE");
-        }
-        Imgproc.cvtColor(mask, mask, Imgproc.COLOR_GRAY2RGB);
-        return mask;
     }
 }

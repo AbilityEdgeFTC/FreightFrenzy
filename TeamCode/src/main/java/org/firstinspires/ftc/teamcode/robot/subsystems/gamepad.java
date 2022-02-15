@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 
 @Config
 public class gamepad {
@@ -28,8 +29,10 @@ public class gamepad {
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
     public static double mainPower = .85, slowPower = .6, multiplier = .9;
-    public static boolean slowMove = false;
+    public static boolean slowMove = false, isRegularDrive = false;
     cGamepad cGamepad1, cGamepad2;
+    SampleMecanumDriveCancelable drivetrain;
+    public static double startH = 0;
 
 
     /**
@@ -55,6 +58,23 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        try
+        {
+            startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
+        }catch (NumberFormatException e)
+        {
+            startH = 0;
+        }
+
+        startH -= Math.PI/2; // red
+        //startH += Math.PI/2; // blue
+
+        this.drivetrain = new SampleMecanumDriveCancelable(hardwareMap);
+        this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
+        // We want to turn off velocity control for teleop
+        // Velocity control per wheel is not necessary outside of motion profiled auto
+        this.drivetrain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void update() {
@@ -77,7 +97,14 @@ public class gamepad {
             power = mainPower;
         }
 
-        regularDrive();
+        if (isRegularDrive)
+        {
+            regularDrive();
+        }
+        else
+        {
+            centricDrive();
+        }
 
         mFL.setPower(leftPower_f);
         mBL.setPower(leftPower_b);
@@ -109,6 +136,19 @@ public class gamepad {
         rightPower_b = Range.clip(drive - twist + strafe, -power, power);
     }
 
+    public void centricDrive()
+    {
+        Vector2d input = new Vector2d(
+                -gamepad1.left_stick_y,
+                gamepad1.left_stick_x
+        ).rotated(drivetrain.getExternalHeading());
+
+        leftPower_f = Range.clip(input.getX() + twist + input.getY() , -power, power);
+        leftPower_b = Range.clip(input.getX() + twist - input.getY(), -power, power);
+        rightPower_f = Range.clip(input.getX() - twist - input.getY(), -power, power);
+        rightPower_b = Range.clip(input.getX() - twist + input.getY(), -power, power);
+    }
+
 
     public double GetmFLPower()
     {
@@ -130,4 +170,8 @@ public class gamepad {
         return mBR.getPower();
     }
 
+    public double getIMU()
+    {
+        return drivetrain.getExternalHeading();
+    }
 }

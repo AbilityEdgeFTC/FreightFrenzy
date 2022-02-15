@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.opmodes.Vision;
 public class VisionObject {
 
 
-    private static double highValueTSE;
-    private static double lowValueTSE;
-    private static String type;
+    public static double highValueTSE;
+    public static double lowValueTSE;
+    public static String type;
 
     public VisionObject(double highValuesTSE,double lowValuesTSE,String type)
     {

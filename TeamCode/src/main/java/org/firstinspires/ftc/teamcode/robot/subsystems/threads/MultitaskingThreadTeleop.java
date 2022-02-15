@@ -57,7 +57,7 @@ public class MultitaskingThreadTeleop extends Thread {
                 {
                     intake.powerIntake(gamepad1.right_trigger);
                     runBackIntake = false;
-                    runFrontIntake = true;
+                    runFrontIntake = false;
                 }
                 else if (gamepad2.left_trigger != 0 && canBackIntake)
                 {
@@ -72,7 +72,7 @@ public class MultitaskingThreadTeleop extends Thread {
                     runFrontIntake = false;
                 }
 
-                if (cGamepad1.rightBumperOnce() )
+                if (cGamepad1.rightBumperOnce())
                 {
                     runFrontIntake = !runFrontIntake;
                     runBackIntake = false;
@@ -111,6 +111,7 @@ public class MultitaskingThreadTeleop extends Thread {
                 if(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce())
                 {
                     dip.releaseFreight();
+                    Thread.sleep(500);
                 }
 
             }
