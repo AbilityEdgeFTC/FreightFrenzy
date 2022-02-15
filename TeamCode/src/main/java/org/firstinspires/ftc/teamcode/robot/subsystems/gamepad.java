@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
@@ -33,7 +34,9 @@ public class gamepad {
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDriveCancelable drivetrain;
     public static double startH = 0;
-
+    public static double Pcoefficient = 0;
+    public static double HEADING_THRESHOLD = 2;
+    public static boolean holdAngle = false;
 
     /**
      * constructor for gamepad
@@ -97,6 +100,12 @@ public class gamepad {
             power = mainPower;
         }
 
+        if(holdAngle)
+        {
+            getGamepadDirections(false);
+            holdAngle();
+        }
+
         if (isRegularDrive)
         {
             regularDrive();
@@ -149,6 +158,38 @@ public class gamepad {
         rightPower_b = Range.clip(input.getX() - twist + input.getY(), -power, power);
     }
 
+    public void holdAngle()
+    {
+        double error;
+
+        // determine turn power based on +/- error
+        error = getError(drivetrain.getExternalHeading());
+
+        if (!(Math.abs(error) <= HEADING_THRESHOLD)) {
+            twist = getSteer(error, Pcoefficient) * power;
+        }
+    }
+
+    public double getError(double targetAngle) {
+
+        double robotError;
+
+        // calculate error in -179 to +180 range  (
+        robotError = targetAngle - drivetrain.getExternalHeading();
+        while (robotError > Math.PI)  robotError -= 2*Math.PI;
+        while (robotError <= -Math.PI) robotError += 2*Math.PI;
+        return robotError;
+    }
+
+    /**
+     * returns desired steering force.  +/- 1 range.  +ve = steer left
+     * @param error   Error angle in robot relative degrees
+     * @param PCoeff  Proportional Gain Coefficient
+     * @return
+     */
+    public double getSteer(double error, double PCoeff) {
+        return Range.clip(error * PCoeff, -1, 1);
+    }
 
     public double GetmFLPower()
     {
