@@ -16,7 +16,7 @@ public class ElevatorController {
     public static double TICKS_PER_REV = 537.7;
     public static double SPOOL_RADIUS = 0.75; // in
     DcMotorEx motor;
-    public static PIDCoefficients coefficients;
+    public static PIDCoefficients coefficients = new PIDCoefficients(0,0,0);
     double encoderPosition = 0;
     double error = 0, derivative, lastError, integralSum, errorChange, previousFilterEstimate = 0, currentFilterEstimate = 0, lastTarget;
     public static double integralSumLimit = 0.25, a = 0.8;

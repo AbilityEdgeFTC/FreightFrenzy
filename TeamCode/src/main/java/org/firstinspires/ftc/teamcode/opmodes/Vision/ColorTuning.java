@@ -55,16 +55,14 @@ public class ColorTuning extends LinearOpMode {
     cGamepad cGamepad2;
     public static boolean TSE = true;
 
-    public static int hMax = 255;
-    public static int sMax = 255;
-    public static int vMax = 255;
+    public static double hMax = 255;
+    public static double sMax = 255;
+    public static double vMax = 255;
 
-    public static int hMin = 0;
-    public static int sMin = 0;
-    public static int vMin = 0;
+    public static double hMin = 0;
+    public static double sMin = 0;
+    public static double vMin = 0;
 
-    public static int[] max ={hMax,sMax,vMax};
-    public static int[] min ={hMin,sMin,vMin};
     MenuPipeline pipeline;
 
     public static boolean isMax = false;
@@ -75,6 +73,8 @@ public class ColorTuning extends LinearOpMode {
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
         pipeline = new MenuPipeline();
+        double[] max ={hMax,sMax,vMax};
+        double[] min ={hMin,sMin,vMin};
 
         int curentType =0;
 
@@ -187,7 +187,6 @@ public class ColorTuning extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
-        pipeline.TSE = true;
 
         webcam.setPipeline(pipeline);
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.

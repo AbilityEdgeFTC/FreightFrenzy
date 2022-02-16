@@ -19,12 +19,6 @@ public class teleopOwl extends LinearOpMode {
 
     gamepad gamepad;
 
-    /**
-     * Function runs once when pressed, and loops while active.
-     * main idea is all teleop functions. Elevator, carousel,
-     * dip, and more.
-     * @throws InterruptedException, thread.sleep
-     */
     @Override
     public void runOpMode() throws InterruptedException {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions

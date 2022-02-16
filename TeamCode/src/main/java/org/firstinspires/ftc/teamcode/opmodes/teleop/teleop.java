@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.threads.ElevatorThread.ElevatorState;
 
-@Config
 @TeleOp(group = "main")
 public class teleop extends LinearOpMode {
 

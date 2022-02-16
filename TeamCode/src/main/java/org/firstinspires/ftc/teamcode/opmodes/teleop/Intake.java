@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @Disabled
 public class Intake extends LinearOpMode {
 
-    DcMotor mI = null;
+    DcMotor mI;
     public static boolean isReverse = true;
     public static double power = 1;
 

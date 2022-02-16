@@ -33,26 +33,11 @@ public class MenuPipeline extends OpenCvPipeline
     Mat mask = new Mat(1280,720,0);//
     Mat inputHSV = new Mat(1280,720,0);
 
-    // creating 3 rectangles(sections) for checking the colors inside them.
-
-    final Rect ALL_SEC = new Rect(
-            new Point(1280,720),
-            new Point(0,0));
-
     public static boolean DEBUG = true;
 
-    public static double threshold_percentage = 0.01; // 1% of the element color
-
-    public static int[] max ={255,255,255};
-    public static int[] min ={0,0,0};
-
-    public static void setMax(int[] max) {
-        MenuPipeline.max = max;
-    }
-
-    public static void setMin(int[] min) {
-        MenuPipeline.min = min;
-    }
+    public static double[] max ={255,255,255};
+    public static double[] min ={0,0,0};
+    public Telemetry telemetry;
 
     @Override
     public Mat processFrame(Mat input) {
@@ -85,12 +70,6 @@ public class MenuPipeline extends OpenCvPipeline
         // we release the mats for use.
         //all.release();
         // if debugging so we display more values in telemetry.
-        if(DEBUG){
-          //  telemetry.addData("Left raw value", Core.sumElems(all).val[0]);
-          //  telemetry.addData("Left average percentage", Math.round(allAvg * 100) + "%");
-            telemetry.addData("Barcode Location", getLocation());
-            telemetry.update();
-        }
 
         Core.inRange(inputHSV, lowValuesTSE, highValuesTSE, mask);
 
@@ -104,37 +83,13 @@ public class MenuPipeline extends OpenCvPipeline
         return mask;
     }
 
-    // the list of locations that can be
-    public enum Location{
-        Left,
-        Center,
-        Right,
-        Not_Found
-    }
-
-    public Location location;
-
-    // color for the rectangles to show on the screen
-    Scalar colorBarcodeRect = new Scalar(0, 255, 0);
-
-    public Telemetry telemetry;
-
-    public static boolean TSE = true;
-
-    boolean barcodeLeft, barcodeCenter, barcodeRight;
-
-    // getting location of the team shipping element.
-    public Location getLocation() {
-        return location;
-    }
-
-    public boolean isTSE() {
-        return TSE;
-    }
-
-    public void setTSE(boolean TSE) {
-        this.TSE = TSE;
-    }
-
     public void setTelementry(Telemetry telemetry){ this.telemetry = telemetry; }
+
+    public void setMax(double[] max) {
+        MenuPipeline.max = max;
+    }
+
+    public void setMin(double[] min) {
+        MenuPipeline.min = min;
+    }
 }

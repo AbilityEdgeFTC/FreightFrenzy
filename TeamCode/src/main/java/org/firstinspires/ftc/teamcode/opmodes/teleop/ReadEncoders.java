@@ -59,9 +59,9 @@ public class ReadEncoders extends LinearOpMode {
 //    private DcMotor mFR = null;
 //    private DcMotor mBL = null;
 //    private DcMotor mBR = null;
-    private DcMotor mI = null;
-    private DcMotor mC = null;
-    private DcMotor eL = null;
+    private DcMotor mI;
+    private DcMotor mC;
+    private DcMotor eL;
 
     @Override
     public void runOpMode() {
