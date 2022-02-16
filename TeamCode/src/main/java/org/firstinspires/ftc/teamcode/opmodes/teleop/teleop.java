@@ -6,23 +6,20 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.threads.MultitaskingThreadTeleop;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.ElevatorThread;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.ElevatorThread.ElevatorState;
 
 @TeleOp(group = "main")
 public class teleop extends LinearOpMode {
 
     carousel carousel;
     gamepad gamepad;
-    ElevatorThread elevatorThread;
+    //ElevatorThread elevatorThread;
     MultitaskingThreadTeleop multitaskingThreadTeleop;
 
     /**
@@ -37,14 +34,14 @@ public class teleop extends LinearOpMode {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
 
-        elevatorThread = new ElevatorThread(hardwareMap, telemetry, gamepad2);
+        //elevatorThread = new ElevatorThread(hardwareMap, telemetry, gamepad2);
         multitaskingThreadTeleop = new MultitaskingThreadTeleop(hardwareMap, telemetry, gamepad1, gamepad2);
-        elevatorThread.elevatorSate = ElevatorState.ZERO;
+        //elevatorThread.elevatorSate = ElevatorState.ZERO;
         // 2 threads, one for the elevator, and the other for multitasking such as dipping, intake and more
-        Thread ElevatorThread = elevatorThread;
+        //Thread ElevatorThread = elevatorThread;
         Thread MultitaskingThread = multitaskingThreadTeleop;
         // start the 2 threads
-        ElevatorThread.start();
+        //ElevatorThread.start();
         MultitaskingThread.start();
 
 
@@ -83,7 +80,7 @@ public class teleop extends LinearOpMode {
         }
 
         // after we exist the opModeIsActive loop, the opmode stops so we have to interrupt the threads and stop them to make the opmode not crash
-        ElevatorThread.interrupt();
+        //ElevatorThread.interrupt();
         MultitaskingThread.interrupt();
     }
 

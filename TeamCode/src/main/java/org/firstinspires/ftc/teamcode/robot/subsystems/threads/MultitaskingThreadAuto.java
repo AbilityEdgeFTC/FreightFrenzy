@@ -18,13 +18,13 @@ public class MultitaskingThreadAuto extends Thread {
     org.firstinspires.ftc.teamcode.robot.subsystems.intake intake;
     org.firstinspires.ftc.teamcode.robot.subsystems.dip dip;
     public static double powerIntake = 1;
-    ElevatorThreadAuto elevator;
+    //ElevatorThreadAuto elevator;
     public static boolean frontIntake = false, backIntake = false;
 
     public MultitaskingThreadAuto(HardwareMap hw) {
         intake = new intake(hw);
         dip = new dip(hw);
-        elevator = new ElevatorThreadAuto(hw);
+        //elevator = new ElevatorThreadAuto(hw);
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -65,7 +65,7 @@ public class MultitaskingThreadAuto extends Thread {
                     intake.stop();
                 }
 
-                if((ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MIN) || (ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MID) || (ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MAX))
+                /*if((ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MIN) || (ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MID) || (ElevatorThreadAuto.elevatorState == ElevatorThreadAuto.ElevatorState.MAX))
                 {
                     dip.releaseFreightPos();
                     dip.handState = dip.handState.HOLD;
@@ -74,7 +74,7 @@ public class MultitaskingThreadAuto extends Thread {
                 {
                     dip.getFreight();
                     dip.handState = dip.handState.HOLD;
-                }
+                }*/
 
                 if(dip.handState == dip.handState.RELEASE)
                 {

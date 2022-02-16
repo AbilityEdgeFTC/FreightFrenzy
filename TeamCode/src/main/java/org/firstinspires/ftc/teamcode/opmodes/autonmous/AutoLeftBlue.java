@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
-import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.ElevatorThreadAuto;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
@@ -43,8 +41,8 @@ public class AutoLeftBlue extends LinearOpMode {
     carousel carousel;
     intake intake;
     dip dip;
-    Elevator elevator;
-    ElevatorThreadAuto threadAuto;
+    //Elevator elevator;
+    //ElevatorThreadAuto threadAuto;
     public static double reverseIntakeFor = .8;
     OpenCvWebcam webcam;
     public static boolean withVision = true;
@@ -80,8 +78,8 @@ public class AutoLeftBlue extends LinearOpMode {
         carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
         dip = new dip(hardwareMap);
-        threadAuto = new ElevatorThreadAuto(hardwareMap);
-        elevator = new Elevator(hardwareMap);
+        //threadAuto = new ElevatorThreadAuto(hardwareMap);
+        //elevator = new Elevator(hardwareMap);
 
         drive.setPoseEstimate(startPoseRight);
 
@@ -118,7 +116,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
 
         dip.getFreight();
-        threadAuto.start();
+        //threadAuto.start();
 
         while (!opModeIsActive() && !isStopRequested())
         {
@@ -151,7 +149,7 @@ public class AutoLeftBlue extends LinearOpMode {
         }
 
         drive.followTrajectorySequence(placement);
-        switch (placeFreightIn)
+        /*switch (placeFreightIn)
         {
             case MIN:
                 goToMin();
@@ -162,7 +160,7 @@ public class AutoLeftBlue extends LinearOpMode {
             case MAX:
                     goToMax();
                     break;
-        }
+        }*/
 
         drive.followTrajectorySequence(entrance);
         intake.intakeForward();
@@ -170,17 +168,17 @@ public class AutoLeftBlue extends LinearOpMode {
         Thread.sleep(1500);
         fixIntake();
         drive.followTrajectorySequence(cycle);
-        goToMax();
+        //goToMax();
         drive.followTrajectorySequence(entrance2);
         intake.intakeForward();
         drive.followTrajectorySequence(collect2);
         Thread.sleep(1500);
         fixIntake();
-        threadAuto.interrupt();
+        //threadAuto.interrupt();
         Thread.currentThread().interrupt();
     }
 
-    void goToMin() throws InterruptedException
+    /*void goToMin() throws InterruptedException
     {
         if(opModeIsActive())
         {
@@ -220,7 +218,7 @@ public class AutoLeftBlue extends LinearOpMode {
             dip.getFreight();
             threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO);
         }
-    }
+    }*/
 
     void fixIntake() throws InterruptedException {
         intake.intakeBackward();

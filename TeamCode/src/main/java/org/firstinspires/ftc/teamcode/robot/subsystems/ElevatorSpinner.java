@@ -12,37 +12,35 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Hardware class for an elevator or linear lift driven by a pulley system.
  */
 @Config
-public class Elevator {
+public class ElevatorSpinner {
 
-    public static double MAX_HEIGHT = 10;
-    public static double MID_HEIGHT = 5;
-    public static double MIN_HEIGHT = 2.5;
-    public static double ZERO_HEIGHT = 0;
+    public static double MAX_ANGLE = 60;
+    public static double MIN_ANGLE = -60;
+    public static double ZERO_ANGLE = 0;
     DcMotorEx motor;
-    public static PIDCoefficients coefficients = new PIDCoefficients(0.011,0.5,0);
+    public static PIDCoefficients coefficients = new PIDCoefficients(0,0,0);
     BasicPID controller;
     double target;
     public static double TICKS_PER_REV = 537.7;
-    public static double SPOOL_RADIUS = 0.75; // in
+    public static double GEAR_RATIO = 146.0/60.0; // in
+    public static double power = 0.1;
     public static boolean usePID = true;
-    public static double power = 0.2;
 
-    public enum ElevatorState
+    public enum SpinnerState
     {
         ZERO,
         MIN,
-        MID,
         MAX
     }
 
-    public static ElevatorState elevatorSate = ElevatorState.ZERO;
+    public static SpinnerState spinnerState = SpinnerState.ZERO;
 
     Gamepad gamepad;
     cGamepad cGamepad;
 
-    public Elevator(HardwareMap hardwareMap, Gamepad gamepad)
+    public ElevatorSpinner(HardwareMap hardwareMap, Gamepad gamepad)
     {
-        this.motor = hardwareMap.get(DcMotorEx.class, "mE");
+        this.motor = hardwareMap.get(DcMotorEx.class, "mS");
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         controller = new BasicPID(new com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients(coefficients.kP, coefficients.kI, coefficients.kD));
@@ -52,6 +50,7 @@ public class Elevator {
 
     public void update()
     {
+
         if(cGamepad.dpadUpOnce() || cGamepad.dpadDownOnce())
         {
             usePID = !usePID;
@@ -61,24 +60,19 @@ public class Elevator {
         {
             if(gamepad.y)
             {
-                elevatorSate = ElevatorState.MAX;
-                target = inchesToEncoderTicks(MAX_HEIGHT);
+                spinnerState = SpinnerState.MAX;
+                target = inchesToEncoderTicks(MAX_ANGLE);
             }
             else if(gamepad.b)
             {
-                elevatorSate = ElevatorState.MID;
-                target = inchesToEncoderTicks(MID_HEIGHT);
+                spinnerState = SpinnerState.ZERO;
+                target = inchesToEncoderTicks(ZERO_ANGLE);
 
             }
             else if(gamepad.a)
             {
-                elevatorSate = ElevatorState.MIN;
-                target = inchesToEncoderTicks(MIN_HEIGHT);
-            }
-            else if(gamepad.x)
-            {
-                elevatorSate = ElevatorState.ZERO;
-                target = inchesToEncoderTicks(ZERO_HEIGHT);
+                spinnerState = SpinnerState.MIN;
+                target = inchesToEncoderTicks(MIN_ANGLE);
             }
         }
         else
@@ -97,16 +91,14 @@ public class Elevator {
             }
         }
 
-        controller.calculate(target, motor.getCurrentPosition());
-
     }
 
     public static double encoderTicksToInches(int ticks) {
-        return SPOOL_RADIUS * 2 * Math.PI * ticks / TICKS_PER_REV;
+        return GEAR_RATIO * 2 * Math.PI * ticks / TICKS_PER_REV;
     }
 
     public static double inchesToEncoderTicks(double inches) {
-        return (inches * TICKS_PER_REV) / (SPOOL_RADIUS * 2 * Math.PI);
+        return (inches * TICKS_PER_REV) / (GEAR_RATIO * 2 * Math.PI);
     }
 
     public int getPosition()

@@ -10,8 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.ElevatorThreadAuto;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.ElevatorThreadAuto.ElevatorState;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -41,7 +39,7 @@ public class AutoRightBlue extends LinearOpMode {
     carousel carousel;
     intake intake;
     dip dip;
-    ElevatorThreadAuto threadAuto;
+    //ElevatorThreadAuto threadAuto;
     OpenCvWebcam webcam;
     GreenLanternPipeline pipeline;
     SampleMecanumDriveCancelable drive;
@@ -76,7 +74,7 @@ public class AutoRightBlue extends LinearOpMode {
         carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
         dip = new dip(hardwareMap);
-        threadAuto = new ElevatorThreadAuto(hardwareMap);
+        //threadAuto = new ElevatorThreadAuto(hardwareMap);
 
         initPipeline();
         webcam.setPipeline(pipeline);
@@ -97,7 +95,7 @@ public class AutoRightBlue extends LinearOpMode {
                 .strafeLeft(parkRight)
                 .build();
 
-        threadAuto.start();
+        //threadAuto.start();
         dip.getFreight();
 
         while (!opModeIsActive() && !isStopRequested())
@@ -133,7 +131,7 @@ public class AutoRightBlue extends LinearOpMode {
         drive.followTrajectorySequence(carouselGo);
         runCarousel();
         drive.followTrajectorySequence(hub);
-        switch (placeFreightIn)
+        /*switch (placeFreightIn)
         {
             case MIN:
                 goToMin();
@@ -144,14 +142,14 @@ public class AutoRightBlue extends LinearOpMode {
             case MAX:
                 goToMax();
                 break;
-        }
+        }*/
         drive.followTrajectorySequence(parking);
-        threadAuto.interrupt();
-        threadAuto = null;
+        //threadAuto.interrupt();
+        //threadAuto = null;
 
     }
 
-    void goToMin() throws InterruptedException
+    /*void goToMin() throws InterruptedException
     {
         if(opModeIsActive())
         {
@@ -191,7 +189,7 @@ public class AutoRightBlue extends LinearOpMode {
             dip.getFreight();
             threadAuto.setElevatorState(ElevatorState.ZERO);
         }
-    }
+    }*/
 
     void initPipeline()
     {

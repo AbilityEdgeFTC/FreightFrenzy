@@ -20,7 +20,7 @@ public class MultitaskingThreadTeleop extends Thread {
     Gamepad gamepad1, gamepad2;
     org.firstinspires.ftc.teamcode.robot.subsystems.dip dip;
     public static double powerIntake = 1;
-    ElevatorThread elevator;
+    //ElevatorThread elevator;
     cGamepad cGamepad1, cGamepad2;
     boolean runFrontIntake = false, runBackIntake = false, canFrontIntake = false, canBackIntake = false;
     Telemetry telemetry;
@@ -29,7 +29,7 @@ public class MultitaskingThreadTeleop extends Thread {
         intake = new intake(hw);
         dip = new dip(hw);
         this.telemetry = telemetry;
-        elevator = new ElevatorThread(hw, telemetry, gamepad2);
+        //elevator = new ElevatorThread(hw, telemetry, gamepad2);
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         cGamepad1 = new cGamepad(gamepad1);
@@ -95,13 +95,13 @@ public class MultitaskingThreadTeleop extends Thread {
                     intake.stop();
                 }
 
-                if((elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
+                if(/*(elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && */!(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
                     dip.releaseFreightPos();
                     canFrontIntake = false;
                     canBackIntake = false;
                 }
-                else if(elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
+                else if(/*elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && */!(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
                     dip.getFreight();
                     canFrontIntake = true;

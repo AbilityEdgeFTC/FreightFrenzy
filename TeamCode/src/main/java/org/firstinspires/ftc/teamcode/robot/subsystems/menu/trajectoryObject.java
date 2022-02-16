@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.ElevatorThreadAuto;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
@@ -19,7 +18,7 @@ public class trajectoryObject {
     ArrayList<TrajectorySequence> trajectories;
     MecanumLocalizer drive;
     carousel carousel;
-    ElevatorThreadAuto elevatorThreadAuto;
+    //ElevatorThreadAuto elevatorThreadAuto;
     dip dip;
     intake intake;
     public static double runCarouselFor = 4;
@@ -37,7 +36,7 @@ public class trajectoryObject {
 
     public trajectoryObject(MecanumLocalizer drive, HardwareMap hardwareMap) {
         this.drive = drive;
-        elevatorThreadAuto = new ElevatorThreadAuto(hardwareMap);
+        //elevatorThreadAuto = new ElevatorThreadAuto(hardwareMap);
         dip = new dip(hardwareMap);
         carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
@@ -60,28 +59,28 @@ public class trajectoryObject {
             case HUB_MIN:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point)
-                        .UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN))
-                        .UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
-                        .UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
-                        .UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
+                        //.UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN))
+                        //.UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
+                        //.UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
+                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
                     .build();
                 break;
             case HUB_MID:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point)
-                        .UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MID))
-                        .UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
-                        .UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
-                        .UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
+                        //.UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MID))
+                        //.UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
+                        //.UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
+                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
                         .build();
                 break;
             case HUB_MAX:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point)
-                        .UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX))
-                        .UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
-                        .UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
-                        .UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
+                        //.UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX))
+                        //.UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
+                        //.UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
+                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
                         .build();
                 break;
 
@@ -89,10 +88,10 @@ public class trajectoryObject {
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point, MecanumLocalizer.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 MecanumLocalizer.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                        .UNSTABLE_addTemporalMarkerOffset(-(trajectorySequence.duration()), () -> intake.intakeForward())
-                        .UNSTABLE_addTemporalMarkerOffset(0, () -> intake.intakeBackward())
-                        .UNSTABLE_addTemporalMarkerOffset(1.5, () -> intake.stop())
-                        .UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
+                        //.UNSTABLE_addTemporalMarkerOffset(-(trajectorySequence.duration()), () -> intake.intakeForward())
+                        //.UNSTABLE_addTemporalMarkerOffset(0, () -> intake.intakeBackward())
+                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> intake.stop())
+                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
                         .build();
                 break;
         }
