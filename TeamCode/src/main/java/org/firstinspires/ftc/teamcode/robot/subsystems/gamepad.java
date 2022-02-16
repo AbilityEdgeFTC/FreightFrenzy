@@ -106,6 +106,11 @@ public class gamepad {
             holdAngle();
         }
 
+        if(cGamepad1.YOnce())
+        {
+            isRegularDrive = !isRegularDrive;
+        }
+
         if (isRegularDrive)
         {
             regularDrive();

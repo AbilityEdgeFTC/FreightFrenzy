@@ -28,5 +28,4 @@ dependencies {
     implementation 'com.acmerobotics.roadrunner:core:0.5.4'
     implementation 'com.spartronics4915.lib:ftc265:2.1.9'
     implementation 'org.openftc:easyopencv:1.5.1'
-    implementation 'com.acmerobotics.dashboard:dashboard:0.4.4'
 }
