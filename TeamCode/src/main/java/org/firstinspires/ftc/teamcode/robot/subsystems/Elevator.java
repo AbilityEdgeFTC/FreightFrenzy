@@ -22,7 +22,7 @@ public class Elevator {
     public static PIDCoefficients coefficients = new PIDCoefficients(0.011,0.5,0);
     BasicPID controller;
     double target;
-    public static double TICKS_PER_REV = 537.7;
+    public static double TICKS_PER_REV = 384.5;
     public static double SPOOL_RADIUS = 0.75; // in
     public static boolean usePID = true;
     public static double power = 0.2;

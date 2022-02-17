@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
@@ -6,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.checkerframework.checker.units.qual.A;
 
 
 /*
@@ -19,9 +22,10 @@ public class ElevatorSpinner {
     public static double ZERO_ANGLE = 0;
     DcMotorEx motor;
     public static PIDCoefficients coefficients = new PIDCoefficients(0,0,0);
-    BasicPID controller;
+    BasicPID PID;
+    AngleController controller;
     double target;
-    public static double TICKS_PER_REV = 537.7;
+    public static double TICKS_PER_REV = 384.5;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double power = 0.1;
     public static boolean usePID = true;
@@ -43,7 +47,8 @@ public class ElevatorSpinner {
         this.motor = hardwareMap.get(DcMotorEx.class, "mS");
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        controller = new BasicPID(new com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients(coefficients.kP, coefficients.kI, coefficients.kD));
+        PID = new BasicPID(new com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients(coefficients.kP, coefficients.kI, coefficients.kD));
+        controller = new AngleController(PID);
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
     }
