@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp(group="Tests")
-@Disabled
 public class Intake extends LinearOpMode {
 
     DcMotor mI;
@@ -53,12 +52,6 @@ public class Intake extends LinearOpMode {
         mI = hardwareMap.get(DcMotor.class, "mI");
         mI.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        if (isReverse)
-            mI.setDirection(DcMotorSimple.Direction.REVERSE);
-        else
-            mI.setDirection(DcMotorSimple.Direction.FORWARD);
-
-
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -67,18 +60,14 @@ public class Intake extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if(gamepad1.dpad_up){
-                mI.setPower(power);
-            }
-            else if(gamepad1.dpad_down) {
+            if(isReverse)
+            {
                 mI.setPower(-power);
             }
-            else{
-                mI.setPower(0);
+            else
+            {
+                mI.setPower(power);
             }
-
-
-
 
         }
     }

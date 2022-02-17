@@ -56,12 +56,12 @@ public class teleop extends LinearOpMode {
 
                 if (gamepad2.dpad_right)
                 {
-                    carousel.spin(false, true);
+                    carousel.spin(false);
                 }
                 else if (gamepad2.dpad_left)
                 {
 
-                    carousel.spin(true, true);
+                    carousel.spin(true);
                 }
                 else
                 {

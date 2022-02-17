@@ -150,7 +150,7 @@ public class AutoLeftRed extends LinearOpMode {
 
     void runCarousel() throws InterruptedException
     {
-        carousel.spin(true, false);
+        carousel.spin(true);
         sleep((long)(runCarouselFor * 1000));
         carousel.stop();
     }

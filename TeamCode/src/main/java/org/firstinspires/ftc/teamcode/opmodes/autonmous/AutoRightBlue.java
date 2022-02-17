@@ -242,7 +242,7 @@ public class AutoRightBlue extends LinearOpMode {
     }
 
     void runCarousel() throws InterruptedException {
-        carousel.spin(false, false);
+        carousel.spin(false);
         Thread.sleep((long)(runCarouselFor * 1000));
         carousel.stop();
     }

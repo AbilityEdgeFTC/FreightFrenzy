@@ -39,20 +39,15 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 
 @Config
 @TeleOp(group="Tests")
-@Disabled
 public class Carousel extends LinearOpMode {
 
-    DcMotor mC;
-    public static double power = -1;
+    public static boolean reverse = true;
     //public static double time = 2;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-        mC = hardwareMap.get(DcMotor.class, "mC");
-        mC.setDirection(DcMotor.Direction.REVERSE);
 
         carousel carousel = new carousel(hardwareMap, telemetry);
 
@@ -62,9 +57,14 @@ public class Carousel extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            carousel.spin(true, true);
-
-            //carousel.spinCarouselMotor(time);
+            if(reverse)
+            {
+                carousel.spin(true);
+            }
+            else
+            {
+                carousel.spin(false);
+            }
 
             carousel.displayTelemetry();
 

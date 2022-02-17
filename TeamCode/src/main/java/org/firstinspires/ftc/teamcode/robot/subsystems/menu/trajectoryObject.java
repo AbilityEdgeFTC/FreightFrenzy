@@ -51,7 +51,7 @@ public class trajectoryObject {
             case CAROUSEL:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point)
-                        .UNSTABLE_addTemporalMarkerOffset(0, () -> carousel.spin(true, false))
+                        .UNSTABLE_addTemporalMarkerOffset(0, () -> carousel.spin(true))
                         .UNSTABLE_addTemporalMarkerOffset(runCarouselFor, () -> carousel.stop())
                         .build();
                 break;
