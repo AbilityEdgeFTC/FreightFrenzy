@@ -25,8 +25,8 @@ public class ElevatorSpinner {
     BasicPID PID;
     AngleController controller;
     double target;
-    public static double TICKS_PER_REV = 384.5;
     public static double GEAR_RATIO = 146.0/60.0; // in
+    public static double TICKS_PER_REV = 384.5 * GEAR_RATIO;
     public static double power = 0.1;
     public static boolean usePID = true;
 
@@ -66,18 +66,18 @@ public class ElevatorSpinner {
             if(gamepad.y)
             {
                 spinnerState = SpinnerState.MAX;
-                target = inchesToEncoderTicks(MAX_ANGLE);
+                target = degreesToEncoderTicks(MAX_ANGLE);
             }
             else if(gamepad.b)
             {
                 spinnerState = SpinnerState.ZERO;
-                target = inchesToEncoderTicks(ZERO_ANGLE);
+                target = degreesToEncoderTicks(ZERO_ANGLE);
 
             }
             else if(gamepad.a)
             {
                 spinnerState = SpinnerState.MIN;
-                target = inchesToEncoderTicks(MIN_ANGLE);
+                target = degreesToEncoderTicks(MIN_ANGLE);
             }
         }
         else
@@ -98,12 +98,12 @@ public class ElevatorSpinner {
 
     }
 
-    public static double encoderTicksToInches(int ticks) {
-        return GEAR_RATIO * 2 * Math.PI * ticks / TICKS_PER_REV;
+    public static double encoderTicksToDegrees(int ticks) {
+        return (ticks * 360) / TICKS_PER_REV;
     }
 
-    public static double inchesToEncoderTicks(double inches) {
-        return (inches * TICKS_PER_REV) / (GEAR_RATIO * 2 * Math.PI);
+    public static double degreesToEncoderTicks(double degrees) {
+        return TICKS_PER_REV / (degrees * 360);
     }
 
     public int getPosition()
