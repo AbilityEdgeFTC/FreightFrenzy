@@ -86,13 +86,13 @@ public class gamepad {
 
         getGamepadDirections(true);
 
-        if (gamepad1.right_stick_button || gamepad1.left_stick_button) {
+        /*if (gamepad1.right_stick_button || gamepad1.left_stick_button) {
             slowMove = true;
         }
         else
         {
             slowMove = false;
-        }
+        }*/
 
         if (slowMove) {
             power = slowPower;
@@ -106,10 +106,10 @@ public class gamepad {
             holdAngle();
         }
 
-        if(cGamepad1.YOnce())
+        /*if(cGamepad1.YOnce())
         {
             isRegularDrive = !isRegularDrive;
-        }
+        }*/
 
         if (isRegularDrive)
         {

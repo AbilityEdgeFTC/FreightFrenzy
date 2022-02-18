@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
+import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.checkerframework.checker.units.qual.A;
+import org.opencv.core.Mat;
 
 
 /*
@@ -17,19 +18,23 @@ import org.checkerframework.checker.units.qual.A;
 @Config
 public class ElevatorSpinner {
 
-    public static double MAX_ANGLE = 60;
-    public static double MIN_ANGLE = -60;
+    public static double MAX_ANGLE = 45;
+    public static double MIN_ANGLE = -45;
     public static double ZERO_ANGLE = 0;
-    DcMotorEx motor;
-    public static PIDCoefficients coefficients = new PIDCoefficients(0,0,0);
+    public static double power = 0.2;
+    public static boolean usePID = true;
+    public static boolean stopAndReset = false;
     BasicPID PID;
     AngleController controller;
-    double target;
+    public static double kP = 2.7;
+    public static double kI = 0;
+    public static double kD = 0;
+    double target = 0;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 384.5 * GEAR_RATIO;
-    public static double power = 0.1;
-    public static boolean usePID = true;
+    DcMotor motor;
 
+    public static int spinnerLevel = 0;
     public enum SpinnerState
     {
         ZERO,
@@ -44,41 +49,60 @@ public class ElevatorSpinner {
 
     public ElevatorSpinner(HardwareMap hardwareMap, Gamepad gamepad)
     {
-        this.motor = hardwareMap.get(DcMotorEx.class, "mS");
-        this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        PID = new BasicPID(new com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients(coefficients.kP, coefficients.kI, coefficients.kD));
+        PID = new BasicPID(new PIDCoefficients(kP, kI, kD));
         controller = new AngleController(PID);
+        motor = hardwareMap.get(DcMotorEx.class, "mS");
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if(stopAndReset)
+        {
+            this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
     }
 
     public void update()
     {
+        cGamepad.update();
 
-        if(cGamepad.dpadUpOnce() || cGamepad.dpadDownOnce())
+        if(gamepad.right_stick_button)
         {
-            usePID = !usePID;
+            usePID = true;
+        }
+        else if(gamepad.left_stick_button)
+        {
+            usePID = false;
         }
 
         if(usePID)
         {
-            if(gamepad.y)
-            {
-                spinnerState = SpinnerState.MAX;
-                target = degreesToEncoderTicks(MAX_ANGLE);
-            }
-            else if(gamepad.b)
-            {
-                spinnerState = SpinnerState.ZERO;
-                target = degreesToEncoderTicks(ZERO_ANGLE);
 
-            }
-            else if(gamepad.a)
+            if(cGamepad.rightBumperOnce() && spinnerLevel <= 1)
             {
-                spinnerState = SpinnerState.MIN;
-                target = degreesToEncoderTicks(MIN_ANGLE);
+                spinnerLevel++;
+                spinnerState = SpinnerState.values()[spinnerLevel];
             }
+
+            if(cGamepad.leftBumperOnce() && spinnerLevel >= 1)
+            {
+                spinnerLevel--;
+                spinnerState = SpinnerState.values()[spinnerLevel];
+            }
+
+            switch (spinnerState)
+            {
+                case ZERO:
+                    target = Math.toRadians(ZERO_ANGLE);
+                    break;
+                case MIN:
+                    target = Math.toRadians(MIN_ANGLE);
+                    break;
+                case MAX:
+                    target = Math.toRadians(MAX_ANGLE);
+                    break;
+            }
+            motor.setPower(controller.calculate(target, encoderTicksToRadians(motor.getCurrentPosition())));
         }
         else
         {
@@ -98,12 +122,12 @@ public class ElevatorSpinner {
 
     }
 
-    public static double encoderTicksToDegrees(int ticks) {
-        return (ticks * 360) / TICKS_PER_REV;
+    public static double encoderTicksToRadians(int ticks) {
+        return Math.toRadians((ticks * 360) / TICKS_PER_REV);
     }
 
-    public static double degreesToEncoderTicks(double degrees) {
-        return TICKS_PER_REV / (degrees * 360);
+    public static double radiansToEncoderTicks(double radians) {
+        return TICKS_PER_REV / (radians * 2 * Math.PI);
     }
 
     public int getPosition()

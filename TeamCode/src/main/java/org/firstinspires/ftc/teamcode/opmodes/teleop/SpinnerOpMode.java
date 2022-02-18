@@ -25,9 +25,10 @@ public class SpinnerOpMode extends LinearOpMode {
         {
             elevator.update();
 
-            telemetry.addData("Current", elevator.encoderTicksToDegrees(elevator.getPosition()));
-            telemetry.addData("Target", elevator.encoderTicksToDegrees((int)elevator.getTarget()));
-            telemetry.addData("Error", elevator.encoderTicksToDegrees((int)elevator.getTarget()) - elevator.encoderTicksToDegrees(elevator.getPosition()));
+            telemetry.addData("Current", elevator.getPosition());
+            //telemetry.addData("Current", elevator.encoderTicksToDegrees(elevator.getPosition()));
+            telemetry.addData("Target", elevator.encoderTicksToRadians((int)elevator.getTarget()));
+            telemetry.addData("Error", elevator.encoderTicksToRadians((int)elevator.getTarget()) - elevator.encoderTicksToRadians(elevator.getPosition()));
             telemetry.update();
         }
 
