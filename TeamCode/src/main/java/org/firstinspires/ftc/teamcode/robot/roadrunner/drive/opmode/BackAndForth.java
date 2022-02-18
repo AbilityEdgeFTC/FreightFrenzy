@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.MecanumLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.MecanumLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.RegressionUtil;
 

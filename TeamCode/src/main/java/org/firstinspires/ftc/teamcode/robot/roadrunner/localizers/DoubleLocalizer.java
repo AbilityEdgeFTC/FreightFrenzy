@@ -29,7 +29,6 @@ import com.acmerobotics.roadrunner.localization.Localizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.PoseUtil;
 
 import java.util.List;
