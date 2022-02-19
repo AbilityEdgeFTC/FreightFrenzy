@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
@@ -34,7 +35,7 @@ public class trajectoryObject {
 
     public static TrajectoryType trajectoryType;
 
-    public trajectoryObject(MecanumLocalizer drive, HardwareMap hardwareMap) {
+    public trajectoryObject(SampleMecanumDriveCancelable drive, HardwareMap hardwareMap) {
         this.drive = drive;
         //elevatorThreadAuto = new ElevatorThreadAuto(hardwareMap);
         dip = new dip(hardwareMap);

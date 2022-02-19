@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 @Config
-public class FreightSensor {
+public class    FreightSensor {
 
     AnalogSensor freightSensor;
     public static double threshold = 0;
