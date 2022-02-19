@@ -51,7 +51,6 @@ public class GreenLanternOpMode extends LinearOpMode {
         GreenLanternPipeline pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
-        pipeline.TSE = true;
 
         initPipeline();
         webcam.setPipeline(pipeline);
@@ -97,7 +96,6 @@ public class GreenLanternOpMode extends LinearOpMode {
         GreenLanternPipeline pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
-        pipeline.TSE = true;
 
         webcam.setPipeline(pipeline);
 

@@ -18,25 +18,25 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Config
 public class GreenLanternPipeline extends OpenCvPipeline
 {
-    public static double lowValuesTSEH = 80;
-    public static double lowValuesTSES = 43;
-    public static double lowValuesTSEV = 14;
+    public static double lowYBlue= 0;
+    public static double lowCrBlue = 0;
+    public static double lowCbBlue = 0;
 
-    public static double highValuesTSEH = 111;
-    public static double highValuesTSES = 173;
-    public static double highValuesTSEV = 92;
+    public static double highYBlue= 41;
+    public static double highCrBlue = 110;
+    public static double highCbBlue = 240;
 
-    public static double lowValuesDUCKH = 21;
-    public static double lowValuesDUCKS = 105;
-    public static double lowValuesDUCKV = 80;
+    public static double lowYRed= 0;
+    public static double lowCrRed = 0;
+    public static double lowCbRed = 0;
 
-    public static double highValuesDUCKH = 86;
-    public static double highValuesDUCKS = 216;
-    public static double highValuesDUCKV = 167;
+    public static double highYRed= 81;
+    public static double highCrRed = 240;
+    public static double highCbRed = 90;
 
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
-    Mat inputHSV = new Mat(1280,720,0);
+    Mat YCrCb = new Mat(1280,720,0);
 
     public static boolean DEBUG = true;
 
@@ -55,10 +55,11 @@ public class GreenLanternPipeline extends OpenCvPipeline
     // color for the rectangles to show on the screen
     Scalar colorBarcodeRectGREEN = new Scalar(0, 255, 0);
     Scalar colorBarcodeRectRED = new Scalar(255, 0, 0);
+    Scalar lowValues, highValues;
 
     public Telemetry telemetry;
 
-    public static boolean TSE = false;
+    public static boolean redSide = true;
 
     boolean barcodeLeft, barcodeCenter, barcodeRight;
 
@@ -81,18 +82,29 @@ public class GreenLanternPipeline extends OpenCvPipeline
                 new Point(900,0 ));
 
 
-//        // HSV low and high values for our team shipping element.
-//        Scalar lowValuesTSE = new Scalar(lowValuesTSEH, lowValuesTSES, lowValuesTSEV);
-//        Scalar highValuesTSE = new Scalar(highValuesTSEH, highValuesTSES, highValuesTSEV);
+        if(redSide)
+        {
+            lowValues = new Scalar(lowYRed, lowCrRed, lowCbRed);
+            highValues = new Scalar(highYRed, highCrRed, highCbRed);
+        }
+        else
+        {
+            lowValues = new Scalar(lowYBlue, lowCrBlue, lowCbBlue);
+            highValues = new Scalar(highYBlue, highCrBlue, highCbBlue);
+        }
 
-        Scalar lowValuesDUCK = new Scalar(lowValuesDUCKH, lowValuesDUCKS, lowValuesDUCKV);
-        Scalar highValuesDUCK = new Scalar(highValuesDUCKH, highValuesDUCKS, highValuesDUCKV);
-
-        Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_BGR2YCrCb);
 
         // turning all colors not between the low and high values to black and the rest white.
-        Core.inRange(inputHSV, lowValuesDUCK, highValuesDUCK, mask);
-        telemetry.addLine("Using: DUCKS/TSE");
+        Core.inRange(YCrCb, lowValues, highValues, mask);
+        if(redSide)
+        {
+            telemetry.addData("Alliance color", "Red");
+        }
+        else
+        {
+            telemetry.addData("Alliance color", "Blue");
+        }
 
         // taking sections from the mask to another mat
         Mat left = mask.submat(LEFT_SEC);
@@ -120,8 +132,8 @@ public class GreenLanternPipeline extends OpenCvPipeline
             telemetry.addData("Center average percentage", Math.round(centerAvg * 100) + "%");
             telemetry.addData("Right average percentage", Math.round(rightAvg * 100) + "%");
             telemetry.addData("Barcode Location", getLocation());
-            telemetry.update();
         }
+        telemetry.update();
 
         // comparing the average color in the left/center/right rect to the threshold.
         barcodeLeft = leftAvg > threshold_percentage;
@@ -190,34 +202,29 @@ public class GreenLanternPipeline extends OpenCvPipeline
 
         if(barcodeLeft && barcodeCenter && barcodeRight){
             // NOT FOUND
-            //location = Location.Not_Found;
-            location = Location.Left;
-            //telemetry.addData("Barcode Location:","Unknown Barcode.");
+            location = Location.values()[(int) Math.random() * (2 - 0 + 1) + 0];
+            telemetry.addData("Barcode Location:","Not found Barcode.");
         }else if(barcodeLeft){
             location = Location.Left;
-            //telemetry.addData("Barcode Location:","LEFT Barcode.");
         }else if(barcodeCenter){
             location = Location.Center;
-            //telemetry.addData("Barcode Location:","CENTER Barcode.");
         }else if(barcodeRight){
             location = Location.Right;
-            //telemetry.addData("Barcode Location:","RIGHT Barcode.");
         }else{
             // NOT FOUND
-            //location = Location.Not_Found;
-            location = Location.Left;
-            //telemetry.addData("Barcode Location:","Unknown Barcode.");
+            location = Location.values()[(int) Math.random() * (2 - 0 + 1) + 0];
+            telemetry.addData("Barcode Location:","Not found Barcode.");
         }
 
         return location;
     }
 
-    public boolean isTSE() {
-        return TSE;
+    public boolean isRedSide() {
+        return redSide;
     }
 
-    public void setTSE(boolean TSE) {
-        this.TSE = TSE;
+    public void setRedSide(boolean redSide) {
+        this.redSide = redSide;
     }
 
     public void setTelementry(Telemetry telemetry){ this.telemetry = telemetry; }

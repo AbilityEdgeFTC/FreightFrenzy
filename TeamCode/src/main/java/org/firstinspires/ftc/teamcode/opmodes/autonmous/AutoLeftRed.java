@@ -64,7 +64,6 @@ public class AutoLeftRed extends LinearOpMode {
         pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
-        pipeline.TSE = true;
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDriveCancelable(hardwareMap);
@@ -207,7 +206,6 @@ public class AutoLeftRed extends LinearOpMode {
         GreenLanternPipeline pipeline = new GreenLanternPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
-        pipeline.TSE = true;
 
         webcam.setPipeline(pipeline);
 

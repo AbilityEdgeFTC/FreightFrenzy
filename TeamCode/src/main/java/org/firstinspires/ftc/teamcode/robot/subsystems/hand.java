@@ -14,42 +14,59 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class hand {
 
-    public static Servo sT;
+    Servo sL, sR;
     Telemetry telemetry;
-    public static double down = 0., mid = 0.5, up = 1;
+    public static double intakePos = 0, level1 = 0, level2 = 0, level3 = 0;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
     public hand(HardwareMap hardwareMap) {
-        this.sT = hardwareMap.get(Servo.class, "sT");
+        this.sL = hardwareMap.get(Servo.class, "sLH");
+        this.sR = hardwareMap.get(Servo.class, "sRH");
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
     public hand(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.sT = hardwareMap.get(Servo.class, "sT");
+        this.sL = hardwareMap.get(Servo.class, "sLH");
+        this.sR = hardwareMap.get(Servo.class, "sRH");
         this.telemetry = telemetry;
     }
 
+    public void intake()
+    {
+        sL.setPosition(intakePos);
+        sR.setPosition(intakePos);
+    }
+
     // spin dip servo to intake positions, and holding servo to hold position.
-    public static void moveHand1() throws InterruptedException {
-        sT.setPosition(up);
+    public void level1()
+    {
+        sL.setPosition(level1);
+        sR.setPosition(level1);
     }
 
-    public static void moveHand2() throws InterruptedException {
-        sT.setPosition(mid);
+    public void level2()
+    {
+        sL.setPosition(level2);
+        sR.setPosition(level2);
     }
 
-    public static void moveHand3() throws InterruptedException {
-        sT.setPosition(down);
+    public void level3()
+    {
+        sL.setPosition(level3);
+        sR.setPosition(level3);
     }
 
-    public static void moveHand(double position) throws InterruptedException {
-        sT.setPosition(position);
+    public void moveTo(double position)
+    {
+        sL.setPosition(position);
+        sR.setPosition(position);
     }
 
     // display position of servo's.
     public void displayTelemetry(){
-        telemetry.addLine("Servo hand at: " + sT.getPosition());
+        telemetry.addData("Servo left hand at", sL.getPosition());
+        telemetry.addData("Servo right hand at", sR.getPosition());
         telemetry.update();
     }
 

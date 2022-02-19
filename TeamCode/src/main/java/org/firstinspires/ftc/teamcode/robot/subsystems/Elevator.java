@@ -22,22 +22,12 @@ public class Elevator {
     DcMotorEx motor;
     public static PIDCoefficients coefficients = new PIDCoefficients(.05,0,0);
     BasicPID controller;
-    double target;
+    public static double target;
     public static double TICKS_PER_REV = 384.5;
     public static double SPOOL_RADIUS = 0.75; // in
     public static double power = 0.5;
     public static boolean stopAndReset = false;
     public static boolean usePID = true;
-    public static int elevatorLevel = 0;
-    public enum ElevatorState
-    {
-        ZERO,
-        MIN,
-        MID,
-        MAX
-    }
-
-    public static ElevatorState elevatorSate = ElevatorState.values()[elevatorLevel];
 
     Gamepad gamepad;
     cGamepad cGamepad;
@@ -59,78 +49,20 @@ public class Elevator {
 
     public void update()
     {
-        if(gamepad.right_stick_button)
+        if (usePID)
         {
-            usePID = true;
-        }
-        else if(gamepad.left_stick_button)
-        {
-            usePID = false;
-        }
-
-        if(usePID)
-        {
-//            if(cGamepad.rightBumperOnce() && elevatorLevel <= 3)
-//            {
-//                elevatorLevel++;
-//                elevatorSate = ElevatorState.values()[elevatorLevel];
-//            }
-//
-//            if(cGamepad.leftBumperOnce() && elevatorLevel >= 1)
-//            {
-//                elevatorLevel--;
-//                elevatorSate = ElevatorState.values()[elevatorLevel];
-//            }
-
-            if(gamepad.a)
-            {
-                elevatorSate = ElevatorState.ZERO;
-            }
-            else if(gamepad.x)
-            {
-                elevatorSate = ElevatorState.MAX;
-            }
-            else if(gamepad.b)
-            {
-                elevatorSate = ElevatorState.MIN;
-            }
-            else if(gamepad.y)
-            {
-                elevatorSate = ElevatorState.MID;
-            }
-
-            switch (elevatorSate)
-            {
-                case ZERO:
-                    target = inchesToEncoderTicks(ZERO_HEIGHT);
-                    break;
-                case MIN:
-                    target = inchesToEncoderTicks(MIN_HEIGHT);
-                    break;
-                case MID:
-                    target = inchesToEncoderTicks(MID_HEIGHT);
-                    break;
-                case MAX:
-                    target = inchesToEncoderTicks(MAX_HEIGHT);
-                    break;
-            }
-
-            motor.setPower(controller.calculate(target, motor.getCurrentPosition()));
+            motor.setPower(controller.calculate(inchesToEncoderTicks(target), motor.getCurrentPosition()));
         }
         else
         {
-            if(gamepad.right_trigger != 0)
-            {
+            if (gamepad.right_trigger != 0) {
                 motor.setPower(gamepad.right_trigger);
-            }
-            else if(gamepad.left_trigger != 0)
-            {
+            } else if (gamepad.left_trigger != 0) {
                 motor.setPower(-gamepad.left_trigger);
-            }
-            else
-            {
+            } else {
                 motor.setPower(0);
             }
+
         }
     }
 

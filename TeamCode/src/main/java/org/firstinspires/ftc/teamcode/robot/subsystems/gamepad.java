@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveC
 @Config
 public class gamepad {
 
+    public static boolean DEBUG = true;
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
@@ -37,6 +38,7 @@ public class gamepad {
     public static double Pcoefficient = 0;
     public static double HEADING_THRESHOLD = 2;
     public static boolean holdAngle = false;
+    public static String allianceColor;
 
     /**
      * constructor for gamepad
@@ -70,8 +72,29 @@ public class gamepad {
             startH = 0;
         }
 
-        startH -= Math.PI/2; // red
-        //startH += Math.PI/2; // blue
+        try
+        {
+            allianceColor = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("AllianceOption.txt"));
+            if(allianceColor == "RED")
+            {
+                startH -= Math.PI/2; // red
+            }
+            else
+            {
+                startH += Math.PI/2; // blue
+            }
+        }catch (NumberFormatException e)
+        {
+            if(DEBUG)
+            {
+                isRegularDrive = true;
+                startH -= Math.PI/2; // red
+            }
+            else
+            {
+                isRegularDrive = false;
+            }
+        }
 
         this.drivetrain = new SampleMecanumDriveCancelable(hardwareMap);
         this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
@@ -86,13 +109,13 @@ public class gamepad {
 
         getGamepadDirections(true);
 
-        /*if (gamepad1.right_stick_button || gamepad1.left_stick_button) {
+        if (gamepad1.right_stick_button || gamepad1.left_stick_button) {
             slowMove = true;
         }
         else
         {
             slowMove = false;
-        }*/
+        }
 
         if (slowMove) {
             power = slowPower;
@@ -106,10 +129,10 @@ public class gamepad {
             holdAngle();
         }
 
-        /*if(cGamepad1.YOnce())
+        if(cGamepad1.XOnce())
         {
             isRegularDrive = !isRegularDrive;
-        }*/
+        }
 
         if (isRegularDrive)
         {

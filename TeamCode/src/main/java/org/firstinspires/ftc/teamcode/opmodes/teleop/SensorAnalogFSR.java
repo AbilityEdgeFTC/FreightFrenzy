@@ -29,41 +29,36 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.AnalogSensor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-/*
- * This is an example LinearOpMode that shows how to use
- * a REV Robotics Touch Sensor.
- *
- * It assumes that the touch sensor is configured with a name of "sensor_digital".
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- */
+import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
+
+@Config
 @TeleOp(group = "Sensor")
 public class SensorAnalogFSR extends LinearOpMode {
 
-    AnalogInput forceSensor;  // Hardware Device Object
-
+    AnalogSensor freightSensor;  // Hardware Device Object
+    public static double voltageThreshold = 0;
     @Override
     public void runOpMode() {
 
-        // get a reference to our digitalTouch object.
-        forceSensor = hardwareMap.analogInput.get("forceSensor");
+        freightSensor = hardwareMap.get(AnalogSensor.class, "freightSensor");
+        intake intake = new intake(hardwareMap);
 
-        // wait for the start button to be pressed.
         waitForStart();
 
-        // while the op mode is active, loop and read the light levels.
-        // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
 
-            telemetry.addData("Sensor", forceSensor.getVoltage());
+            if(freightSensor.readRawVoltage() < voltageThreshold){
+                intake.stop();
+            } else {
+                intake.intakeForward();
+            }
+
+            telemetry.addData("Sensor Value", freightSensor.readRawVoltage());
             telemetry.update();
         }
     }

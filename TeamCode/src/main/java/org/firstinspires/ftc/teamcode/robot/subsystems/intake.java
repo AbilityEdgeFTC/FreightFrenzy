@@ -69,6 +69,7 @@ public class intake {
      */
     public void intakeForward(){
         mI.setPower(power);
+        intakeState = IntakeState.FORWARD;
     }
 
     /**
@@ -77,6 +78,7 @@ public class intake {
      */
     public void intakeBackward(){
         mI.setPower(-power);
+        intakeState = IntakeState.REVERSE;
     }
 
     /**
@@ -85,6 +87,7 @@ public class intake {
      */
     public void stop(){
         mI.setPower(0);
+        intakeState = IntakeState.STOP;
     }
 
     /**

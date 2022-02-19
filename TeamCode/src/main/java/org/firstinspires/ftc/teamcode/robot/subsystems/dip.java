@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class dip {
 
-    Servo sD, sH;
-    public static double intakePosition = 0.55, releasingPosition = .3, holdingPosition = 1, pushingPosition = .3;
+    Servo sD;
+    public static double releasingPosition = .3, holdingPosition = 1;
     Telemetry telemetry;
 
     public enum HandState
@@ -25,58 +25,40 @@ public class dip {
         RELEASE
     }
 
-    public static HandState handState = HandState.HOLD;
+    public static HandState handState = HandState.RELEASE;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
     public dip(HardwareMap hardwareMap) {
-        this.sD = hardwareMap.get(Servo.class, "sE");
-        this.sH = hardwareMap.get(Servo.class, "sH");;
+        this.sD = hardwareMap.get(Servo.class, "sD");
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
     public dip(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.sD = hardwareMap.get(Servo.class, "sE");
-        this.sH = hardwareMap.get(Servo.class, "sH");;
+        this.sD = hardwareMap.get(Servo.class, "sD");
         this.telemetry = telemetry;
     }
 
     // spin dip servo to intake positions, and holding servo to hold position.
     public void getFreight() throws InterruptedException {
-        sD.setPosition(intakePosition);
-        sH.setPosition(holdingPosition);
-    }
-    // spin dip servo to releasing positions, and holding servo to hold position.
-    public void releaseFreightPos() throws InterruptedException {
         sD.setPosition(releasingPosition);
-        sH.setPosition(holdingPosition);
+        handState = HandState.RELEASE;
     }
 
     // spin holding servo to push position.
     public void releaseFreight() throws InterruptedException {
-        sH.setPosition(pushingPosition);
-    }
-
-    // spin dip servo to intake positions, and holding servo to hold position.
-    public void getFreightAUTO() {
-        sD.setPosition(intakePosition);
-        sH.setPosition(holdingPosition);
-    }
-    // spin dip servo to releasing positions, and holding servo to hold position.
-    public void releaseFreightPosAUTO() {
-        sD.setPosition(releasingPosition);
-        sH.setPosition(holdingPosition);
+        sD.setPosition(holdingPosition);
+        handState = HandState.HOLD;
     }
 
     // spin holding servo to push position.
-    public void releaseFreightAUTO() {
-        sH.setPosition(pushingPosition);
+    public void holdFreight() throws InterruptedException {
+        sD.setPosition(holdingPosition);
+        handState = HandState.HOLD;
     }
-
     // display position of servo's.
     public void displayTelemetry(){
         telemetry.addLine("Servo Dip at: " + sD.getPosition());
-        telemetry.addLine("Servo Hold at: " + sH.getPosition());
         telemetry.update();
     }
 

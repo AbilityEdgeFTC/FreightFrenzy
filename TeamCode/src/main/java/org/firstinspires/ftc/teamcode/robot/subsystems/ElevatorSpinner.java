@@ -18,8 +18,8 @@ import org.opencv.core.Mat;
 @Config
 public class ElevatorSpinner {
 
-    public static double MAX_ANGLE = 45;
-    public static double MIN_ANGLE = -45;
+    public static double MAX_ANGLE = 60;
+    public static double MIN_ANGLE = -60;
     public static double ZERO_ANGLE = 0;
     public static double power = 0.2;
     public static boolean usePID = true;
@@ -29,17 +29,17 @@ public class ElevatorSpinner {
     public static double kP = 2.7;
     public static double kI = 0;
     public static double kD = 0;
-    double target = 0;
+    public static double target = 0;
     public static double GEAR_RATIO = 146.0/60.0; // in
-    public static double TICKS_PER_REV = 384.5 * GEAR_RATIO;
+    public static double TICKS_PER_REV = 1992.6 * GEAR_RATIO;
     DcMotor motor;
 
     public static int spinnerLevel = 0;
     public enum SpinnerState
     {
+        LEFT,
         ZERO,
-        MIN,
-        MAX
+        RIGHT
     }
 
     public static SpinnerState spinnerState = SpinnerState.ZERO;
@@ -66,39 +66,17 @@ public class ElevatorSpinner {
     {
         cGamepad.update();
 
-        if(gamepad.right_stick_button)
-        {
-            usePID = true;
-        }
-        else if(gamepad.left_stick_button)
-        {
-            usePID = false;
-        }
-
         if(usePID)
         {
-
-            if(cGamepad.rightBumperOnce() && spinnerLevel <= 1)
-            {
-                spinnerLevel++;
-                spinnerState = SpinnerState.values()[spinnerLevel];
-            }
-
-            if(cGamepad.leftBumperOnce() && spinnerLevel >= 1)
-            {
-                spinnerLevel--;
-                spinnerState = SpinnerState.values()[spinnerLevel];
-            }
-
             switch (spinnerState)
             {
                 case ZERO:
                     target = Math.toRadians(ZERO_ANGLE);
                     break;
-                case MIN:
+                case LEFT:
                     target = Math.toRadians(MIN_ANGLE);
                     break;
-                case MAX:
+                case RIGHT:
                     target = Math.toRadians(MAX_ANGLE);
                     break;
             }

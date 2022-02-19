@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -16,7 +17,7 @@ public class MMRightRed {
         double poseHubFrontX = -11;
         double poseHubFrontY = -41.5;
         double poseHubFrontH = 90;
-        double poseEntranceX = 12;
+        double poseEntranceX = 10;
         double poseEntranceY = -64;
         double poseEntranceH = 180;
         double poseCollectX = 60;
@@ -29,22 +30,43 @@ public class MMRightRed {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 12.805)
+                .setConstraints(80, 80, Math.toRadians(270), Math.toRadians(270), 12.805)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPoseRight)
                                 .lineToLinearHeading(poseHubFront)
-                                .waitSeconds(1)
-                                .lineToLinearHeading(poseEntrance)
-                                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 15, poseCollect.getY(), poseCollect.getHeading() - Math.toRadians(1.5)))
-                                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 10, poseCollect.getY(), poseCollect.getHeading() + Math.toRadians(1.5)))
-                                .waitSeconds(1)
-                                .lineToLinearHeading(poseEntrance)
-                                .lineToLinearHeading(poseHubFront)
-                                .waitSeconds(1)
-                                .lineToLinearHeading(poseEntrance)
-                                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 10, poseCollect.getY() - 2, poseCollect.getHeading() - Math.toRadians(2)))
-                                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 7.5, poseCollect.getY() - 2, poseCollect.getHeading() + Math.toRadians(3)))
-                                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 5, poseCollect.getY() - 2, poseCollect.getHeading() + Math.toRadians(3)))
+                                .back(5)
+                                .splineToSplineHeading(poseEntrance, Math.toRadians(0))
+                                .lineToSplineHeading (poseCollect)
+                                .lineToSplineHeading(poseEntrance)
+                                .splineTo(new Vector2d(poseHubFront.getX(), poseHubFront.getY()), poseHubFront.getHeading())
+                                .back(5)
+                                .splineToSplineHeading(poseEntrance, Math.toRadians(0))
+                                .lineToSplineHeading (poseCollect)
+                                .lineToSplineHeading(poseEntrance)
+                                .splineTo(new Vector2d(poseHubFront.getX(), poseHubFront.getY()), poseHubFront.getHeading())
+                                .back(5)
+                                .splineToSplineHeading(poseEntrance, Math.toRadians(0))
+                                .lineToSplineHeading (poseCollect)
+                                .lineToSplineHeading(poseEntrance)
+                                .splineTo(new Vector2d(poseHubFront.getX(), poseHubFront.getY()), poseHubFront.getHeading())
+                                .back(5)
+                                .splineToSplineHeading(poseEntrance, Math.toRadians(0))
+                                .lineToSplineHeading (poseCollect)
+                                .lineToSplineHeading(poseEntrance)
+                                .splineTo(new Vector2d(poseHubFront.getX(), poseHubFront.getY()), poseHubFront.getHeading())
+                                .back(5)
+                                .splineToSplineHeading(poseEntrance, Math.toRadians(0))
+                                .lineToSplineHeading (poseCollect)
+                                .lineToSplineHeading(poseEntrance)
+                                .splineTo(new Vector2d(poseHubFront.getX(), poseHubFront.getY()), poseHubFront.getHeading())
+                                .back(5)
+                                .splineToSplineHeading(poseEntrance, Math.toRadians(0))
+                                .lineToSplineHeading (poseCollect)
+                                .lineToSplineHeading(poseEntrance)
+                                .splineTo(new Vector2d(poseHubFront.getX(), poseHubFront.getY()), poseHubFront.getHeading())
+                                .back(5)
+                                .splineToSplineHeading(poseEntrance, Math.toRadians(0))
+                                .lineToSplineHeading (poseCollect)
                                 .build()
                 );
 
