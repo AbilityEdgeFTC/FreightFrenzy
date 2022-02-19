@@ -26,7 +26,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class TrajectoryBuilder {
     /**TO DO: TRAJETORY FINAL ARRAY MAYBE**/
     //static trajectoryObject[] trajectorys ={}; /**trajectoryObject ------> PoseEstimate,numOfCycles,park**/
-    public static SampleMecanumDriveCancelable drive = null;
+    public static MecanumLocalizer drive = null;
     public static HardwareMap hardwerMap;
 
     // BLUE:

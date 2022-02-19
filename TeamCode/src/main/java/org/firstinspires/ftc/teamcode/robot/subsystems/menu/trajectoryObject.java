@@ -35,7 +35,7 @@ public class trajectoryObject {
 
     public static TrajectoryType trajectoryType;
 
-    public trajectoryObject(SampleMecanumDriveCancelable drive, HardwareMap hardwareMap) {
+    public trajectoryObject(MecanumLocalizer drive, HardwareMap hardwareMap) {
         this.drive = drive;
         //elevatorThreadAuto = new ElevatorThreadAuto(hardwareMap);
         dip = new dip(hardwareMap);
