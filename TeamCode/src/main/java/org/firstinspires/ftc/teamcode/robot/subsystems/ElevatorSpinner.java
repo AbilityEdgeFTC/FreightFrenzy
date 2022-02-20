@@ -31,7 +31,7 @@ public class ElevatorSpinner {
     public static double kD = 0;
     public static double target = 0;
     public static double GEAR_RATIO = 146.0/60.0; // in
-    public static double TICKS_PER_REV = 1992.6 * GEAR_RATIO;
+    public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     DcMotor motor;
 
     public static int spinnerLevel = 0;
