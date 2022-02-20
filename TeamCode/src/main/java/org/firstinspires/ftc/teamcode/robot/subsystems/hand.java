@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class hand {
 
-    public static Servo sT;
+    Servo sT;
     Telemetry telemetry;
     public static double down = 0., mid = 0.5, up = 1;
 
@@ -31,19 +31,19 @@ public class hand {
     }
 
     // spin dip servo to intake positions, and holding servo to hold position.
-    public static void moveHand1() throws InterruptedException {
+    public void moveHand1() throws InterruptedException {
         sT.setPosition(up);
     }
 
-    public static void moveHand2() throws InterruptedException {
+    public void moveHand2() throws InterruptedException {
         sT.setPosition(mid);
     }
 
-    public static void moveHand3() throws InterruptedException {
+    public void moveHand3() throws InterruptedException {
         sT.setPosition(down);
     }
 
-    public static void moveHand(double position) throws InterruptedException {
+    public void moveHand(double position) throws InterruptedException {
         sT.setPosition(position);
     }
 

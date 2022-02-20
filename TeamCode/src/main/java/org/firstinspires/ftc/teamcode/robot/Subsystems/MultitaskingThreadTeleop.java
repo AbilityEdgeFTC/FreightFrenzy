@@ -21,6 +21,7 @@ public class MultitaskingThreadTeleop extends Thread {
     cGamepad cGamepad1, cGamepad2;
     boolean runFrontIntake = false, runBackIntake = false, canFrontIntake = false, canBackIntake = false;
     Telemetry telemetry;
+    boolean flag = true;
 
     public MultitaskingThreadTeleop(HardwareMap hw, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         intake = new intake(hw);
@@ -54,7 +55,7 @@ public class MultitaskingThreadTeleop extends Thread {
                 {
                     intake.powerIntake(gamepad1.right_trigger);
                     runBackIntake = false;
-                    runFrontIntake = true;
+                    runFrontIntake = false;
                 }
                 else if (gamepad2.left_trigger != 0 && canBackIntake)
                 {
@@ -94,12 +95,22 @@ public class MultitaskingThreadTeleop extends Thread {
 
                 if((elevator.elevatorSate == ElevatorThread.ElevatorState.MIN) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MID) || (elevator.elevatorSate == ElevatorThread.ElevatorState.MAX) && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
-                    dip.releaseFreightPos();
+                    if(flag)
+                    {
+                        Thread.sleep(300);
+                        dip.releaseFreightPos();
+                        flag = false;
+                    }
+                    else
+                    {
+                        dip.releaseFreightPos();
+                    }
                     canFrontIntake = false;
                     canBackIntake = false;
                 }
                 else if(elevator.elevatorSate == ElevatorThread.ElevatorState.ZERO && !(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce()))
                 {
+                    flag = true;
                     dip.getFreight();
                     canFrontIntake = true;
                     canBackIntake = true;
@@ -108,6 +119,7 @@ public class MultitaskingThreadTeleop extends Thread {
                 if(cGamepad2.rightBumperOnce() || cGamepad2.leftBumperOnce())
                 {
                     dip.releaseFreight();
+                    flag = true;
                 }
 
             }
