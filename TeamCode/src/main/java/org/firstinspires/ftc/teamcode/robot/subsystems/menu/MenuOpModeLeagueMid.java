@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 
-@TeleOp(name="Menu Autonmous League Mid", group="Main")
+@TeleOp(name="Menu Autonmous League", group="Main")
 public class MenuOpModeLeagueMid extends LinearOpMode
 {
     //TODO: ADD TASKS WITH OPTIONS

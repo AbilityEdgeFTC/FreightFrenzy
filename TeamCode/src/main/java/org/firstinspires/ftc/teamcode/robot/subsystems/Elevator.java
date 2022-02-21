@@ -26,7 +26,7 @@ public class Elevator {
     public static double TICKS_PER_REV = 384.5;
     public static double SPOOL_RADIUS = 0.75; // in
     public static double power = 0.5;
-    public static boolean stopAndReset = false;
+    public static boolean stopAndReset = true;
     public static boolean usePID = true;
 
     Gamepad gamepad;

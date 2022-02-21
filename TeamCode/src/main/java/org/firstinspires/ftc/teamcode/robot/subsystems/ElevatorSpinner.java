@@ -23,7 +23,7 @@ public class ElevatorSpinner {
     public static double ZERO_ANGLE = 0;
     public static double power = 0.2;
     public static boolean usePID = true;
-    public static boolean stopAndReset = false;
+    public static boolean stopAndReset = true;
     BasicPID PID;
     AngleController controller;
     public static double kP = 2.7;

@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Left BLUE FULL", group = "blue")
+@Autonomous(name = "MENU FULL", group = "blue")
 public class AutoMenu extends LinearOpMode {
 
 

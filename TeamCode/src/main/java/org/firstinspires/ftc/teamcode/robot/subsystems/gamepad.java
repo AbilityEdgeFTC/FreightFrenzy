@@ -74,21 +74,24 @@ public class gamepad {
 
         try
         {
-            allianceColor = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("AllianceOption.txt"));
-            if(allianceColor == "RED")
+            if(!DEBUG)
             {
-                startH -= Math.PI/2; // red
-            }
-            else
-            {
-                startH += Math.PI/2; // blue
+                allianceColor = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("AllianceOption.txt"));
+                if(allianceColor == "RED")
+                {
+                    startH -= Math.PI/2; // red
+                }
+                else
+                {
+                    startH -= Math.PI + Math.PI/2; // blue
+                }
             }
         }catch (NumberFormatException e)
         {
             if(DEBUG)
             {
                 isRegularDrive = true;
-                startH -= Math.PI/2; // red
+                startH -= Math.PI + Math.PI/2; // blue
             }
             else
             {
