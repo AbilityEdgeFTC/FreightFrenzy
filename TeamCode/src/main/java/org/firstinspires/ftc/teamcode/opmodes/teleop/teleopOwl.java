@@ -83,7 +83,7 @@ public class teleopOwl extends LinearOpMode {
         while (opModeIsActive()) {
             cGamepad1.update();
 
-            if(gamepad1.a)
+            /*if(gamepad1.a)
             {
                 ElevatorLevel = 0;
             }
@@ -107,7 +107,7 @@ public class teleopOwl extends LinearOpMode {
             else if(gamepad2.b)
             {
                 SpinnerLevel = 1;
-            }
+            }*/
 
             if(gamepad2.left_stick_button)
             {
@@ -221,19 +221,17 @@ public class teleopOwl extends LinearOpMode {
                     break;
             }
 
-            gamepad.update();
-            elevator.update();
-            spinner.update();
-
             if(gamepad1.left_bumper && elevatorMovement != ElevatorMovement.SPIN)
             {
-                elevatorMovement = ElevatorMovement.DIP;
-                retract = true;
+                elevatorMovement = ElevatorMovement.SPIN;
                 //intake.spinIntake = true;
                 canIntake = true;
                 frontIntake = true;
             }
 
+            gamepad.update();
+            elevator.update();
+            spinner.update();
             telemetry.update();
         }
 
