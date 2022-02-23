@@ -32,7 +32,7 @@ public class ElevatorSpinner {
     public static double target = 0;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
-    DcMotor motor;
+    public DcMotor motor;
 
     public static int spinnerLevel = 0;
     public enum SpinnerState
@@ -84,15 +84,15 @@ public class ElevatorSpinner {
         }
         else
         {
-            if(gamepad.right_bumper)
+            if(gamepad.right_bumper && gamepad != null)
             {
                 motor.setPower(power);
             }
-            else if(gamepad.left_bumper)
+            else if(gamepad.left_bumper && gamepad != null)
             {
                 motor.setPower(-power);
             }
-            else
+            else if(gamepad != null)
             {
                 motor.setPower(0);
             }
@@ -116,6 +116,16 @@ public class ElevatorSpinner {
     public double getTarget()
     {
         return target;
+    }
+
+    public void setTarget(double newTarget)
+    {
+        target = newTarget;
+    }
+
+    public void setUsePID(boolean usePID)
+    {
+        this.usePID = usePID;
     }
 
 

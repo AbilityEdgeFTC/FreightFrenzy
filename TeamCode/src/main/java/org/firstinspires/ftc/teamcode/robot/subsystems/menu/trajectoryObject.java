@@ -3,25 +3,39 @@ package org.firstinspires.ftc.teamcode.robot.subsystems.menu;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorAuto;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerAuto;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
+import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 import java.util.ArrayList;
 import java.util.Queue;
+
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MAX_HEIGHT;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MID_HEIGHT;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MIN_HEIGHT;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.ZERO_HEIGHT;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MAX_ANGLE;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MIN_ANGLE;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.ZERO_ANGLE;
 
 public class trajectoryObject {
     Queue<TrajectorySequence> trajectorySequenceQueue = null;
     ArrayList<TrajectorySequence> trajectories;
     MecanumLocalizer drive;
     carousel carousel;
-    //ElevatorThreadAuto elevatorThreadAuto;
+    ElevatorAuto elevator;
+    ElevatorSpinnerAuto spinner;
     dip dip;
     intake intake;
+    hand hand;
     public static double runCarouselFor = 4;
 
     public enum TrajectoryType
@@ -30,20 +44,26 @@ public class trajectoryObject {
         HUB_MIN,
         HUB_MID,
         HUB_MAX,
-        INTAKE
+        INTAKE,
+        PLAIN
     }
 
     public static TrajectoryType trajectoryType;
 
     public trajectoryObject(MecanumLocalizer drive, HardwareMap hardwareMap) {
         this.drive = drive;
-        //elevatorThreadAuto = new ElevatorThreadAuto(hardwareMap);
+        elevator = new ElevatorAuto(hardwareMap);
+        spinner = new ElevatorSpinnerAuto(hardwareMap);
         dip = new dip(hardwareMap);
         carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
+        hand = new hand(hardwareMap);
     }
 
-    public void generateTrajectory(Pose2d startPose, Pose2d point, TrajectoryType trajectoryType)
+    /**
+     * TODO: CHANGE THE TRAJ TYPES FROM lineToLinearHeading TO THE CORRECT TYPE
+     */
+    public void generateTrajectory(Pose2d startPose, Pose2d point, TrajectoryType trajectoryType, boolean isRed)
     {
         TrajectorySequence trajectorySequence = null;
 
@@ -52,47 +72,154 @@ public class trajectoryObject {
             case CAROUSEL:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point)
-                        .UNSTABLE_addTemporalMarkerOffset(0, () -> carousel.spin(true))
-                        .UNSTABLE_addTemporalMarkerOffset(runCarouselFor, () -> carousel.stop())
+                        .addTemporalMarker( ( ) -> {
+                            if(isRed)
+                            {
+                                carousel.spin(false);
+                            }
+                            else
+                            {
+                                carousel.spin(true);
+                            }
+                        })
+                        .waitSeconds(3.25)
+                        .addTemporalMarker( ( ) -> {
+                            carousel.stop();
+                        })
                         .build();
                 break;
 
             case HUB_MIN:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point)
-                        //.UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN))
-                        //.UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
-                        //.UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
-                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
+                        .addTemporalMarker(pathTime -> pathTime * 0.4, () -> {
+                            dip.holdFreight();
+                            if(isRed)
+                            {
+                                spinner.goToPosition(MAX_ANGLE);
+                            }
+                            else
+                            {
+                                spinner.goToPosition(MIN_ANGLE);
+                            }
+                        })
+                        .addTemporalMarker(pathTime -> pathTime * 0.6, () -> {
+                            elevator.goToPosition(MIN_HEIGHT);
+                        })
+                        .addTemporalMarker(pathTime -> pathTime * 0.7, () -> {
+                            hand.level1();
+                        })
+                        .addTemporalMarker(() -> {
+                            dip.releaseFreight();
+                        })
+                        .addTemporalMarker(() -> {
+                            dip.getFreight();
+                        })
+                        .addTemporalMarker(() -> {
+                            hand.intake();
+                        })
+                        .addTemporalMarker(() -> {
+                            spinner.goToPosition(ZERO_ANGLE);
+                        })
+                        .addTemporalMarker(() -> {
+                            elevator.goToPosition(ZERO_HEIGHT);
+                        })
                     .build();
                 break;
             case HUB_MID:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point)
-                        //.UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MID))
-                        //.UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
-                        //.UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
-                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
+                        .addTemporalMarker(pathTime -> pathTime * 0.4, () -> {
+                            dip.holdFreight();
+                            if(isRed)
+                            {
+                                spinner.goToPosition(MAX_ANGLE);
+                            }
+                            else
+                            {
+                                spinner.goToPosition(MIN_ANGLE);
+                            }
+                        })
+                        .addTemporalMarker(pathTime -> pathTime * 0.6, () -> {
+                            elevator.goToPosition(MID_HEIGHT);
+                        })
+                        .addTemporalMarker(pathTime -> pathTime * 0.7, () -> {
+                            hand.level1();
+                        })
+                        .addTemporalMarker(() -> {
+                            dip.releaseFreight();
+                        })
+                        .addTemporalMarker(() -> {
+                            dip.getFreight();
+                        })
+                        .addTemporalMarker(() -> {
+                            hand.intake();
+                        })
+                        .addTemporalMarker(() -> {
+                            spinner.goToPosition(ZERO_ANGLE);
+                        })
+                        .addTemporalMarker(() -> {
+                            elevator.goToPosition(ZERO_HEIGHT);
+                        })
                         .build();
                 break;
             case HUB_MAX:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
                         .lineToLinearHeading(point)
-                        //.UNSTABLE_addTemporalMarkerOffset(-(elevatorThreadAuto.timeTo+1), () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX))
-                        //.UNSTABLE_addTemporalMarkerOffset(.5, () -> dip.releaseFreightAUTO())
-                        //.UNSTABLE_addTemporalMarkerOffset(1, () -> dip.getFreightAUTO())
-                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
+                        .addTemporalMarker(pathTime -> pathTime * 0.4, () -> {
+                            dip.holdFreight();
+                            if(isRed)
+                            {
+                                spinner.goToPosition(MAX_ANGLE);
+                            }
+                            else
+                            {
+                                spinner.goToPosition(MIN_ANGLE);
+                            }
+                        })
+                        .addTemporalMarker(pathTime -> pathTime * 0.6, () -> {
+                            elevator.goToPosition(MAX_HEIGHT);
+                        })
+                        .addTemporalMarker(pathTime -> pathTime * 0.7, () -> {
+                            hand.level1();
+                        })
+                        .addTemporalMarker(() -> {
+                            dip.releaseFreight();
+                        })
+                        .addTemporalMarker(() -> {
+                            dip.getFreight();
+                        })
+                        .addTemporalMarker(() -> {
+                            hand.intake();
+                        })
+                        .addTemporalMarker(() -> {
+                            spinner.goToPosition(ZERO_ANGLE);
+                        })
+                        .addTemporalMarker(() -> {
+                            elevator.goToPosition(ZERO_HEIGHT);
+                        })
                         .build();
                 break;
 
             case INTAKE:
                 trajectorySequence = drive.trajectorySequenceBuilder(startPose)
-                        .lineToLinearHeading(point, MecanumLocalizer.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                MecanumLocalizer.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                        //.UNSTABLE_addTemporalMarkerOffset(-(trajectorySequence.duration()), () -> intake.intakeForward())
-                        //.UNSTABLE_addTemporalMarkerOffset(0, () -> intake.intakeBackward())
-                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> intake.stop())
-                        //.UNSTABLE_addTemporalMarkerOffset(1.5, () -> elevatorThreadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.ZERO))
+                        .lineToLinearHeading(point)
+                        .addTemporalMarker(pathTime -> pathTime * 0.9, () -> {
+                            intake.intakeForward();
+                        })
+                        .waitSeconds(1.5)
+                        .addTemporalMarker(() -> {
+                            intake.intakeBackward();
+                        })
+                        .waitSeconds(0.5)
+                        .addTemporalMarker(() -> {
+                            intake.stop();
+                        })
+                        .build();
+                break;
+            case PLAIN:
+                trajectorySequence = drive.trajectorySequenceBuilder(startPose)
+                        .lineToLinearHeading(point)
                         .build();
                 break;
         }
@@ -102,7 +229,7 @@ public class trajectoryObject {
 
     public void addTrajectory(TrajectorySequence trajectorySequence)
     {
-        trajectorySequenceQueue.add(trajectorySequence);
+        trajectories.add(trajectorySequence);
     }
 
     public MecanumLocalizer getDrive() {

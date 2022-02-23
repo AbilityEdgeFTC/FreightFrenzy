@@ -40,19 +40,19 @@ public class dip {
     }
 
     // spin dip servo to intake positions, and holding servo to hold position.
-    public void getFreight() throws InterruptedException {
+    public void getFreight() {
         sD.setPosition(releasingPosition);
         handState = HandState.RELEASE;
     }
 
     // spin holding servo to push position.
-    public void releaseFreight() throws InterruptedException {
-        sD.setPosition(holdingPosition);
+    public void releaseFreight() {
+        sD.setPosition(releasingPosition);
         handState = HandState.HOLD;
     }
 
     // spin holding servo to push position.
-    public void holdFreight() throws InterruptedException {
+    public void holdFreight() {
         sD.setPosition(holdingPosition);
         handState = HandState.HOLD;
     }

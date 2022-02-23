@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveC
 public class gamepad {
 
     public static boolean DEBUG = true;
+    public static boolean redAlliance = false;
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
@@ -31,14 +32,14 @@ public class gamepad {
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
     public static double mainPower = .85, slowPower = .6, multiplier = .9;
-    public static boolean slowMove = false, isRegularDrive = false;
+    public static boolean slowMove = false, isCentricDrive = false;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDriveCancelable drivetrain;
     public static double startH = 0;
     public static double Pcoefficient = 0;
     public static double HEADING_THRESHOLD = 2;
     public static boolean holdAngle = false;
-    public static String allianceColor;
+    //public static String allianceColor;
 
     /**
      * constructor for gamepad
@@ -72,31 +73,15 @@ public class gamepad {
             startH = 0;
         }
 
-        try
+        if(DEBUG && redAlliance)
         {
-            if(!DEBUG)
-            {
-                allianceColor = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("AllianceOption.txt"));
-                if(allianceColor == "RED")
-                {
-                    startH -= Math.PI/2; // red
-                }
-                else
-                {
-                    startH -= Math.PI + Math.PI/2; // blue
-                }
-            }
-        }catch (NumberFormatException e)
+            startH = 0;
+            startH -= Math.PI/2; // red
+        }
+        else if(DEBUG && !redAlliance)
         {
-            if(DEBUG)
-            {
-                isRegularDrive = true;
-                startH -= Math.PI + Math.PI/2; // blue
-            }
-            else
-            {
-                isRegularDrive = false;
-            }
+            startH = 0;
+            startH -= Math.PI + Math.PI/2; // blue
         }
 
         this.drivetrain = new SampleMecanumDriveCancelable(hardwareMap);
@@ -134,16 +119,16 @@ public class gamepad {
 
         if(cGamepad1.XOnce())
         {
-            isRegularDrive = !isRegularDrive;
+            isCentricDrive = !isCentricDrive;
         }
 
-        if (isRegularDrive)
+        if (isCentricDrive)
         {
-            regularDrive();
+            centricDrive();
         }
         else
         {
-            centricDrive();
+            regularDrive();
         }
 
         mFL.setPower(leftPower_f);
@@ -245,5 +230,10 @@ public class gamepad {
     public double getIMU()
     {
         return drivetrain.getExternalHeading();
+    }
+
+    public void saveIMUHeading()
+    {
+        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + getIMU());
     }
 }

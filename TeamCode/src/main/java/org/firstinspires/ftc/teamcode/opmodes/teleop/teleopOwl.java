@@ -40,9 +40,8 @@ public class teleopOwl extends LinearOpMode {
     //IntakeFixingThread intake;
     //Thread intakeFixingThread;
     intake intake;
-    //hand hand;
-    //dip dip;
-    boolean retract = false;
+    hand hand;
+    dip dip;
     private boolean frontIntake = false, backIntake = false;
     cGamepad cGamepad1;
     public static double powerIntake = 1;
@@ -58,7 +57,7 @@ public class teleopOwl extends LinearOpMode {
     }
 
     public static int ElevatorLevel = 0;
-    public static int SpinnerLevel = 1;
+    public static int SpinnerLevel = 0;
 
     public static ElevatorMovement elevatorMovement = ElevatorMovement.SPIN;
     @Override
@@ -71,8 +70,8 @@ public class teleopOwl extends LinearOpMode {
         //intake = new IntakeFixingThread(hardwareMap, telemetry);
         //intakeFixingThread = intake;
         intake = new intake(hardwareMap);
-        //hand = new hand(hardwareMap);
-        //dip = new dip(hardwareMap);
+        hand = new hand(hardwareMap);
+        dip = new dip(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
 
         // wait till after init
@@ -103,21 +102,17 @@ public class teleopOwl extends LinearOpMode {
             else if(gamepad2.x)
             {
                 SpinnerLevel = 2;
-            }
-            else if(gamepad2.b)
-            {
-                SpinnerLevel = 1;
             }*/
 
             if(gamepad2.left_stick_button)
             {
-                spinner.usePID = false;
-                elevator.usePID = false;
+                spinner.setUsePID(false);
+                elevator.setUsePID(false);
             }
             else if(gamepad2.right_stick_button)
             {
-                spinner.usePID = true;
-                elevator.usePID = true;
+                spinner.setUsePID(true);
+                elevator.setUsePID(true);
             }
 
             if ((gamepad1.left_trigger != 0 || gamepad2.left_trigger != 0) && canIntake)
@@ -149,10 +144,9 @@ public class teleopOwl extends LinearOpMode {
 
             switch (elevatorMovement) {
                 case SPIN:
-                    spinner.target = ZERO_ANGLE;
-                    elevator.target = ZERO_HEIGHT;
-                    //dip.getFreight();
-                    retract = false;
+                    spinner.setTarget(ZERO_ANGLE);
+                    elevator.setTarget(ZERO_HEIGHT);
+                    dip.getFreight();
                     canIntake = true;
 
                     if (gamepad1.right_bumper)
@@ -161,19 +155,19 @@ public class teleopOwl extends LinearOpMode {
                         frontIntake = false;
                         backIntake = false;
                         canIntake = false;
-                        //dip.holdFreight();
+                        dip.holdFreight();
 
                         switch (SpinnerLevel)
                         {
                             case 0:
-                                spinner.target = MIN_ANGLE;
+                                spinner.setTarget(MIN_ANGLE);
                                 break;
                             case 2:
-                                spinner.target = MAX_ANGLE;
+                                spinner.setTarget(MAX_ANGLE);
                                 break;
                             default:
-                                spinner.usePID = false;
-                                elevator.usePID = false;
+                                spinner.setUsePID(false);
+                                elevator.setUsePID(false);
                         }
 
                         switch (ElevatorLevel)
@@ -192,24 +186,24 @@ public class teleopOwl extends LinearOpMode {
                     }
                     break;
                 case EXTEND_LEVEL1:
-                    elevator.target = MIN_HEIGHT;
-                    //hand.level1();
+                    elevator.setTarget(MIN_HEIGHT);
+                    hand.level1();
                     elevatorMovement = ElevatorMovement.DIP;
                     break;
                 case EXTEND_LEVEL2:
-                    elevator.target = MID_HEIGHT;
-                    //hand.level2();
+                    elevator.setTarget(MID_HEIGHT);
+                    hand.level2();
                     elevatorMovement = ElevatorMovement.DIP;
                     break;
                 case EXTEND_LEVEL3:
-                    elevator.target = MAX_HEIGHT;
-                    //hand.level3();
+                    elevator.setTarget(MAX_HEIGHT);
+                    hand.level3();
                     elevatorMovement = ElevatorMovement.DIP;
                     break;
                 case DIP:
-                    if(gamepad1.left_bumper || retract)
+                    if(gamepad1.left_bumper)
                     {
-                        //dip.releaseFreight();
+                        dip.releaseFreight();
                         //intake.spinIntake = true;
                         canIntake = true;
                         frontIntake = true;
@@ -234,6 +228,8 @@ public class teleopOwl extends LinearOpMode {
             spinner.update();
             telemetry.update();
         }
+
+        gamepad.saveIMUHeading();
 
         //intake.exitThread();
         //intakeFixingThread.interrupt();
