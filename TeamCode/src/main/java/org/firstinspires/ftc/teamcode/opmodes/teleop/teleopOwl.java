@@ -20,7 +20,9 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL1;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL2;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL3;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.SHARED_HUB;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.ZERO_HEIGHT;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.elevatorLevel;
@@ -50,9 +52,10 @@ public class teleopOwl extends LinearOpMode {
     enum ElevatorMovement
     {
         SPIN,
-        EXTEND_LEVEL1,
-        EXTEND_LEVEL2,
-        EXTEND_LEVEL3,
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        SHARED,
         DIP
     }
 
@@ -90,7 +93,13 @@ public class teleopOwl extends LinearOpMode {
                     hand.updateElevatorLevel(Elevator.ElevatorLevel.SHARED_HUB);
                     break;
                 case 2:
-                    hand.updateElevatorLevel(Elevator.ElevatorLevel.HUB);
+                    hand.updateElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL1);
+                    break;
+                case 3:
+                    hand.updateElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL2);
+                    break;
+                case 4:
+                    hand.updateElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL3);
                     break;
 
             }
@@ -185,25 +194,35 @@ public class teleopOwl extends LinearOpMode {
                         switch (elevatorLevel)
                         {
                             case 0:
-                                elevatorMovement = ElevatorMovement.EXTEND_LEVEL1;
+                                elevatorMovement = ElevatorMovement.LEVEL1;
                                 break;
                             case 1:
-                                elevatorMovement = ElevatorMovement.EXTEND_LEVEL2;
+                                elevatorMovement = ElevatorMovement.LEVEL2;
                                 break;
                             case 2:
-                                elevatorMovement = ElevatorMovement.EXTEND_LEVEL3;
+                                elevatorMovement = ElevatorMovement.LEVEL3;
                                 break;
                         }
 
                     }
                     break;
-                case EXTEND_LEVEL1:
-                    elevator.setTarget(SHARED_HUB);
+                case LEVEL1:
+                    elevator.setTarget(HUB_LEVEL1);
                     hand.level1();
                     elevatorMovement = ElevatorMovement.DIP;
                     break;
-                case EXTEND_LEVEL2:
-                    elevator.setTarget(HUB);
+                case LEVEL2:
+                    elevator.setTarget(HUB_LEVEL2);
+                    hand.level2();
+                    elevatorMovement = ElevatorMovement.DIP;
+                    break;
+                case LEVEL3:
+                    elevator.setTarget(HUB_LEVEL3);
+                    hand.level2();
+                    elevatorMovement = ElevatorMovement.DIP;
+                    break;
+                case SHARED:
+                    elevator.setTarget(SHARED_HUB);
                     hand.level2();
                     elevatorMovement = ElevatorMovement.DIP;
                     break;

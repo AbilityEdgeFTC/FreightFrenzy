@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class Elevator {
 
-    public static double HUB = 22;
+    public static double HUB_LEVEL1 = 22,HUB_LEVEL2 = 19,HUB_LEVEL3 = 17;
     public static double SHARED_HUB = 4.5;
     public static double ZERO_HEIGHT = 0;
     public DcMotorEx motor;
@@ -30,7 +30,10 @@ public class Elevator {
     public enum ElevatorLevel {
         ZERO,
         SHARED_HUB,
-        HUB
+        HUB_LEVEL1,
+        HUB_LEVEL2,
+        HUB_LEVEL3
+
     }
 
     public static ElevatorLevel elevatorLevel = ElevatorLevel.ZERO;
@@ -61,8 +64,14 @@ public class Elevator {
                 case SHARED_HUB:
                     target = SHARED_HUB;
                     break;
-                case HUB:
-                    target = HUB;
+                case HUB_LEVEL1:
+                    target = HUB_LEVEL1;
+                    break;
+                case HUB_LEVEL2:
+                    target = HUB_LEVEL2;
+                    break;
+                case HUB_LEVEL3:
+                    target = HUB_LEVEL3;
                     break;
 
             }

@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.SHARED_HUB;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL1;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL2;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL3;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.ZERO_HEIGHT;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MAX_ANGLE;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MIN_ANGLE;
