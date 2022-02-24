@@ -84,18 +84,8 @@ public class ElevatorSpinner {
         }
         else
         {
-            if(gamepad.right_bumper && gamepad != null)
-            {
-                motor.setPower(power);
-            }
-            else if(gamepad.left_bumper && gamepad != null)
-            {
-                motor.setPower(-power);
-            }
-            else if(gamepad != null)
-            {
-                motor.setPower(0);
-            }
+            motor.setPower(gamepad.right_stick_x);
+
         }
 
     }

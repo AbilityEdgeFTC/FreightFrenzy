@@ -40,22 +40,20 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 // 1 is get freight from intake
 @Config
 @TeleOp(group="Tests")
-public class servoElevator extends LinearOpMode {
+public class TwoServo extends LinearOpMode {
 
-    Servo servo1;
-    Servo servo2;
-    public static double position1 = 0;
-    public static double position2 = 0;
-    public static String servo1Name = "sE";
-    public static String servo2Name = "sE";
-    public static double time = 500;
+    Servo left;
+    Servo right;
+    public static double position1 = 0.08;
+    public static double position2 = 0.08;
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        servo1 = hardwareMap.get(Servo.class, servo1Name);
-        servo2 = hardwareMap.get(Servo.class, servo2Name);
+        right = hardwareMap.get(Servo.class, "sRight");
+        left = hardwareMap.get(Servo.class, "sLeft");
+        left.setDirection(Servo.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -63,10 +61,8 @@ public class servoElevator extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
 
         while (opModeIsActive()) {
-
-            servo1.setPosition(position1);
-            servo1.setPosition(position1);
-            sleep((long)time);
+            right.setPosition(position1);
+            left.setPosition(position2);
         }
     }
 }

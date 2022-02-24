@@ -18,9 +18,8 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import java.util.ArrayList;
 import java.util.Queue;
 
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MAX_HEIGHT;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MID_HEIGHT;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MIN_HEIGHT;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.SHARED_HUB;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.ZERO_HEIGHT;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MAX_ANGLE;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MIN_ANGLE;
@@ -104,7 +103,7 @@ public class trajectoryObject {
                             }
                         })
                         .addTemporalMarker(pathTime -> pathTime * 0.6, () -> {
-                            elevator.goToPosition(MIN_HEIGHT);
+                            elevator.goToPosition(SHARED_HUB);
                         })
                         .addTemporalMarker(pathTime -> pathTime * 0.7, () -> {
                             hand.level1();
@@ -140,9 +139,6 @@ public class trajectoryObject {
                                 spinner.goToPosition(MIN_ANGLE);
                             }
                         })
-                        .addTemporalMarker(pathTime -> pathTime * 0.6, () -> {
-                            elevator.goToPosition(MID_HEIGHT);
-                        })
                         .addTemporalMarker(pathTime -> pathTime * 0.7, () -> {
                             hand.level1();
                         })
@@ -176,9 +172,6 @@ public class trajectoryObject {
                             {
                                 spinner.goToPosition(MIN_ANGLE);
                             }
-                        })
-                        .addTemporalMarker(pathTime -> pathTime * 0.6, () -> {
-                            elevator.goToPosition(MAX_HEIGHT);
                         })
                         .addTemporalMarker(pathTime -> pathTime * 0.7, () -> {
                             hand.level1();

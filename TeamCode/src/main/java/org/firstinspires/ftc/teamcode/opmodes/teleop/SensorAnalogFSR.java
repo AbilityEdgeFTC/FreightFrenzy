@@ -32,34 +32,47 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.AnalogSensor;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
+import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
 
 @Config
 @TeleOp(group = "Sensor")
 public class SensorAnalogFSR extends LinearOpMode {
 
-    AnalogSensor freightSensor;  // Hardware Device Object
-    public static double voltageThreshold = 0;
+    //AnalogSensor freightSensor;  // Hardware Device Object
+    AnalogInput freightSensor;
+    public static double voltageThreshold = (float) 0.00000000000000001;
+    IntakeFixingThread intakeFixingThread;
     @Override
     public void runOpMode() {
 
-        freightSensor = hardwareMap.get(AnalogSensor.class, "freightSensor");
+        freightSensor = hardwareMap.get(AnalogInput.class, "freightSensor");
         intake intake = new intake(hardwareMap);
+        intakeFixingThread = new IntakeFixingThread(hardwareMap, telemetry);
+        //analogInputController = hardwareMap.get(AnalogInputController.class, "freightSensor");
+        //analogInput = new AnalogInput(analogInputController, 0);
+
+        intakeFixingThread.start();
 
         waitForStart();
 
         while (opModeIsActive()) {
 
-            if(freightSensor.readRawVoltage() < voltageThreshold){
-                intake.stop();
-            } else {
+            if(freightSensor.getVoltage() < voltageThreshold){
                 intake.intakeForward();
+            } else {
+                intake.stop();
             }
 
-            telemetry.addData("Sensor Value", freightSensor.readRawVoltage());
+            telemetry.addData("Sensor Value", freightSensor.getVoltage());
             telemetry.update();
         }
+
+        intakeFixingThread.exitThread();
+        intakeFixingThread.interrupt();
     }
 }

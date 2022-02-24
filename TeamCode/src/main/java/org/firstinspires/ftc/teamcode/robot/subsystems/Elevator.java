@@ -15,9 +15,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class Elevator {
 
-    public static double MAX_HEIGHT = 13;
-    public static double MID_HEIGHT = 10;
-    public static double MIN_HEIGHT = 6;
+    public static double HUB = 22;
+    public static double SHARED_HUB = 4.5;
     public static double ZERO_HEIGHT = 0;
     public DcMotorEx motor;
     public static PIDCoefficients coefficients = new PIDCoefficients(.05,0,0);
@@ -26,8 +25,15 @@ public class Elevator {
     public static double TICKS_PER_REV = 384.5;
     public static double SPOOL_RADIUS = 0.75; // in
     public static double power = 0.5;
-    public static boolean stopAndReset = true;
     public static boolean usePID = true;
+
+    public enum ElevatorLevel {
+        ZERO,
+        SHARED_HUB,
+        HUB
+    }
+
+    public static ElevatorLevel elevatorLevel = ElevatorLevel.ZERO;
 
     Gamepad gamepad;
     cGamepad cGamepad;
@@ -38,10 +44,6 @@ public class Elevator {
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
-        if(stopAndReset)
-        {
-            this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
         controller = new BasicPID(new com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients(coefficients.kP, coefficients.kI, coefficients.kD));
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
@@ -51,17 +53,24 @@ public class Elevator {
     {
         if (usePID)
         {
+            switch (elevatorLevel)
+            {
+                case ZERO:
+                    target = ZERO_HEIGHT;
+                    break;
+                case SHARED_HUB:
+                    target = SHARED_HUB;
+                    break;
+                case HUB:
+                    target = HUB;
+                    break;
+
+            }
             motor.setPower(controller.calculate(inchesToEncoderTicks(target), motor.getCurrentPosition()));
         }
         else
         {
-            if (gamepad.right_trigger != 0 && gamepad != null) {
-                motor.setPower(gamepad.right_trigger);
-            } else if (gamepad.left_trigger != 0 && gamepad != null) {
-                motor.setPower(-gamepad.left_trigger);
-            } else if(gamepad != null){
-                motor.setPower(0);
-            }
+            motor.setPower(gamepad.left_stick_y);
 
         }
     }

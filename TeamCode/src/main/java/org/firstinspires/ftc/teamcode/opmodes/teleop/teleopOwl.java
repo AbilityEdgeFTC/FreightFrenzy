@@ -20,10 +20,10 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MAX_HEIGHT;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MID_HEIGHT;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.MIN_HEIGHT;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.SHARED_HUB;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.ZERO_HEIGHT;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.elevatorLevel;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MAX_ANGLE;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MIN_ANGLE;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.ZERO_ANGLE;
@@ -56,8 +56,8 @@ public class teleopOwl extends LinearOpMode {
         DIP
     }
 
-    public static int ElevatorLevel = 0;
-    public static int SpinnerLevel = 0;
+    public static int elevatorLevel = 0;
+    public static int spinnerLevel = 0;
 
     public static ElevatorMovement elevatorMovement = ElevatorMovement.SPIN;
     @Override
@@ -81,18 +81,30 @@ public class teleopOwl extends LinearOpMode {
 
         while (opModeIsActive()) {
             cGamepad1.update();
+            switch (elevatorLevel)
+            {
+                case 0:
+                    hand.updateElevatorLevel(Elevator.ElevatorLevel.ZERO);
+                    break;
+                case 1:
+                    hand.updateElevatorLevel(Elevator.ElevatorLevel.SHARED_HUB);
+                    break;
+                case 2:
+                    hand.updateElevatorLevel(Elevator.ElevatorLevel.HUB);
+                    break;
 
+            }
             /*if(gamepad1.a)
             {
-                ElevatorLevel = 0;
+                elevatorLevel = 0;
             }
             else if(gamepad1.x)
             {
-                ElevatorLevel = 2;
+                elevatorLevel = 2;
             }
             else if(gamepad1.b)
             {
-                ElevatorLevel = 1;
+                elevatorLevel = 1;
             }
 
             if(gamepad2.a)
@@ -157,7 +169,7 @@ public class teleopOwl extends LinearOpMode {
                         canIntake = false;
                         dip.holdFreight();
 
-                        switch (SpinnerLevel)
+                        switch (spinnerLevel)
                         {
                             case 0:
                                 spinner.setTarget(MIN_ANGLE);
@@ -170,7 +182,7 @@ public class teleopOwl extends LinearOpMode {
                                 elevator.setUsePID(false);
                         }
 
-                        switch (ElevatorLevel)
+                        switch (elevatorLevel)
                         {
                             case 0:
                                 elevatorMovement = ElevatorMovement.EXTEND_LEVEL1;
@@ -186,20 +198,16 @@ public class teleopOwl extends LinearOpMode {
                     }
                     break;
                 case EXTEND_LEVEL1:
-                    elevator.setTarget(MIN_HEIGHT);
+                    elevator.setTarget(SHARED_HUB);
                     hand.level1();
                     elevatorMovement = ElevatorMovement.DIP;
                     break;
                 case EXTEND_LEVEL2:
-                    elevator.setTarget(MID_HEIGHT);
+                    elevator.setTarget(HUB);
                     hand.level2();
                     elevatorMovement = ElevatorMovement.DIP;
                     break;
-                case EXTEND_LEVEL3:
-                    elevator.setTarget(MAX_HEIGHT);
-                    hand.level3();
-                    elevatorMovement = ElevatorMovement.DIP;
-                    break;
+
                 case DIP:
                     if(gamepad1.left_bumper)
                     {
