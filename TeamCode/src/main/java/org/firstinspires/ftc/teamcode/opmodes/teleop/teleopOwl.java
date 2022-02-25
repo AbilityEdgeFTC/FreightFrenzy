@@ -59,7 +59,7 @@ public class teleopOwl extends LinearOpMode {
         DIP
     }
 
-    public static int elevatorLevel = 0;
+    public static int elevatorLevel = 3;
     public static int spinnerLevel = 0;
 
     public static ElevatorMovement elevatorMovement = ElevatorMovement.SPIN;
@@ -86,161 +86,10 @@ public class teleopOwl extends LinearOpMode {
             cGamepad1.update();
             hand.goToPositions();
 
-            /*if(gamepad1.a)
-            {
-                elevatorLevel = 0;
-            }
-            else if(gamepad1.x)
-            {
-                elevatorLevel = 2;
-            }
-            else if(gamepad1.b)
-            {
-                elevatorLevel = 1;
-            }
-
-            if(gamepad2.a)
-            {
-                SpinnerLevel = 0;
-            }
-            else if(gamepad2.x)
-            {
-                SpinnerLevel = 2;
-            }*/
-
-            if(gamepad2.left_stick_button)
-            {
-                spinner.setUsePID(false);
-                elevator.setUsePID(false);
-            }
-            else if(gamepad2.right_stick_button)
-            {
-                spinner.setUsePID(true);
-                elevator.setUsePID(true);
-            }
-
-            if ((gamepad1.left_trigger != 0 || gamepad2.left_trigger != 0) && canIntake)
-            {
-                intake.powerIntake(-gamepad1.left_trigger);
-                frontIntake = false;
-                backIntake = false;
-            }
-            else if ((gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0) && canIntake)
-            {
-                intake.powerIntake(gamepad1.right_trigger);
-                frontIntake = false;
-                backIntake = false;
-            }
-
-            if(frontIntake && canIntake)
-            {
-                intake.powerIntake(powerIntake);
-            }
-            else if(backIntake && canIntake)
-            {
-                intake.powerIntake(-powerIntake);
-            }
-            else if(gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0)
-            {
-                intake.stop();
-            }
-
-
-            switch (elevatorMovement) {
-                case SPIN:
-                    spinner.setTarget(ZERO_ANGLE);
-                    elevator.setTarget(ZERO_HEIGHT);
-                    dip.getFreight();
-                    hand.setHandPos(HandPos.INTAKE);
-                    canIntake = true;
-
-                    if (gamepad1.right_bumper)
-                    {
-                        //intake.spinIntake = false;
-                        frontIntake = false;
-                        backIntake = false;
-                        canIntake = false;
-                        dip.holdFreight();
-
-                        switch (spinnerLevel)
-                        {
-                            case 0:
-                                spinner.setTarget(MIN_ANGLE);
-                                break;
-                            case 2:
-                                spinner.setTarget(MAX_ANGLE);
-                                break;
-                            default:
-                                spinner.setUsePID(false);
-                                elevator.setUsePID(false);
-                        }
-
-                        switch (elevatorLevel)
-                        {
-                            case 0:
-                                elevatorMovement = ElevatorMovement.SHARED;
-                                break;
-                            case 1:
-                                elevatorMovement = ElevatorMovement.LEVEL1;
-                                break;
-                            case 2:
-                                elevatorMovement = ElevatorMovement.LEVEL2;
-                                break;
-                            case 3:
-                                elevatorMovement = ElevatorMovement.LEVEL3;
-                                break;
-                        }
-
-                    }
-                    break;
-                case LEVEL1:
-                    elevator.setTarget(HUB_LEVEL1);
-                    elevatorMovement = ElevatorMovement.DIP;
-                    hand.setHandPos(HandPos.ONE_HUB);
-                    break;
-                case LEVEL2:
-                    elevator.setTarget(HUB_LEVEL2);
-                    elevatorMovement = ElevatorMovement.DIP;
-                    hand.setHandPos(HandPos.TWO_HUB);
-                    break;
-                case LEVEL3:
-                    elevator.setTarget(HUB_LEVEL3);
-                    elevatorMovement = ElevatorMovement.DIP;
-                    hand.setHandPos(HandPos.THREE_HUB);
-                    break;
-                case SHARED:
-                    elevator.setTarget(SHARED_HUB);
-                    elevatorMovement = ElevatorMovement.DIP;
-                    hand.setHandPos(HandPos.SHARED_HUB);
-                    break;
-                case DIP:
-                    if(elevator.getTarget() == SHARED_HUB)
-                    {
-                        elevator.setTarget(ZERO_HEIGHT);
-                    }
-                    
-                    if(gamepad1.left_bumper)
-                    {
-                        dip.releaseFreight();
-                        hand.setHandPos(HandPos.INTAKE);
-                        //intake.spinIntake = true;
-                        canIntake = true;
-                        frontIntake = true;
-                        elevatorMovement = ElevatorMovement.SPIN;
-                    }
-                    break;
-                default:
-                    elevatorMovement = ElevatorMovement.SPIN;
-                    break;
-            }
-
-            if(gamepad1.left_bumper && elevatorMovement != ElevatorMovement.SPIN)
-            {
-                elevatorMovement = ElevatorMovement.SPIN;
-                //intake.spinIntake = true;
-                canIntake = true;
-                frontIntake = true;
-            }
+            pidToggles();
+            intakeToggles();
+            elevatorSwitch();
+            resetElevatorMidMoving();
 
             gamepad.update();
             elevator.update();
@@ -252,6 +101,167 @@ public class teleopOwl extends LinearOpMode {
 
         //intake.exitThread();
         //intakeFixingThread.interrupt();
+    }
+
+    void pidToggles()
+    {
+        if(gamepad2.left_stick_button)
+        {
+            spinner.setUsePID(false);
+            elevator.setUsePID(false);
+        }
+        else if(gamepad2.right_stick_button)
+        {
+            spinner.setUsePID(true);
+            elevator.setUsePID(true);
+        }
+    }
+
+    void intakeToggles()
+    {
+        if ((gamepad1.left_trigger != 0 || gamepad2.left_trigger != 0) && canIntake)
+        {
+            intake.powerIntake(-gamepad1.left_trigger);
+            frontIntake = false;
+            backIntake = false;
+        }
+        else if ((gamepad1.right_trigger != 0 || gamepad2.right_trigger != 0) && canIntake)
+        {
+            intake.powerIntake(gamepad1.right_trigger);
+            frontIntake = false;
+            backIntake = false;
+        }
+
+
+        powerIntake();
+    }
+
+    void powerIntake()
+    {
+        if(frontIntake && canIntake)
+        {
+            intake.powerIntake(powerIntake);
+        }
+        else if(backIntake && canIntake)
+        {
+            intake.powerIntake(-powerIntake);
+        }
+        else if(gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0)
+        {
+            intake.stop();
+        }
+    }
+
+    void elevatorSwitch()
+    {
+        switch (elevatorMovement) {
+            case SPIN:
+                resetElevator();
+
+                if (gamepad1.right_bumper)
+                {
+                    //intake.spinIntake = false;
+                    frontIntake = false;
+                    backIntake = false;
+                    canIntake = false;
+                    dip.holdFreight();
+
+                    switch (spinnerLevel)
+                    {
+                        case 0:
+                            spinner.setTarget(MIN_ANGLE);
+                            break;
+                        case 2:
+                            spinner.setTarget(MAX_ANGLE);
+                            break;
+                        default:
+                            spinner.setUsePID(false);
+                    }
+
+                    switch (elevatorLevel)
+                    {
+                        case 0:
+                            elevatorMovement = ElevatorMovement.SHARED;
+                            break;
+                        case 1:
+                            elevatorMovement = ElevatorMovement.LEVEL1;
+                            break;
+                        case 2:
+                            elevatorMovement = ElevatorMovement.LEVEL2;
+                            break;
+                        case 3:
+                            elevatorMovement = ElevatorMovement.LEVEL3;
+                            break;
+                        default:
+                            elevator.setUsePID(false);
+                    }
+
+                }
+                break;
+            case LEVEL1:
+                elevator.setTarget(HUB_LEVEL1);
+                elevatorMovement = ElevatorMovement.DIP;
+                hand.setHandPos(HandPos.ONE_HUB);
+                break;
+            case LEVEL2:
+                elevator.setTarget(HUB_LEVEL2);
+                elevatorMovement = ElevatorMovement.DIP;
+                hand.setHandPos(HandPos.TWO_HUB);
+                break;
+            case LEVEL3:
+                elevator.setTarget(HUB_LEVEL3);
+                elevatorMovement = ElevatorMovement.DIP;
+                hand.setHandPos(HandPos.THREE_HUB);
+                break;
+            case SHARED:
+                elevator.setTarget(SHARED_HUB);
+                elevatorMovement = ElevatorMovement.DIP;
+                hand.setHandPos(HandPos.SHARED_HUB);
+                break;
+            case DIP:
+                if(elevator.getTarget() == SHARED_HUB)
+                {
+                    elevator.setTarget(ZERO_HEIGHT);
+                }
+
+                if(gamepad1.left_bumper)
+                {
+                    dip.releaseFreight();
+                    if(elevator.getTarget() == ZERO_HEIGHT)
+                    {
+                        elevator.setTarget(SHARED_HUB);
+                    }
+                    hand.setHandPos(HandPos.INTAKE);
+                    //intake.spinIntake = true;
+                    canIntake = true;
+                    frontIntake = true;
+                    elevatorMovement = ElevatorMovement.SPIN;
+                }
+                break;
+            default:
+                elevatorMovement = ElevatorMovement.SPIN;
+                break;
+        }
+    }
+
+    void resetElevator()
+    {
+        spinner.setTarget(ZERO_ANGLE);
+        elevator.setTarget(ZERO_HEIGHT);
+        dip.getFreight();
+        hand.setHandPos(HandPos.INTAKE);
+        canIntake = true;
+    }
+
+    void resetElevatorMidMoving()
+    {
+        if(gamepad1.left_bumper && elevatorMovement != ElevatorMovement.SPIN)
+        {
+            elevatorMovement = ElevatorMovement.SPIN;
+            //intake.spinIntake = true;
+            canIntake = true;
+            frontIntake = true;
+        }
     }
 
 }

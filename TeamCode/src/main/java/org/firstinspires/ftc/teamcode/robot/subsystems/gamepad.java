@@ -4,13 +4,16 @@
  */
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
+import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
@@ -36,10 +39,12 @@ public class gamepad {
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDriveCancelable drivetrain;
     public static double startH = 0;
-    public static double Pcoefficient = 0;
-    public static double HEADING_THRESHOLD = 2;
     public static boolean holdAngle = false;
+    public static double angleToHold = 0;
     //public static String allianceColor;
+    BasicPID pid;
+    AngleController controller;
+    public static double kP = 0, kI = 0, kD = 0;
 
     /**
      * constructor for gamepad
@@ -64,7 +69,8 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        pid = new BasicPID(new PIDCoefficients(kP, kI, kD));
+        controller = new AngleController(pid);
         try
         {
             startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
@@ -109,6 +115,15 @@ public class gamepad {
             power = slowPower;
         } else {
             power = mainPower;
+        }
+
+        if(gamepad1.right_bumper)
+        {
+            holdAngle = true;
+        }
+        else if(gamepad1.left_bumper)
+        {
+            holdAngle = false;
         }
 
         if(holdAngle)
@@ -176,35 +191,12 @@ public class gamepad {
 
     public void holdAngle()
     {
-        double error;
+        twist = controller.calculate(Math.toRadians(angleToHold), drivetrain.getExternalHeading());
 
-        // determine turn power based on +/- error
-        error = getError(drivetrain.getExternalHeading());
-
-        if (!(Math.abs(error) <= HEADING_THRESHOLD)) {
-            twist = getSteer(error, Pcoefficient) * power;
-        }
-    }
-
-    public double getError(double targetAngle) {
-
-        double robotError;
-
-        // calculate error in -179 to +180 range  (
-        robotError = targetAngle - drivetrain.getExternalHeading();
-        while (robotError > Math.PI)  robotError -= 2*Math.PI;
-        while (robotError <= -Math.PI) robotError += 2*Math.PI;
-        return robotError;
-    }
-
-    /**
-     * returns desired steering force.  +/- 1 range.  +ve = steer left
-     * @param error   Error angle in robot relative degrees
-     * @param PCoeff  Proportional Gain Coefficient
-     * @return
-     */
-    public double getSteer(double error, double PCoeff) {
-        return Range.clip(error * PCoeff, -1, 1);
+        leftPower_f = Range.clip(drive + twist + strafe, -power, power);
+        leftPower_b = Range.clip(drive + twist - strafe, -power, power);
+        rightPower_f = Range.clip(drive - twist - strafe, -power, power);
+        rightPower_b = Range.clip(drive - twist + strafe, -power, power);
     }
 
     public double GetmFLPower()
