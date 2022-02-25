@@ -10,7 +10,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import org.firstinspires.ftc.teamcode.robot.subsystems.hand.HandPos;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
@@ -84,25 +84,8 @@ public class teleopOwl extends LinearOpMode {
 
         while (opModeIsActive()) {
             cGamepad1.update();
-            switch (elevatorLevel)
-            {
-                case 0:
-                    hand.updateElevatorLevel(Elevator.ElevatorLevel.ZERO);
-                    break;
-                case 1:
-                    hand.updateElevatorLevel(Elevator.ElevatorLevel.SHARED_HUB);
-                    break;
-                case 2:
-                    hand.updateElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL1);
-                    break;
-                case 3:
-                    hand.updateElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL2);
-                    break;
-                case 4:
-                    hand.updateElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL3);
-                    break;
+            hand.goToPositions();
 
-            }
             /*if(gamepad1.a)
             {
                 elevatorLevel = 0;
@@ -168,6 +151,7 @@ public class teleopOwl extends LinearOpMode {
                     spinner.setTarget(ZERO_ANGLE);
                     elevator.setTarget(ZERO_HEIGHT);
                     dip.getFreight();
+                    hand.setHandPos(HandPos.INTAKE);
                     canIntake = true;
 
                     if (gamepad1.right_bumper)
@@ -194,12 +178,15 @@ public class teleopOwl extends LinearOpMode {
                         switch (elevatorLevel)
                         {
                             case 0:
-                                elevatorMovement = ElevatorMovement.LEVEL1;
+                                elevatorMovement = ElevatorMovement.SHARED;
                                 break;
                             case 1:
-                                elevatorMovement = ElevatorMovement.LEVEL2;
+                                elevatorMovement = ElevatorMovement.LEVEL1;
                                 break;
                             case 2:
+                                elevatorMovement = ElevatorMovement.LEVEL2;
+                                break;
+                            case 3:
                                 elevatorMovement = ElevatorMovement.LEVEL3;
                                 break;
                         }
@@ -208,29 +195,34 @@ public class teleopOwl extends LinearOpMode {
                     break;
                 case LEVEL1:
                     elevator.setTarget(HUB_LEVEL1);
-                    hand.level1();
                     elevatorMovement = ElevatorMovement.DIP;
+                    hand.setHandPos(HandPos.ONE_HUB);
                     break;
                 case LEVEL2:
                     elevator.setTarget(HUB_LEVEL2);
-                    hand.level2();
                     elevatorMovement = ElevatorMovement.DIP;
+                    hand.setHandPos(HandPos.TWO_HUB);
                     break;
                 case LEVEL3:
                     elevator.setTarget(HUB_LEVEL3);
-                    hand.level2();
                     elevatorMovement = ElevatorMovement.DIP;
+                    hand.setHandPos(HandPos.THREE_HUB);
                     break;
                 case SHARED:
                     elevator.setTarget(SHARED_HUB);
-                    hand.level2();
                     elevatorMovement = ElevatorMovement.DIP;
+                    hand.setHandPos(HandPos.SHARED_HUB);
                     break;
-
                 case DIP:
+                    if(elevator.getTarget() == SHARED_HUB)
+                    {
+                        elevator.setTarget(ZERO_HEIGHT);
+                    }
+                    
                     if(gamepad1.left_bumper)
                     {
                         dip.releaseFreight();
+                        hand.setHandPos(HandPos.INTAKE);
                         //intake.spinIntake = true;
                         canIntake = true;
                         frontIntake = true;

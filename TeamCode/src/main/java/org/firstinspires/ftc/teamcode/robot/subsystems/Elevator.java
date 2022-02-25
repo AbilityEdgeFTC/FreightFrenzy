@@ -33,7 +33,6 @@ public class Elevator {
         HUB_LEVEL1,
         HUB_LEVEL2,
         HUB_LEVEL3
-
     }
 
     public static ElevatorLevel elevatorLevel = ElevatorLevel.ZERO;

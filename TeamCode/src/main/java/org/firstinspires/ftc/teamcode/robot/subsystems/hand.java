@@ -19,9 +19,16 @@ public class hand {
     public static double intakePos = 0.07;
     public static double level1Hub = 0.95, level2Hub = 0.85, level3Hub = .63, levelSharedHub = 0.7;
 
+    public enum HandPos
+    {
+        INTAKE,
+        SHARED_HUB,
+        ONE_HUB,
+        TWO_HUB,
+        THREE_HUB
+    }
 
-
-    public static Elevator.ElevatorLevel elevatorLevel = Elevator.elevatorLevel;
+    public HandPos handPos = HandPos.INTAKE;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
@@ -37,8 +44,29 @@ public class hand {
         this.telemetry = telemetry;
     }
 
+    public void goToPositions()
+    {
+        switch (handPos)
+        {
+            case INTAKE:
+                intake();
+                break;
+            case SHARED_HUB:
+            case ONE_HUB:
+                level1();
+                break;
+            case TWO_HUB:
+                level2();
+                break;
+            case THREE_HUB:
+                level3();
+                break;
+        }
+    }
+
     public void intake()
     {
+        handPos = HandPos.INTAKE;
         sL.setPosition(intakePos);
         sR.setPosition(intakePos);
     }
@@ -46,13 +74,13 @@ public class hand {
     // spin dip servo to intake positions, and holding servo to hold position.
     public void level1()
     {
-        switch (elevatorLevel)
+        switch (handPos)
         {
             case SHARED_HUB:
                 sL.setPosition(levelSharedHub);
                 sR.setPosition(levelSharedHub);
                 break;
-            case HUB_LEVEL1:
+            case ONE_HUB:
                 sL.setPosition(level1Hub);
                 sR.setPosition(level1Hub);
                 break;
@@ -61,27 +89,23 @@ public class hand {
 
     public void level2()
     {
+        handPos = HandPos.TWO_HUB;
         sL.setPosition(level2Hub);
         sR.setPosition(level2Hub);
     }
 
     public void level3()
     {
+        handPos = HandPos.THREE_HUB;
         sL.setPosition(level3Hub);
         sR.setPosition(level3Hub);
     }
-
 
 
     public void moveTo(double position)
     {
         sL.setPosition(position);
         sR.setPosition(position);
-    }
-
-    public void updateElevatorLevel(Elevator.ElevatorLevel elevatorLevel)
-    {
-        this.elevatorLevel = elevatorLevel;
     }
 
     // display position of servo's.
@@ -91,4 +115,11 @@ public class hand {
         telemetry.update();
     }
 
+    public HandPos getHandPos() {
+        return handPos;
+    }
+
+    public void setHandPos(HandPos handPos) {
+        this.handPos = handPos;
+    }
 }
