@@ -1,7 +1,14 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.FullStateFeedback;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedforward.BasicFeedforward;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedforward.FeedforwardController;
+import com.ThermalEquilibrium.homeostasis.Filters.Estimators.Estimator;
+import com.ThermalEquilibrium.homeostasis.Parameters.FeedforwardCoefficients;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
+import com.ThermalEquilibrium.homeostasis.Systems.PositionVelocitySystem;
+import com.ThermalEquilibrium.homeostasis.Utils.Vector;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -10,6 +17,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.checkerframework.checker.units.qual.A;
 import org.opencv.core.Mat;
+
+import java.util.Collections;
+import java.util.function.DoubleSupplier;
 
 
 /*
@@ -23,7 +33,6 @@ public class ElevatorSpinner {
     public static double ZERO_ANGLE = 0;
     public static double power = 0.2;
     public static boolean usePID = true;
-    public static boolean stopAndReset = true;
     BasicPID PID;
     AngleController controller;
     public static double kP = 2.7;
@@ -32,7 +41,42 @@ public class ElevatorSpinner {
     public static double target = 0;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
-    public DcMotor motor;
+    public DcMotorEx motor;
+    PositionVelocitySystem positionVelocitySystem;
+
+    DoubleSupplier positionSupplier = new DoubleSupplier() {
+        @Override
+        public double getAsDouble() {
+            return motor.getCurrentPosition();
+        }
+    };
+    Estimator positionEstimator = new Estimator(positionSupplier) {
+        @Override
+        public double update() {
+            return motor.getCurrentPosition();
+        }
+    };
+
+    DoubleSupplier velocitySupplier = new DoubleSupplier() {
+        @Override
+        public double getAsDouble() {
+            return motor.getVelocity();
+        }
+    };
+    Estimator velocityEstimator = new Estimator(velocitySupplier) {
+        @Override
+        public double update() {
+            return motor.getVelocity();
+        }
+    };
+
+    double Kv = 1.1;
+    double Ka = 0.2;
+    double Ks = 0.001;
+    FeedforwardCoefficients coefficientsKVA = new FeedforwardCoefficients(Kv,Ka,Ks);
+    BasicFeedforward feedforwardController = new BasicFeedforward(coefficientsKVA);
+    Vector K = new Vector(new double[] {1.1,0.3});
+    FullStateFeedback controllerPOS = new FullStateFeedback(K);
 
     public static int spinnerLevel = 0;
     public enum SpinnerState
@@ -53,11 +97,10 @@ public class ElevatorSpinner {
         controller = new AngleController(PID);
         motor = hardwareMap.get(DcMotorEx.class, "mS");
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        positionVelocitySystem = new PositionVelocitySystem(positionEstimator, velocityEstimator,
+                feedforwardController,
+             controllerPOS);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        if(stopAndReset)
-        {
-            this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
     }
