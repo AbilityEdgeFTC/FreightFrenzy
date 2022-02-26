@@ -10,16 +10,17 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.robot.subsystems.hand.HandPos;
+
 import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner;
+import org.firstinspires.ftc.teamcode.robot.subsystems.hand.HandPos;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
+
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL1;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL2;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL3;
@@ -29,7 +30,6 @@ import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.elevatorL
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MAX_ANGLE;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MIN_ANGLE;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.ZERO_ANGLE;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.usePID;
 
 @Config
 @TeleOp(group = "main")
