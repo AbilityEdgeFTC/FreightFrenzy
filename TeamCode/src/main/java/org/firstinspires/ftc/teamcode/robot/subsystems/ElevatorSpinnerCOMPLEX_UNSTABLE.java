@@ -21,8 +21,8 @@ import java.util.function.DoubleSupplier;
 @Config
 public class ElevatorSpinnerCOMPLEX_UNSTABLE {
 
-    public static double MAX_VEL = 10;
-    public static double MAX_ACCEL = 10;
+    public static double MAX_VEL = 5;
+    public static double MAX_ACCEL = 2;
     public static double MAX_ANGLE = 60;
     public static double MIN_ANGLE = -60;
     public static double ZERO_ANGLE = 0;
@@ -31,7 +31,7 @@ public class ElevatorSpinnerCOMPLEX_UNSTABLE {
     public static double kPPOS = 2.7;
     public static double kIPOS = 0;
     public static double kDPOS = 0;
-    public static double kPVEL = 1;
+    public static double kPVEL = 0;
     public static double kIVEL = 0;
     public static double kDVEL = 0;
     public static double kV = 0;
@@ -42,9 +42,9 @@ public class ElevatorSpinnerCOMPLEX_UNSTABLE {
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     DcMotorEx motor;
 
-    public static double Q = 0.3;
-    public static double R = 3;
-    public static int N = 3;
+    public static double Q = 0;
+    public static double R = 0;
+    public static int N = 0;
     PIDCoefficients posCoefficients = new PIDCoefficients(kPPOS,kIPOS,kDPOS);
     PIDCoefficients veloCoefficients = new PIDCoefficients(kPVEL,kIVEL,kDVEL);
     BasicPID posControl = new BasicPID(posCoefficients);

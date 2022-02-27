@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.roadrunner.drive.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
  */
 @TeleOp(group = "drive")
 @Config
-public class LocalizationTest extends LinearOpMode {
+public class AlwaysOnePos extends LinearOpMode {
 
     public static double startPoseX = 0;
     public static double startPoseY = 0;
@@ -60,14 +61,14 @@ public class LocalizationTest extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setPoseEstimate(startPose);
 
-        gamepad gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry);
-
         waitForStart();
 
         while (!isStopRequested()) {
-            gamepad.update();
-
-            drive.update();
+            drive.followTrajectory(
+                    drive.trajectoryBuilder(drive.getPoseEstimate())
+                            .splineToSplineHeading(new Pose2d(0,0,0), 0)
+                            .build()
+            );
 
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());

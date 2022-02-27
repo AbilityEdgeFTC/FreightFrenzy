@@ -112,5 +112,11 @@ public class Elevator {
     }
 
 
+    public static ElevatorLevel getElevatorLevel() {
+        return elevatorLevel;
+    }
 
+    public static void setElevatorLevel(ElevatorLevel elevatorLevel) {
+        Elevator.elevatorLevel = elevatorLevel;
+    }
 }

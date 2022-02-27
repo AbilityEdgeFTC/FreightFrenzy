@@ -35,7 +35,7 @@ public class gamepad {
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
     public static double mainPower = .85, slowPower = .6, multiplier = .9;
-    public static boolean slowMove = false, isCentricDrive = false;
+    public static boolean slowMove = false, isCentricDrive = true;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDriveCancelable drivetrain;
     public static double startH = 0;
@@ -44,7 +44,8 @@ public class gamepad {
     //public static String allianceColor;
     BasicPID pid;
     AngleController controller;
-    public static double kP = 0, kI = 0, kD = 0;
+    public static double kP = 0.15, kI = 0, kD = 0;
+    public static double correction = 5;
 
     /**
      * constructor for gamepad
@@ -126,12 +127,6 @@ public class gamepad {
             holdAngle = false;
         }
 
-        if(holdAngle)
-        {
-            getGamepadDirections(false);
-            holdAngle();
-        }
-
         if(cGamepad1.XOnce())
         {
             isCentricDrive = !isCentricDrive;
@@ -144,6 +139,12 @@ public class gamepad {
         else
         {
             regularDrive();
+        }
+
+        if(holdAngle)
+        {
+            getGamepadDirections(false);
+            holdAngle();
         }
 
         mFL.setPower(leftPower_f);
@@ -191,7 +192,14 @@ public class gamepad {
 
     public void holdAngle()
     {
-        twist = controller.calculate(Math.toRadians(angleToHold), drivetrain.getExternalHeading());
+        if(Math.abs(angleToHold - drivetrain.getExternalHeading()) <= Math.toRadians(correction) && Math.abs(angleToHold - drivetrain.getExternalHeading()) >= Math.toRadians(-correction))
+        {
+            twist = 0;
+        }
+        else
+        {
+            twist = controller.calculate(Math.toRadians(angleToHold), drivetrain.getExternalHeading());
+        }
 
         leftPower_f = Range.clip(drive + twist + strafe, -power, power);
         leftPower_b = Range.clip(drive + twist - strafe, -power, power);

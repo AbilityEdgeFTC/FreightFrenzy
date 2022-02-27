@@ -35,12 +35,14 @@ public class hand {
     public hand(HardwareMap hardwareMap) {
         this.sL = hardwareMap.get(Servo.class, "sLeft");
         this.sR = hardwareMap.get(Servo.class, "sRight");
+        this.sL.setDirection(Servo.Direction.REVERSE);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
     public hand(HardwareMap hardwareMap, Telemetry telemetry) {
         this.sL = hardwareMap.get(Servo.class, "sLeft");
         this.sR = hardwareMap.get(Servo.class, "sRight");
+        this.sL.setDirection(Servo.Direction.REVERSE);
         this.telemetry = telemetry;
     }
 
@@ -52,6 +54,8 @@ public class hand {
                 intake();
                 break;
             case SHARED_HUB:
+                shared();
+                break;
             case ONE_HUB:
                 level1();
                 break;
@@ -71,20 +75,17 @@ public class hand {
         sR.setPosition(intakePos);
     }
 
+    public void shared()
+    {
+        sL.setPosition(levelSharedHub);
+        sR.setPosition(levelSharedHub);
+    }
+
     // spin dip servo to intake positions, and holding servo to hold position.
     public void level1()
     {
-        switch (handPos)
-        {
-            case SHARED_HUB:
-                sL.setPosition(levelSharedHub);
-                sR.setPosition(levelSharedHub);
-                break;
-            case ONE_HUB:
-                sL.setPosition(level1Hub);
-                sR.setPosition(level1Hub);
-                break;
-        }
+        sL.setPosition(level1Hub);
+        sR.setPosition(level1Hub);
     }
 
     public void level2()

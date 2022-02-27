@@ -23,10 +23,9 @@ public class ElevatorSpinner {
     public static double ZERO_ANGLE = 0;
     public static double power = 0.2;
     public static boolean usePID = true;
-    public static boolean stopAndReset = true;
     BasicPID PID;
     AngleController controller;
-    public static double kP = 2.7;
+    public static double kP = 1.2;
     public static double kI = 0;
     public static double kD = 0;
     double target = 0;
@@ -54,10 +53,6 @@ public class ElevatorSpinner {
         motor = hardwareMap.get(DcMotorEx.class, "mS");
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        if(stopAndReset)
-        {
-            this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
     }
@@ -118,6 +113,11 @@ public class ElevatorSpinner {
         this.usePID = usePID;
     }
 
+    public static SpinnerState getSpinnerState() {
+        return spinnerState;
+    }
 
-
+    public static void setSpinnerState(SpinnerState spinnerState) {
+        ElevatorSpinner.spinnerState = spinnerState;
+    }
 }
