@@ -36,6 +36,7 @@ public class LocalizationTest extends LinearOpMode {
 
     MecanumLocalizer drive;
     Pose2d poseEstimate;
+    T265Localizer t265Localizer;
 
     public static RobotLocalizer localizer = RobotLocalizer.Mecanum;
 
@@ -48,7 +49,9 @@ public class LocalizationTest extends LinearOpMode {
             case Mecanum:
                 break;
             case Camera:
-                drive.setLocalizer(new T265Localizer(hardwareMap));
+                t265Localizer = new T265Localizer(hardwareMap);
+                t265Localizer.start(hardwareMap);
+                drive.setLocalizer(t265Localizer);
                 break;
             case Both:
                 drive.setLocalizer(new DoubleLocalizer(hardwareMap));
@@ -68,11 +71,17 @@ public class LocalizationTest extends LinearOpMode {
             gamepad.update();
 
             drive.update();
+            poseEstimate = drive.getPoseEstimate();
 
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
+        }
+
+        if(localizer != RobotLocalizer.Mecanum)
+        {
+            t265Localizer.stop();
         }
     }
 }

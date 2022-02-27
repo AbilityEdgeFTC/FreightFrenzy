@@ -12,22 +12,23 @@ public class MenuOpModeFinal extends LinearOpMode
 {
     //TODO: ADD TASKS WITH OPTIONS
     static taskObject autonomus =
-            new taskObject(new String[]{"YES","NO"},"Run Autonomous");
+            new taskObject(new String[]{"YES","NO"},"RunAutonomous");
     static taskObject side =
-            new taskObject(new String[]{"LEFT","RIGHT"},"Alliance Side");
+            new taskObject(new String[]{"LEFT","RIGHT"},"AllianceSide");
     static taskObject color =
-            new taskObject(new String[]{"RED", "BLUE"},"Alliance Color");
+            new taskObject(new String[]{"RED", "BLUE"},"AllianceColor");
     static taskObject vision =
-            new taskObject(new String[]{"DUCK","TSE","NINE"},"Vision Detection");
+            new taskObject(new String[]{"DUCK","TSE","NONE"},"VisionDetection");
     static taskObject delay =
-            new taskObject(new String[]{"0","2","4","6","8","10","12","14","16","18","20","22","24","26"},"Start Delay");
+            new taskObject(new String[]{"0","2","4","6","8","10","12","14","16","18","20","22","24","26"},"StartDelay");
     static taskObject numOfCycles =
-            new taskObject(new String[]{"0","1","2","3","4","5"},"Num Of Cycles");
+            new taskObject(new String[]{"0","1","2","3","4","5"},"NumOfCycles");
     static taskObject park =
-            new taskObject(new String[]{"Warehouse Left","Warehouse Right","Warehouse Half","Alliance Shipping Unit"},"Park In");
-
+            new taskObject(new String[]{"Warehouse Left","Warehouse Right","Warehouse Half","Alliance Shipping Unit"},"ParkIn");
+    static taskObject carousel =
+            new taskObject(new String[]{"YES","NO"},"Carousel");
     //all tasks taskObject array:
-    public static taskObject[] tasks = {autonomus,side,color,vision,delay,numOfCycles,park};
+    public static taskObject[] tasks = {autonomus,side,color,vision,delay,numOfCycles,park,carousel};
     //final list string array
     public static String[] finalOptions = {};
     // TO TRY LATER: public static String[] finalTrajectory = {};

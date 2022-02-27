@@ -76,6 +76,7 @@ public class MecanumLocalizer extends MecanumDrive {
 
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
+    DcMotor motor;
 
     public MecanumLocalizer(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -123,6 +124,10 @@ public class MecanumLocalizer extends MecanumDrive {
         leftRear = hardwareMap.get(DcMotorEx.class, "mBL");
         rightRear = hardwareMap.get(DcMotorEx.class, "mBR");
         rightFront = hardwareMap.get(DcMotorEx.class, "mFR");
+
+
+        motor = hardwareMap.get(DcMotorEx.class, "mS");
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 

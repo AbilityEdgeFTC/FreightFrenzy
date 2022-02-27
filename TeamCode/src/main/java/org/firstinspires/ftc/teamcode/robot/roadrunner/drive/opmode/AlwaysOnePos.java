@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.roadrunner.drive.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.path.EmptyPathSegmentException;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -36,9 +37,11 @@ public class AlwaysOnePos extends LinearOpMode {
     }
 
     MecanumLocalizer drive;
-    Pose2d poseEstimate;
+    T265Localizer t265Localizer;
 
-    public static RobotLocalizer localizer = RobotLocalizer.Mecanum;
+    Pose2d poseEstimate;
+    Trajectory trajectory;
+    public static RobotLocalizer localizer = RobotLocalizer.Camera;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -49,7 +52,9 @@ public class AlwaysOnePos extends LinearOpMode {
             case Mecanum:
                 break;
             case Camera:
-                drive.setLocalizer(new T265Localizer(hardwareMap));
+                t265Localizer = new T265Localizer(hardwareMap);
+                t265Localizer.start(hardwareMap);
+                drive.setLocalizer(t265Localizer);
                 break;
             case Both:
                 drive.setLocalizer(new DoubleLocalizer(hardwareMap));
@@ -64,16 +69,37 @@ public class AlwaysOnePos extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            drive.followTrajectory(
-                    drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .splineToSplineHeading(new Pose2d(0,0,0), 0)
-                            .build()
-            );
+
+            try {
+                trajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .lineTo(new Vector2d(0, 0))
+                        .build();
+
+            }catch (EmptyPathSegmentException e)
+            {
+
+            }
+
+            if(gamepad1.a)
+            {
+                try {
+                    drive.followTrajectory(trajectory);
+                }catch (NullPointerException e)
+                {
+
+                }
+            }
+            poseEstimate = drive.getPoseEstimate();
 
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
+        }
+
+        if(localizer != RobotLocalizer.Mecanum)
+        {
+            t265Localizer.stop();
         }
     }
 }

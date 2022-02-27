@@ -33,21 +33,22 @@ public class T265Localizer implements Localizer {
     /**
      * see what are the positive negative x,y cordinates of the bot with the camera when moving, and set the offset by them
      */
-    public static double LATERAL_DISTANCE = 0; // in; offset of the camera from the left or right of the middle of the teleop.
-    public static double FORWARD_OFFSET = 0; // in; offset of the camera from the front or back of the middle of the teleop.
-    public static double DIRECTION = 0;
+    public static double LATERAL_DISTANCE = -5.71; // in; offset of the camera from the left or right of the middle of the teleop.
+    public static double FORWARD_OFFSET = 2.3062992126; // in; offset of the camera from the front or back of the middle of the teleop.
+    public static double DIRECTION = -90;
 
     private static T265Camera slamra = null;
 
     public T265Localizer(HardwareMap hardwareMap){
         super();
 
-        Translation2d translation = new Translation2d(LATERAL_DISTANCE,FORWARD_OFFSET);
+        Translation2d translation = new Translation2d(LATERAL_DISTANCE, FORWARD_OFFSET);
         Transform2d offset = new Transform2d(PoseUtil.inchesToMeters(translation), Rotation2d.fromDegrees(DIRECTION));
 
         if (slamra == null) {
             slamra = new T265Camera(offset, 0.1, hardwareMap.appContext);
         }
+
 
         setPoseEstimate(new Pose2d(0,0,0));
     }
@@ -57,15 +58,17 @@ public class T265Localizer implements Localizer {
     public Pose2d getPoseEstimate() {
         T265Camera.CameraUpdate up = slamra.getLastReceivedCameraUpdate();
 
+        //Pose2d pose = new Pose2d(up.pose.getX(), up.pose.getY(), up.pose.getHeading());
+
         // convert from meter, to inches, and from degrees to radians
-        Pose2d pose = new Pose2d(up.pose.getX() * 39.37, up.pose.getY() * 39.37, up.pose.getHeading() * 180/Math.PI);
+        Pose2d pose = new Pose2d(up.pose.getX() * 39.37, up.pose.getY() * 39.37, up.pose.getHeading());
 
         return pose;
     }
 
     @Override
     public void setPoseEstimate(@NotNull Pose2d pose2d) {
-        slamra.setPose(new com.arcrobotics.ftclib.geometry.Pose2d(pose2d.getX(), pose2d.getY(), Rotation2d.fromDegrees(pose2d.getHeading())));
+        slamra.setPose(new com.arcrobotics.ftclib.geometry.Pose2d(pose2d.getX(), pose2d.getY(), new Rotation2d(pose2d.getHeading())));
     }
 
     @Nullable

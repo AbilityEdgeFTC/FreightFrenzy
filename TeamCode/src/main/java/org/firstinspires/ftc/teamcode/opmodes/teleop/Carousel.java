@@ -42,6 +42,9 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 public class Carousel extends LinearOpMode {
 
     public static boolean reverse = true;
+    public static Object generateTrajectory;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
