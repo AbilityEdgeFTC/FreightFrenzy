@@ -78,7 +78,7 @@ public class Elevator {
         }
         else
         {
-            motor.setPower(gamepad.left_stick_y);
+            motor.setPower(-gamepad.left_stick_y);
 
         }
     }
@@ -101,6 +101,11 @@ public class Elevator {
         return target;
     }
 
+    public static boolean getUsePID()
+    {
+        return usePID;
+    }
+
     public void setTarget(double newTarget)
     {
         target = newTarget;
@@ -119,4 +124,6 @@ public class Elevator {
     public static void setElevatorLevel(ElevatorLevel elevatorLevel) {
         Elevator.elevatorLevel = elevatorLevel;
     }
+
+
 }
