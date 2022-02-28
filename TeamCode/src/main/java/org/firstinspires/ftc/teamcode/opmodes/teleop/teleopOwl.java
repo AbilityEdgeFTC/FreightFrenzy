@@ -10,6 +10,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner;
@@ -46,10 +48,19 @@ public class teleopOwl extends LinearOpMode {
     intake intake;
     hand hand;
     dip dip;
+    DcMotor mFL, mBL, mFR, mBR;
+
+    double leftPower_f;
+    double leftPower_b;
+    double rightPower_f;
+    double rightPower_b;
+
+    public double power = .7;
     private boolean frontIntake = false, backIntake = false;
     cGamepad cGamepad1;
     public static double powerIntake = 1;
     boolean canIntake = true;
+
 
     enum ElevatorMovement
     {
@@ -80,6 +91,15 @@ public class teleopOwl extends LinearOpMode {
         dip = new dip(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
 
+
+
+        mFL = hardwareMap.get(DcMotor.class, "mFL");
+        mBL = hardwareMap.get(DcMotor.class, "mBL");
+        mBR = hardwareMap.get(DcMotor.class, "mBR");
+        mFR = hardwareMap.get(DcMotor.class, "mFR");
+
+        mFL.setDirection(DcMotor.Direction.REVERSE);
+        mBL.setDirection(DcMotor.Direction.REVERSE);
         // wait till after init
         waitForStart();
 
@@ -87,17 +107,35 @@ public class teleopOwl extends LinearOpMode {
 
         while (opModeIsActive()) {
             cGamepad1.update();
+            double drive = -gamepad1.left_stick_y;
+            double strafe = gamepad1.left_stick_x;
+            double twist = gamepad1.right_stick_x * 0.7;
 
-            pidToggles();
-            intakeToggles();
-            elevatorSwitch();
-            resetElevatorMidMoving();
+            leftPower_f = Range.clip(drive + twist + strafe, -power, power);
+            leftPower_b = Range.clip(drive + twist - strafe, -power, power);
+            rightPower_f = Range.clip(drive - twist - strafe, -power, power);
+            rightPower_b = Range.clip(drive - twist + strafe, -power, power);
+
 
             gamepad.update();
             elevator.update();
             spinner.update();
             telemetry.update();
+
+            /**Gamepad 1:**/
+
+            intakeToggles();
+            elevatorSwitch();
+            resetElevatorMidMoving();
+
+            mFL.setPower(leftPower_f);
+            mBL.setPower(leftPower_b);
+            mFR.setPower(rightPower_f);
+            mBR.setPower(rightPower_b);
+
+            /**Gamepad 2:**/
         }
+
 
         gamepad.saveIMUHeading();
 
@@ -184,7 +222,7 @@ public class teleopOwl extends LinearOpMode {
 //                        default:
 //                            spinner.setUsePID(false);
 //                    }
-
+//
 //                    switch (elevatorLevel)
 //                    {
 //                        case 0:
@@ -273,6 +311,7 @@ public class teleopOwl extends LinearOpMode {
             canIntake = true;
             frontIntake = true;
         }
+
     }
 
 }

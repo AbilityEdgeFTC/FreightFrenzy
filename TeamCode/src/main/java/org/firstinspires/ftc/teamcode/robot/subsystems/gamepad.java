@@ -4,8 +4,8 @@
  */
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
-import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
+//import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
+//import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -13,7 +13,7 @@ import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
+//import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
@@ -42,8 +42,8 @@ public class gamepad {
     public static boolean holdAngle = false;
     public static double angleToHold = 0;
     //public static String allianceColor;
-    BasicPID pid;
-    AngleController controller;
+    //BasicPID pid;
+  //  AngleController controller;
     public static double kP = 0.15, kI = 0, kD = 0;
     public static double correction = 5;
 
@@ -70,8 +70,8 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        pid = new BasicPID(new PIDCoefficients(kP, kI, kD));
-        controller = new AngleController(pid);
+//        pid = new BasicPID(new PIDCoefficients(kP, kI, kD));
+//        controller = new AngleController(pid);
         try
         {
             startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
@@ -198,7 +198,7 @@ public class gamepad {
         }
         else
         {
-            twist = controller.calculate(Math.toRadians(angleToHold), drivetrain.getExternalHeading());
+ //           twist = controller.calculate(Math.toRadians(angleToHold), drivetrain.getExternalHeading());
         }
 
         leftPower_f = Range.clip(drive + twist + strafe, -power, power);
