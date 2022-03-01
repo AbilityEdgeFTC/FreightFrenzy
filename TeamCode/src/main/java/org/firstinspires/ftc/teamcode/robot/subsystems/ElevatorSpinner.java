@@ -20,8 +20,8 @@ import org.opencv.core.Mat;
 @Config
 public class ElevatorSpinner {
 
-    public static double MAX_ANGLE = 60;
-    public static double MIN_ANGLE = -60;
+    public static double RIGHT_ANGLE = 60;
+    public static double LEFT_ANGLE = -60;
     public static double ZERO_ANGLE = 0;
     public static double power = 0.2;
     public static boolean usePID = true;
@@ -75,10 +75,10 @@ public class ElevatorSpinner {
                     target = Math.toRadians(ZERO_ANGLE);
                     break;
                 case LEFT:
-                    target = Math.toRadians(MIN_ANGLE);
+                    target = Math.toRadians(LEFT_ANGLE);
                     break;
                 case RIGHT:
-                    target = Math.toRadians(MAX_ANGLE);
+                    target = Math.toRadians(RIGHT_ANGLE);
                     break;
             }
 

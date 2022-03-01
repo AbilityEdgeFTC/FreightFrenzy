@@ -15,8 +15,6 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerCOMPLEX_UNSTABLE;
-import org.firstinspires.ftc.teamcode.robot.subsystems.hand.HandPos;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
@@ -24,15 +22,8 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL1;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL2;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.HUB_LEVEL3;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.SHARED_HUB;
 import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.ZERO_HEIGHT;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.Elevator.elevatorLevel;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MAX_ANGLE;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.MIN_ANGLE;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner.ZERO_ANGLE;
 
 @Config
 @TeleOp(group = "main")
