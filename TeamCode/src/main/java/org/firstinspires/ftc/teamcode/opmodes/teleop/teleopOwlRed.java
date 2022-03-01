@@ -205,18 +205,6 @@ public class teleopOwlRed extends LinearOpMode {
                     hand.intake();
                     dip.holdFreight();
 
-//                    switch (spinnerLevel)
-//                    {
-//                        case 0:
-//                            spinner.setTarget(MIN_ANGLE);
-//                            break;
-//                        case 2:
-//                            spinner.setTarget(MAX_ANGLE);
-//                            break;
-//                        default:
-//                            spinner.setUsePID(false);
-//                    }
-//
                     switch (elevatorLevel)
                     {
                         case 0:

@@ -1,75 +1,31 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedforward.BasicFeedforward;
-import com.ThermalEquilibrium.homeostasis.Filters.Estimators.KalmanEstimator;
-import com.ThermalEquilibrium.homeostasis.Parameters.FeedforwardCoefficients;
-import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
-import com.ThermalEquilibrium.homeostasis.Systems.PositionVelocitySystem;
+
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import java.util.function.DoubleSupplier;
-
-
-/*
- * Hardware class for an elevator or linear lift driven by a pulley system.
- */
 @Config
 public class ElevatorSpinnerCOMPLEX_UNSTABLE {
 
-    public static double MAX_VEL = 5;
-    public static double MAX_ACCEL = 2;
     public static double MAX_ANGLE = 60;
     public static double MIN_ANGLE = -60;
     public static double ZERO_ANGLE = 0;
+    public static double power = 0.2;
     public static boolean usePID = true;
-    AngleController controller;
-    public static double kPPOS = 2.7;
-    public static double kIPOS = 0;
-    public static double kDPOS = 0;
-    public static double kPVEL = 0;
-    public static double kIVEL = 0;
-    public static double kDVEL = 0;
-    public static double kV = 0;
-    public static double kA = 0;
-    public static double kS = 0;
     double target = 0;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     DcMotorEx motor;
+    public static PIDCoefficients coefficients = new PIDCoefficients(2.5,0,0);
+    public static PIDCoefficients coefficientsVAS = new PIDCoefficients(0,0,0);
+    PIDFController controller = new PIDFController(coefficients,coefficientsVAS.kP, coefficientsVAS.kI, coefficientsVAS.kD);
+    public static double MAX_ACCEL = 2.5;
+    public static double MAX_VEL = 5;
 
-    public static double Q = 0;
-    public static double R = 0;
-    public static int N = 0;
-    PIDCoefficients posCoefficients = new PIDCoefficients(kPPOS,kIPOS,kDPOS);
-    PIDCoefficients veloCoefficients = new PIDCoefficients(kPVEL,kIVEL,kDVEL);
-    BasicPID posControl = new BasicPID(posCoefficients);
-    BasicPID veloControl = new BasicPID(veloCoefficients);
-
-    DoubleSupplier motorPosition = new DoubleSupplier() {
-        @Override
-        public double getAsDouble() {
-            return motor.getCurrentPosition();
-        }
-    };
-    DoubleSupplier motorVelocity = new DoubleSupplier() {
-        @Override
-        public double getAsDouble() {
-            return motor.getVelocity();
-        }
-    };
-
-    KalmanEstimator positionFilter = new KalmanEstimator(motorPosition,Q,R,N);
-    KalmanEstimator velocityFilter = new KalmanEstimator(motorVelocity,Q,R,N);
-
-    FeedforwardCoefficients coefficientsFF = new FeedforwardCoefficients(kV,kA,kS);
-    BasicFeedforward feedforward = new BasicFeedforward(coefficientsFF);
-
-    public static int spinnerLevel = 0;
     public enum SpinnerState
     {
         LEFT,
@@ -81,17 +37,13 @@ public class ElevatorSpinnerCOMPLEX_UNSTABLE {
 
     Gamepad gamepad;
     cGamepad cGamepad;
-    PositionVelocitySystem system;
 
     public ElevatorSpinnerCOMPLEX_UNSTABLE(HardwareMap hardwareMap, Gamepad gamepad)
     {
-        controller = new AngleController(posControl);
-        motor = hardwareMap.get(DcMotorEx.class, "mS");
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        system =
-                new PositionVelocitySystem(positionFilter,
-                        velocityFilter,feedforward,controller,veloControl);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motor = hardwareMap.get(DcMotorEx.class, "mS");
+        this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
     }
@@ -115,11 +67,16 @@ public class ElevatorSpinnerCOMPLEX_UNSTABLE {
                     break;
             }
 
-            motor.setPower(system.update(radiansToEncoderTicks(target), MAX_VEL, MAX_ACCEL));
+            controller.setTargetPosition(radiansToEncoderTicks(target));
+            controller.setTargetVelocity(MAX_VEL);
+            controller.setTargetAcceleration(MAX_ACCEL);
+
+            motor.setPower(controller.update(radiansToEncoderTicks(Angle.normDelta(encoderTicksToRadians(motor.getCurrentPosition()))), motor.getVelocity()));
         }
         else
         {
             motor.setPower(gamepad.right_stick_x);
+
         }
 
     }
@@ -152,6 +109,11 @@ public class ElevatorSpinnerCOMPLEX_UNSTABLE {
         this.usePID = usePID;
     }
 
+    public static SpinnerState getSpinnerState() {
+        return spinnerState;
+    }
 
-
+    public static void setSpinnerState(SpinnerState spinnerState) {
+        ElevatorSpinnerCOMPLEX_UNSTABLE.spinnerState = spinnerState;
+    }
 }

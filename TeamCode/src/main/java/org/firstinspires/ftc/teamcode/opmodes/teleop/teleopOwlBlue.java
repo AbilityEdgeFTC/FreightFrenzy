@@ -216,18 +216,6 @@ public class teleopOwlBlue extends LinearOpMode {
                     hand.intake();
                     dip.holdFreight();
 
-//                    switch (spinnerLevel)
-//                    {
-//                        case 0:
-//                            spinner.setTarget(MIN_ANGLE);
-//                            break;
-//                        case 2:
-//                            spinner.setTarget(MAX_ANGLE);
-//                            break;
-//                        default:
-//                            spinner.setUsePID(false);
-//                    }
-//
                     switch (elevatorLevel)
                     {
                         case 0:
@@ -244,6 +232,7 @@ public class teleopOwlBlue extends LinearOpMode {
                             break;
                         default:
                             elevator.setUsePID(false);
+                            break;
                     }
 
 

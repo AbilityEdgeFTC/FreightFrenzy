@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.FullStateFeedback;
+import com.ThermalEquilibrium.homeostasis.Utils.Vector;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -20,12 +23,18 @@ public class Elevator {
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
     public static PIDCoefficients coefficients = new PIDCoefficients(.05,0,0);
-    BasicPID controller;
     double target;
     public static double TICKS_PER_REV = 384.5;
     public static double SPOOL_RADIUS = 0.75; // in
     public static double power = 0.5;
     public static boolean usePID = true;
+    BasicPID controller = new BasicPID(new com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients(coefficients.kP, coefficients.kI, coefficients.kD));
+
+//    public static double kP = 2.5;
+//    public static double kV = 0;
+//    Vector K = new Vector(new double[] {kP,kV});
+//    FullStateFeedback controller = new FullStateFeedback(K);
+//    public static double MAX_VEL = 20;
 
     public enum ElevatorLevel {
         ZERO,
@@ -43,10 +52,10 @@ public class Elevator {
     public Elevator(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
+        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
-        controller = new BasicPID(new com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients(coefficients.kP, coefficients.kI, coefficients.kD));
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
     }
@@ -72,8 +81,14 @@ public class Elevator {
                 case HUB_LEVEL3:
                     target = HUB_LEVEL3;
                     break;
-
             }
+
+//            Vector state = new Vector(new double[]{motor.getCurrentPosition(), motor.getVelocity()});
+//            // target position and velocity
+//            // protip - these can be generated with motion profiles!
+//            Vector reference = new Vector(new double [] {inchesToEncoderTicks(target), MAX_VEL});
+//            motor.setPower(controller.calculate(reference,state));
+
             motor.setPower(controller.calculate(inchesToEncoderTicks(target), motor.getCurrentPosition()));
         }
         else
