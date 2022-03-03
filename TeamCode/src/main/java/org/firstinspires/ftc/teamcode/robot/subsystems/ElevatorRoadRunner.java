@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -12,17 +12,22 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Hardware class for an elevator or linear lift driven by a pulley system.
  */
 @Config
-public class ElevatorRegular {
+public class ElevatorRoadRunner {
 
     public static double HUB_LEVEL1 = 22,HUB_LEVEL2 = 19,HUB_LEVEL3 = 17;
     public static double SHARED_HUB = 4.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
+    public static PIDCoefficients coefficients = new PIDCoefficients(.03,0,0);
     double target;
     public static double TICKS_PER_REV = 384.5;
     public static double SPOOL_RADIUS = 0.75; // in
-    public static double power = 1;
+    public static double power = 0.5;
     public static boolean usePID = true;
+    public static double kV = 0;
+    public static double kA = 0;
+    public static double kStatic = 0;
+    PIDFController controller = new PIDFController(coefficients, kV,kA,kStatic);
 
     public enum ElevatorLevel {
         ZERO,
@@ -37,12 +42,12 @@ public class ElevatorRegular {
     Gamepad gamepad;
     cGamepad cGamepad;
 
-    public ElevatorRegular(HardwareMap hardwareMap, Gamepad gamepad)
+    public ElevatorRoadRunner(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
         this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
@@ -70,9 +75,8 @@ public class ElevatorRegular {
                     break;
             }
 
-            motor.setTargetPosition(inchesToEncoderTicks(target));
-            motor.setPower(power);
-            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            controller.setTargetPosition(inchesToEncoderTicks(target));
+            motor.setPower(controller.update(motor.getCurrentPosition(), motor.getVelocity()));
         }
         else
         {
@@ -120,7 +124,7 @@ public class ElevatorRegular {
     }
 
     public static void setElevatorLevel(ElevatorLevel elevatorLevel) {
-        ElevatorRegular.elevatorLevel = elevatorLevel;
+        ElevatorRoadRunner.elevatorLevel = elevatorLevel;
     }
 
 

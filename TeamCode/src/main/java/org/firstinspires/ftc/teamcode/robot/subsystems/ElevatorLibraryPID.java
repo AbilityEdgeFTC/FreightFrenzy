@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.FullStateFeedback;
-import com.ThermalEquilibrium.homeostasis.Utils.Vector;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -16,7 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Hardware class for an elevator or linear lift driven by a pulley system.
  */
 @Config
-public class Elevator {
+public class ElevatorLibraryPID {
 
     public static double HUB_LEVEL1 = 22,HUB_LEVEL2 = 19,HUB_LEVEL3 = 17;
     public static double SHARED_HUB = 4.5;
@@ -43,7 +39,7 @@ public class Elevator {
     Gamepad gamepad;
     cGamepad cGamepad;
 
-    public Elevator(HardwareMap hardwareMap, Gamepad gamepad)
+    public ElevatorLibraryPID(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
         this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -124,7 +120,7 @@ public class Elevator {
     }
 
     public static void setElevatorLevel(ElevatorLevel elevatorLevel) {
-        Elevator.elevatorLevel = elevatorLevel;
+        ElevatorLibraryPID.elevatorLevel = elevatorLevel;
     }
 
 

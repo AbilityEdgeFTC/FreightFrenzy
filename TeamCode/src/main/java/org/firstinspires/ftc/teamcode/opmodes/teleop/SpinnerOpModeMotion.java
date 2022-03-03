@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import static org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerMotionProfile.LEFT_ANGLE;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerMotionProfile.RIGHT_ANGLE;
+import static org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerMotionProfile.ZERO_ANGLE;
+
+import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerMotion;
-
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerMotion.LEFT_ANGLE;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerMotion.RIGHT_ANGLE;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerMotion.ZERO_ANGLE;
+import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerMotionProfile;
 
 //import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerCOMPLEX_UNSTABLE;
 /*
@@ -16,7 +17,7 @@ import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerMot
 @TeleOp(group = "drive")
 public class SpinnerOpModeMotion extends LinearOpMode {
 
-    ElevatorSpinnerMotion elevator;
+    SpinnerMotionProfile elevator;
 
     enum Angle
     {
@@ -24,13 +25,15 @@ public class SpinnerOpModeMotion extends LinearOpMode {
         ZERO,
         RIGHT
     }
-
+    public static double timeTo = 5;
     public static Angle angle = Angle.ZERO;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        elevator = new ElevatorSpinnerMotion(hardwareMap);
+        elevator = new SpinnerMotionProfile(hardwareMap);
+
+        NanoClock clock = NanoClock.system();
 
         waitForStart();
 
@@ -48,6 +51,14 @@ public class SpinnerOpModeMotion extends LinearOpMode {
                     elevator.setAngle(RIGHT_ANGLE);
                     break;
             }
+
+            double startTime = clock.seconds();
+
+            while (!isStopRequested() && (clock.seconds() - startTime) < timeTo) {
+                elevator.update();
+            }
+
+            elevator.update();
 
             elevator.update();
         }

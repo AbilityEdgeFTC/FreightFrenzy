@@ -1,24 +1,18 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.FullStateFeedback;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
-import com.ThermalEquilibrium.homeostasis.Utils.Vector;
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.checkerframework.checker.units.qual.A;
-import org.opencv.core.Mat;
 
 
 /*
  * Hardware class for an elevator or linear lift driven by a pulley system.
  */
 @Config
-public class ElevatorSpinner {
+public class ElevatorSpinnerLibraryPID {
 
     public static double RIGHT_ANGLE = 60;
     public static double LEFT_ANGLE = -60;
@@ -53,7 +47,7 @@ public class ElevatorSpinner {
     Gamepad gamepad;
     cGamepad cGamepad;
 
-    public ElevatorSpinner(HardwareMap hardwareMap, Gamepad gamepad)
+    public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mS");
         this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -132,6 +126,6 @@ public class ElevatorSpinner {
     }
 
     public static void setSpinnerState(SpinnerState spinnerState) {
-        ElevatorSpinner.spinnerState = spinnerState;
+        ElevatorSpinnerLibraryPID.spinnerState = spinnerState;
     }
 }

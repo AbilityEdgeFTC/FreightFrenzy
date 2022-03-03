@@ -4,8 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorRR;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorRegular;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorRoadRunner;
 
 //import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorCOMPLEX_UNSTABLE;
 /*
@@ -15,13 +14,13 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorRegular;
 @Config
 public class ElevatorOpModeRR extends LinearOpMode {
 
-    ElevatorRR elevator;
+    ElevatorRoadRunner elevator;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        elevator = new ElevatorRR(hardwareMap, gamepad1);
+        elevator = new ElevatorRoadRunner(hardwareMap, gamepad1);
 
         waitForStart();
 
