@@ -83,10 +83,18 @@ public class teleopOwlBlue extends LinearOpMode {
             cGamepad1.update();
 
             gamepad.update();
-            elevator.update();
+            try {
+                elevator.update();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             spinner.update();
             intakeToggles();
-            elevatorSwitch();
+            try {
+                elevatorSwitch();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             resetElevatorMidMoving();
             pidToggles();
             carouselSpinning();
@@ -190,8 +198,7 @@ public class teleopOwlBlue extends LinearOpMode {
         }
     }
 
-    void elevatorSwitch()
-    {
+    void elevatorSwitch() throws Exception {
         switch (elevatorMovement) {
             case SPIN:
                 resetElevator();

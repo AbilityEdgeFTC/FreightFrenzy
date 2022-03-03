@@ -1,22 +1,20 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.FullStateFeedback;
-import com.ThermalEquilibrium.homeostasis.Utils.Vector;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 
 /*
  * Hardware class for an elevator or linear lift driven by a pulley system.
  */
 @Config
-public class Elevator {
+public class ElevatorRR {
 
     public static double HUB_LEVEL1 = 22,HUB_LEVEL2 = 19,HUB_LEVEL3 = 17;
     public static double SHARED_HUB = 4.5;
@@ -28,7 +26,10 @@ public class Elevator {
     public static double SPOOL_RADIUS = 0.75; // in
     public static double power = 0.5;
     public static boolean usePID = true;
-    BasicPID controller = new BasicPID(new com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients(coefficients.kP, coefficients.kI, coefficients.kD));
+    public static double kV = 0;
+    public static double kA = 0;
+    public static double kStatic = 0;
+    PIDFController controller = new PIDFController(coefficients, kV,kA,kStatic);
 
     public enum ElevatorLevel {
         ZERO,
@@ -43,7 +44,7 @@ public class Elevator {
     Gamepad gamepad;
     cGamepad cGamepad;
 
-    public Elevator(HardwareMap hardwareMap, Gamepad gamepad)
+    public ElevatorRR(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
         this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -76,7 +77,8 @@ public class Elevator {
                     break;
             }
 
-            motor.setPower(controller.calculate(inchesToEncoderTicks(target), motor.getCurrentPosition()));
+            controller.setTargetPosition(inchesToEncoderTicks(target));
+            motor.setPower(controller.update(motor.getCurrentPosition(), motor.getVelocity()));
         }
         else
         {
@@ -124,7 +126,7 @@ public class Elevator {
     }
 
     public static void setElevatorLevel(ElevatorLevel elevatorLevel) {
-        Elevator.elevatorLevel = elevatorLevel;
+        ElevatorRR.elevatorLevel = elevatorLevel;
     }
 
 

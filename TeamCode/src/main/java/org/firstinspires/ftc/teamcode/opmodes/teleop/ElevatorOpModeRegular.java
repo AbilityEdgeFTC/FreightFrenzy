@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorRegular;
 
 //import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorCOMPLEX_UNSTABLE;
 /*
@@ -12,14 +12,15 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
  */
 @TeleOp(group = "drive")
 @Config
-public class ElevatorOpMode extends LinearOpMode {
+public class ElevatorOpModeRegular extends LinearOpMode {
 
-    Elevator elevator;
+    ElevatorRegular elevator;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        elevator = new Elevator(hardwareMap, gamepad1);
+        elevator = new ElevatorRegular(hardwareMap, gamepad1);
 
         waitForStart();
 

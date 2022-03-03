@@ -12,7 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.Elevator;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorRegular;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerRegular;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -29,7 +31,7 @@ public class teleopOwlRed extends LinearOpMode {
 
     gamepad gamepad;
     //ElevatorSpinnerCOMPLEX_UNSTABLE spinner;
-    ElevatorSpinner spinner;
+    ElevatorSpinnerRegular spinner;
     Elevator elevator;
     carousel carousel;
     //IntakeFixingThread intake;
@@ -62,7 +64,7 @@ public class teleopOwlRed extends LinearOpMode {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         //spinner = new ElevatorSpinnerCOMPLEX_UNSTABLE(hardwareMap, gamepad2);
-        spinner = new ElevatorSpinner(hardwareMap, gamepad2);
+        spinner = new ElevatorSpinnerRegular(hardwareMap, gamepad2);
         elevator = new Elevator(hardwareMap, gamepad2);
         carousel = new carousel(hardwareMap);
         //intake = new IntakeFixingThread(hardwareMap, telemetry);
@@ -121,7 +123,10 @@ public class teleopOwlRed extends LinearOpMode {
 
     void handMoving()
     {
-        hand.moveTo(gamepad2.right_trigger);
+        if(gamepad2.right_trigger != 0)
+        {
+            hand.moveTo(gamepad2.right_trigger);
+        }
     }
     void pidToggles()
     {
@@ -188,8 +193,7 @@ public class teleopOwlRed extends LinearOpMode {
         }
     }
 
-    void elevatorSwitch()
-    {
+    void elevatorSwitch() {
         switch (elevatorMovement) {
             case SPIN:
                 resetElevator();
@@ -227,26 +231,26 @@ public class teleopOwlRed extends LinearOpMode {
                 }
                 break;
             case LEVEL1:
-                spinner.setSpinnerState(ElevatorSpinner.SpinnerState.RIGHT);
-                elevator.setElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL1);
+                elevator.setElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL3);
+                spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.RIGHT);
                 hand.level1();
                 elevatorMovement = ElevatorMovement.DIP;
                 break;
             case LEVEL2:
-                spinner.setSpinnerState(ElevatorSpinner.SpinnerState.RIGHT);
                 elevator.setElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL2);
+                spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.RIGHT);
                 hand.level2();
                 elevatorMovement = ElevatorMovement.DIP;
                 break;
             case LEVEL3:
-                spinner.setSpinnerState(ElevatorSpinner.SpinnerState.RIGHT);
-                elevator.setElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL3);
+                elevator.setElevatorLevel(Elevator.ElevatorLevel.HUB_LEVEL1);
+                spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.RIGHT);
                 hand.level3();
                 elevatorMovement = ElevatorMovement.DIP;
                 break;
             case SHARED:
-                spinner.setSpinnerState(ElevatorSpinner.SpinnerState.LEFT);
                 elevator.setElevatorLevel(Elevator.ElevatorLevel.SHARED_HUB);
+                spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.LEFT);
                 hand.shared();
                 elevatorMovement = ElevatorMovement.DIP;
                 break;
@@ -284,7 +288,7 @@ public class teleopOwlRed extends LinearOpMode {
         dip.getFreight();
         hand.intake();
         elevator.setElevatorLevel(Elevator.ElevatorLevel.ZERO);
-        spinner.setSpinnerState(ElevatorSpinner.SpinnerState.ZERO);
+        spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.ZERO);
         canIntake = true;
     }
 

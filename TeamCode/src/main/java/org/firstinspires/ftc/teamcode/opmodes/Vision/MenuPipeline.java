@@ -48,7 +48,7 @@ public class MenuPipeline extends OpenCvPipeline
 //        Scalar lowValuesDUCK = new Scalar(hMin, sMin, vMin);
 //        Scalar highValuesDUCK = new Scalar(hMax, sMax, vMax);
 
-        Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2YCrCb);
 
         // turning all colors not between the low and high values to black and the rest white.
 //        if(TSE){

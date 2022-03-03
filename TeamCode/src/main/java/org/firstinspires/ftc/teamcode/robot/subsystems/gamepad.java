@@ -39,13 +39,7 @@ public class gamepad {
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDriveCancelable drivetrain;
     public static double startH = 0;
-    public static boolean holdAngle = false;
-    public static double angleToHold = 0;
     //public static String allianceColor;
-    //BasicPID pid;
-  //  AngleController controller;
-    public static double kP = 0.15, kI = 0, kD = 0;
-    public static double correction = 5;
 
     /**
      * constructor for gamepad
@@ -70,8 +64,6 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        pid = new BasicPID(new PIDCoefficients(kP, kI, kD));
-//        controller = new AngleController(pid);
         try
         {
             startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
@@ -102,7 +94,7 @@ public class gamepad {
         cGamepad1.update();
         cGamepad2.update();
 
-        getGamepadDirections(true);
+        getGamepadDirections();
 
         if (gamepad1.right_stick_button || gamepad1.left_stick_button) {
             slowMove = true;
@@ -116,15 +108,6 @@ public class gamepad {
             power = slowPower;
         } else {
             power = mainPower;
-        }
-
-        if(gamepad1.right_bumper)
-        {
-            holdAngle = true;
-        }
-        else if(gamepad1.left_bumper)
-        {
-            holdAngle = false;
         }
 
         if(cGamepad1.XOnce())
@@ -141,32 +124,17 @@ public class gamepad {
             regularDrive();
         }
 
-        if(holdAngle)
-        {
-            getGamepadDirections(false);
-            holdAngle();
-        }
-
         mFL.setPower(leftPower_f);
         mBL.setPower(leftPower_b);
         mFR.setPower(rightPower_f);
         mBR.setPower(rightPower_b);
     }
 
-    public void getGamepadDirections(boolean canTurn)
+    public void getGamepadDirections()
     {
-        if(canTurn)
-        {
-            drive = -gamepad1.left_stick_y;
-            strafe = gamepad1.left_stick_x;
-            twist = gamepad1.right_stick_x * multiplier;
-        }
-        else
-        {
-            drive = -gamepad1.left_stick_y;
-            strafe = gamepad1.left_stick_x;
-            twist = 0;
-        }
+        drive = -gamepad1.left_stick_y;
+        strafe = gamepad1.left_stick_x;
+        twist = gamepad1.right_stick_x * multiplier;
     }
 
     public void regularDrive()
@@ -188,23 +156,6 @@ public class gamepad {
         leftPower_b = Range.clip(input.getX() + twist - input.getY(), -power, power);
         rightPower_f = Range.clip(input.getX() - twist - input.getY(), -power, power);
         rightPower_b = Range.clip(input.getX() - twist + input.getY(), -power, power);
-    }
-
-    public void holdAngle()
-    {
-        if(Math.abs(angleToHold - drivetrain.getExternalHeading()) <= Math.toRadians(correction) && Math.abs(angleToHold - drivetrain.getExternalHeading()) >= Math.toRadians(-correction))
-        {
-            twist = 0;
-        }
-        else
-        {
- //           twist = controller.calculate(Math.toRadians(angleToHold), drivetrain.getExternalHeading());
-        }
-
-        leftPower_f = Range.clip(drive + twist + strafe, -power, power);
-        leftPower_b = Range.clip(drive + twist - strafe, -power, power);
-        rightPower_f = Range.clip(drive - twist - strafe, -power, power);
-        rightPower_b = Range.clip(drive - twist + strafe, -power, power);
     }
 
     public double GetmFLPower()

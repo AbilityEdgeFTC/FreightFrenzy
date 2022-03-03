@@ -16,8 +16,8 @@ public class hand {
 
     Servo sL, sR;
     Telemetry telemetry;
-    public static double intakePos = 0.07;
-    public static double level1Hub = 0.95, level2Hub = 0.85, level3Hub = .63, levelSharedHub = 0.7;
+    public static double intakePos = 1;
+    public static double level1Hub = 0.12, level2Hub = 0.25, level3Hub = .44, levelSharedHub = 0.37;
 
     public enum HandPos
     {
@@ -33,16 +33,16 @@ public class hand {
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
     public hand(HardwareMap hardwareMap) {
-        this.sL = hardwareMap.get(Servo.class, "sLeft");
         this.sR = hardwareMap.get(Servo.class, "sRight");
-        this.sL.setDirection(Servo.Direction.REVERSE);
+        this.sL = hardwareMap.get(Servo.class, "sLeft");
+        this.sR.setDirection(Servo.Direction.REVERSE);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
     public hand(HardwareMap hardwareMap, Telemetry telemetry) {
         this.sL = hardwareMap.get(Servo.class, "sLeft");
         this.sR = hardwareMap.get(Servo.class, "sRight");
-        this.sL.setDirection(Servo.Direction.REVERSE);
+        this.sR.setDirection(Servo.Direction.REVERSE);
         this.telemetry = telemetry;
     }
 
@@ -77,6 +77,7 @@ public class hand {
 
     public void shared()
     {
+        handPos = HandPos.SHARED_HUB;
         sL.setPosition(levelSharedHub);
         sR.setPosition(levelSharedHub);
     }
@@ -84,6 +85,7 @@ public class hand {
     // spin dip servo to intake positions, and holding servo to hold position.
     public void level1()
     {
+        handPos = HandPos.ONE_HUB;
         sL.setPosition(level1Hub);
         sR.setPosition(level1Hub);
     }

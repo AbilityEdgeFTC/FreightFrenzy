@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinner;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerCOMPLEX_UNSTABLE;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerMotion;
 
 import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerMotion.LEFT_ANGLE;

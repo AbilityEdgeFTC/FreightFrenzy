@@ -1,32 +1,28 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
-
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
-import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+
+/*
+ * Hardware class for an elevator or linear lift driven by a pulley system.
+ */
 @Config
-public class ElevatorCOMPLEX_UNSTABLE {
+public class ElevatorRegular {
 
     public static double HUB_LEVEL1 = 22,HUB_LEVEL2 = 19,HUB_LEVEL3 = 17;
     public static double SHARED_HUB = 4.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
-    public static PIDCoefficients coefficients = new PIDCoefficients(.05,0,0);
-    public static PIDCoefficients coefficientsVAS = new PIDCoefficients(0,0,0);
     double target;
     public static double TICKS_PER_REV = 384.5;
     public static double SPOOL_RADIUS = 0.75; // in
-    public static double power = 0.5;
+    public static double power = 1;
     public static boolean usePID = true;
-    public static double MAX_ACCEL = 5;
-    public static double MAX_VEL = 5;
-    PIDFController controller = new PIDFController(coefficients,coefficientsVAS.kP, coefficientsVAS.kI, coefficientsVAS.kD);
-    NanoClock clock;
 
     public enum ElevatorLevel {
         ZERO,
@@ -41,20 +37,18 @@ public class ElevatorCOMPLEX_UNSTABLE {
     Gamepad gamepad;
     cGamepad cGamepad;
 
-    public ElevatorCOMPLEX_UNSTABLE(HardwareMap hardwareMap, Gamepad gamepad)
+    public ElevatorRegular(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
         this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
-
     }
 
-    public void update()
-    {
+    public void update() {
         if (usePID)
         {
             switch (elevatorLevel)
@@ -74,17 +68,16 @@ public class ElevatorCOMPLEX_UNSTABLE {
                 case HUB_LEVEL3:
                     target = HUB_LEVEL3;
                     break;
-
             }
-            controller.setTargetPosition(inchesToEncoderTicks(target));
-            controller.setTargetVelocity(MAX_VEL);
-            controller.setTargetAcceleration(MAX_ACCEL);
 
-            motor.setPower(controller.update(motor.getCurrentPosition(), motor.getVelocity()));
+            motor.setTargetPosition(inchesToEncoderTicks(target));
+            motor.setPower(power);
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         else
         {
             motor.setPower(-gamepad.left_stick_y);
+
         }
     }
 
@@ -121,12 +114,14 @@ public class ElevatorCOMPLEX_UNSTABLE {
         this.usePID = usePID;
     }
 
+
     public static ElevatorLevel getElevatorLevel() {
         return elevatorLevel;
     }
 
-    public static void setSpinnerState(ElevatorLevel elevatorLevel) {
-        ElevatorCOMPLEX_UNSTABLE.elevatorLevel = elevatorLevel;
+    public static void setElevatorLevel(ElevatorLevel elevatorLevel) {
+        ElevatorRegular.elevatorLevel = elevatorLevel;
     }
+
 
 }

@@ -42,14 +42,14 @@ public class ServoTest extends LinearOpMode {
 
     Servo servo;
     public static double position = 0.08;
-    public static String name = "sD";
+    //public static String name = "sD";
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        servo = hardwareMap.get(Servo.class, name);
+        servo = hardwareMap.get(Servo.class, "sD");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

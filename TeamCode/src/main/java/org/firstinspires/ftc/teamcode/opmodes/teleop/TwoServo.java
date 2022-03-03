@@ -53,7 +53,7 @@ public class TwoServo extends LinearOpMode {
 
         right = hardwareMap.get(Servo.class, "sRight");
         left = hardwareMap.get(Servo.class, "sLeft");
-        left.setDirection(Servo.Direction.REVERSE);
+        right.setDirection(Servo.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
