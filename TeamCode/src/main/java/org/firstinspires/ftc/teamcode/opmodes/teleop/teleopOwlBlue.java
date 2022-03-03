@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorLibraryPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerRegular;
+import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -29,7 +29,7 @@ public class teleopOwlBlue extends LinearOpMode {
 
     gamepad gamepad;
     //ElevatorSpinnerCOMPLEX_UNSTABLE spinner;
-    ElevatorSpinnerRegular spinner;
+    SpinnerFirstPID spinner;
     ElevatorLibraryPID elevatorLibraryPID;
     carousel carousel;
     //IntakeFixingThread intake;
@@ -60,7 +60,7 @@ public class teleopOwlBlue extends LinearOpMode {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         //spinner = new ElevatorSpinnerCOMPLEX_UNSTABLE(hardwareMap, gamepad2);
-        spinner = new ElevatorSpinnerRegular(hardwareMap, gamepad2);
+        spinner = new SpinnerFirstPID(hardwareMap, gamepad2);
         elevatorLibraryPID = new ElevatorLibraryPID(hardwareMap, gamepad2);
         carousel = new carousel(hardwareMap);
         //intake = new IntakeFixingThread(hardwareMap, telemetry);
@@ -212,22 +212,22 @@ public class teleopOwlBlue extends LinearOpMode {
                     {
                         case 0:
                             elevatorLibraryPID.setElevatorLevel(ElevatorLibraryPID.ElevatorLevel.SHARED_HUB);
-                            spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.RIGHT);
+                            spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                             elevatorMovement = ElevatorMovement.SHARED;
                             break;
                         case 1:
                             elevatorLibraryPID.setElevatorLevel(ElevatorLibraryPID.ElevatorLevel.HUB_LEVEL2);
-                            spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.LEFT);
+                            spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
                             elevatorMovement = ElevatorMovement.LEVEL1;
                             break;
                         case 2:
                             elevatorLibraryPID.setElevatorLevel(ElevatorLibraryPID.ElevatorLevel.HUB_LEVEL1);
-                            spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.LEFT);
+                            spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
                             elevatorMovement = ElevatorMovement.LEVEL2;
                             break;
                         case 3:
                             elevatorLibraryPID.setElevatorLevel(ElevatorLibraryPID.ElevatorLevel.HUB_LEVEL3);
-                            spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.LEFT);
+                            spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
                             elevatorMovement = ElevatorMovement.LEVEL3;
                             break;
                         default:
@@ -303,7 +303,7 @@ public class teleopOwlBlue extends LinearOpMode {
             hand.intake();
         }
         elevatorLibraryPID.setElevatorLevel(ElevatorLibraryPID.ElevatorLevel.ZERO);
-        spinner.setSpinnerState(ElevatorSpinnerRegular.SpinnerState.ZERO);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO);
         canIntake = true;
     }
 

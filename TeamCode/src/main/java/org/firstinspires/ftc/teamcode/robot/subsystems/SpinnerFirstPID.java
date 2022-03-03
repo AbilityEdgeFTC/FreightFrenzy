@@ -1,7 +1,4 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
-import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,7 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Hardware class for an elevator or linear lift driven by a pulley system.
  */
 @Config
-public class ElevatorSpinnerRegular {
+public class SpinnerFirstPID {
 
     public static double RIGHT_ANGLE = 60;
     public static double LEFT_ANGLE = -60;
@@ -38,7 +35,7 @@ public class ElevatorSpinnerRegular {
     Gamepad gamepad;
     cGamepad cGamepad;
 
-    public ElevatorSpinnerRegular(HardwareMap hardwareMap, Gamepad gamepad)
+    public SpinnerFirstPID(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mS");
         this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -113,6 +110,6 @@ public class ElevatorSpinnerRegular {
     }
 
     public static void setSpinnerState(SpinnerState spinnerState) {
-        ElevatorSpinnerRegular.spinnerState = spinnerState;
+        SpinnerFirstPID.spinnerState = spinnerState;
     }
 }
