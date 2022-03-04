@@ -20,7 +20,7 @@ public class ElevatorRoadRunner {
     DcMotorEx motor;
     public static PIDCoefficients coefficients = new PIDCoefficients(.03,0,0);
     double target;
-    public static double TICKS_PER_REV = 384.5;
+    public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
     public static double power = 0.5;
     public static boolean usePID = true;

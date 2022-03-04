@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 
 /*
@@ -12,12 +13,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 22,HUB_LEVEL2 = 19,HUB_LEVEL1 = 17;
+    public static double HUB_LEVEL3 = 25,HUB_LEVEL2 = 19,HUB_LEVEL1 = 17;
     public static double SHARED_HUB = 4.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
     double target;
-    public static double TICKS_PER_REV = 384.5;
+    public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
     public static double power = 1;
     public static boolean usePID = true;
@@ -74,8 +75,8 @@ public class ElevatorFirstPID {
         }
         else
         {
-            motor.setPower(-gamepad.left_stick_y);
-
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setPower(Range.clip(-gamepad.left_stick_y, -power, power));
         }
     }
 
@@ -97,11 +98,6 @@ public class ElevatorFirstPID {
         return target;
     }
 
-    public static boolean getUsePID()
-    {
-        return usePID;
-    }
-
     public void setTarget(double newTarget)
     {
         target = newTarget;
@@ -121,5 +117,16 @@ public class ElevatorFirstPID {
         ElevatorFirstPID.elevatorLevel = elevatorLevel;
     }
 
+    public static double getPower() {
+        return power;
+    }
 
+    public boolean getUsePID()
+    {
+        return usePID;
+    }
+
+    public static void setPower(double power) {
+        ElevatorFirstPID.power = power;
+    }
 }

@@ -29,12 +29,6 @@ public class ElevatorSpinnerLibraryPID {
     BasicPID PID = new BasicPID(new PIDCoefficients(kP, kI, kD));
     AngleController controller = new AngleController(PID);
 
-//    public static double kP = 2.5;
-//    public static double kV = 0;
-//    Vector K = new Vector(new double[] {kP,kV});
-//    FullStateFeedback controller = new FullStateFeedback(K);
-//    public static double MAX_VEL = 5;
-
     public enum SpinnerState
     {
         LEFT,
@@ -75,13 +69,6 @@ public class ElevatorSpinnerLibraryPID {
                     target = Math.toRadians(RIGHT_ANGLE);
                     break;
             }
-
-//            // measured position and velocity
-//            Vector state = new Vector(new double[]{motor.getCurrentPosition(), motor.getVelocity()});
-//            // target position and velocity
-//            // protip - these can be generated with motion profiles!
-//            Vector reference = new Vector(new double [] {radiansToEncoderTicks(target), MAX_VEL});
-//            motor.setPower(controller.calculate(reference,state));
 
             motor.setPower(controller.calculate(target, encoderTicksToRadians(motor.getCurrentPosition())));
         }

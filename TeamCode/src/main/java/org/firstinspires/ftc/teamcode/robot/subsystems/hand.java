@@ -16,8 +16,8 @@ public class hand {
 
     Servo sL, sR;
     Telemetry telemetry;
-    public static double intakePos = 1;
-    public static double level1Hub = 0.12, level2Hub = 0.25, level3Hub = .44, levelSharedHub = 0.37;
+    public static double intakePos = 0.07;
+    public static double /*level1Hub = 1, level2Hub = .8, */level3Hub = .63, levelSharedHub = .8;
 
     public enum HandPos
     {
@@ -86,15 +86,19 @@ public class hand {
     public void level1()
     {
         handPos = HandPos.ONE_HUB;
-        sL.setPosition(level1Hub);
-        sR.setPosition(level1Hub);
+//        sL.setPosition(level1Hub);
+//        sR.setPosition(level1Hub);
+        sL.setPosition(level3Hub);
+        sR.setPosition(level3Hub);
     }
 
     public void level2()
     {
         handPos = HandPos.TWO_HUB;
-        sL.setPosition(level2Hub);
-        sR.setPosition(level2Hub);
+//        sL.setPosition(level2Hub);
+//        sR.setPosition(level2Hub);
+        sL.setPosition(level3Hub);
+        sR.setPosition(level3Hub);
     }
 
     public void level3()
@@ -121,6 +125,11 @@ public class hand {
     public HandPos getHandPos() {
         return handPos;
     }
+
+    public double getPos() {
+        return sL.getPosition();
+    }
+
 
     public void setHandPos(HandPos handPos) {
         this.handPos = handPos;

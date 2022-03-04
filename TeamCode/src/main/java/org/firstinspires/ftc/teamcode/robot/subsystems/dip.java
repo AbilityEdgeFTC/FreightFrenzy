@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class dip {
 
     Servo sD;
-    public static double releasingPosition = .3, holdingPosition = 1;
+    public static double releasingPosition = .4, holdingPosition = 0.13;
     Telemetry telemetry;
 
     public enum HandState

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 
 //import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerCOMPLEX_UNSTABLE;
 /*
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID
 @TeleOp(group = "drive")
 public class SpinnerOpMode extends LinearOpMode {
 
-    ElevatorSpinnerLibraryPID elevator;
+    SpinnerFirstPID elevator;
 
     enum Controller
     {
@@ -25,13 +26,15 @@ public class SpinnerOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        elevator = new ElevatorSpinnerLibraryPID(hardwareMap, gamepad1);
+        elevator = new SpinnerFirstPID(hardwareMap, gamepad1);
 
         waitForStart();
 
         while (opModeIsActive())
         {
-            elevator.update();
+            telemetry.addData("POS", elevator.getPosition());
+            telemetry.addData("TARGET", elevator.getTarget());
+            telemetry.update();
         }
     }
 }

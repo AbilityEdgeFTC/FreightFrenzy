@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 
 /*
@@ -13,12 +14,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class SpinnerFirstPID {
 
-    public static double RIGHT_ANGLE = 60;
-    public static double LEFT_ANGLE = -60;
-    public static double ZERO_ANGLE = 0;
+    public static int RIGHT_ANGLE = 215;
+    public static int LEFT_ANGLE = -215;
+    public static int ZERO_ANGLE = 315;
     public static double power = 0.7;
     public static boolean usePID = true;
-    double target = 0;
+    int target = 0;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     DcMotorEx motor;
@@ -54,24 +55,24 @@ public class SpinnerFirstPID {
             switch (spinnerState)
             {
                 case ZERO:
-                    target = Math.toRadians(ZERO_ANGLE);
+                    target = ZERO_ANGLE;
                     break;
                 case LEFT:
-                    target = Math.toRadians(LEFT_ANGLE);
+                    target = LEFT_ANGLE;
                     break;
                 case RIGHT:
-                    target = Math.toRadians(RIGHT_ANGLE);
+                    target = RIGHT_ANGLE;
                     break;
             }
 
-            motor.setTargetPosition((int)radiansToEncoderTicks(Angle.normDelta(encoderTicksToRadians(motor.getCurrentPosition()))));
-            //motor.setTargetPosition((int)(radiansToEncoderTicks(Angle.normDelta(target))));
+            motor.setTargetPosition(target);
             motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         else
         {
-            motor.setPower(gamepad.right_stick_x);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setPower(Range.clip(gamepad.left_stick_x, -power/2, power/2));
 
         }
 
@@ -90,12 +91,17 @@ public class SpinnerFirstPID {
         return motor.getCurrentPosition();
     }
 
-    public double getTarget()
+    public double getTargetRadians()
+    {
+        return encoderTicksToRadians(target);
+    }
+
+    public int getTarget()
     {
         return target;
     }
 
-    public void setTarget(double newTarget)
+    public void setTarget(int newTarget)
     {
         target = newTarget;
     }
@@ -103,6 +109,11 @@ public class SpinnerFirstPID {
     public void setUsePID(boolean usePID)
     {
         this.usePID = usePID;
+    }
+
+    public boolean getUsePID()
+    {
+        return usePID;
     }
 
     public static SpinnerState getSpinnerState() {

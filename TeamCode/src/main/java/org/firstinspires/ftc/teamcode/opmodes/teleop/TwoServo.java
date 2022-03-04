@@ -44,8 +44,7 @@ public class TwoServo extends LinearOpMode {
 
     Servo left;
     Servo right;
-    public static double position1 = 0.08;
-    public static double position2 = 0.08;
+    public static double position = 0;
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
@@ -61,8 +60,8 @@ public class TwoServo extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
 
         while (opModeIsActive()) {
-            right.setPosition(position1);
-            left.setPosition(position2);
+            right.setPosition(position);
+            left.setPosition(position);
         }
     }
 }

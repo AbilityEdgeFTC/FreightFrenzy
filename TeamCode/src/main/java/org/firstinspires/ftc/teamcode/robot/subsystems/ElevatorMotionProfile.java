@@ -19,9 +19,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
  */
 @Config
 public class ElevatorMotionProfile {
-    private static final MotorConfigurationType MOTOR_CONFIG =
-            MotorConfigurationType.getMotorType(NeveRest20Gearmotor.class);
-    private static final double TICKS_PER_REV = MOTOR_CONFIG.getTicksPerRev();
+    private static final double TICKS_PER_REV = 145.1;
 
     public static double SPOOL_RADIUS = 1; // in
     public static double GEAR_RATIO = 1; // output (spool) speed / input (motor) speed
@@ -56,10 +54,6 @@ public class ElevatorMotionProfile {
 
     public static double rpmToVelocity(double rpm) {
         return rpm * GEAR_RATIO * 2 * Math.PI * SPOOL_RADIUS / 60.0;
-    }
-
-    public static double getMaxRpm() {
-        return MOTOR_CONFIG.getMaxRPM();
     }
 
     public ElevatorMotionProfile(HardwareMap hardwareMap) {
