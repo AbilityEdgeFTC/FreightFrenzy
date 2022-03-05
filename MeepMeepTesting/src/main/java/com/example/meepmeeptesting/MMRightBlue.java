@@ -1,31 +1,28 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator;
-import com.acmerobotics.roadrunner.path.heading.WiggleInterpolator;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class MMRightRed {
+public class MMRightBlue {
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
         double startPoseRightX = 12;
-        double startPoseRightY = -64.04;
+        double startPoseRightY = 64.04;
         double startPoseRightH = 90;
 
         double turnPoseRightX = 0;
-        double turnPoseRightY = -62;
+        double turnPoseRightY = 62;
         double turnPoseRightH = 180;
         //double startPoseRightH = 180;
         double poseEntranceX = 20;
-        double poseEntranceY = -64;
+        double poseEntranceY = 64;
         double poseEntranceH = 180;
         double poseCollectX = 56;
-        double poseCollectY = -64;
+        double poseCollectY = 64;
         double poseCollectH = 180;
         Pose2d turnPoseRight = new Pose2d(turnPoseRightX,turnPoseRightY,Math.toRadians(turnPoseRightH));
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
