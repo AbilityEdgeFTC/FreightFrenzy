@@ -17,7 +17,7 @@ public class SpinnerFirstPID {
     public static int RIGHT_ANGLE = 215;
     public static int LEFT_ANGLE = -215;
     public static int ZERO_ANGLE = 315;
-    public static double power = 0.7;
+    public static double power = 1;
     public static boolean usePID = true;
     int target = 0;
     public static double GEAR_RATIO = 146.0/60.0; // in
@@ -27,11 +27,13 @@ public class SpinnerFirstPID {
     public enum SpinnerState
     {
         LEFT,
-        ZERO,
+        ZERO_RED,
+        ZERO_BLUE,
+        ZERO_DO_NOT_USE,
         RIGHT
     }
 
-    public static SpinnerState spinnerState = SpinnerState.ZERO;
+    public static SpinnerState spinnerState = SpinnerState.ZERO_DO_NOT_USE;
 
     Gamepad gamepad;
     cGamepad cGamepad;
@@ -54,8 +56,8 @@ public class SpinnerFirstPID {
         {
             switch (spinnerState)
             {
-                case ZERO:
-                    target = ZERO_ANGLE;
+                case ZERO_DO_NOT_USE:
+                    target = 0;
                     break;
                 case LEFT:
                     target = LEFT_ANGLE;
@@ -63,9 +65,13 @@ public class SpinnerFirstPID {
                 case RIGHT:
                     target = RIGHT_ANGLE;
                     break;
+                case ZERO_RED:
+                case ZERO_BLUE:
+                    target = ZERO_ANGLE;
+                    break;
             }
 
-            motor.setTargetPosition(target);
+            motor.setTargetPosition(target - ZERO_ANGLE);
             motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }

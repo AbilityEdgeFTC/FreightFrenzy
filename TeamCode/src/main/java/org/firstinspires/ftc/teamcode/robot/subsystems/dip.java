@@ -16,16 +16,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class dip {
 
     Servo sD;
-    public static double releasingPosition = .4, holdingPosition = 0.13;
+    public static double releasingPosition = .55, holdingPosition = 0.13;
     Telemetry telemetry;
-
-    public enum HandState
-    {
-        HOLD,
-        RELEASE
-    }
-
-    public static HandState handState = HandState.RELEASE;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
@@ -42,19 +34,16 @@ public class dip {
     // spin dip servo to intake positions, and holding servo to hold position.
     public void getFreight() {
         sD.setPosition(releasingPosition);
-        handState = HandState.RELEASE;
     }
 
     // spin holding servo to push position.
     public void releaseFreight() {
         sD.setPosition(releasingPosition);
-        handState = HandState.HOLD;
     }
 
     // spin holding servo to push position.
     public void holdFreight() {
         sD.setPosition(holdingPosition);
-        handState = HandState.HOLD;
     }
     // display position of servo's.
     public void displayTelemetry(){

@@ -62,7 +62,7 @@ public class SensorAnalogFSR extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if(freightSensor.getVoltage() < voltageThreshold){
+            if(freightSensor.getVoltage() > voltageThreshold){
                 intake.intakeForward();
             } else {
                 intake.stop();

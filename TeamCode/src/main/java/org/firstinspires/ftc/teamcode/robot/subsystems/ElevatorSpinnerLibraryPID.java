@@ -18,8 +18,8 @@ public class ElevatorSpinnerLibraryPID {
     public static double LEFT_ANGLE = -60;
     public static double ZERO_ANGLE = 0;
     public static double power = 0.2;
-    public static boolean usePID = true;
-    public static double kP = 2.5;
+    boolean usePID = true;
+    public static double kP = 5;
     public static double kI = 0;
     public static double kD = 0;
     double target = 0;
@@ -32,11 +32,13 @@ public class ElevatorSpinnerLibraryPID {
     public enum SpinnerState
     {
         LEFT,
-        ZERO,
+        ZERO_RED,
+        ZERO_BLUE,
+        ZERO_DO_NOT_USE,
         RIGHT
     }
 
-    public static SpinnerState spinnerState = SpinnerState.ZERO;
+    public static SpinnerState spinnerState = SpinnerState.ZERO_DO_NOT_USE;
 
     Gamepad gamepad;
     cGamepad cGamepad;
@@ -49,18 +51,24 @@ public class ElevatorSpinnerLibraryPID {
         this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
+        ZERO_ANGLE = encoderTicksToRadians(315);
+        RIGHT_ANGLE = encoderTicksToRadians(215);
+        LEFT_ANGLE = encoderTicksToRadians(-215);
     }
 
     public void update()
     {
+        ZERO_ANGLE = encoderTicksToRadians(315);
+        RIGHT_ANGLE = encoderTicksToRadians(215);
+        LEFT_ANGLE = encoderTicksToRadians(-215);
         cGamepad.update();
 
         if(usePID)
         {
             switch (spinnerState)
             {
-                case ZERO:
-                    target = Math.toRadians(ZERO_ANGLE);
+                case ZERO_DO_NOT_USE:
+                    target = 0;
                     break;
                 case LEFT:
                     target = Math.toRadians(LEFT_ANGLE);
@@ -68,9 +76,14 @@ public class ElevatorSpinnerLibraryPID {
                 case RIGHT:
                     target = Math.toRadians(RIGHT_ANGLE);
                     break;
+                case ZERO_RED:
+                    target = Math.toRadians(ZERO_ANGLE);
+                case ZERO_BLUE:
+                    target = Math.toRadians(ZERO_ANGLE);
+                    break;
             }
 
-            motor.setPower(controller.calculate(target, encoderTicksToRadians(motor.getCurrentPosition())));
+            motor.setPower(controller.calculate(ZERO_ANGLE - target, encoderTicksToRadians(motor.getCurrentPosition())));
         }
         else
         {

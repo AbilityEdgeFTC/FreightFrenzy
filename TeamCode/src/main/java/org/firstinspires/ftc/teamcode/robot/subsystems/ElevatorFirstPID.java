@@ -69,7 +69,7 @@ public class ElevatorFirstPID {
                     break;
             }
 
-            motor.setTargetPosition(inchesToEncoderTicks(target));
+            motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT));
             motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }

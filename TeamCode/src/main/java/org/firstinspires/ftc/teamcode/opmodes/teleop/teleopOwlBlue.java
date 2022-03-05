@@ -77,7 +77,7 @@ public class teleopOwlBlue extends LinearOpMode {
         dip = new dip(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_BLUE);
 
         // wait till after init
         waitForStart();
