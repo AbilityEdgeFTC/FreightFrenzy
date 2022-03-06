@@ -50,7 +50,6 @@ public class ElevatorSpinnerLibraryPID {
         this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         this.gamepad = gamepad;
-        this.cGamepad = new cGamepad(gamepad);
         ZERO_ANGLE = encoderTicksToRadians(315);
         RIGHT_ANGLE = encoderTicksToRadians(215);
         LEFT_ANGLE = encoderTicksToRadians(-215);
@@ -83,7 +82,7 @@ public class ElevatorSpinnerLibraryPID {
                     break;
             }
 
-            motor.setPower(controller.calculate(ZERO_ANGLE - target, encoderTicksToRadians(motor.getCurrentPosition())));
+            motor.setPower(controller.calculate(target, encoderTicksToRadians(motor.getCurrentPosition() + 315)));
         }
         else
         {

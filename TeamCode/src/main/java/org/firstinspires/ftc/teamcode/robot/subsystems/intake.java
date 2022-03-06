@@ -7,13 +7,14 @@ package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class intake {
 
-    DcMotor mI;
+    DcMotorEx mI;
     public static double power = 1;
     Telemetry telemetry;
 
@@ -29,7 +30,7 @@ public class intake {
      * constructor for intake
      */
     public intake(HardwareMap hardwareMap) {
-        this.mI = hardwareMap.get(DcMotor.class, "mI");
+        this.mI = hardwareMap.get(DcMotorEx.class, "mI");
     }
 
     /**
@@ -38,7 +39,7 @@ public class intake {
      */
     public intake(HardwareMap hardwareMap, double power) {
         this.power = power;
-        this.mI = hardwareMap.get(DcMotor.class, "mI");
+        this.mI = hardwareMap.get(DcMotorEx.class, "mI");
         this.mI.setDirection(DcMotor.Direction.REVERSE);
     }
 
@@ -48,7 +49,7 @@ public class intake {
      * @param power the power to give the motor
      * @param telemetry the telemetry object from the opmode
      */
-    public intake(DcMotor mI, double power, Telemetry telemetry) {
+    public intake(DcMotorEx mI, double power, Telemetry telemetry) {
         this.power = power;
         this.mI = mI;
         this.telemetry = telemetry;

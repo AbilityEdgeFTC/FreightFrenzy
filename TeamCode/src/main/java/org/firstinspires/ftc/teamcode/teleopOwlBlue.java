@@ -3,12 +3,13 @@
  * - Elior Yousefi
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.util.NanoClock;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -28,7 +29,8 @@ import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorLibraryPID
 import static org.firstinspires.ftc.teamcode.robot.subsystems.hand.intakePos;
 
 @Config
-@TeleOp(group = "main")
+@Disabled
+@TeleOp(name = "TeleOp Blue Alliance", group = "main")
 public class teleopOwlBlue extends LinearOpMode {
 
     gamepad gamepad;
