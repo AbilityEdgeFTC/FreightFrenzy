@@ -19,7 +19,7 @@ public class ElevatorSpinnerLibraryPID {
     public static double ZERO_ANGLE = 0;
     public static double power = 0.2;
     boolean usePID = true;
-    public static double kP = 5;
+    public static double kP = 6;
     public static double kI = 0;
     public static double kD = 0;
     double target = 0;
