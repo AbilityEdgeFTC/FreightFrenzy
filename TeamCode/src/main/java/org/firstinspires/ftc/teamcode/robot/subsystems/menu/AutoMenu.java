@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
@@ -57,7 +57,7 @@ public class AutoMenu extends LinearOpMode {
 
     levels placeFreightIn = levels.MAX;
     GreenLanternPipeline pipeline;
-    SampleMecanumDriveCancelable drive;
+    SampleMecanumDrive drive;
 
     Pose2d startPoseRight, poseHubFront, poseEntrance, poseCollect;
     TrajectorySequence placement, entrance, collect, cycle, entrance2, collect2;
@@ -69,7 +69,7 @@ public class AutoMenu extends LinearOpMode {
         pipeline.DEBUG = false;
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        drive = new SampleMecanumDriveCancelable(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHubFront = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));

@@ -50,16 +50,17 @@ public class ElevatorSpinnerLibraryPID {
         this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         this.gamepad = gamepad;
+        this.cGamepad = new cGamepad(gamepad);
         ZERO_ANGLE = encoderTicksToRadians(315);
-        RIGHT_ANGLE = encoderTicksToRadians(215);
-        LEFT_ANGLE = encoderTicksToRadians(-215);
+        RIGHT_ANGLE = encoderTicksToRadians(200);
+        LEFT_ANGLE = encoderTicksToRadians(-200);
     }
 
     public void update()
     {
         ZERO_ANGLE = encoderTicksToRadians(315);
-        RIGHT_ANGLE = encoderTicksToRadians(215);
-        LEFT_ANGLE = encoderTicksToRadians(-215);
+        RIGHT_ANGLE = encoderTicksToRadians(200);
+        LEFT_ANGLE = encoderTicksToRadians(-200);
         cGamepad.update();
 
         if(usePID)
@@ -70,19 +71,19 @@ public class ElevatorSpinnerLibraryPID {
                     target = 0;
                     break;
                 case LEFT:
-                    target = Math.toRadians(LEFT_ANGLE);
+                    target = LEFT_ANGLE;
                     break;
                 case RIGHT:
-                    target = Math.toRadians(RIGHT_ANGLE);
+                    target = RIGHT_ANGLE;
                     break;
                 case ZERO_RED:
-                    target = Math.toRadians(ZERO_ANGLE);
+                    target = ZERO_ANGLE;
                 case ZERO_BLUE:
-                    target = Math.toRadians(ZERO_ANGLE);
+                    target = ZERO_ANGLE;
                     break;
             }
 
-            motor.setPower(controller.calculate(target, encoderTicksToRadians(motor.getCurrentPosition() + 315)));
+            motor.setPower(controller.calculate(target - ZERO_ANGLE, encoderTicksToRadians(motor.getCurrentPosition())));
         }
         else
         {

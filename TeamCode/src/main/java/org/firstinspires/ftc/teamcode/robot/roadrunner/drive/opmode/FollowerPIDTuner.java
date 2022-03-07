@@ -3,10 +3,9 @@ package org.firstinspires.ftc.teamcode.robot.roadrunner.drive.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 
 /*
@@ -19,7 +18,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.Trajec
  * You should observe the target position (green) and your pose estimate (blue) and adjust your
  * follower PID coefficients such that you follow the target position as accurately as possible.
  * If you are using SampleMecanumDrive, you should be tuning TRANSLATIONAL_PID and HEADING_PID.
- * If you are using SampleOneWheel, you should be tuning AXIAL_PID, CROSS_TRACK_PID, and HEADING_PID.
+ * If you are using SampleTankDrive, you should be tuning AXIAL_PID, CROSS_TRACK_PID, and HEADING_PID.
  * These coefficients can be tuned live in dashboard.
  */
 @Config
@@ -29,7 +28,7 @@ public class FollowerPIDTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumLocalizer drive = new MecanumLocalizer(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Pose2d startPose = new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0);
 

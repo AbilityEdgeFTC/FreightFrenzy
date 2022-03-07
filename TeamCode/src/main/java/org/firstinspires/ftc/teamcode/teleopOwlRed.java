@@ -173,13 +173,13 @@ public class teleopOwlRed extends LinearOpMode {
     {
         if ((gamepad1.right_trigger != 0) && canIntake)
         {
-            intake.powerIntake(-gamepad1.right_trigger);
+            intake.powerIntake(gamepad1.right_trigger);
             frontIntake = false;
             backIntake = false;
         }
         else if ((gamepad1.left_trigger != 0) && canIntake)
         {
-            intake.powerIntake(gamepad1.left_trigger);
+            intake.powerIntake(-gamepad1.left_trigger);
             frontIntake = false;
             backIntake = false;
         }

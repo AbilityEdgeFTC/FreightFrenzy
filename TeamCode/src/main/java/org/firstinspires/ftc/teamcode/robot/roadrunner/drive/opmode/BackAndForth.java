@@ -4,10 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -19,7 +17,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocaliz
  * backward. You should observe the target position (green) and your pose estimate (blue) and adjust
  * your follower PID coefficients such that you follow the target position as accurately as possible.
  * If you are using SampleMecanumDrive, you should be tuning TRANSLATIONAL_PID and HEADING_PID.
- * If you are using SampleOneWheel, you should be tuning AXIAL_PID, CROSS_TRACK_PID, and HEADING_PID.
+ * If you are using SampleTankDrive, you should be tuning AXIAL_PID, CROSS_TRACK_PID, and HEADING_PID.
  * These coefficients can be tuned live in dashboard.
  *
  * This opmode is designed as a convenient, coarse tuning for the follower PID coefficients. It
@@ -33,7 +31,7 @@ public class BackAndForth extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumLocalizer drive = new MecanumLocalizer(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Trajectory trajectoryForward = drive.trajectoryBuilder(new Pose2d())
                 .forward(DISTANCE)

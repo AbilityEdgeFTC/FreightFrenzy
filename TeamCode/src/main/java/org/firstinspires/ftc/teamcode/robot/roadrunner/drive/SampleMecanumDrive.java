@@ -29,7 +29,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceRunnerCancelable;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.AxisDirection;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.util.LynxModuleUtil;
@@ -47,25 +47,24 @@ import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstan
 import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.TRACK_WIDTH;
 import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.encoderTicksToInches;
 import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.kStatic;
 
 /*
- * Trajectory-cancelable version of the simple mecanum drive hardware implementation for REV hardware.
- * Ensure that this is copied into your project.
+ * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class SampleMecanumDriveCancelable extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 0);
+public class SampleMecanumDrive extends MecanumDrive {
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8.2, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.1594;
+    public static double LATERAL_MULTIPLIER = 1.1721;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    private TrajectorySequenceRunnerCancelable trajectorySequenceRunner;
+    private TrajectorySequenceRunner trajectorySequenceRunner;
 
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
@@ -73,12 +72,13 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
     private TrajectoryFollower follower;
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    DcMotor motorSpinner, motorElevator;
     private List<DcMotorEx> motors;
 
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public SampleMecanumDriveCancelable(HardwareMap hardwareMap) {
+    public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
@@ -118,13 +118,18 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         // and the placement of the dot/orientation from https://docs.revrobotics.com/rev-control-system/control-system-overview/dimensions#imu-location
         //
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
-        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
+        BNO055IMUUtil.remapZAxis(imu, AxisDirection.POS_Y);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "mFL");
         leftRear = hardwareMap.get(DcMotorEx.class, "mBL");
         rightRear = hardwareMap.get(DcMotorEx.class, "mBR");
         rightFront = hardwareMap.get(DcMotorEx.class, "mFR");
 
+
+        motorSpinner = hardwareMap.get(DcMotorEx.class, "mS");
+        motorSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorElevator = hardwareMap.get(DcMotorEx.class, "mE");
+        motorElevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {
@@ -146,11 +151,9 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // TODO: if desired, use setLocalizer() to change the localization method
-        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
         setLocalizer(new MecanumLocalizer(this, true));
 
-        trajectorySequenceRunner = new TrajectorySequenceRunnerCancelable(follower, HEADING_PID);
+        trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -206,11 +209,6 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
     public void followTrajectorySequence(TrajectorySequence trajectorySequence) {
         followTrajectorySequenceAsync(trajectorySequence);
         waitForIdle();
-    }
-
-    public void breakFollowing() {
-        trajectorySequenceRunner.breakFollowing();
-        setMotorPowers(0,0,0,0);
     }
 
     public Pose2d getLastError() {
@@ -310,8 +308,8 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
     @Override
     public Double getExternalHeadingVelocity() {
         // To work around an SDK bug, use -zRotationRate in place of xRotationRate
-        // and -xRotationRate in place of zRotationRate (yRotationRate behaves as
-        // expected). This bug does NOT affect orientation.
+        // and -xRotationRate in place of zRotationRate (yRotationRate behaves as 
+        // expected). This bug does NOT affect orientation. 
         //
         // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
         return (double) -imu.getAngularVelocity().xRotationRate;

@@ -9,10 +9,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
-import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.RealsenseLocalizer;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -36,24 +35,23 @@ public class AlwaysOnePos extends LinearOpMode {
         Both
     }
 
-    MecanumLocalizer drive;
-    T265Localizer t265Localizer;
+    SampleMecanumDrive drive;
+    RealsenseLocalizer t265Localizer;
 
     Pose2d poseEstimate;
     Trajectory trajectory;
-    public static RobotLocalizer localizer = RobotLocalizer.Camera;
+    public static RobotLocalizer localizer = RobotLocalizer.Mecanum;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        drive = new MecanumLocalizer(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
 
         switch (localizer)
         {
             case Mecanum:
                 break;
             case Camera:
-                t265Localizer = new T265Localizer(hardwareMap);
-                t265Localizer.start(hardwareMap);
+                t265Localizer = new RealsenseLocalizer(hardwareMap);
                 drive.setLocalizer(t265Localizer);
                 break;
             case Both:
@@ -72,7 +70,7 @@ public class AlwaysOnePos extends LinearOpMode {
 
             try {
                 trajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .lineTo(new Vector2d(0, 0))
+                        .splineTo(new Vector2d(0, 0), 0)
                         .build();
 
             }catch (EmptyPathSegmentException e)
@@ -97,9 +95,5 @@ public class AlwaysOnePos extends LinearOpMode {
             telemetry.update();
         }
 
-        if(localizer != RobotLocalizer.Mecanum)
-        {
-            t265Localizer.stop();
-        }
     }
 }

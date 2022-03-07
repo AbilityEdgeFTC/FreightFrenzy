@@ -1,111 +1,80 @@
 package org.firstinspires.ftc.teamcode.robot.roadrunner.localizers;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.localization.Localizer;
-import com.arcrobotics.ftclib.geometry.Rotation2d;
-import com.arcrobotics.ftclib.geometry.Transform2d;
-import com.arcrobotics.ftclib.geometry.Translation2d;
-import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.spartronics4915.lib.T265Camera;
+ import com.acmerobotics.roadrunner.geometry.Pose2d;
+ import com.acmerobotics.roadrunner.geometry.Vector2d;
+ import com.acmerobotics.roadrunner.localization.Localizer;
+ import com.arcrobotics.ftclib.geometry.Rotation2d;
+ import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.util.PoseUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+ import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
+ import org.firstinspires.ftc.teamcode.robot.roadrunner.util.PoseUtil;
+ import org.jetbrains.annotations.NotNull;
+ import org.jetbrains.annotations.Nullable;
 
-/*
- * Sample tracking wheel localizer implementation assuming the standard configuration:
- *
- *    /--------------\
- *    |              |
- *    |              |
- *    | ||           |
- *    | ||           |
- *    |              |
- *    |              |
- *    \--------------/
- *
- */
-@Config
-public class T265Localizer implements Localizer {
-    // TODO:
-    /**
-     * see what are the positive negative x,y cordinates of the bot with the camera when moving, and set the offset by them
-     */
-    public static double LATERAL_DISTANCE = -5.71; // in; offset of the camera from the left or right of the middle of the teleop.
-    public static double FORWARD_OFFSET = 2.3062992126; // in; offset of the camera from the front or back of the middle of the teleop.
-    public static double DIRECTION = -90;
+ import static org.firstinspires.ftc.teamcode.robot.roadrunner.util.RealsenseLoader.slamera;
 
-    private static T265Camera slamra = null;
+/**
+  * Localizer for the T265 camera.
+  */
+ public class T265Localizer implements Localizer {
+    RealsenseLocalizer realsenseLocalizer;
+     public interface SendOdometryFunction {
+         Vector2d run();
+     }
 
-    public T265Localizer(HardwareMap hardwareMap){
+    public T265Localizer(HardwareMap hardwareMap) {
         super();
-
-        Translation2d translation = new Translation2d(LATERAL_DISTANCE, FORWARD_OFFSET);
-        Transform2d offset = new Transform2d(PoseUtil.inchesToMeters(translation), Rotation2d.fromDegrees(DIRECTION));
-
-        if (slamra == null) {
-            slamra = new T265Camera(offset, 0.1, hardwareMap.appContext);
-        }
-
-
-        setPoseEstimate(new Pose2d(0,0,0));
+        realsenseLocalizer = new RealsenseLocalizer(hardwareMap);
     }
 
-    @NotNull
-    @Override
-    public Pose2d getPoseEstimate() {
-        T265Camera.CameraUpdate up = slamra.getLastReceivedCameraUpdate();
+     private SendOdometryFunction sendOdometryCallback;
 
-        //Pose2d pose = new Pose2d(up.pose.getX(), up.pose.getY(), up.pose.getHeading());
+     /**
+      * Get the current pose of the T265.
+      * @return the pose
+      */
+     @NotNull
+     @Override
+     public Pose2d getPoseEstimate() {
+         return new Pose2d(slamera.getLastReceivedCameraUpdate().pose.getX(), slamera.getLastReceivedCameraUpdate().pose.getY(),  slamera.getLastReceivedCameraUpdate().pose.getHeading());
+     }
 
-        // convert from meter, to inches, and from degrees to radians
-        Pose2d pose = new Pose2d(up.pose.getX() * 39.37, up.pose.getY() * 39.37, up.pose.getHeading());
+     /**
+      * Set the pose of the T265 camera.
+      * @param pose2d the pose
+      */
+     @Override
+     public void setPoseEstimate(@NotNull Pose2d pose2d) {
+         slamera.setPose(new com.arcrobotics.ftclib.geometry.Pose2d(pose2d.getX(), pose2d.getY(),  new Rotation2d(pose2d.getHeading())));
+     }
 
-        return pose;
-    }
+     /**
+      * Get the current velocity of the T265.
+      * @return the velocity
+      */
+     @Nullable
+     @Override
+     public Pose2d getPoseVelocity() {
+         return PoseUtil.chassisSpeedsToRoadrunnerPose(slamera.getLastReceivedCameraUpdate().velocity);
+     }
 
-    @Override
-    public void setPoseEstimate(@NotNull Pose2d pose2d) {
-        slamra.setPose(new com.arcrobotics.ftclib.geometry.Pose2d(pose2d.getX(), pose2d.getY(), new Rotation2d(pose2d.getHeading())));
-    }
+     /**
+      * Send odometry data to the T265 if the callback is set.
+      */
+     @Override
+     public void update() {
+         // Make sure the callback is set
+         if (sendOdometryCallback != null) {
+             Vector2d odometry = sendOdometryCallback.run();
+             slamera.sendOdometry(odometry.getX(), odometry.getY());
+         }
+     }
 
-    @Nullable
-    @Override
-    public Pose2d getPoseVelocity() {
-        ChassisSpeeds up = slamra.getLastReceivedCameraUpdate().velocity;
-
-        Pose2d poseV = new Pose2d(up.vxMetersPerSecond, up.vyMetersPerSecond, up.omegaRadiansPerSecond);
-
-        return poseV;
-    }
-
-    @Override
-    public void update() {
-    }
-
-    /**
-     * Gets the last update received from the camera
-     * @return The CameraUpdate
-     */
-    public T265Camera.CameraUpdate getRawUpdate() {
-        return slamra.getLastReceivedCameraUpdate();
-    }
-
-    /**
-     * Sends external odometry to the Realsense camera for extra accuracy
-     */
-    public void sendOdometry(Pose2d velocity) {
-        slamra.sendOdometry(velocity.getX(), velocity.getY());
-    }
-
-    public void stop(){
-        slamra.stop();
-    }
-
-    public void start(HardwareMap hardwareMap){
-        slamra.start();
-    }
-
-}
+     /**
+      * Set a callback to send odometry data to the T265.
+      * @param sendOdometryCallback the callback
+      */
+     public void setSendOdometryCallback(SendOdometryFunction sendOdometryCallback) {
+         this.sendOdometryCallback = sendOdometryCallback;
+     }
+ }

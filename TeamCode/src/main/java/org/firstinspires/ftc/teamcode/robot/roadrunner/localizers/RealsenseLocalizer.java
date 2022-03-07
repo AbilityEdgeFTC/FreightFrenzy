@@ -45,6 +45,7 @@ public class RealsenseLocalizer implements Localizer {
      */
     public RealsenseLocalizer(HardwareMap hardwareMap) {
         super();
+        RealsenseLoader.init(hardwareMap);
 
         if (RealsenseLoader.slamera != null) {
             slamera = RealsenseLoader.slamera;

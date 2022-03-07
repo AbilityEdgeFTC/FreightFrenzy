@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 
 @Config
 public class gamepad {
@@ -37,7 +37,7 @@ public class gamepad {
     public static double mainPower = .85, slowPower = .6, multiplier = .9;
     public static boolean slowMove = false, isCentricDrive = true;
     cGamepad cGamepad1, cGamepad2;
-    SampleMecanumDriveCancelable drivetrain;
+    SampleMecanumDrive drivetrain;
     public static double startH = 0;
     //public static String allianceColor;
 
@@ -83,7 +83,7 @@ public class gamepad {
             startH -= Math.PI + Math.PI/2; // blue
         }
 
-        this.drivetrain = new SampleMecanumDriveCancelable(hardwareMap);
+        this.drivetrain = new SampleMecanumDrive(hardwareMap);
         this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
         // We want to turn off velocity control for teleop
         // Velocity control per wheel is not necessary outside of motion profiled auto

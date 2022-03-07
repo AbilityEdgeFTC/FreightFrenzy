@@ -6,10 +6,9 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -17,13 +16,13 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocaliz
 @Config
 @Autonomous(group = "drive")
 public class StrafeTest extends LinearOpMode {
-    public static double DISTANCE = 60; // in
+    public static double DISTANCE = 59.06; // in
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        MecanumLocalizer drive = new MecanumLocalizer(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
                 .strafeRight(DISTANCE)
@@ -35,12 +34,15 @@ public class StrafeTest extends LinearOpMode {
 
         drive.followTrajectory(trajectory);
 
-        Pose2d poseEstimate = drive.getPoseEstimate();
-        telemetry.addData("finalX", poseEstimate.getX());
-        telemetry.addData("finalY", poseEstimate.getY());
-        telemetry.addData("finalHeading", poseEstimate.getHeading());
-        telemetry.update();
+        while (opModeIsActive())
+        {
+            drive.update();
+            Pose2d poseEstimate = drive.getPoseEstimate();
+            telemetry.addData("finalX", poseEstimate.getX());
+            telemetry.addData("finalY", poseEstimate.getY());
+            telemetry.addData("finalHeading", poseEstimate.getHeading());
+            telemetry.update();
+        }
 
-        while (!isStopRequested() && opModeIsActive()) ;
     }
 }

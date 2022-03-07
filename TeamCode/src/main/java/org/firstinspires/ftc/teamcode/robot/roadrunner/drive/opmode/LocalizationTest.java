@@ -2,15 +2,15 @@ package org.firstinspires.ftc.teamcode.robot.roadrunner.drive.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.RealsenseLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
-import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -23,10 +23,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 @Config
 public class LocalizationTest extends LinearOpMode {
 
-    public static double startPoseX = 0;
-    public static double startPoseY = 0;
-    public static double startPoseH = 0;
-
     enum RobotLocalizer
     {
         Mecanum,
@@ -34,15 +30,16 @@ public class LocalizationTest extends LinearOpMode {
         Both
     }
 
-    MecanumLocalizer drive;
-    Pose2d poseEstimate;
+    SampleMecanumDrive drive;
     T265Localizer t265Localizer;
 
-    public static RobotLocalizer localizer = RobotLocalizer.Mecanum;
+    Pose2d poseEstimate;
+    Trajectory trajectory;
+    public static AlwaysOnePos.RobotLocalizer localizer = AlwaysOnePos.RobotLocalizer.Camera;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        drive = new MecanumLocalizer(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         switch (localizer)
         {
@@ -50,7 +47,6 @@ public class LocalizationTest extends LinearOpMode {
                 break;
             case Camera:
                 t265Localizer = new T265Localizer(hardwareMap);
-                t265Localizer.start(hardwareMap);
                 drive.setLocalizer(t265Localizer);
                 break;
             case Both:
@@ -58,30 +54,26 @@ public class LocalizationTest extends LinearOpMode {
                 break;
         }
 
-        Pose2d startPose = new Pose2d(startPoseX, startPoseY, Math.toRadians(startPoseH));
-
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        drive.setPoseEstimate(startPose);
-
-        gamepad gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry);
 
         waitForStart();
 
         while (!isStopRequested()) {
-            gamepad.update();
+            drive.setWeightedDrivePower(
+                    new Pose2d(
+                            -gamepad1.left_stick_y,
+                            -gamepad1.left_stick_x,
+                            -gamepad1.right_stick_x
+                    )
+            );
 
             drive.update();
-            poseEstimate = drive.getPoseEstimate();
 
+            Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
-        }
-
-        if(localizer != RobotLocalizer.Mecanum)
-        {
-            t265Localizer.stop();
         }
     }
 }

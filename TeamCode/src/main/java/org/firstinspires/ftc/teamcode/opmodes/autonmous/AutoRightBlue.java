@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
@@ -42,7 +42,7 @@ public class AutoRightBlue extends LinearOpMode {
     //ElevatorThreadAuto threadAuto;
     OpenCvWebcam webcam;
     GreenLanternPipeline pipeline;
-    SampleMecanumDriveCancelable drive;
+    SampleMecanumDrive drive;
 
     TrajectorySequence carouselGo,hub,parking;
 
@@ -64,7 +64,7 @@ public class AutoRightBlue extends LinearOpMode {
         pipeline.DEBUG = false;
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        drive = new SampleMecanumDriveCancelable(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
 
         Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));

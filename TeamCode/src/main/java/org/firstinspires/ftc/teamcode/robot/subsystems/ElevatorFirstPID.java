@@ -48,6 +48,8 @@ public class ElevatorFirstPID {
     }
 
     public void update() {
+        cGamepad.update();
+
         if (usePID)
         {
             switch (elevatorLevel)
