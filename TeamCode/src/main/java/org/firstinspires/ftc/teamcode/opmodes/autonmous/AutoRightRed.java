@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -28,93 +29,114 @@ public class AutoRightRed extends LinearOpMode {
 
     public static double startPoseRightX = 12;
     public static double startPoseRightY = -64.04;
-    public static double startPoseRightH = 0;
-    public static double poseHubFrontX = -11;
-    public static double poseHubFrontY = -41.5;
-    public static double poseHubFrontH = 90;
-    public static double poseEntranceX = 12;
+    public static double startPoseRightH = 90;
+    public static double turnPoseRightX = 0;
+    public static double turnPoseRightY = -62;
+    public static double turnPoseRightH = 180;
+    public static double poseEntranceX = 20;
     public static double poseEntranceY = -64;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 60;
+    public static double poseCollectX = 56;
     public static double poseCollectY = -64;
     public static double poseCollectH = 180;
-    carousel carousel;
+
+    //carousel carousel;
     intake intake;
-    dip dip;
+    //dip dip;
     //ElevatorThreadAuto threadAuto;
-    public static double reverseIntakeFor = .8;
-    OpenCvWebcam webcam;
-    GreenLanternPipeline pipeline;
+    //public static double reverseIntakeFor = .8;
+    //OpenCvWebcam webcam;
+    //GreenLanternPipeline pipeline;
     SampleMecanumDrive drive;
 
-    TrajectorySequence placement,entrance,collect,cycle,entrance2,collect2;
+    TrajectorySequence main;
 
-    public static boolean withVision = true;
+    //public static boolean withVision = true;
 
-    enum levels
+    /*enum levels
     {
         MIN,
         MID,
         MAX
     }
 
-    levels placeFreightIn = levels.MAX;
+    levels placeFreightIn = levels.MAX;*/
 
     @Override
     public void runOpMode() throws InterruptedException {
-        pipeline = new GreenLanternPipeline();
-        pipeline.telemetry = telemetry;
-        pipeline.DEBUG = false;
+        //pipeline = new GreenLanternPipeline();
+        //pipeline.telemetry = telemetry;
+        //pipeline.DEBUG = false;
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
 
+        Pose2d turnPoseRight = new Pose2d(turnPoseRightX,turnPoseRightY,Math.toRadians(turnPoseRightH));
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
-        Pose2d poseHubFront = new Pose2d(poseHubFrontX, poseHubFrontY, Math.toRadians(poseHubFrontH));
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
 
-        carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
-        dip = new dip(hardwareMap);
-        //threadAuto = new ElevatorThreadAuto(hardwareMap);
-
-        initPipeline();
-        webcam.setPipeline(pipeline);
+        //initPipeline();
+        //webcam.setPipeline(pipeline);
 
         drive.setPoseEstimate(startPoseRight);
 
-        placement = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(poseHubFront)
-                .build();
-        entrance = drive.trajectorySequenceBuilder(placement.end())
-                .lineToLinearHeading(poseEntrance)
-                .build();
-
-        collect = drive.trajectorySequenceBuilder(entrance.end())
-                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 15, poseCollect.getY(), poseCollect.getHeading() - Math.toRadians(1.5)))
-                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 10, poseCollect.getY(), poseCollect.getHeading() + Math.toRadians(1.5)))
-                .build();
-
-        cycle = drive.trajectorySequenceBuilder(collect.end())
-                .lineToLinearHeading(poseEntrance)
-                .lineToLinearHeading(poseHubFront)
-                .build();
-
-        entrance2 = drive.trajectorySequenceBuilder(cycle.end())
-                .lineToLinearHeading(poseEntrance)
-                .build();
-
-        collect2 = drive.trajectorySequenceBuilder(entrance2.end())
-                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 10, poseCollect.getY() - 2, poseCollect.getHeading() - Math.toRadians(2)))
-                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 7.5, poseCollect.getY() - 2, poseCollect.getHeading() + Math.toRadians(3)))
-                .lineToLinearHeading(new Pose2d(poseCollect.getX() - 5, poseCollect.getY() - 2, poseCollect.getHeading() + Math.toRadians(3)))
+        main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .forward(5)
+                .lineToSplineHeading(poseEntrance,
+                SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .addDisplacementMarker(() -> {
+                    intake.intakeForward();
+                })
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
+                    intake.intakeBackward();
+                })
+                .lineToSplineHeading(poseEntrance)
+                .addDisplacementMarker(() -> {
+                    intake.intakeForward();
+                })
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
+                    intake.intakeBackward();
+                })
+                .lineToSplineHeading(poseEntrance)
+                .addDisplacementMarker(() -> {
+                    intake.intakeForward();
+                })
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
+                    intake.intakeBackward();
+                })
+                .lineToSplineHeading(poseEntrance)
+                .addDisplacementMarker(() -> {
+                    intake.intakeForward();
+                })
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
+                    intake.intakeBackward();
+                })
+                .lineToSplineHeading(poseEntrance)
+                .addDisplacementMarker(() -> {
+                    intake.intakeForward();
+                })
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
+                    intake.intakeBackward();
+                })
+                .lineToSplineHeading(poseEntrance)
+                .addDisplacementMarker(() -> {
+                    intake.intakeForward();
+                })
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                 .build();
 
         //threadAuto.start();
-        dip.getFreight();
+        //dip.getFreight();
 
-        while (!opModeIsActive() && !isStopRequested())
+        /*while (!opModeIsActive() && !isStopRequested())
         {
             switch (pipeline.getLocation())
             {
@@ -136,137 +158,64 @@ public class AutoRightRed extends LinearOpMode {
             }
             telemetry.addData("Barcode Location:", pipeline.getLocation());
             telemetry.update();
-        }
+        }*/
 
         waitForStart();
 
-        if(withVision){
+        /*if(withVision){
             webcam.stopStreaming();
-        }
-
-        drive.followTrajectorySequence(placement);
-        /*switch (placeFreightIn) {
-            case MIN:
-                goToMin();
-                break;
-            case MID:
-                goToMid();
-                break;
-            case MAX:
-                goToMax();
-                break;
         }*/
-        drive.followTrajectorySequence(entrance);
-        intake.intakeForward();
-        drive.followTrajectorySequence(collect);
-        Thread.sleep(1500);
-        fixIntake();
-        drive.followTrajectorySequence(cycle);
-        //goToMax();
-        drive.followTrajectorySequence(entrance2);
-        intake.intakeForward();
-        drive.followTrajectorySequence(collect2);
-        Thread.sleep(1500);
-        fixIntake();
-        //threadAuto.interrupt();
-        //threadAuto = null;
+
+        drive.followTrajectorySequence(main);
     }
 
-    /*void goToMin() throws InterruptedException
-    {
-        if(opModeIsActive())
-        {
-            threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MIN);
-            sleep(800);
-            dip.releaseFreightPos();
-            sleep(1000);
-            dip.releaseFreight();
-            dip.getFreight();
-            threadAuto.setElevatorState(ElevatorState.ZERO);
-        }
-    }
-
-    void goToMid() throws InterruptedException
-    {
-        if(opModeIsActive())
-        {
-            threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MID);
-            sleep(800);
-            dip.releaseFreightPos();
-            sleep(1000);
-            dip.releaseFreight();
-            dip.getFreight();
-            threadAuto.setElevatorState(ElevatorState.ZERO);
-        }
-    }
-
-    void goToMax() throws InterruptedException
-    {
-        if(opModeIsActive())
-        {
-            threadAuto.setElevatorState(ElevatorThreadAuto.ElevatorState.MAX);
-            sleep(800);
-            dip.releaseFreightPos();
-            sleep(1000);
-            dip.releaseFreight();
-            dip.getFreight();
-            threadAuto.setElevatorState(ElevatorState.ZERO);
-        }
-    }*/
-
-    void initPipeline()
-    {
-        //setting up webcam from config, and displaying it in the teleop controller.
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-
-        //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
-        pipeline.telemetry = telemetry;
-        pipeline.DEBUG = false;
-
-        webcam.setPipeline(pipeline);
-
-        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                /*
-                 * Tell the webcam to start streaming images to us! Note that you must make sure
-                 * the resolution you specify is supported by the camera. If it is not, an exception
-                 * will be thrown.
-                 *
-                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
-                 * supports streaming from the webcam in the uncompressed YUV image format. This means
-                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
-                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
-                 *
-                 * Also, we specify the rotation that the webcam is used in. This is so that the image
-                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
-                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
-                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
-                 * away from the user.
-                 */
-                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-                FtcDashboard.getInstance().startCameraStream(webcam,0);
-            }
-
-            @Override
-            public void onError(int errorCode)
-            {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
-            }
-        });
-    }
-
-    void fixIntake() throws InterruptedException {
-        intake.intakeBackward();
-        Thread.sleep((long)(reverseIntakeFor * 1000));
-        intake.stop();
-    }
+//    void initPipeline()
+//    {
+//        //setting up webcam from config, and displaying it in the teleop controller.
+//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+//
+//        //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
+//        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+//        pipeline.telemetry = telemetry;
+//        pipeline.DEBUG = false;
+//
+//        webcam.setPipeline(pipeline);
+//
+//        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+//        {
+//            @Override
+//            public void onOpened()
+//            {
+//                /*
+//                 * Tell the webcam to start streaming images to us! Note that you must make sure
+//                 * the resolution you specify is supported by the camera. If it is not, an exception
+//                 * will be thrown.
+//                 *
+//                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
+//                 * supports streaming from the webcam in the uncompressed YUV image format. This means
+//                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
+//                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
+//                 *
+//                 * Also, we specify the rotation that the webcam is used in. This is so that the image
+//                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
+//                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
+//                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
+//                 * away from the user.
+//                 */
+//                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+//                FtcDashboard.getInstance().startCameraStream(webcam,0);
+//            }
+//
+//            @Override
+//            public void onError(int errorCode)
+//            {
+//                /*
+//                 * This will be called if the camera could not be opened
+//                 */
+//            }
+//        });
+//    }
 
 }

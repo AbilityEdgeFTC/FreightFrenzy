@@ -14,9 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class ElevatorSpinnerLibraryPID {
 
-    public static double RIGHT_ANGLE = 60;
-    public static double LEFT_ANGLE = -60;
-    public static double ZERO_ANGLE = 0;
+    double RIGHT_ANGLE = 0, RIGHT_ANGLE_SHARED = 0, LEFT_ANGLE = 0, LEFT_ANGLE_SHARED = 0, ZERO_ANGLE = 0;
     public static double power = 0.2;
     boolean usePID = true;
     public static double kP = 6;
@@ -35,6 +33,8 @@ public class ElevatorSpinnerLibraryPID {
         ZERO_RED,
         ZERO_BLUE,
         ZERO_DO_NOT_USE,
+        SHARED_RED,
+        SHARED_BLUE,
         RIGHT
     }
 
@@ -52,15 +52,14 @@ public class ElevatorSpinnerLibraryPID {
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
         ZERO_ANGLE = encoderTicksToRadians(315);
-        RIGHT_ANGLE = encoderTicksToRadians(200);
+        LEFT_ANGLE_SHARED = encoderTicksToRadians(-150);
         LEFT_ANGLE = encoderTicksToRadians(-200);
+        RIGHT_ANGLE_SHARED = encoderTicksToRadians(150);
+        RIGHT_ANGLE = encoderTicksToRadians(200);
     }
 
     public void update()
     {
-        ZERO_ANGLE = encoderTicksToRadians(315);
-        RIGHT_ANGLE = encoderTicksToRadians(200);
-        LEFT_ANGLE = encoderTicksToRadians(-200);
         cGamepad.update();
 
         if(usePID)
@@ -78,8 +77,15 @@ public class ElevatorSpinnerLibraryPID {
                     break;
                 case ZERO_RED:
                     target = ZERO_ANGLE;
+                    break;
                 case ZERO_BLUE:
                     target = ZERO_ANGLE;
+                    break;
+                case SHARED_RED:
+                    target = RIGHT_ANGLE_SHARED;
+                    break;
+                case SHARED_BLUE:
+                    target = LEFT_ANGLE_SHARED;
                     break;
             }
 
@@ -116,6 +122,11 @@ public class ElevatorSpinnerLibraryPID {
         target = newTarget;
     }
 
+    public boolean getUsePID()
+    {
+        return usePID;
+    }
+
     public void setUsePID(boolean usePID)
     {
         this.usePID = usePID;
@@ -128,4 +139,5 @@ public class ElevatorSpinnerLibraryPID {
     public static void setSpinnerState(SpinnerState spinnerState) {
         ElevatorSpinnerLibraryPID.spinnerState = spinnerState;
     }
+
 }

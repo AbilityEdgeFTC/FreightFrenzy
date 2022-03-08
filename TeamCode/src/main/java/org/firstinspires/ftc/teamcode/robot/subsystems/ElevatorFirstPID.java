@@ -13,15 +13,15 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 25,HUB_LEVEL2 = 19,HUB_LEVEL1 = 17;
-    public static double SHARED_HUB = 4.5;
+    public static double HUB_LEVEL3 = 21,HUB_LEVEL2 = 19,HUB_LEVEL1 = 17;
+    public static double SHARED_HUB = 5.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
     double target;
     public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
-    public static double power = 1;
-    public static boolean usePID = true;
+    double power = 1;
+    boolean usePID = true;
 
     public enum ElevatorLevel {
         ZERO,
@@ -119,7 +119,7 @@ public class ElevatorFirstPID {
         ElevatorFirstPID.elevatorLevel = elevatorLevel;
     }
 
-    public static double getPower() {
+    public double getPower() {
         return power;
     }
 
@@ -128,7 +128,7 @@ public class ElevatorFirstPID {
         return usePID;
     }
 
-    public static void setPower(double power) {
-        ElevatorFirstPID.power = power;
+    public void setPower(double power) {
+        this.power = power;
     }
 }

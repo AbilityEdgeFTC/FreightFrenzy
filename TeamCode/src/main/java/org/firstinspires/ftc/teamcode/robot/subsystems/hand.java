@@ -18,6 +18,7 @@ public class hand {
     Telemetry telemetry;
     public static double intakePos = 0.07;
     public static double /*level1Hub = 1, level2Hub = .8, */level3Hub = .65, levelSharedHub = .9;
+    public static double offset = 0;
 
     public enum HandPos
     {
@@ -72,14 +73,14 @@ public class hand {
     {
         handPos = HandPos.INTAKE;
         sL.setPosition(intakePos);
-        sR.setPosition(intakePos);
+        sR.setPosition(intakePos-offset);
     }
 
     public void shared()
     {
         handPos = HandPos.SHARED_HUB;
         sL.setPosition(levelSharedHub);
-        sR.setPosition(levelSharedHub);
+        sR.setPosition(levelSharedHub-offset);
     }
 
     // spin dip servo to intake positions, and holding servo to hold position.
@@ -89,7 +90,7 @@ public class hand {
 //        sL.setPosition(level1Hub);
 //        sR.setPosition(level1Hub);
         sL.setPosition(level3Hub);
-        sR.setPosition(level3Hub);
+        sR.setPosition(level3Hub-offset);
     }
 
     public void level2()
@@ -98,21 +99,21 @@ public class hand {
 //        sL.setPosition(level2Hub);
 //        sR.setPosition(level2Hub);
         sL.setPosition(level3Hub);
-        sR.setPosition(level3Hub);
+        sR.setPosition(level3Hub-offset);
     }
 
     public void level3()
     {
         handPos = HandPos.THREE_HUB;
         sL.setPosition(level3Hub);
-        sR.setPosition(level3Hub);
+        sR.setPosition(level3Hub-offset);
     }
 
 
     public void moveTo(double position)
     {
         sL.setPosition(position);
-        sR.setPosition(position);
+        sR.setPosition(position-offset);
     }
 
     // display position of servo's.
