@@ -6,48 +6,44 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 @Config
-public class dip {
+public class FreightSensor {
 
-    Servo sD;
-    public static double releasingPosition = .55, holdingPosition = 0.13;
+    AnalogInput freightSensor;
+    public static double voltageThreshold = (float) 0.00000000000000001;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public dip(HardwareMap hardwareMap) {
-        this.sD = hardwareMap.get(Servo.class, "sD");
+    public FreightSensor(HardwareMap hardwareMap) {
+        this.freightSensor = hardwareMap.get(AnalogInput.class, "freightSensor");
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public dip(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.sD = hardwareMap.get(Servo.class, "sD");
+    public FreightSensor(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.freightSensor = hardwareMap.get(AnalogInput.class, "freightSensor");
         this.telemetry = telemetry;
     }
 
     // spin dip servo to intake positions, and holding servo to hold position.
-    public void getFreight() {
-        sD.setPosition(releasingPosition);
+    public boolean freightOn()
+    {
+        if(freightSensor.getVoltage() < voltageThreshold){
+            return false;
+        } else {
+            return true;
+        }
+
     }
 
-    // spin holding servo to push position.
-    public void releaseFreight() {
-        sD.setPosition(releasingPosition);
-    }
-
-    // spin holding servo to push position.
-    public void holdFreight() {
-        sD.setPosition(holdingPosition);
-    }
     // display position of servo's.
     public void displayTelemetry(){
-        telemetry.addLine("Servo Dip at: " + sD.getPosition());
+        telemetry.addData("Sensor value", freightSensor.getVoltage());
         telemetry.update();
     }
 
