@@ -243,6 +243,7 @@ public class teleopOwlRed extends LinearOpMode {
                 resetElevator();
                 elevator.update();
                 spinner.update();
+                gamepad.setSlowMove(false);
                 if(withPID())
                 {
                     handMoving();
@@ -250,6 +251,7 @@ public class teleopOwlRed extends LinearOpMode {
 
                 if (gamepad1.right_bumper)
                 {
+                    gamepad.setSlowMove(true);
                     powerElevator = powerSlowElevator;
                     elevator.setPower(powerElevator);
                     //intake.spinIntake = false;

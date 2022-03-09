@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 public class gamepad {
 
     public static boolean DEBUG = true;
-    public static boolean redAlliance = false;
+    public static boolean redAlliance = true;
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
@@ -76,12 +76,12 @@ public class gamepad {
         if(DEBUG && redAlliance)
         {
             startH = 0;
-            startH -= Math.PI + Math.PI/2; // red
+            startH -= Math.PI/2; // red
         }
         else if(DEBUG && !redAlliance)
         {
             startH = 0;
-            startH -= Math.PI/2; // blue
+            startH -= Math.PI + Math.PI/2; // blue
         }
 
         this.drivetrain = new SampleMecanumDrive(hardwareMap);
@@ -103,12 +103,6 @@ public class gamepad {
         else
         {
             slowMove = false;
-        }
-
-        if (slowMove) {
-            power = slowPower;
-        } else {
-            power = mainPower;
         }
 
         if(cGamepad1.XOnce())
@@ -136,6 +130,10 @@ public class gamepad {
         drive = -gamepad1.left_stick_y;
         strafe = gamepad1.left_stick_x;
         twist = gamepad1.right_stick_x * multiplier;
+        if(slowMove)
+        {
+            twist = Range.clip(twist, -slowPower, slowPower);
+        }
     }
 
     public void regularDrive()
@@ -187,6 +185,10 @@ public class gamepad {
     public void saveIMUHeading()
     {
         ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + getIMU());
+    }
+
+    public static void setSlowMove(boolean slowMove) {
+        gamepad.slowMove = slowMove;
     }
 
     public static void setRedAlliance(boolean redAlliance) {
