@@ -40,15 +40,16 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @TeleOp(group="Tests")
-public class GreenLanternOpMode extends LinearOpMode {
+public class YCbCrOpMode extends LinearOpMode {
 
     OpenCvWebcam webcam;
 
     @Override
     public void runOpMode() {
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+        YCbCrPipeline pipeline = new YCbCrPipeline();
         pipeline.telemetry = telemetry;
+        pipeline.DEBUG = false;
 
         initPipeline();
         webcam.setPipeline(pipeline);
@@ -59,7 +60,10 @@ public class GreenLanternOpMode extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            telemetry.addData("Barcode Location:",pipeline.getLocation());
+            //telemetry.addData("Barcode Location:",pipeline.getLocation());
+            telemetry.addData("LEFT", pipeline.barcodeLeft);
+            telemetry.addData("CENTER", pipeline.barcodeCenter);
+            telemetry.addData("RIGHT", pipeline.barcodeRight);
             telemetry.update();
         }
 
@@ -74,7 +78,7 @@ public class GreenLanternOpMode extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+        YCbCrPipeline pipeline = new YCbCrPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 

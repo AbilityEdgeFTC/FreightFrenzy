@@ -13,15 +13,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorLibraryPID.SHARED_HUB;
-import static org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorLibraryPID.ZERO_HEIGHT;
 
 @Config
 @TeleOp(name = "TeleOp Red Alliance", group = "main")
@@ -38,10 +35,10 @@ public class teleopOwlRed extends LinearOpMode {
     dip dip;
     private boolean frontIntake = false, backIntake = false;
     cGamepad cGamepad1, cGamepad2;
-    public static double powerIntake = 1, powerSlowElevator = .6, powerElevator = 1, powerSlowElevatorHub = .1;
+    public static double powerIntake = 1, powerSlowElevator = .6, powerElevator = 1, powerLevel1Back = .1, powerLevel12ack = .3;
     boolean canIntake = true;
     double position = 0;
-    ElapsedTime sharedTime;
+    ElapsedTime resetElevator;
 
 
     enum ElevatorMovement
@@ -60,6 +57,7 @@ public class teleopOwlRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
+        gamepad.redAlliance = true;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new ElevatorSpinnerLibraryPID(hardwareMap, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
@@ -72,7 +70,7 @@ public class teleopOwlRed extends LinearOpMode {
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
         spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.ZERO_RED);
-        sharedTime = new ElapsedTime();
+        resetElevator = new ElapsedTime();
 
         // wait till after init
         waitForStart();
@@ -129,24 +127,26 @@ public class teleopOwlRed extends LinearOpMode {
     {
         position = hand.getPos();
 
-        if(cGamepad2.rightBumperOnce() && hand.getPos() <= 0.95)
+        if(cGamepad2.rightBumperOnce() && hand.getPos() <= 0.99)
         {
-            position += 0.05;
+            position += 0.01;
             hand.moveTo(position);
         }
-        else if(cGamepad2.leftBumperOnce() && hand.getPos() > 0.05)
+        else if(cGamepad2.leftBumperOnce() && hand.getPos() > 0.01)
         {
-            position -= 0.05;
+            position -= 0.01;
             hand.moveTo(position);
         }
+
     }
 
-    void pidToggles()
+    boolean pidToggles()
     {
-        if(gamepad2.left_stick_button)
+        if(gamepad2.left_stick_button || gamepad2.right_stick_y != 0 || gamepad2.right_stick_x != 0 || gamepad2.left_stick_y != 0 || gamepad2.left_stick_x != 0)
         {
             spinner.setUsePID(false);
             elevator.setUsePID(false);
+            return false;
         }
         else if(gamepad2.right_stick_button || gamepad1.left_bumper)
         {
@@ -171,17 +171,18 @@ public class teleopOwlRed extends LinearOpMode {
                     break;
             }
         }
+        return true;
     }
 
     void carouselSpinning()
     {
         if(gamepad2.dpad_right)
         {
-            carousel.spin(false);
+            carousel.spin(false, true);
         }
         else if(gamepad2.dpad_left)
         {
-            carousel.spin(true);
+            carousel.spin(true, true);
         }
         else
         {
@@ -255,7 +256,10 @@ public class teleopOwlRed extends LinearOpMode {
                     frontIntake = false;
                     backIntake = false;
                     canIntake = false;
-                    dip.holdFreight();
+                    if(!withPID())
+                    {
+                        dip.holdFreight();
+                    }
 
                     switch (elevatorLevel)
                     {
@@ -311,7 +315,6 @@ public class teleopOwlRed extends LinearOpMode {
                 {
                     hand.shared();
                 }
-                sharedTime.reset();
                 elevatorMovement = ElevatorMovement.DIP;
                 break;
             case DIP:
@@ -322,12 +325,20 @@ public class teleopOwlRed extends LinearOpMode {
                     handMoving();
                 }
 
-                if(gamepad1.left_bumper)
+                if(gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1 && elevator.getUsePID() == false && spinner.getUsePID() == false)
                 {
                     dip.releaseFreight();
+                }
 
+                if(gamepad1.left_bumper)
+                {
+                    resetElevator.reset();
                     if(!withPID())
                     {
+                        if(!withPID())
+                        {
+                            dip.releaseFreight();
+                        }
                         hand.intake();
                     }
 
@@ -338,7 +349,7 @@ public class teleopOwlRed extends LinearOpMode {
                     if(spinner.getSpinnerState() == ElevatorSpinnerLibraryPID.SpinnerState.SHARED_RED)
                     {
                         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
-                        sharedTime.reset();
+                        resetElevator.reset();
                     }
 
                     elevatorMovement = ElevatorMovement.SPIN;
@@ -353,18 +364,29 @@ public class teleopOwlRed extends LinearOpMode {
     void resetElevator()
     {
 
-        dip.getFreight();
         if(!withPID())
         {
-            hand.intake();
+            dip.releaseFreight();
         }
 
         elevator.setPower(powerSlowElevator);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         switch (elevatorLevel)
         {
             case 0:
                 spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.SHARED_RED);
-                if(sharedTime.seconds() > .67)
+                if(resetElevator.seconds() > .67 && pidToggles())
+                {
+                    elevator.setUsePID(true);
+                }
+                else
+                {
+                    elevator.setUsePID(false);
+                }
+                break;
+            case 1:
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                if(resetElevator.seconds() > 1.3 && pidToggles())
                 {
                     elevator.setUsePID(true);
                 }
@@ -374,13 +396,33 @@ public class teleopOwlRed extends LinearOpMode {
                 }
                 break;
             case 3:
-            case 2:
-            case 1:
                 spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                if(resetElevator.seconds() > .13 && pidToggles())
+                {
+                    elevator.setUsePID(true);
+                }
+                else
+                {
+                    elevator.setUsePID(false);
+                }
+                break;
+            case 2:
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                if(resetElevator.seconds() > .55 && pidToggles())
+                {
+                    elevator.setUsePID(true);
+                }
+                else
+                {
+                    elevator.setUsePID(false);
+                }
                 break;
         }
 
-        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+        if(!withPID())
+        {
+            hand.intake();
+        }
 
         canIntake = true;
     }

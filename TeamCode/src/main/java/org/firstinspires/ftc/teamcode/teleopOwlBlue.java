@@ -88,7 +88,7 @@ public class teleopOwlBlue extends LinearOpMode {
             elevatorSwitch();
             resetElevatorMidMoving();
             pidToggles();
-            carouselSpinning();
+            //carouselSpinning();
             if(withPID())
             {
                 handMoving();
@@ -172,7 +172,7 @@ public class teleopOwlBlue extends LinearOpMode {
         }
     }
 
-    void carouselSpinning()
+    /*void carouselSpinning()
     {
         if(gamepad2.dpad_right)
         {
@@ -186,7 +186,7 @@ public class teleopOwlBlue extends LinearOpMode {
         {
             carousel.stop();
         }
-    }
+    }*/
 
     void intakeToggles()
     {

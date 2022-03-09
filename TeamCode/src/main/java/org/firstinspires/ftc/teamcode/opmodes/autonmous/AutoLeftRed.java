@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
+import org.firstinspires.ftc.teamcode.opmodes.Vision.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
@@ -130,7 +130,7 @@ public class AutoLeftRed extends LinearOpMode {
         }
 
         drive.followTrajectorySequence(carouselGo);
-        runCarousel();
+        //runCarousel();
         drive.followTrajectorySequence(hub);
         /*switch (placeFreightIn) {
             case MIN:
@@ -148,12 +148,12 @@ public class AutoLeftRed extends LinearOpMode {
         //threadAuto = null;
     }
 
-    void runCarousel() throws InterruptedException
+    /*void runCarousel() throws InterruptedException
     {
         carousel.spin(true);
         sleep((long)(runCarouselFor * 1000));
         carousel.stop();
-    }
+    }*/
 
     /*void goToMin() throws InterruptedException
     {

@@ -38,11 +38,19 @@ public class carousel {
     }
 
     // spin carousel motor with power, option for reversed is added.
-    public void spin(boolean reverse){
-        if(reverse){
-            sCL.setPower(-powerCarousel);
-        }else{
-            sCR.setPower(powerCarousel);
+    public void spin(boolean reverse, boolean isRed){
+        if (isRed) {
+            if (reverse) {
+                sCL.setPower(powerCarousel);
+            } else {
+                sCL.setPower(-powerCarousel);
+            }
+        } else if (!isRed) {
+            if (reverse) {
+                sCR.setPower(powerCarousel);
+            } else {
+                sCR.setPower(-powerCarousel);
+            }
         }
     }
 

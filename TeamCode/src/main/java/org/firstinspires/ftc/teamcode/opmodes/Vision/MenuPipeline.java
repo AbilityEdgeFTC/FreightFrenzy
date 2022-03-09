@@ -18,67 +18,66 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Config
 public class MenuPipeline extends OpenCvPipeline
 {
-//    public static int hMax = 255;
-//    public static int sMax = 255;
-//    public static int vMax = 255;
-//
-//    public static int hMin = 0;
-//    public static int sMin = 0;
-//    public static int vMin = 0;
-//
-//    public static int[] max ={hMax,sMax,vMax};
-//    public static int[] min ={hMin,sMin,vMin};
+    // creating 3 rectangles(sections) for checking the colors inside them.
+    final Rect LEFT_SEC = new Rect(
+            new Point(426.666667,300),//mask.cols()/7, mask.rows()/5 * 2
+            new Point(0,720));//mask.cols()/7 * 2, mask.rows()/5 * 4)
+
+
+    final Rect CENTER_SEC = new Rect(
+            new Point(853.333334,300),
+            new Point(426.666667,720));
+
+    final Rect RIGHT_SEC = new Rect(
+            new Point(1280,300),
+            new Point(853.333334,720));
+
+    public static double threshold = 10000;
+
+    boolean barcodeLeft, barcodeCenter, barcodeRight;
+    Scalar colorBarcodeRect = new Scalar(0, 255, 0);
 
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
-    Mat inputHSV = new Mat(1280,720,0);
+    Mat inputYCbCr = new Mat(1280,720,0);
 
     public static boolean DEBUG = true;
 
     public static double[] max ={255,255,255};
     public static double[] min ={0,0,0};
+
     public Telemetry telemetry;
 
     @Override
     public Mat processFrame(Mat input) {
-        // HSV low and high values for our team shipping element.
-        Scalar highValuesTSE = new Scalar(max[0], max[1], max[2]);
-        Scalar lowValuesTSE = new Scalar(min[0], min[1], min[2]);
-
-//        Scalar lowValuesDUCK = new Scalar(hMin, sMin, vMin);
-//        Scalar highValuesDUCK = new Scalar(hMax, sMax, vMax);
-
-        Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2YCrCb);
+        Scalar lowValues = new Scalar(min[0], min[1], min[2]);
+        Scalar highValues = new Scalar(max[0], max[1], max[2]);
 
         // turning all colors not between the low and high values to black and the rest white.
-//        if(TSE){
-//            Core.inRange(inputHSV, lowValuesTSE, highValuesTSE, mask);
-//            telemetry.addLine("Using: TSE");
-//        }else if(!TSE){
-//            Core.inRange(inputHSV, lowValuesDUCK, highValuesDUCK, mask);
-//            telemetry.addLine("Using: DUCKS");
-//        }else{
-//            Core.inRange(inputHSV, lowValuesDUCK, highValuesDUCK, mask);
-//            telemetry.addLine("Using: NONE");
-//        }
+        //Core.inRange(inputYCbCr, lowValues, highValues, mask);
 
         // taking sections from the mask to another mat
-        //Mat all = mask.submat(ALL_SEC);
+        /*Mat left = mask.submat(LEFT_SEC);
+        Mat center = mask.submat(CENTER_SEC);
+        Mat right = mask.submat(RIGHT_SEC);
 
-        // calculating the average amount of color in the SECTION.
-        //double allAvg = Core.sumElems(all).val[0] / ALL_SEC.area()/255;
+        barcodeLeft = Core.countNonZero(left) > threshold;
+        barcodeCenter = Core.countNonZero(center) > threshold;
+        barcodeRight = Core.countNonZero(right) > threshold;
+
         // we release the mats for use.
-        //all.release();
-        // if debugging so we display more values in telemetry.
-
-        Core.inRange(inputHSV, lowValuesTSE, highValuesTSE, mask);
-
-        telemetry.update();
+        left.release();
+        center.release();
+        right.release();
 
         Imgproc.cvtColor(mask, mask, Imgproc.COLOR_GRAY2RGB);
 
         // creating 3 rectangles at the mask mat with the color @colorBarcodeRect@ and the rectangle points LEFT/CENTER/RIGHT.
-        //Imgproc.rectangle(mask, ALL_SEC, colorBarcodeRect);
+        Imgproc.rectangle(mask, LEFT_SEC, colorBarcodeRect);
+        Imgproc.rectangle(mask, CENTER_SEC, colorBarcodeRect);
+        Imgproc.rectangle(mask, RIGHT_SEC, colorBarcodeRect);
+
+        telemetry.update();*/
 
         return mask;
     }

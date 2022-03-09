@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 
 /*
@@ -21,6 +22,7 @@ public class ElevatorSpinnerLibraryPID {
     public static double kI = 0;
     public static double kD = 0;
     double target = 0;
+    public static double maxPower = 0.4;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     DcMotorEx motor;
@@ -53,9 +55,17 @@ public class ElevatorSpinnerLibraryPID {
         this.cGamepad = new cGamepad(gamepad);
         ZERO_ANGLE = encoderTicksToRadians(315);
         LEFT_ANGLE_SHARED = encoderTicksToRadians(-150);
-        LEFT_ANGLE = encoderTicksToRadians(-200);
+        LEFT_ANGLE = encoderTicksToRadians(-203);
         RIGHT_ANGLE_SHARED = encoderTicksToRadians(150);
-        RIGHT_ANGLE = encoderTicksToRadians(200);
+        RIGHT_ANGLE = encoderTicksToRadians(203);
+    }
+
+    public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap)
+    {
+        this.motor = hardwareMap.get(DcMotorEx.class, "mS");
+        this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void update()
@@ -93,7 +103,7 @@ public class ElevatorSpinnerLibraryPID {
         }
         else
         {
-            motor.setPower(gamepad.right_stick_x);
+            motor.setPower(Range.clip(gamepad.right_stick_x, -maxPower, maxPower));
 
         }
 

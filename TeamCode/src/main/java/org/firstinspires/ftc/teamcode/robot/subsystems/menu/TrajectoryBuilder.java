@@ -16,7 +16,7 @@
 //import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDriveCancelable;
 //import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.MecanumLocalizer;
 //import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-//import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
+//import org.firstinspires.ftc.teamcode.robot.subsystems.YCbCrPipeline;
 //import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 //import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 //import org.firstinspires.ftc.teamcode.robot.subsystems.intake;

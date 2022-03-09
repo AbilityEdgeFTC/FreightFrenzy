@@ -7,18 +7,10 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
-import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -46,7 +38,7 @@ public class AutoRightRed extends LinearOpMode {
     //ElevatorThreadAuto threadAuto;
     //public static double reverseIntakeFor = .8;
     //OpenCvWebcam webcam;
-    //GreenLanternPipeline pipeline;
+    //YCbCrPipeline pipeline;
     SampleMecanumDrive drive;
 
     TrajectorySequence main;
@@ -64,7 +56,7 @@ public class AutoRightRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        //pipeline = new GreenLanternPipeline();
+        //pipeline = new YCbCrPipeline();
         //pipeline.telemetry = telemetry;
         //pipeline.DEBUG = false;
 
@@ -176,7 +168,7 @@ public class AutoRightRed extends LinearOpMode {
 //        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 //
 //        //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-//        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+//        YCbCrPipeline pipeline = new YCbCrPipeline();
 //        pipeline.telemetry = telemetry;
 //        pipeline.DEBUG = false;
 //

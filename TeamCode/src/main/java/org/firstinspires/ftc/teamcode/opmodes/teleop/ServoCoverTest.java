@@ -38,11 +38,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 // 1 is out freight from intake
 @Config
 @TeleOp(group="Tests")
-public class ServoTest extends LinearOpMode {
+public class ServoCoverTest extends LinearOpMode {
 
     Servo servo;
-    public static double position = 0.08;
-    //public static String name = "sD";
+    public static double position = 0.55;
 
     @Override
     public void runOpMode() throws InterruptedException {

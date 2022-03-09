@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.Vision;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -121,6 +122,8 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
             // (typically 16/9).
             tfod.setZoom(2.5, 16.0/9.0);
         }
+
+        FtcDashboard.getInstance().startCameraStream(vuforia,0);
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");

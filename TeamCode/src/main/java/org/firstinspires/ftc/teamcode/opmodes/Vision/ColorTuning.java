@@ -35,12 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.robot.subsystems.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -164,14 +159,16 @@ public class ColorTuning extends LinearOpMode {
             telemetry.addLine("(h) " +  ": " +min[0] + " " + max[0]);
             telemetry.addLine("(s) " +  ": " +min[1] + " " + max[1]);
             telemetry.addLine("(v) " +  ": " +min[2] + " " + max[2]);
-
+            telemetry.addData("LEFT", pipeline.barcodeLeft);
+            telemetry.addData("CENTER", pipeline.barcodeCenter);
+            telemetry.addData("RIGHT", pipeline.barcodeRight);
             //}
 
-            if(cGamepad1.AOnce())
-            {
-                pipeline.setMax(max);
-                pipeline.setMin(min);
-            }
+//            if(cGamepad1.AOnce())
+//            {
+//                pipeline.setMax(max);
+//                pipeline.setMin(min);
+//            }
             //telemetry.addData("Barcode Location:",pipeline.getLocation());
             telemetry.update();
         }
@@ -185,6 +182,9 @@ public class ColorTuning extends LinearOpMode {
         //setting up webcam from config, and displaying it in the teleop controller.
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
+        MenuPipeline pipeline = new MenuPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 

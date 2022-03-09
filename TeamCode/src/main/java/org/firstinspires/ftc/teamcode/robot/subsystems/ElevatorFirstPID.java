@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 21,HUB_LEVEL2 = 19,HUB_LEVEL1 = 17;
+    public static double HUB_LEVEL3 = 21,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5;
     public static double SHARED_HUB = 5.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
@@ -22,6 +22,7 @@ public class ElevatorFirstPID {
     public static double SPOOL_RADIUS = 0.75; // in
     double power = 1;
     boolean usePID = true;
+    public static double maxPower = 0.7;
 
     public enum ElevatorLevel {
         ZERO,
@@ -78,7 +79,7 @@ public class ElevatorFirstPID {
         else
         {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            motor.setPower(Range.clip(-gamepad.left_stick_y, -power, power));
+            motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower, maxPower));
         }
     }
 
@@ -93,6 +94,11 @@ public class ElevatorFirstPID {
     public int getPosition()
     {
         return motor.getCurrentPosition();
+    }
+
+    public double getHeight()
+    {
+        return encoderTicksToInches(motor.getCurrentPosition());
     }
 
     public double getTarget()

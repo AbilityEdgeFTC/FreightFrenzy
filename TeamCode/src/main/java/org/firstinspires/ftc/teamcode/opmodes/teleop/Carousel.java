@@ -61,11 +61,11 @@ public class Carousel extends LinearOpMode {
 
             if(reverse)
             {
-                carousel.spin(true);
+                carousel.spin(true, true);
             }
             else
             {
-                carousel.spin(false);
+                carousel.spin(false, true);
             }
 
             carousel.displayTelemetry();

@@ -39,6 +39,7 @@ public class gamepad {
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
     public static double startH = 0;
+
     //public static String allianceColor;
 
     /**
@@ -75,12 +76,12 @@ public class gamepad {
         if(DEBUG && redAlliance)
         {
             startH = 0;
-            startH -= Math.PI/2; // red
+            startH -= Math.PI + Math.PI/2; // red
         }
         else if(DEBUG && !redAlliance)
         {
             startH = 0;
-            startH -= Math.PI + Math.PI/2; // blue
+            startH -= Math.PI/2; // blue
         }
 
         this.drivetrain = new SampleMecanumDrive(hardwareMap);
