@@ -22,10 +22,10 @@ public class MMLeftRed {
         double poseParkcH = 180;
 
         double poseParkaX = 3;
-        double poseParkaY = -3;
+        double poseParkaY = -8;
         double poseParkaH = 180;
 
-        double poseParkbX = 10;
+        double poseParkbX = 6.5;
         double poseParkbY = -40;
         double poseParkbH = 180;
 

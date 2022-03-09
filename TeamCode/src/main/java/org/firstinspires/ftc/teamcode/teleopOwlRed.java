@@ -57,7 +57,7 @@ public class teleopOwlRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
-        gamepad.redAlliance = true;
+        gamepad.setRedAlliance(true);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new ElevatorSpinnerLibraryPID(hardwareMap, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
@@ -333,18 +333,21 @@ public class teleopOwlRed extends LinearOpMode {
                 if(gamepad1.left_bumper)
                 {
                     resetElevator.reset();
+
                     if(!withPID())
                     {
-                        if(!withPID())
-                        {
-                            dip.releaseFreight();
-                        }
-                        hand.intake();
+                        dip.releaseFreight();
                     }
+
 
                     //intake.spinIntake = true;
                     canIntake = true;
                     frontIntake = true;
+
+                    if(!withPID())
+                    {
+                        hand.intake();
+                    }
 
                     if(spinner.getSpinnerState() == ElevatorSpinnerLibraryPID.SpinnerState.SHARED_RED)
                     {

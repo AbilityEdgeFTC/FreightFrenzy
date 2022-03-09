@@ -1,85 +1,73 @@
 package org.firstinspires.ftc.teamcode.robot.roadrunner.localizers;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.arcrobotics.ftclib.geometry.Transform2d;
+import com.arcrobotics.ftclib.geometry.Translation2d;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.spartronics4915.lib.T265Camera;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265StartupHook.slamera;
-
-/**
- * Localizer for the T265 camera.
- */
-public class T265Localizer implements Localizer {
-
-    T265StartupHook t265StartupHook = new T265StartupHook();
+public class T265Localizer implements Localizer
+{
+    // We treat this like a singleton because there should only ever be one object per camera
+    private static T265Camera slamra = null;
+    T265Camera.CameraUpdate up;
+    public static double X = 0;
+    public static double Y = 0;
 
     public T265Localizer(HardwareMap hardwareMap)
     {
-        t265StartupHook.createSlamera(hardwareMap.appContext);
-    }
-    public interface SendOdometryFunction {
-        Vector2d run();
+        Translation2d translation2d = new Translation2d(X / 100, Y / 100);
+        Rotation2d rotation2d = new Rotation2d(Math.toRadians(0));
+        if(slamra == null)
+        {
+            slamra = new T265Camera(new Transform2d(translation2d, rotation2d), 0.1, hardwareMap.appContext);
+        }
+        start();
     }
 
-    private SendOdometryFunction sendOdometryCallback;
+    public void start() {
+        slamra.start();
+    }
 
-    /**
-     * Get the current pose of the T265.
-     * @return the pose
-     */
-    @NotNull
+    public void stop() {
+        slamra.stop();
+    }
+
     @Override
-    public Pose2d getPoseEstimate() {
-        //return slamera.getLastReceivedCameraUpdate().pose;
-        return new Pose2d();
+    public @NotNull Pose2d getPoseEstimate() {
+        up = slamra.getLastReceivedCameraUpdate();
+        return new Pose2d(-up.pose.getY() / 0.0254, up.pose.getX() / 0.0254, up.pose.getHeading());
     }
 
-    /**
-     * Set the pose of the T265 camera.
-     * @param pose2d the pose
-     */
     @Override
     public void setPoseEstimate(@NotNull Pose2d pose2d) {
-        slamera.setPose(new com.arcrobotics.ftclib.geometry.Pose2d(pose2d.getX(), pose2d.getY(), new Rotation2d(pose2d.getHeading())));
+        up = slamra.getLastReceivedCameraUpdate();
+        slamra.setPose(new com.arcrobotics.ftclib.geometry.Pose2d(pose2d.getY() * 0.0254, -pose2d.getX() * 0.0254, new Rotation2d(pose2d.getHeading())));
     }
 
-    /**
-     * Get the current velocity of the T265.
-     * @return the velocity
-     */
-    @Nullable
     @Override
-    public Pose2d getPoseVelocity() {
-        return new Pose2d(slamera.getLastReceivedCameraUpdate().velocity.vxMetersPerSecond, slamera.getLastReceivedCameraUpdate().velocity.vyMetersPerSecond, slamera.getLastReceivedCameraUpdate().velocity.omegaRadiansPerSecond);
+    public @Nullable Pose2d getPoseVelocity() {
+        up = slamra.getLastReceivedCameraUpdate();
+        return new Pose2d(-up.velocity.vyMetersPerSecond / 0.0254, up.velocity.vxMetersPerSecond / 0.0254, up.velocity.omegaRadiansPerSecond);
     }
 
-    /**
-     * Send odometry data to the T265 if the callback is set.
-     */
     @Override
     public void update() {
-        // Make sure the callback is set
-        if (sendOdometryCallback != null) {
-            Vector2d odometry = sendOdometryCallback.run();
-            slamera.sendOdometry(odometry.getX(), odometry.getY());
-        }
+        up = slamra.getLastReceivedCameraUpdate();
+        if (up == null) return;
     }
 
-    /**
-     * Set a callback to send odometry data to the T265.
-     * @param sendOdometryCallback the callback
-     */
-    public void setSendOdometryCallback(SendOdometryFunction sendOdometryCallback) {
-        this.sendOdometryCallback = sendOdometryCallback;
-    }
-
-    public void stop(HardwareMap hardwareMap)
-    {
-        t265StartupHook.destroySlamera(hardwareMap.appContext);
+    public void sendOdometry(Pose2d velocity) {
+        slamra.sendOdometry(velocity.getX(), velocity.getY());
     }
 }

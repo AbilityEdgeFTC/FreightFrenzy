@@ -7,23 +7,18 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.opmodes.Vision.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.opmodes.Vision.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
-@Autonomous(name = "Left Red FULL", group = "red")
-public class AutoLeftRed extends LinearOpMode {
+@Autonomous(name = "Left Red T265", group = "red")
+public class AutoLeftRed265 extends LinearOpMode {
 
     public static double startPoseLeftX = -36;
     public static double startPoseLeftY = -64.04;
@@ -32,14 +27,14 @@ public class AutoLeftRed extends LinearOpMode {
     public static double poseCarouselY = -57.5;
     public static double poseCarouselH = 135;
     public static double carouselHelp = 15;
-    public static double poseParkcX = 55;
-    public static double poseParkcY = -52;
+    public static double poseParkcX = 50;
+    public static double poseParkcY = -40;
     public static double poseParkcH = 180;
     public static double poseParkaX = 3;
-    public static double poseParkaY = -7.2;
+    public static double poseParkaY = -8;
     public static double poseParkaH = 180;
-    public static double poseParkbX = 7.6;
-    public static double poseParkbY = -52;
+    public static double poseParkbX = 6.5;
+    public static double poseParkbY = -40;
     public static double poseParkbH = 180;
     public static double runCarouselFor = 2;
 
@@ -62,6 +57,8 @@ public class AutoLeftRed extends LinearOpMode {
     levels placeFreightIn = levels.MAX;*/
 
     TrajectorySequence carouselGo,hub,parking;
+    T265Localizer t265Localizer;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -72,6 +69,8 @@ public class AutoLeftRed extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         drive.setPoseEstimate(startPoseLeft);
+        t265Localizer = new T265Localizer(hardwareMap);
+        drive.setLocalizer(t265Localizer);
 
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
         Pose2d poseParkinga = new Pose2d(poseParkaX, poseParkaY, Math.toRadians(poseParkaH));
@@ -111,6 +110,7 @@ public class AutoLeftRed extends LinearOpMode {
 
         drive.followTrajectorySequence(carouselGo);
         drive.followTrajectorySequence(parking);
+        t265Localizer.stop();
     }
 
     /*void runCarousel() throws InterruptedException

@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.robot.roadrunner.drive.opmode;
+package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
@@ -55,6 +54,10 @@ public class TestCameraOpMode extends OpMode
         double x2 = translation.getX() + arrowX, y2 = translation.getY() + arrowY;
         field.strokeLine(x1, y1, x2, y2);
 
+        telemetry.addData("X: ", translation.getX());
+        telemetry.addData("Y: ", translation.getY());
+        telemetry.addData("Heading: ", rotation.getRadians());
+        telemetry.update();
         dashboard.sendTelemetryPacket(packet);
     }
 

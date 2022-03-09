@@ -8,9 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.RealsenseLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
+//import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -50,7 +49,7 @@ public class LocalizationTest extends LinearOpMode {
                 drive.setLocalizer(t265Localizer);
                 break;
             case Both:
-                drive.setLocalizer(new DoubleLocalizer(hardwareMap));
+                //drive.setLocalizer(new DoubleLocalizer(hardwareMap));
                 break;
         }
 
@@ -75,5 +74,7 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
+
+        t265Localizer.stop();
     }
 }

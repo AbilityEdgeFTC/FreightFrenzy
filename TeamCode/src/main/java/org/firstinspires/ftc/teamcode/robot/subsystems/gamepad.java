@@ -188,4 +188,8 @@ public class gamepad {
     {
         ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + getIMU());
     }
+
+    public static void setRedAlliance(boolean redAlliance) {
+        gamepad.redAlliance = redAlliance;
+    }
 }
