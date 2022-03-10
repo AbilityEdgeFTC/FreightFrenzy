@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -77,6 +78,32 @@ public class AutoLeftRed extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
 
+        MarkerCallback carouselOnn = new MarkerCallback() {
+            @Override
+            public void onMarkerReached() {
+                 carousel.spin(false,true);
+            }
+        };
+        MarkerCallback carouselOff = new MarkerCallback() {
+            @Override
+            public void onMarkerReached() {
+                carousel.stop();
+            }
+        };
+        MarkerCallback intakeDuck =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                intake.intakeForward();
+            }
+        };
+        MarkerCallback intakeStop =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                intake.stop();
+            }
+        };
 
         Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
@@ -99,10 +126,13 @@ public class AutoLeftRed extends LinearOpMode {
         carouselGo = drive.trajectorySequenceBuilder(startPoseLeft)
                 .forward(carouselHelp)
                 .lineToLinearHeading(poseCarousel)
+                .addTemporalMarker(carouselOnn)
                 .waitSeconds(runCarouselFor)
+                .addTemporalMarker(carouselOff)
                 .build();
 
         duck = drive.trajectorySequenceBuilder(carouselGo.end())
+                .addTemporalMarker(intakeDuck)
                 .strafeRight(2)
                 .back(6)
                 .forward(8)
@@ -112,16 +142,18 @@ public class AutoLeftRed extends LinearOpMode {
                 .strafeRight(2)
                 .back(8)
                 .forward(8)
+                .addTemporalMarker(intakeStop)
                 .build();
 
         parking = drive.trajectorySequenceBuilder(duck.end())
 
                 .lineToSplineHeading(poseParkingHelp)
                 .splineToLinearHeading(poseParkinga,poseParkaH)
-                .lineToSplineHeading(poseParkingb)
+                .lineToLinearHeading(poseParkingb)
                 .waitSeconds(.6)
                 .lineToLinearHeading(poseParkingc,SampleMecanumDrive.getVelocityConstraint(70, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(80))
+
                 .build();
 
         //threadAuto.start();

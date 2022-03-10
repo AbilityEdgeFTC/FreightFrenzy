@@ -67,7 +67,7 @@ public class MMLeftRed {
                                 .forward(5)
                                 .lineToSplineHeading(poseParkingHelp)
                                 .splineToLinearHeading(poseParkinga,poseParkaH)
-                                .lineToSplineHeading(poseParkingb)
+                                .lineToLinearHeading(poseParkingb)
                                 .waitSeconds(.6)
                                 .lineToLinearHeading(poseParkingc)
                                 .build()
