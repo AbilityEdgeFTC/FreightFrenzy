@@ -48,6 +48,17 @@ public class ElevatorFirstPID {
         this.cGamepad = new cGamepad(gamepad);
     }
 
+    public ElevatorFirstPID(HardwareMap hardwareMap)
+    {
+        this.motor = hardwareMap.get(DcMotorEx.class, "mE");
+        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.motor.setDirection(DcMotor.Direction.REVERSE);
+        this.gamepad = gamepad;
+        this.cGamepad = new cGamepad(gamepad);
+    }
+
     public void update() {
         cGamepad.update();
 
@@ -81,6 +92,32 @@ public class ElevatorFirstPID {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower, maxPower));
         }
+    }
+
+    public void updateAuto()
+    {
+        switch (elevatorLevel)
+        {
+            case ZERO:
+                target = ZERO_HEIGHT;
+                break;
+            case SHARED_HUB:
+                target = SHARED_HUB;
+                break;
+            case HUB_LEVEL1:
+                target = HUB_LEVEL1;
+                break;
+            case HUB_LEVEL2:
+                target = HUB_LEVEL2;
+                break;
+            case HUB_LEVEL3:
+                target = HUB_LEVEL3;
+                break;
+        }
+
+        motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT));
+        motor.setPower(power);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public static double encoderTicksToInches(int ticks) {

@@ -6,9 +6,14 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
+import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 
@@ -26,33 +31,48 @@ public class AutoRightRed extends LinearOpMode {
     public static double turnPoseRightY = -62;
     public static double turnPoseRightH = 180;
     public static double poseEntranceX = 19.5;
-    public static double poseEntranceY = -63;
+    public static double poseEntranceY = -62;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 63;
-    public static double poseCollectY = -63;
+    public static double poseCollectY = -62;
     public static double poseCollectH = 180;
-
-    //carousel carousel;
+    ElevatorFirstPID elevator;
+    ElevatorSpinnerLibraryPID spinner;
+    ElapsedTime resetElevator;
+    hand hand;
     intake intake;
-    //dip dip;
-    //ElevatorThreadAuto threadAuto;
+    dip dip;
+    boolean canIntake = true, openElevator = false, closeElevator = false;
+    public static double powerIntake = 1, powerSlowElevator = .6, powerElevator = 1;
     //public static double reverseIntakeFor = .8;
     //OpenCvWebcam webcam;
     //YCbCrPipeline pipeline;
     SampleMecanumDrive drive;
-
     TrajectorySequence main;
 
     //public static boolean withVision = true;
 
-    /*enum levels
+    enum levels
     {
         MIN,
         MID,
         MAX
     }
 
-    levels placeFreightIn = levels.MAX;*/
+    levels placeFreightIn = levels.MAX;
+
+    enum ElevatorMovement
+    {
+        SPIN,
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        DIP
+    }
+
+    public static int elevatorLevel = 3;
+
+    public static ElevatorMovement elevatorMovement = ElevatorMovement.SPIN;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -62,8 +82,12 @@ public class AutoRightRed extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
+        elevator = new ElevatorFirstPID(hardwareMap);
+        spinner = new ElevatorSpinnerLibraryPID(hardwareMap);
+        intake = new intake(hardwareMap);
+        hand = new hand(hardwareMap);
+        dip = new dip(hardwareMap);
 
-        Pose2d turnPoseRight = new Pose2d(turnPoseRightX,turnPoseRightY,Math.toRadians(turnPoseRightH));
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
@@ -75,57 +99,121 @@ public class AutoRightRed extends LinearOpMode {
         drive.setPoseEstimate(startPoseRight);
 
         main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    openElevator = true;
+                    switch (placeFreightIn)
+                    {
+                        case MIN:
+                            elevatorLevel = 1;
+                            break;
+                        case MID:
+                            elevatorLevel = 2;
+                            break;
+                        case MAX:
+                            elevatorLevel = 3;
+                            break;
+                    }
+                })
+                .waitSeconds(2)
                 .forward(5)
                 .lineToSplineHeading(poseEntrance,
                 SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addDisplacementMarker(() -> {
-                    intake.intakeForward();
-                })
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
-                    intake.intakeBackward();
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeForward();
+                    }
                 })
                 .lineToSplineHeading(poseEntrance)
-                .addDisplacementMarker(() -> {
-                    intake.intakeForward();
+                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeBackward();
+                    }
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    openElevator = true;
+                    elevatorLevel = 3;
                 })
                 .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
-                    intake.intakeBackward();
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeForward();
+                    }
                 })
                 .lineToSplineHeading(poseEntrance)
-                .addDisplacementMarker(() -> {
-                    intake.intakeForward();
+                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeBackward();
+                    }
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    openElevator = true;
+                    elevatorLevel = 3;
                 })
                 .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
-                    intake.intakeBackward();
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeForward();
+                    }
                 })
                 .lineToSplineHeading(poseEntrance)
-                .addDisplacementMarker(() -> {
-                    intake.intakeForward();
+                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeBackward();
+                    }
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    openElevator = true;
+                    elevatorLevel = 3;
                 })
                 .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
-                    intake.intakeBackward();
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeForward();
+                    }
                 })
                 .lineToSplineHeading(poseEntrance)
-                .addDisplacementMarker(() -> {
-                    intake.intakeForward();
+                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeBackward();
+                    }
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    openElevator = true;
+                    elevatorLevel = 3;
                 })
                 .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
-                    intake.intakeBackward();
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeForward();
+                    }
                 })
                 .lineToSplineHeading(poseEntrance)
-                .addDisplacementMarker(() -> {
-                    intake.intakeForward();
+                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
+                    if(canIntake)
+                    {
+                        intake.intakeBackward();
+                    }
                 })
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    openElevator = true;
+                    elevatorLevel = 3;
+                })
+                .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                 .build();
 
@@ -156,13 +244,21 @@ public class AutoRightRed extends LinearOpMode {
             telemetry.update();
         }*/
 
+        resetElevator = new ElapsedTime();
+        drive.followTrajectorySequenceAsync(main);
+
         waitForStart();
 
         /*if(withVision){
             webcam.stopStreaming();
         }*/
 
-        drive.followTrajectorySequence(main);
+        while (opModeIsActive())
+        {
+            switchElevator();
+            drive.update();
+
+        }
     }
 
 //    void initPipeline()
@@ -213,5 +309,188 @@ public class AutoRightRed extends LinearOpMode {
 //            }
 //        });
 //    }
+
+    void switchElevator()
+    {
+        switch (elevatorMovement) {
+            case SPIN:
+                resetElevator();
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                if (openElevator)
+                {
+                    powerElevator = powerSlowElevator;
+                    elevator.setPower(powerElevator);
+                    canIntake = false;
+
+                    if(!withoutPID())
+                    {
+                        dip.holdFreight();
+                    }
+
+                    openElevator = false;
+
+                    switch (elevatorLevel)
+                    {
+                        case 1:
+                            elevatorMovement = ElevatorMovement.LEVEL1;
+                            break;
+                        case 2:
+                            elevatorMovement = ElevatorMovement.LEVEL2;
+                            break;
+                        case 3:
+                            elevatorMovement = ElevatorMovement.LEVEL3;
+                            break;
+                        default:
+                            elevator.setUsePID(false);
+                            break;
+                    }
+                }
+                break;
+            case LEVEL1:
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
+                if(!withoutPID())
+                {
+                    hand.level1();
+                }
+                elevatorMovement = ElevatorMovement.DIP;
+                break;
+            case LEVEL2:
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
+                if(!withoutPID())
+                {
+                    hand.level2();
+                }
+                elevatorMovement = ElevatorMovement.DIP;
+                break;
+            case LEVEL3:
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                if(!withoutPID())
+                {
+                    hand.level3();
+                }
+                elevatorMovement = ElevatorMovement.DIP;
+                break;
+            case DIP:
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                resetElevator.reset();
+
+                if(resetElevator.seconds() > 0.5)
+                {
+                    closeElevator = true;
+                }
+
+                if(closeElevator)
+                {
+                    if(!withoutPID())
+                    {
+                        dip.releaseFreight();
+                    }
+
+                    resetElevator.reset();
+
+                    canIntake = true;
+                    closeElevator = false;
+                    elevatorMovement = ElevatorMovement.SPIN;
+                }
+                break;
+            default:
+                elevatorMovement = ElevatorMovement.SPIN;
+                break;
+        }
+    }
+
+    boolean withoutPID()
+    {
+        if(elevator.getUsePID() == true || spinner.getUsePID() == true && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
+        {
+            switch (hand.getHandPos())
+            {
+                case INTAKE:
+                    hand.intake();
+                    break;
+                case ONE_HUB:
+                    hand.level1();
+                    break;
+                case TWO_HUB:
+                    hand.level2();
+                    break;
+                case THREE_HUB:
+                    hand.level3();
+                    break;
+            }
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void resetElevator()
+    {
+
+        if(!withoutPID())
+        {
+            dip.releaseFreight();
+        }
+
+        elevator.setPower(powerSlowElevator);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+        switch (elevatorLevel)
+        {
+            case 1:
+                if(resetElevator.seconds() > 1.3)
+                {
+                    if(!withoutPID())
+                    {
+                        hand.intake();
+                    }
+                    elevator.setUsePID(true);
+                }
+                else
+                {
+                    elevator.setUsePID(false);
+                }
+                break;
+            case 2:
+                if(resetElevator.seconds() > .55)
+                {
+                    if(!withoutPID())
+                    {
+                        hand.intake();
+                    }
+                    elevator.setUsePID(true);
+                }
+                else
+                {
+                    elevator.setUsePID(false);
+                }
+                break;
+            case 3:
+                if(resetElevator.seconds() > .25)
+                {
+                    if(!withoutPID())
+                    {
+                        hand.intake();
+                    }
+                    elevator.setUsePID(true);
+                }
+                else
+                {
+                    elevator.setUsePID(false);
+                }
+                break;
+        }
+
+        canIntake = true;
+    }
 
 }

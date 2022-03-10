@@ -20,35 +20,26 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 @Autonomous(name = "Left Red FULL", group = "red")
 public class AutoLeftRed extends LinearOpMode {
 
-    double startPoseLeftX = -35;
-    double startPoseLeftY = -60;
-    double startPoseLeftH = 90;
-    double poseCarouselX = -59.5;
-    double poseCarouselY = -57.5;
-    double poseCarouselH = 95;
-
-
-
-    double carouselHelp = 15;
-
-
-    double poseParkHelpX = -27.5;
-    double poseParkHelpY = -9;
-    double poseParkHelpH = 180;
-
-    double poseParkaX = 8;
-    double poseParkaY = -9;
-    double poseParkaH = 180;
-
-    double poseParkbX = 8;
-    double poseParkbY = -50;
-    double poseParkbH = 180;
-
-    double poseParkcX = 60;
-    double poseParkcY = -50;
-    double poseParkcH = 180;
-
-    double runCarouselFor = 4;
+    public static double startPoseLeftX = -35;
+    public static double startPoseLeftY = -60;
+    public static double startPoseLeftH = 90;
+    public static double poseCarouselX = -60.2;
+    public static double poseCarouselY = -58.2;
+    public static double poseCarouselH = 95;
+    public static double carouselHelp = 15;
+    public static double poseParkHelpX = -27.5;
+    public static double poseParkHelpY = -9;
+    public static double poseParkHelpH = 180;
+    public static double poseParkaX = 9;
+    public static double poseParkaY = -9;
+    public static double poseParkaH = 180;
+    public static double poseParkbX = 9;
+    public static double poseParkbY = -50;
+    public static double poseParkbH = 180;
+    public static double poseParkcX = 65;
+    public static double poseParkcY = -50;
+    public static double poseParkcH = 180;
+    public static double runCarouselFor = 4;
 
     carousel carousel;
     intake intake;
@@ -81,7 +72,7 @@ public class AutoLeftRed extends LinearOpMode {
         MarkerCallback carouselOnn = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                 carousel.spin(false,true);
+                 carousel.spin(true,true);
             }
         };
         MarkerCallback carouselOff = new MarkerCallback() {
