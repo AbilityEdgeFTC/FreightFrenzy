@@ -42,7 +42,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
-@TeleOp(group="Tests")
+@TeleOp(name = "YCbCr Menu", group = "vision")
 public class ColorTuning extends LinearOpMode {
 
     OpenCvWebcam webcam;
@@ -58,7 +58,7 @@ public class ColorTuning extends LinearOpMode {
     public static double sMin = 0;
     public static double vMin = 0;
 
-    MenuPipeline pipeline;
+    ColorTuningPipeline pipeline;
 
     public static boolean isMax = false;
 
@@ -67,7 +67,7 @@ public class ColorTuning extends LinearOpMode {
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        pipeline = new MenuPipeline();
+        pipeline = new ColorTuningPipeline();
         double[] max ={hMax,sMax,vMax};
         double[] min ={hMin,sMin,vMin};
 
@@ -184,7 +184,7 @@ public class ColorTuning extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        MenuPipeline pipeline = new MenuPipeline();
+        ColorTuningPipeline pipeline = new ColorTuningPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 

@@ -10,7 +10,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp(name = "Vision No Filter", group = "vision")
+@TeleOp(name = "RAW Camera", group = "vision")
 public class Camera extends LinearOpMode {
 
     OpenCvWebcam webcam;

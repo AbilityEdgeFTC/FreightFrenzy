@@ -7,16 +7,14 @@ package org.firstinspires.ftc.teamcode.opmodes.Vision;
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Config
-public class MenuPipeline extends OpenCvPipeline
+public class ColorTuningPipeline extends OpenCvPipeline
 {
     // creating 3 rectangles(sections) for checking the colors inside them.
     final Rect LEFT_SEC = new Rect(
@@ -85,10 +83,10 @@ public class MenuPipeline extends OpenCvPipeline
     public void setTelementry(Telemetry telemetry){ this.telemetry = telemetry; }
 
     public void setMax(double[] max) {
-        MenuPipeline.max = max;
+        ColorTuningPipeline.max = max;
     }
 
     public void setMin(double[] min) {
-        MenuPipeline.min = min;
+        ColorTuningPipeline.min = min;
     }
 }

@@ -4,28 +4,37 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorLibraryPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 
 //import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorCOMPLEX_UNSTABLE;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@TeleOp(group = "drive")
 @Config
+@TeleOp(name = "Elevator Testing", group = "testing")
 public class ElevatorOpMode extends LinearOpMode {
 
-    ElevatorLibraryPID elevatorLibraryPID;
+    ElevatorFirstPID elevator;
+
+    public static boolean usePID = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        elevatorLibraryPID = new ElevatorLibraryPID(hardwareMap, gamepad1);
+        elevator = new ElevatorFirstPID(hardwareMap, gamepad1);
 
         waitForStart();
 
         while (opModeIsActive())
         {
-            elevatorLibraryPID.update();
+            if(usePID)
+            {
+                elevator.update();
+            }
+            else
+            {
+                elevator.setUsePID(false);
+            }
 
             telemetry.update();
         }

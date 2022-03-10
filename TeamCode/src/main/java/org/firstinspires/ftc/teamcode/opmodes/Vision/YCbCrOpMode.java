@@ -39,7 +39,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp(group="Tests")
+@TeleOp(name = "YCbCr OpMode", group = "vision")
 public class YCbCrOpMode extends LinearOpMode {
 
     OpenCvWebcam webcam;

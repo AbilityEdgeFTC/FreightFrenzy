@@ -39,15 +39,15 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp(group="Tests")
-public class GreenLanternOpMode extends LinearOpMode {
+@TeleOp(name = "HSV OpMode", group = "vision")
+public class HSVOpMode extends LinearOpMode {
 
     OpenCvWebcam webcam;
 
     @Override
     public void runOpMode() {
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+        HSVPipeline pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
 
         initPipeline();
@@ -74,7 +74,7 @@ public class GreenLanternOpMode extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+        HSVPipeline pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 

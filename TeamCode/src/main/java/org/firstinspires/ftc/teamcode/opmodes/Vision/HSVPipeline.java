@@ -16,7 +16,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Config
-public class GreenLanternPipeline extends OpenCvPipeline
+public class HSVPipeline extends OpenCvPipeline
 {
     public static double lowValuesY = 33;
     public static double lowValuesB = 165;

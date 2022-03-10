@@ -40,7 +40,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
 
 @Config
-@TeleOp(group = "Sensor")
+@TeleOp(name = "Force sensor Testing", group = "testing")
 public class SensorAnalogFSR extends LinearOpMode {
 
     //AnalogSensor freightSensor;  // Hardware Device Object

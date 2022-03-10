@@ -35,7 +35,7 @@ public class gamepad {
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
     public static double mainPower = .85, slowPower = .6, multiplier = .9;
-    public static boolean slowMove = false, isCentricDrive = true;
+    public static boolean slowMove = false, isCentricDrive = true, canTwist = true;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
     public static double startH = 0;
@@ -76,12 +76,12 @@ public class gamepad {
         if(DEBUG && redAlliance)
         {
             startH = 0;
-            startH -= Math.PI/2; // red
+            startH -= (Math.PI + Math.PI/2); // red
         }
         else if(DEBUG && !redAlliance)
         {
             startH = 0;
-            startH -= Math.PI + Math.PI/2; // blue
+            startH -= Math.PI/2; // blue
         }
 
         this.drivetrain = new SampleMecanumDrive(hardwareMap);
@@ -96,14 +96,6 @@ public class gamepad {
         cGamepad2.update();
 
         getGamepadDirections();
-
-        if (gamepad1.right_stick_button || gamepad1.left_stick_button) {
-            slowMove = true;
-        }
-        else
-        {
-            slowMove = false;
-        }
 
         if(cGamepad1.XOnce())
         {
@@ -129,10 +121,13 @@ public class gamepad {
     {
         drive = -gamepad1.left_stick_y;
         strafe = gamepad1.left_stick_x;
-        twist = gamepad1.right_stick_x * multiplier;
-        if(slowMove)
+        if(canTwist)
         {
-            twist = Range.clip(twist, -slowPower, slowPower);
+            twist = gamepad1.right_stick_x * multiplier;
+        }
+        else
+        {
+            twist = 0;
         }
     }
 
@@ -193,5 +188,13 @@ public class gamepad {
 
     public static void setRedAlliance(boolean redAlliance) {
         gamepad.redAlliance = redAlliance;
+    }
+
+    public static boolean isCanTwist() {
+        return canTwist;
+    }
+
+    public static void setCanTwist(boolean canTwist) {
+        gamepad.canTwist = canTwist;
     }
 }

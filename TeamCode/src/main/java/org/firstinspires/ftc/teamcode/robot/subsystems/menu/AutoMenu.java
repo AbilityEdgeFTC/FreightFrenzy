@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.opmodes.Vision.GreenLanternPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
@@ -56,7 +56,7 @@ public class AutoMenu extends LinearOpMode {
     }
 
     levels placeFreightIn = levels.MAX;
-    GreenLanternPipeline pipeline;
+    HSVPipeline pipeline;
     SampleMecanumDrive drive;
 
     Pose2d startPoseRight, poseHubFront, poseEntrance, poseCollect;
@@ -64,7 +64,7 @@ public class AutoMenu extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        pipeline = new GreenLanternPipeline();
+        pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 
@@ -233,7 +233,7 @@ public class AutoMenu extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+        HSVPipeline pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 

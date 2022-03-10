@@ -38,13 +38,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 
 @Config
-@TeleOp(group="Tests")
+@TeleOp(name = "Carousel Testing", group = "testing")
 public class Carousel extends LinearOpMode {
 
     public static boolean reverse = true;
-    public static Object generateTrajectory;
-
-
+    public static boolean isRed = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -59,14 +57,7 @@ public class Carousel extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            if(reverse)
-            {
-                carousel.spin(true, true);
-            }
-            else
-            {
-                carousel.spin(false, true);
-            }
+            carousel.spin(reverse, isRed);
 
             carousel.displayTelemetry();
 

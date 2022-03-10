@@ -15,16 +15,18 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class ElevatorSpinnerLibraryPID {
 
-    double RIGHT_ANGLE = 0, RIGHT_ANGLE_SHARED = 0, LEFT_ANGLE = 0, LEFT_ANGLE_SHARED = 0, ZERO_ANGLE = 0;
+    double RIGHT_ANGLE = 0, RIGHT_ANGLE_SHARED = 0, LEFT_ANGLE = 0, LEFT_ANGLE_SHARED = 0, ZERO_ANGLE_RED = 0, ZERO_ANGLE_BLUE = 0, ZERO_ANGLE = 0;
     public static double power = 0.2;
     boolean usePID = true;
     public static double kP = 6;
     public static double kI = 0;
     public static double kD = 0;
     double target = 0;
-    public static double maxPower = 0.4;
+    public static double maxPower = 0.5;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
+    boolean slowMove = false;
+    double newOffset = 0;
     DcMotorEx motor;
     BasicPID PID = new BasicPID(new PIDCoefficients(kP, kI, kD));
     AngleController controller = new AngleController(PID);
@@ -42,22 +44,24 @@ public class ElevatorSpinnerLibraryPID {
 
     public static SpinnerState spinnerState = SpinnerState.ZERO_DO_NOT_USE;
 
-    Gamepad gamepad;
-    cGamepad cGamepad;
+    Gamepad gamepad2, gamepad1;
+    cGamepad cGamepad2;
 
-    public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap, Gamepad gamepad)
+    public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mS");
         this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        this.gamepad = gamepad;
-        this.cGamepad = new cGamepad(gamepad);
-        ZERO_ANGLE = encoderTicksToRadians(315);
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
+        this.cGamepad2 = new cGamepad(gamepad2);
+        ZERO_ANGLE_RED = encoderTicksToRadians(330);
+        ZERO_ANGLE_BLUE = encoderTicksToRadians(-280);
         LEFT_ANGLE_SHARED = encoderTicksToRadians(-150);
-        LEFT_ANGLE = encoderTicksToRadians(-203);
+        LEFT_ANGLE = encoderTicksToRadians(-225);
         RIGHT_ANGLE_SHARED = encoderTicksToRadians(150);
-        RIGHT_ANGLE = encoderTicksToRadians(203);
+        RIGHT_ANGLE = encoderTicksToRadians(225);
     }
 
     public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap)
@@ -66,11 +70,17 @@ public class ElevatorSpinnerLibraryPID {
         this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        ZERO_ANGLE_RED = encoderTicksToRadians(330);
+        ZERO_ANGLE_BLUE = encoderTicksToRadians(-280);
+        LEFT_ANGLE_SHARED = encoderTicksToRadians(-150);
+        LEFT_ANGLE = encoderTicksToRadians(-225);
+        RIGHT_ANGLE_SHARED = encoderTicksToRadians(150);
+        RIGHT_ANGLE = encoderTicksToRadians(225);
     }
 
     public void update()
     {
-        cGamepad.update();
+        cGamepad2.update();
 
         if(usePID)
         {
@@ -86,10 +96,12 @@ public class ElevatorSpinnerLibraryPID {
                     target = RIGHT_ANGLE;
                     break;
                 case ZERO_RED:
-                    target = ZERO_ANGLE;
+                    target = ZERO_ANGLE_RED;
+                    ZERO_ANGLE = ZERO_ANGLE_RED;
                     break;
                 case ZERO_BLUE:
-                    target = ZERO_ANGLE;
+                    target = ZERO_ANGLE_BLUE;
+                    ZERO_ANGLE = ZERO_ANGLE_BLUE;
                     break;
                 case SHARED_RED:
                     target = RIGHT_ANGLE_SHARED;
@@ -99,11 +111,19 @@ public class ElevatorSpinnerLibraryPID {
                     break;
             }
 
-            motor.setPower(controller.calculate(target - ZERO_ANGLE, encoderTicksToRadians(motor.getCurrentPosition())));
+            motor.setPower(controller.calculate(target - ZERO_ANGLE + newOffset, encoderTicksToRadians(motor.getCurrentPosition())));
+
         }
         else
         {
-            motor.setPower(Range.clip(gamepad.right_stick_x, -maxPower, maxPower));
+            if(slowMove || gamepad2.right_stick_x != 0)
+            {
+                motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
+                if(gamepad2.right_stick_x != 0)
+                {
+                    motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
+                }
+            }
 
         }
 
@@ -150,4 +170,16 @@ public class ElevatorSpinnerLibraryPID {
         ElevatorSpinnerLibraryPID.spinnerState = spinnerState;
     }
 
+    public boolean isSlowMove() {
+        return slowMove;
+    }
+
+    public void setSlowMove(boolean slowMove) {
+        this.slowMove = slowMove;
+    }
+
+    public void saveOffset()
+    {
+        newOffset = encoderTicksToRadians(motor.getCurrentPosition()) - ZERO_ANGLE;
+    }
 }

@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.opmodes.Vision.GreenLanternPipeline;
+import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
@@ -42,7 +42,7 @@ public class AutoLeftRed265 extends LinearOpMode {
     intake intake;
     dip dip;
     //OpenCvWebcam webcam;
-    GreenLanternPipeline pipeline;
+    HSVPipeline pipeline;
     SampleMecanumDrive drive;
 
     //public static boolean withVision = true;
@@ -62,7 +62,7 @@ public class AutoLeftRed265 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        pipeline = new GreenLanternPipeline();
+        pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -169,7 +169,7 @@ public class AutoLeftRed265 extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+        HSVPipeline pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 

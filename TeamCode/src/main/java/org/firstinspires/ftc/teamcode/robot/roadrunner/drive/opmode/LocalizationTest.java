@@ -22,6 +22,10 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
 @Config
 public class LocalizationTest extends LinearOpMode {
 
+    public static double startPoseLeftX = -35;
+    public static double startPoseLeftY = -60;
+    public static double startPoseLeftH = 90;
+
     enum RobotLocalizer
     {
         Mecanum,
@@ -34,7 +38,7 @@ public class LocalizationTest extends LinearOpMode {
 
     Pose2d poseEstimate;
     Trajectory trajectory;
-    public static AlwaysOnePos.RobotLocalizer localizer = AlwaysOnePos.RobotLocalizer.Camera;
+    public static AlwaysOnePos.RobotLocalizer localizer = AlwaysOnePos.RobotLocalizer.Mecanum;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,6 +56,8 @@ public class LocalizationTest extends LinearOpMode {
                 //drive.setLocalizer(new DoubleLocalizer(hardwareMap));
                 break;
         }
+
+        drive.setPoseEstimate(new Pose2d(startPoseLeftX, startPoseLeftY, startPoseLeftH));
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 

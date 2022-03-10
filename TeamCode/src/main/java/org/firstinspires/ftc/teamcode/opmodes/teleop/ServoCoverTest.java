@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 // .3 is throw freight
 // 1 is out freight from intake
 @Config
-@TeleOp(group="Tests")
+@TeleOp(name = "Servo Cover Testing", group = "testing")
 public class ServoCoverTest extends LinearOpMode {
 
     Servo servo;

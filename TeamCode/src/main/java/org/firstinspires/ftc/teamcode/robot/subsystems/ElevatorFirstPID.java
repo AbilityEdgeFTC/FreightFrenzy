@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 21,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5;
+    public static double HUB_LEVEL3 = 22,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5;
     public static double SHARED_HUB = 5.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;

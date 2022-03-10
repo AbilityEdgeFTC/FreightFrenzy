@@ -10,10 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
-import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
+import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
+import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -23,8 +23,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Left BLUE FULL", group = "blue")
-public class AutoLeftBlue extends LinearOpMode {
+@Autonomous(name = "Left BLUE T265", group = "blue")
+public class AutoLeftBlue265 extends LinearOpMode {
 
     public static double startPoseRightX = 9.6;
     public static double startPoseRightY = 64.04;

@@ -36,15 +36,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 
-// .6 is throw freight
-// 1 is get freight from intake
 @Config
-@TeleOp(group="Tests")
+@TeleOp(name = "Servo Hand Testing", group = "testing")
 public class HandServosTest extends LinearOpMode {
 
     Servo left;
     Servo right;
     public static double position = 0.07;
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");

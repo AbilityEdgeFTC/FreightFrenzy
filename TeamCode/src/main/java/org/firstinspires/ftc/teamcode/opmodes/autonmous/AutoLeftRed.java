@@ -7,31 +7,25 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.opmodes.Vision.GreenLanternPipeline;
+import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
 @Autonomous(name = "Left Red FULL", group = "red")
 public class AutoLeftRed extends LinearOpMode {
 
-    public static double startPoseLeftX = -36;
-    public static double startPoseLeftY = -64.04;
+    public static double startPoseLeftX = -35;
+    public static double startPoseLeftY = -60;
     public static double startPoseLeftH = 90;
-    public static double poseCarouselX = -59.5;
+    public static double poseCarouselX = -61.5;
     public static double poseCarouselY = -57.5;
     public static double poseCarouselH = 135;
-    public static double carouselHelp = 15;
+    public static double carouselHelp = 18;
     public static double poseParkcX = 55;
     public static double poseParkcY = -52;
     public static double poseParkcH = 180;
@@ -47,7 +41,7 @@ public class AutoLeftRed extends LinearOpMode {
     intake intake;
     dip dip;
     //OpenCvWebcam webcam;
-    GreenLanternPipeline pipeline;
+    HSVPipeline pipeline;
     SampleMecanumDrive drive;
 
     //public static boolean withVision = true;
@@ -65,7 +59,7 @@ public class AutoLeftRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        pipeline = new GreenLanternPipeline();
+        pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -169,7 +163,7 @@ public class AutoLeftRed extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        GreenLanternPipeline pipeline = new GreenLanternPipeline();
+        HSVPipeline pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 
