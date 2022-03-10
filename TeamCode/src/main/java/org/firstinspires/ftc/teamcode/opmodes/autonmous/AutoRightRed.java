@@ -19,17 +19,17 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.Trajec
 @Autonomous(name = "Right Red FULL", group = "red")
 public class AutoRightRed extends LinearOpMode {
 
-    public static double startPoseRightX = 12;
-    public static double startPoseRightY = -64.04;
-    public static double startPoseRightH = 90;
+    double startPoseRightX = 13;
+    double startPoseRightY = -60;
+    double startPoseRightH = 90;
     public static double turnPoseRightX = 0;
     public static double turnPoseRightY = -62;
     public static double turnPoseRightH = 180;
-    public static double poseEntranceX = 20;
-    public static double poseEntranceY = -64;
+    public static double poseEntranceX = 19.5;
+    public static double poseEntranceY = -63;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 56;
-    public static double poseCollectY = -64;
+    public static double poseCollectX = 63;
+    public static double poseCollectY = -63;
     public static double poseCollectH = 180;
 
     //carousel carousel;
@@ -77,7 +77,7 @@ public class AutoRightRed extends LinearOpMode {
         main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .forward(5)
                 .lineToSplineHeading(poseEntrance,
-                SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() -> {
                     intake.intakeForward();
@@ -90,6 +90,7 @@ public class AutoRightRed extends LinearOpMode {
                 .addDisplacementMarker(() -> {
                     intake.intakeForward();
                 })
+                .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                 .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
                     intake.intakeBackward();
@@ -98,6 +99,7 @@ public class AutoRightRed extends LinearOpMode {
                 .addDisplacementMarker(() -> {
                     intake.intakeForward();
                 })
+                .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                 .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
                     intake.intakeBackward();
@@ -106,6 +108,7 @@ public class AutoRightRed extends LinearOpMode {
                 .addDisplacementMarker(() -> {
                     intake.intakeForward();
                 })
+                .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                 .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
                     intake.intakeBackward();
@@ -114,6 +117,7 @@ public class AutoRightRed extends LinearOpMode {
                 .addDisplacementMarker(() -> {
                     intake.intakeForward();
                 })
+                .waitSeconds(2)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                 .addDisplacementMarker(pathLength -> pathLength * 0.45, () -> {
                     intake.intakeBackward();

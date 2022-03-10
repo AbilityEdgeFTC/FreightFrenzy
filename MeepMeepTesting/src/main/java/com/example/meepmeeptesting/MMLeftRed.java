@@ -16,25 +16,29 @@ public class MMLeftRed {
         double poseCarouselX = -59.5;
         double poseCarouselY = -57.5;
         double poseCarouselH = 95;
+
+
+
         double carouselHelp = 15;
 
-        double poseParkHelpX = 0;
-        double poseParkHelpY = -8;
+
+        double poseParkHelpX = -27.5;
+        double poseParkHelpY = -6;
         double poseParkHelpH = 180;
 
-        double poseParkaX = 0;
-        double poseParkaY = -8;
+        double poseParkaX = 7.5;
+        double poseParkaY = -9;
         double poseParkaH = 180;
 
-        double poseParkbX = 6.5;
-        double poseParkbY = -40;
+        double poseParkbX = 7.5;
+        double poseParkbY = -45;
         double poseParkbH = 180;
 
         double poseParkcX = 50;
-        double poseParkcY = -40;
+        double poseParkcY = -45;
         double poseParkcH = 180;
 
-        double runCarouselFor = 10;
+        double runCarouselFor = 4;
         //Pose2d turnPoseRight = new Pose2d(turnPoseRightX,turnPoseRightY,Math.toRadians(turnPoseRightH));
         Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
@@ -52,7 +56,15 @@ public class MMLeftRed {
                                 .forward(carouselHelp)
                                 .lineToLinearHeading(poseCarousel)
                                 .waitSeconds(runCarouselFor)
-                                .strafeRight(10)
+                                .strafeRight(2)
+                                .back(5)
+                                .forward(5)
+                                .strafeRight(2)
+                                .back(5)
+                                .forward(5)
+                                .strafeRight(2)
+                                .back(5)
+                                .forward(5)
                                 .lineToSplineHeading(poseParkingHelp)
                                 .splineToLinearHeading(poseParkinga,poseParkaH)
                                 .lineToSplineHeading(poseParkingb)

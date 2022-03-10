@@ -19,23 +19,35 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 @Autonomous(name = "Left Red FULL", group = "red")
 public class AutoLeftRed extends LinearOpMode {
 
-    public static double startPoseLeftX = -35;
-    public static double startPoseLeftY = -60;
-    public static double startPoseLeftH = 90;
-    public static double poseCarouselX = -61.5;
-    public static double poseCarouselY = -57.5;
-    public static double poseCarouselH = 135;
-    public static double carouselHelp = 18;
-    public static double poseParkcX = 55;
-    public static double poseParkcY = -52;
-    public static double poseParkcH = 180;
-    public static double poseParkaX = 3;
-    public static double poseParkaY = -7.2;
-    public static double poseParkaH = 180;
-    public static double poseParkbX = 7.6;
-    public static double poseParkbY = -52;
-    public static double poseParkbH = 180;
-    public static double runCarouselFor = 2;
+    double startPoseLeftX = -35;
+    double startPoseLeftY = -60;
+    double startPoseLeftH = 90;
+    double poseCarouselX = -59.5;
+    double poseCarouselY = -57.5;
+    double poseCarouselH = 95;
+
+
+
+    double carouselHelp = 15;
+
+
+    double poseParkHelpX = -27.5;
+    double poseParkHelpY = -9;
+    double poseParkHelpH = 180;
+
+    double poseParkaX = 8;
+    double poseParkaY = -9;
+    double poseParkaH = 180;
+
+    double poseParkbX = 8;
+    double poseParkbY = -50;
+    double poseParkbH = 180;
+
+    double poseParkcX = 60;
+    double poseParkcY = -50;
+    double poseParkcH = 180;
+
+    double runCarouselFor = 4;
 
     carousel carousel;
     intake intake;
@@ -55,7 +67,7 @@ public class AutoLeftRed extends LinearOpMode {
 
     levels placeFreightIn = levels.MAX;*/
 
-    TrajectorySequence carouselGo,hub,parking;
+    TrajectorySequence carouselGo,parking,duck;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -64,10 +76,11 @@ public class AutoLeftRed extends LinearOpMode {
         pipeline.DEBUG = false;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
-        drive.setPoseEstimate(startPoseLeft);
 
+
+        Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
+        Pose2d poseParkingHelp = new Pose2d(poseParkHelpX,poseParkHelpY,Math.toRadians(poseParkHelpH));
         Pose2d poseParkinga = new Pose2d(poseParkaX, poseParkaY, Math.toRadians(poseParkaH));
         Pose2d poseParkingb = new Pose2d(poseParkbX, poseParkbY, Math.toRadians(poseParkbH));
         Pose2d poseParkingc = new Pose2d(poseParkcX, poseParkcY, Math.toRadians(poseParkcH));
@@ -87,11 +100,24 @@ public class AutoLeftRed extends LinearOpMode {
                 .forward(carouselHelp)
                 .lineToLinearHeading(poseCarousel)
                 .waitSeconds(runCarouselFor)
-                .strafeRight(10)
                 .build();
 
-        parking = drive.trajectorySequenceBuilder(carouselGo.end())
-                .splineToLinearHeading(poseParkinga, poseParkaH)
+        duck = drive.trajectorySequenceBuilder(carouselGo.end())
+                .strafeRight(2)
+                .back(6)
+                .forward(8)
+                .strafeRight(2)
+                .back(7)
+                .forward(8)
+                .strafeRight(2)
+                .back(8)
+                .forward(8)
+                .build();
+
+        parking = drive.trajectorySequenceBuilder(duck.end())
+
+                .lineToSplineHeading(poseParkingHelp)
+                .splineToLinearHeading(poseParkinga,poseParkaH)
                 .lineToSplineHeading(poseParkingb)
                 .waitSeconds(.6)
                 .lineToLinearHeading(poseParkingc,SampleMecanumDrive.getVelocityConstraint(70, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -104,6 +130,7 @@ public class AutoLeftRed extends LinearOpMode {
         waitForStart();
 
         drive.followTrajectorySequence(carouselGo);
+        drive.followTrajectorySequence(duck);
         drive.followTrajectorySequence(parking);
     }
 
