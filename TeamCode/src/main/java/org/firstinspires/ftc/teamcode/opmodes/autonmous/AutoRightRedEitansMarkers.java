@@ -4,25 +4,26 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 
 /*
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red FULL", group = "red")
-public class AutoRightRed extends LinearOpMode {
+@Autonomous(name = "Right Red FULL Eitans", group = "red")
+public class AutoRightRedEitansMarkers extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -60;
@@ -92,6 +93,30 @@ public class AutoRightRed extends LinearOpMode {
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
 
+        MarkerCallback elevetorOpen = new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached() {
+                openElevator = true;
+                elevatorLevel = 3;
+            }
+        };
+        MarkerCallback intakeForward =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                intake.intakeForward();
+            }
+        };
+        MarkerCallback intakeBackword =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                intake.intakeBackward();
+            }
+        };
+
+
         intake = new intake(hardwareMap);
         //initPipeline();
         //webcam.setPipeline(pipeline);
@@ -119,102 +144,55 @@ public class AutoRightRed extends LinearOpMode {
                 .lineToSplineHeading(poseEntrance,
                 SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+
+                .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeForward();
-                    }
-                })
+                .addTemporalMarker(intakeBackword)
+
                 .lineToSplineHeading(poseEntrance)
-                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeBackward();
-                    }
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    openElevator = true;
-                    elevatorLevel = 3;
-                })
+
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(2)
+
+                .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeForward();
-                    }
-                })
+                .addTemporalMarker(intakeBackword)
+
                 .lineToSplineHeading(poseEntrance)
-                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeBackward();
-                    }
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    openElevator = true;
-                    elevatorLevel = 3;
-                })
+
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(2)
+
+                .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeForward();
-                    }
-                })
+                .addTemporalMarker(intakeBackword)
+
                 .lineToSplineHeading(poseEntrance)
-                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeBackward();
-                    }
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    openElevator = true;
-                    elevatorLevel = 3;
-                })
+
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(2)
+
+                .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeForward();
-                    }
-                })
+                .addTemporalMarker(intakeBackword)
+
                 .lineToSplineHeading(poseEntrance)
-                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeBackward();
-                    }
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    openElevator = true;
-                    elevatorLevel = 3;
-                })
+
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(2)
+
+                .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeForward();
-                    }
-                })
+                .addTemporalMarker(intakeBackword)
+
                 .lineToSplineHeading(poseEntrance)
-                .UNSTABLE_addTemporalMarkerOffset(-1.2, () -> {
-                    if(canIntake)
-                    {
-                        intake.intakeBackward();
-                    }
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    openElevator = true;
-                    elevatorLevel = 3;
-                })
+
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(2)
+
+                .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .addTemporalMarker(intakeBackword)
                 .build();
 
         //threadAuto.start();
@@ -247,6 +225,7 @@ public class AutoRightRed extends LinearOpMode {
         resetElevator = new ElapsedTime();
         drive.followTrajectorySequenceAsync(main);
         spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.ZERO_RED);
+
 
         waitForStart();
 
