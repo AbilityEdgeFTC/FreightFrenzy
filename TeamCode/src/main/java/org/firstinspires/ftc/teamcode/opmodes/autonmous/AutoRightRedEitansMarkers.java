@@ -147,6 +147,7 @@ public class AutoRightRedEitansMarkers extends LinearOpMode {
 
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(1)
                 .addTemporalMarker(intakeBackword)
 
                 .lineToSplineHeading(poseEntrance)
@@ -156,6 +157,7 @@ public class AutoRightRedEitansMarkers extends LinearOpMode {
 
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(1)
                 .addTemporalMarker(intakeBackword)
 
                 .lineToSplineHeading(poseEntrance)
@@ -165,6 +167,7 @@ public class AutoRightRedEitansMarkers extends LinearOpMode {
 
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(1)
                 .addTemporalMarker(intakeBackword)
 
                 .lineToSplineHeading(poseEntrance)
@@ -174,6 +177,17 @@ public class AutoRightRedEitansMarkers extends LinearOpMode {
 
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(1)
+                .addTemporalMarker(intakeBackword)
+                .lineToSplineHeading(poseEntrance)
+
+
+                .addTemporalMarker(elevetorOpen)
+                .waitSeconds(2)
+
+                .addTemporalMarker(intakeForward)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(1)
                 .addTemporalMarker(intakeBackword)
 
                 .lineToSplineHeading(poseEntrance)
@@ -183,15 +197,7 @@ public class AutoRightRedEitansMarkers extends LinearOpMode {
 
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .addTemporalMarker(intakeBackword)
-
-                .lineToSplineHeading(poseEntrance)
-
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(2)
-
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(1)
                 .addTemporalMarker(intakeBackword)
                 .build();
 
