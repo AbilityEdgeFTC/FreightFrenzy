@@ -394,7 +394,6 @@ public class teleopOwlRed extends LinearOpMode {
             case 0:
 
                 spinner.setUsePID(true);
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.SHARED_RED);
                 if(resetElevator.seconds() > .67 && pidToggles())
                 {
                     if(!withoutPID())
@@ -407,10 +406,10 @@ public class teleopOwlRed extends LinearOpMode {
                 {
                     elevator.setUsePID(false);
                 }
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.SHARED_RED);
                 break;
             case 1:
                 spinner.setUsePID(true);
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
                 if(resetElevator.seconds() > 1.3 && pidToggles())
                 {
                     if(!withoutPID())
@@ -423,11 +422,11 @@ public class teleopOwlRed extends LinearOpMode {
                 {
                     elevator.setUsePID(false);
                 }
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
                 break;
             case 2:
                 spinner.setUsePID(true);
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
-                if(resetElevator.seconds() > .55 && pidToggles())
+                if(resetElevator.seconds() > .8 && pidToggles())
                 {
                     if(!withoutPID())
                     {
@@ -439,11 +438,11 @@ public class teleopOwlRed extends LinearOpMode {
                 {
                     elevator.setUsePID(false);
                 }
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
                 break;
             case 3:
                 spinner.setUsePID(true);
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
-                if(resetElevator.seconds() > .25 && pidToggles())
+                if(resetElevator.seconds() > .6 && pidToggles())
                 {
                     if(!withoutPID())
                     {
@@ -455,6 +454,7 @@ public class teleopOwlRed extends LinearOpMode {
                 {
                     elevator.setUsePID(false);
                 }
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
                 break;
         }
 

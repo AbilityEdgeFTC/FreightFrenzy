@@ -92,6 +92,30 @@ public class SpinnerFirstPID {
 
     }
 
+    public void updateAuto()
+    {
+        switch (spinnerState)
+        {
+            case ZERO_DO_NOT_USE:
+                target = 0;
+                break;
+            case LEFT:
+                target = LEFT_ANGLE;
+                break;
+            case RIGHT:
+                target = RIGHT_ANGLE;
+                break;
+            case ZERO_RED:
+            case ZERO_BLUE:
+                target = ZERO_ANGLE;
+                break;
+        }
+
+        motor.setTargetPosition(target - ZERO_ANGLE);
+        motor.setPower(power);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
     public static double encoderTicksToRadians(int ticks) {
         return Math.toRadians((ticks * 360) / TICKS_PER_REV);
     }
