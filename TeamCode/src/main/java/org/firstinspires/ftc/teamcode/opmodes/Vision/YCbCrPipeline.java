@@ -93,19 +93,19 @@ public class YCbCrPipeline extends OpenCvPipeline
         right.release();
 
         //checking which barcode is found.
-        /*if(barcodeLeft && barcodeCenter && barcodeRight){
+        if(barcodeLeft && barcodeCenter && barcodeRight){
             // NOT FOUND
-            location = Location.Not_Found;
+            setLocation(Location.Not_Found);
         }else if(barcodeLeft){
-            location = Location.Left;
+            setLocation(Location.Left);
         }else if(barcodeCenter){
-            location = Location.Center;
+            setLocation(Location.Center);
         }else if(barcodeRight){
-            location = Location.Right;
+            setLocation(Location.Right);
         }else{
             // NOT FOUND
-            location = Location.Not_Found;
-        }*/
+            setLocation(Location.Not_Found);
+        }
 
         Imgproc.cvtColor(mask, mask, Imgproc.COLOR_GRAY2RGB);
 
@@ -120,6 +120,10 @@ public class YCbCrPipeline extends OpenCvPipeline
     // getting location of the team shipping element.
     public Location getLocation() {
         return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public boolean isTSE() {
