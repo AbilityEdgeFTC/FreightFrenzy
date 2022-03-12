@@ -34,7 +34,7 @@ public class gamepad {
     double rightPower_f;
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
-    public static double mainPower = .85, slowPower = .6, multiplier = .9;
+    public static double mainPower = .75, multiplier = .9;
     public static boolean slowMove = false, isCentricDrive = true, canTwist = true;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
@@ -196,5 +196,9 @@ public class gamepad {
 
     public static void setCanTwist(boolean canTwist) {
         gamepad.canTwist = canTwist;
+    }
+
+    public void setPower(double power) {
+        this.power = power;
     }
 }

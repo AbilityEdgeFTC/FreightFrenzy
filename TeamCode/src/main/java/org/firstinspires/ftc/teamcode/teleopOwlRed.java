@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
+import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
 
 @Config
 @TeleOp(name = "TeleOp Red Alliance", group = "main")
@@ -28,8 +29,7 @@ public class teleopOwlRed extends LinearOpMode {
     ElevatorSpinnerLibraryPID spinner;
     ElevatorFirstPID elevator;
     carousel carousel;
-    //IntakeFixingThread intake;
-    //Thread intakeFixingThread;
+    //IntakeFixingThread intakeFixingThread;
     intake intake;
     hand hand;
     dip dip;
@@ -62,8 +62,7 @@ public class teleopOwlRed extends LinearOpMode {
         spinner = new ElevatorSpinnerLibraryPID(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
         carousel = new carousel(hardwareMap);
-        //intake = new IntakeFixingThread(hardwareMap, telemetry);
-        //intakeFixingThread = intake;
+        //intakeFixingThread = new IntakeFixingThread(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
@@ -92,14 +91,21 @@ public class teleopOwlRed extends LinearOpMode {
             {
                 handMoving();
             }
+            if(gamepad1.left_stick_button)
+            {
+                gamepad.setPower(1);
+            }
+            else
+            {
+                gamepad.setPower(gamepad.mainPower);
+            }
             elevatorLeveling();
-            //telemetry.addData("Sec", sharedTime.seconds());
             telemetry.update();
         }
 
         gamepad.saveIMUHeading();
 
-        //intake.exitThread();
+        //intakeFixingThread.exitThread();
         //intakeFixingThread.interrupt();
     }
 
@@ -152,24 +158,6 @@ public class teleopOwlRed extends LinearOpMode {
         {
             spinner.setUsePID(true);
             elevator.setUsePID(true);
-            switch (hand.getHandPos())
-            {
-                case SHARED_HUB:
-                    hand.shared();
-                    break;
-                case INTAKE:
-                    //hand.intake();
-                    break;
-                case ONE_HUB:
-                    hand.level1();
-                    break;
-                case TWO_HUB:
-                    hand.level2();
-                    break;
-                case THREE_HUB:
-                    hand.level3();
-                    break;
-            }
         }
         else if(gamepad2.right_stick_button && gamepad2.left_stick_button || gamepad1.right_stick_button && gamepad1.left_stick_button)
         {
@@ -197,13 +185,13 @@ public class teleopOwlRed extends LinearOpMode {
 
     void intakeToggles()
     {
-        if ((gamepad1.right_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad2.left_trigger == 0) && (gamepad1.left_trigger == 0))
+        if ((gamepad1.right_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad2.left_trigger == 0) && (gamepad1.left_trigger == 0)/* && !intakeFixingThread.withFreight()*/)
         {
             intake.powerIntake(gamepad1.right_trigger);
             frontIntake = false;
             backIntake = false;
         }
-        else if ((gamepad1.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad2.left_trigger == 0))
+        else if ((gamepad1.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad2.left_trigger == 0)/* && !intakeFixingThread.withFreight()*/)
         {
             intake.powerIntake(-gamepad1.left_trigger);
             frontIntake = false;
@@ -211,24 +199,27 @@ public class teleopOwlRed extends LinearOpMode {
         }
         else if ((gamepad2.right_trigger != 0) && canIntake && (gamepad2.left_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0))
         {
+            //intakeFixingThread.setOverride(true);
             intake.powerIntake(gamepad2.right_trigger);
             frontIntake = false;
             backIntake = false;
         }
         else if ((gamepad2.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0))
         {
+            //intakeFixingThread.setOverride(true);
             intake.powerIntake(-gamepad2.left_trigger);
             frontIntake = false;
             backIntake = false;
         }
 
+        //intakeFixingThread.setOverride(false);
 
         powerIntake();
     }
 
     void powerIntake()
     {
-        if(frontIntake && canIntake)
+        if(frontIntake && canIntake /*&& !intakeFixingThread.withFreight()*/)
         {
             intake.powerIntake(powerIntake);
         }
@@ -261,10 +252,10 @@ public class teleopOwlRed extends LinearOpMode {
                     gamepad.setCanTwist(false);
                     powerElevator = powerSlowElevator;
                     elevator.setPower(powerElevator);
-                    //intake.spinIntake = false;
                     frontIntake = false;
                     backIntake = false;
                     canIntake = false;
+                    //intakeFixingThread.setOverride(true);
                     if(!withoutPID())
                     {
                         dip.holdFreight();
@@ -360,7 +351,7 @@ public class teleopOwlRed extends LinearOpMode {
                     gamepad.setCanTwist(true);
                     resetElevator.reset();
 
-                    //intake.spinIntake = true;
+                    //intakeFixingThread.setOverride(false);
                     canIntake = true;
                     frontIntake = true;
 
@@ -466,7 +457,7 @@ public class teleopOwlRed extends LinearOpMode {
         if(gamepad1.left_bumper && elevatorMovement != ElevatorMovement.SPIN)
         {
             elevatorMovement = ElevatorMovement.SPIN;
-            //intake.spinIntake = true;
+            //intakeFixingThread.setOverride(false);
             canIntake = true;
             frontIntake = true;
         }

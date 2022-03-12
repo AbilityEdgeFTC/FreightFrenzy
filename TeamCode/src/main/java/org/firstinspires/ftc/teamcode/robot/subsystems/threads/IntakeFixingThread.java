@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.robot.subsystems.FreightSensor;
+import org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
@@ -17,15 +18,19 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 public class IntakeFixingThread extends Thread {
 
     intake intake;
-    FreightSensor freightSensor;
-    Telemetry telemetry;
+    SensorColor colorSensor;
     public static boolean exit = false;
     public static boolean spinIntake = false;
+    public static double MIN_CM = 0, MAX_CM = 0;
+    public static double MIN_H = 0, MAX_H = 0;
+    public static double MIN_S = 0, MAX_S = 0;
+    public static double MIN_V = 0, MAX_V = 0;
+    public boolean override = false;
 
-    public IntakeFixingThread(HardwareMap hw, Telemetry telemetry) {
+
+    public IntakeFixingThread(HardwareMap hw) {
         intake = new intake(hw);
-        freightSensor = new FreightSensor(hw);
-        this.telemetry = telemetry;
+        colorSensor = new SensorColor(hw);
     }
 
     // called when tread.start is called. thread stays in loop to do what it does until exit is
@@ -35,20 +40,23 @@ public class IntakeFixingThread extends Thread {
         try {
             while (!exit)
             {
-                if(freightSensor.freightOn())
+                if(!override)
                 {
-                    intake.intakeBackward();
-                    Thread.sleep(1500);
-                }
+                    if(withFreight())
+                    {
+                        intake.intakeBackward();
+                        Thread.sleep(1500);
+                    }
 
-                while(freightSensor.freightOn())
-                {
-                    intake.stop();
-                }
+                    while(withFreight())
+                    {
+                        intake.stop();
+                    }
 
-                while (!freightSensor.freightOn() && spinIntake)
-                {
-                    intake.intakeForward();
+                    while (!withFreight() && spinIntake)
+                    {
+                        intake.intakeForward();
+                    }
                 }
             }
             Thread.currentThread().interrupt();
@@ -61,5 +69,49 @@ public class IntakeFixingThread extends Thread {
     public static void exitThread()
     {
         exit = true;
+    }
+
+    public boolean withFreight()
+    {
+
+        if(distanceIsMathcing() || colorIsMatching())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public boolean colorIsMatching()
+    {
+        float[] color = colorSensor.getHSV();
+
+        if((color[0] >= MIN_H && color[0] <= MAX_H) && (color[1] >= MIN_S && color[1] <= MAX_S) && (color[2] >= MIN_V && color[2] <= MAX_V))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public boolean distanceIsMathcing()
+    {
+        double distance = colorSensor.getCM();
+        if(distance >= MIN_CM && distance <= MAX_CM)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void setOverride(boolean override) {
+        this.override = override;
     }
 }

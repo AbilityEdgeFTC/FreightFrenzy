@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
+/* Copyright (c) 2017-2020 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -27,54 +27,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.robot.subsystems;
+
+import android.graphics.Color;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogInputController;
-import com.qualcomm.robotcore.hardware.AnalogSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.opencv.core.Scalar;
 
 @Config
-@TeleOp(name = "Force sensor Testing", group = "testing")
-@Disabled
-public class SensorAnalogFSR extends LinearOpMode {
+public class SensorColor {
 
-    //AnalogSensor freightSensor;  // Hardware Device Object
-    AnalogInput freightSensor;
-    public static double voltageThreshold = (float) 0.00000000000000001;
-    IntakeFixingThread intakeFixingThread;
-    @Override
-    public void runOpMode() {
+    RevColorSensorV3 colorSensor;
+    public static double gain = 2;
+    float[] hsvValues = new float[3];
+    float[] rgbValues = new float[3];
+    NormalizedRGBA colors;
+    double distance;
 
-        freightSensor = hardwareMap.get(AnalogInput.class, "freightSensor");
-        intake intake = new intake(hardwareMap);
-        //intakeFixingThread = new IntakeFixingThread(hardwareMap, telemetry);
-        //analogInputController = hardwareMap.get(AnalogInputController.class, "freightSensor");
-        //analogInput = new AnalogInput(analogInputController, 0);
-
-        intakeFixingThread.start();
-
-        waitForStart();
-
-        while (opModeIsActive()) {
-
-            if(freightSensor.getVoltage() > voltageThreshold){
-                intake.intakeForward();
-            } else {
-                intake.stop();
-            }
-
-            telemetry.addData("Sensor Value", freightSensor.getVoltage());
-            telemetry.update();
+    public SensorColor(HardwareMap hardwareMap) {
+        this.colorSensor = hardwareMap.get(RevColorSensorV3.class, "sensor_color");
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensor).enableLight(true);
         }
-
-        intakeFixingThread.exitThread();
-        intakeFixingThread.interrupt();
+        colorSensor.setGain((float)gain);
     }
+
+    public float[] getRGB()
+    {
+        colors = colorSensor.getNormalizedColors();
+        rgbValues = new float[]{colors.red, colors.blue, colors.green};
+        return rgbValues;
+    }
+
+    public float[] getHSV()
+    {
+        colors = colorSensor.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        return hsvValues;
+    }
+
+    public float getAlpha()
+    {
+        colors = colorSensor.getNormalizedColors();
+        return colors.alpha;
+    }
+
+    public double getCM() {
+        distance = colorSensor.getDistance(DistanceUnit.CM);
+        return distance;
+    }
+
 }
