@@ -16,7 +16,9 @@ public class SpinnerFirstPID {
 
     public static int RIGHT_ANGLE = 215;
     public static int LEFT_ANGLE = -215;
-    public static int ZERO_ANGLE = 315;
+    public static int ZERO_ANGLE = 330;
+    public static int LEFT_AUTO_ANGLE = -130;
+    public static int DUCK_ANGLE = 150;
     public static double power = 1;
     public static boolean usePID = true;
     int target = 0;
@@ -30,7 +32,9 @@ public class SpinnerFirstPID {
         ZERO_RED,
         ZERO_BLUE,
         ZERO_DO_NOT_USE,
-        RIGHT
+        RIGHT,
+        LEFT_AUTO_ANGLE,
+        DUCK_ANGLE
     }
 
     public static SpinnerState spinnerState = SpinnerState.ZERO_DO_NOT_USE;
@@ -77,6 +81,12 @@ public class SpinnerFirstPID {
                 case ZERO_BLUE:
                     target = ZERO_ANGLE;
                     break;
+                case DUCK_ANGLE:
+                    target = DUCK_ANGLE;
+                    break;
+                case LEFT_AUTO_ANGLE:
+                    target = LEFT_AUTO_ANGLE;
+                    break;
             }
 
             motor.setTargetPosition(target - ZERO_ANGLE);
@@ -94,21 +104,34 @@ public class SpinnerFirstPID {
 
     public void updateAuto()
     {
-        switch (spinnerState)
+        if(usePID)
         {
-            case ZERO_DO_NOT_USE:
-                target = 0;
-                break;
-            case LEFT:
-                target = LEFT_ANGLE;
-                break;
-            case RIGHT:
-                target = RIGHT_ANGLE;
-                break;
-            case ZERO_RED:
-            case ZERO_BLUE:
-                target = ZERO_ANGLE;
-                break;
+            switch (spinnerState)
+            {
+                case ZERO_DO_NOT_USE:
+                    target = 0;
+                    break;
+                case LEFT:
+                    target = LEFT_ANGLE;
+                    break;
+                case RIGHT:
+                    target = RIGHT_ANGLE;
+                    break;
+                case ZERO_RED:
+                case ZERO_BLUE:
+                    target = ZERO_ANGLE;
+                    break;
+                case DUCK_ANGLE:
+                    target = DUCK_ANGLE;
+                    break;
+                case LEFT_AUTO_ANGLE:
+                    target = LEFT_AUTO_ANGLE;
+                    break;
+            }
+
+            motor.setTargetPosition(target - ZERO_ANGLE);
+            motor.setPower(power);
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         motor.setTargetPosition(target - ZERO_ANGLE);

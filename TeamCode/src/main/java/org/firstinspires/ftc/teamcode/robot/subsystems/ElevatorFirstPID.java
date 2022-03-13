@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 
 /*
@@ -13,7 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 22,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5;
+    public static double HUB_LEVEL3 = 22,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5,AUTO_LEFT_LEVEL = 18,DUCK_RED_LEVEL = 10.5;
     public static double SHARED_HUB = 5.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
@@ -23,13 +26,17 @@ public class ElevatorFirstPID {
     double power = 1;
     boolean usePID = true;
     public static double maxPower = 0.7;
+    double startHeight = 0;
+    public static boolean DEBUG = true;
 
     public enum ElevatorLevel {
         ZERO,
         SHARED_HUB,
         HUB_LEVEL1,
         HUB_LEVEL2,
-        HUB_LEVEL3
+        HUB_LEVEL3,
+        AUTO_LEFT_LEVEL,
+        DUCK_RED_LEVEL
     }
 
     public static ElevatorLevel elevatorLevel = ElevatorLevel.ZERO;
@@ -46,6 +53,18 @@ public class ElevatorFirstPID {
         this.motor.setDirection(DcMotor.Direction.REVERSE);
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
+
+        try {
+            ZERO_HEIGHT = encoderTicksToInches(Integer.parseInt(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"))));
+        }catch (NumberFormatException e)
+        {
+            ZERO_HEIGHT = 0;
+        }
+
+        if(DEBUG)
+        {
+            ZERO_HEIGHT = 0;
+        }
     }
 
     public ElevatorFirstPID(HardwareMap hardwareMap)
@@ -55,8 +74,18 @@ public class ElevatorFirstPID {
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
-        this.gamepad = gamepad;
-        this.cGamepad = new cGamepad(gamepad);
+
+        try {
+            ZERO_HEIGHT = encoderTicksToInches(Integer.parseInt(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"))));
+        }catch (NumberFormatException e)
+        {
+            ZERO_HEIGHT = 0;
+        }
+
+        if(DEBUG)
+        {
+            ZERO_HEIGHT = 0;
+        }
     }
 
     public void update() {
@@ -67,7 +96,7 @@ public class ElevatorFirstPID {
             switch (elevatorLevel)
             {
                 case ZERO:
-                    target = ZERO_HEIGHT;
+                    target = 0;
                     break;
                 case SHARED_HUB:
                     target = SHARED_HUB;
@@ -80,6 +109,12 @@ public class ElevatorFirstPID {
                     break;
                 case HUB_LEVEL3:
                     target = HUB_LEVEL3;
+                    break;
+                case DUCK_RED_LEVEL:
+                    target = DUCK_RED_LEVEL;
+                    break;
+                case AUTO_LEFT_LEVEL:
+                    target = AUTO_LEFT_LEVEL;
                     break;
             }
 
@@ -96,28 +131,40 @@ public class ElevatorFirstPID {
 
     public void updateAuto()
     {
-        switch (elevatorLevel)
-        {
-            case ZERO:
-                target = ZERO_HEIGHT;
-                break;
-            case SHARED_HUB:
-                target = SHARED_HUB;
-                break;
-            case HUB_LEVEL1:
-                target = HUB_LEVEL1;
-                break;
-            case HUB_LEVEL2:
-                target = HUB_LEVEL2;
-                break;
-            case HUB_LEVEL3:
-                target = HUB_LEVEL3;
-                break;
-        }
+//        AUTO_LEFT_LEVEL = encoderTicksToInches(580);
+//        DUCK_RED_LEVEL = encoderTicksToInches(220);
 
-        motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT));
-        motor.setPower(power);
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if(usePID)
+        {
+            switch (elevatorLevel)
+            {
+                case ZERO:
+                    target = 0;
+                    break;
+                case SHARED_HUB:
+                    target = SHARED_HUB;
+                    break;
+                case HUB_LEVEL1:
+                    target = HUB_LEVEL1;
+                    break;
+                case HUB_LEVEL2:
+                    target = HUB_LEVEL2;
+                    break;
+                case HUB_LEVEL3:
+                    target = HUB_LEVEL3;
+                    break;
+                case DUCK_RED_LEVEL:
+                    target = DUCK_RED_LEVEL;
+                    break;
+                case AUTO_LEFT_LEVEL:
+                    target = AUTO_LEFT_LEVEL;
+                    break;
+            }
+
+            motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT));
+            motor.setPower(power);
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
     }
 
     public static double encoderTicksToInches(int ticks) {

@@ -8,8 +8,10 @@ import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.opmodes.Vision.YCbCrPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
@@ -30,24 +32,24 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red FULL", group = "red")
+@Autonomous(name = "Right Red FULL", group = "Autonomous")
 public class AutoRightRed extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -60;
     double startPoseRightH = 90;
-    public static double poseEntranceX = 12;
-    public static double poseEntranceY = -61.6;
+    public static double poseEntranceX = 14.3;
+    public static double poseEntranceY = -63.2;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 50;
-    public static double poseCollectY = -61.6;
+    public static double poseCollectX = 51.6;
+    public static double poseCollectY = -63.2;
     public static double poseCollectH = 180;
-    public static double poseHelpX = 7;
-    public static double poseHelpY = -50;
+    public static double poseHelpX =9;
+    public static double poseHelpY = -52;
     public static double poseHelpH = 180;
     ElevatorFirstPID elevator;
-    //SpinnerFirstPID spinner;
-    ElevatorSpinnerLibraryPID spinner;
+    SpinnerFirstPID spinner;
+    //ElevatorSpinnerLibraryPID spinner;
     hand hand;
     intake intake;
     dip dip;
@@ -60,15 +62,16 @@ public class AutoRightRed extends LinearOpMode {
     {
         MIN,
         MID,
-        MAX
+        MAX;
+
     }
 
     levels placeFreightIn = levels.MAX;
 
     public static int elevatorLevel = 3;
 
-    OpenCvWebcam webcam;
-    YCbCrPipeline pipeline;
+    //OpenCvWebcam webcam;
+    //YCbCrPipeline pipeline;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -76,8 +79,8 @@ public class AutoRightRed extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
-        //spinner = new SpinnerFirstPID(hardwareMap);
-        spinner = new ElevatorSpinnerLibraryPID(hardwareMap);
+        spinner = new SpinnerFirstPID(hardwareMap);
+        //spinner = new ElevatorSpinnerLibraryPID(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
@@ -86,12 +89,14 @@ public class AutoRightRed extends LinearOpMode {
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
-        DriveConstants.setMaxVel(65);
+        DriveConstants.setMaxVel(70);
 
         MarkerCallback elevetorOpen = new MarkerCallback()
         {
             @Override
             public void onMarkerReached() {
+                elevator.updateAuto();
+                spinner.updateAuto();
                 switch (placeFreightIn)
                 {
                     case MIN:
@@ -114,20 +119,17 @@ public class AutoRightRed extends LinearOpMode {
                 switch (elevatorLevel)
                 {
                     case 1:
-                        //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
                         hand.level1();
                         break;
                     case 2:
-                        //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
                         hand.level2();
                         break;
                     case 3:
-                        //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
                         hand.level3();
                         break;
@@ -142,6 +144,8 @@ public class AutoRightRed extends LinearOpMode {
         {
             @Override
             public void onMarkerReached(){
+                elevator.updateAuto();
+                spinner.updateAuto();
                 powerElevator = powerSlowElevator;
                 dip.releaseFreight();
                 elevator.updateAuto();
@@ -150,8 +154,7 @@ public class AutoRightRed extends LinearOpMode {
                 elevator.setPower(powerElevator);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
                 hand.intake();
-                //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                 elevator.updateAuto();
                 spinner.updateAuto();
             }
@@ -163,6 +166,8 @@ public class AutoRightRed extends LinearOpMode {
             public void onMarkerReached(){
                 dip.getFreight();
                 intake.intakeForward();
+                elevator.updateAuto();
+                spinner.updateAuto();
             }
         };
 
@@ -171,6 +176,8 @@ public class AutoRightRed extends LinearOpMode {
             @Override
             public void onMarkerReached(){
                 intake.intakeBackward();
+                elevator.updateAuto();
+                spinner.updateAuto();
             }
         };
 
@@ -181,72 +188,64 @@ public class AutoRightRed extends LinearOpMode {
             SampleMecanumDrive.getAccelerationConstraint(20))
          */
 
-        initPipeline();
+        //initPipeline();
 
         main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(poseEntrance.getX() + 3.5, poseEntrance.getY(), poseEntrance.getHeading()))
+                .lineToSplineHeading(new Pose2d(poseEntrance.getX(), poseEntrance.getY(), poseEntrance.getHeading()))
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(1.2)
+                .waitSeconds(.9)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
                 .waitSeconds(0.3)
                 .lineToSplineHeading(poseCollect)
-                .turn(Math.toRadians(-3))
-                .turn(Math.toRadians(3))
+                .turn(Math.toRadians(-10))
+                .turn(Math.toRadians(10))
                 .addTemporalMarker(intakeBackword)
-                .addTemporalMarker(elevetorOpen)
                 .lineToSplineHeading(poseEntrance)
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(.85)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
                 .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 1.5, poseCollect.getY(), poseCollect.getHeading()))
-                .turn(Math.toRadians(-3))
-                .turn(Math.toRadians(3))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 2.2, poseCollect.getY(), poseCollect.getHeading()))
+                .turn(Math.toRadians(-10))
+                .turn(Math.toRadians(10))
                 .addTemporalMarker(intakeBackword)
-                .addTemporalMarker(elevetorOpen)
                 .lineToSplineHeading(poseEntrance)
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(.85)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
                 .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 2, poseCollect.getY(), poseCollect.getHeading()))
-                .turn(Math.toRadians(-3))
-                .turn(Math.toRadians(3))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 8, poseCollect.getY(), poseCollect.getHeading()))
+                .turn(Math.toRadians(-13))
+                .turn(Math.toRadians(13))
                 .addTemporalMarker(intakeBackword)
-                .addTemporalMarker(elevetorOpen)
                 .lineToSplineHeading(poseEntrance)
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(.85)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
                 .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 3, poseCollect.getY(), poseCollect.getHeading()))
-                .turn(Math.toRadians(-3))
-                .turn(Math.toRadians(3))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 8.9, poseCollect.getY(), poseCollect.getHeading()))
+                .turn(Math.toRadians(-15))
+                .turn(Math.toRadians(15))
                 .addTemporalMarker(intakeBackword)
-                .addTemporalMarker(elevetorOpen)
                 .lineToSplineHeading(poseEntrance)
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(.85)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 4, poseCollect.getY(), poseCollect.getHeading()))
-                .turn(Math.toRadians(-3))
-                .turn(Math.toRadians(3))
-                .addTemporalMarker(intakeBackword)
-                .addTemporalMarker(elevetorOpen)
-                .lineToSplineHeading(poseEntrance)
-                .waitSeconds(.85)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(70, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(60))
+                .turn(Math.PI/4)
                 .build();
 
         dip.getFreight();
 
-        while (!opModeIsActive())
+        /*while (!opModeIsActive())
         {
             telemetry.addData("BARCODE LOCATION: ", pipeline.getLocation());
             switch (pipeline.getLocation())
@@ -261,18 +260,23 @@ public class AutoRightRed extends LinearOpMode {
                     placeFreightIn = levels.MAX; // RED, blue = 1
                     break;
             }
-        }
+        }*/
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
 
         waitForStart();
-        //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.updateAuto();
         elevator.updateAuto();
 
         drive.followTrajectorySequence(main);
+
+        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + drive.getExternalHeading());
+        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"), "" + elevator.getPosition());
+        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("SpinnerValue.txt"), "" + spinner.getPosition());
     }
 
-    public void initPipeline()
+    /*public void initPipeline()
     {
         //setting up webcam from config, and displaying it in the teleop controller.
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -282,6 +286,8 @@ public class AutoRightRed extends LinearOpMode {
         pipeline = new YCbCrPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
+        pipeline.setRedAlliance(true);
+
 
         webcam.setPipeline(pipeline);
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
@@ -305,7 +311,7 @@ public class AutoRightRed extends LinearOpMode {
                  * For a front facing camera, rotation is defined assuming the user is looking at the screen.
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
-                 */
+
                 webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
                 FtcDashboard.getInstance().startCameraStream(webcam,0);
             }
@@ -313,12 +319,10 @@ public class AutoRightRed extends LinearOpMode {
             @Override
             public void onError(int errorCode)
             {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
+
             }
         });
-    }
+    }*/
 
 
 }

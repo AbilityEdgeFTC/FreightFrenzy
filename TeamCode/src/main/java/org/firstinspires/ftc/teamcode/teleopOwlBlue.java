@@ -167,10 +167,6 @@ public class teleopOwlBlue extends LinearOpMode {
                     break;
             }
         }
-        else if(gamepad2.right_stick_button && gamepad2.left_stick_button || gamepad1.right_stick_button && gamepad1.left_stick_button)
-        {
-            spinner.saveOffset();
-        }
 
         return true;
     }

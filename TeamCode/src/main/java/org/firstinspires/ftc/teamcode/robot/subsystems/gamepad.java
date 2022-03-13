@@ -141,6 +141,11 @@ public class gamepad {
 
     public void centricDrive()
     {
+//        Vector2d input = new Vector2d(
+//                -gamepad1.left_stick_y,
+//                -gamepad1.left_stick_x
+//        ).rotated(-drivetrain.getExternalHeading());
+
         Vector2d input = new Vector2d(
                 -gamepad1.left_stick_y,
                 gamepad1.left_stick_x

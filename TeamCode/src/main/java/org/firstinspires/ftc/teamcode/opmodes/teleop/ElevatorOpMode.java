@@ -29,13 +29,16 @@ public class ElevatorOpMode extends LinearOpMode {
         {
             if(usePID)
             {
+
                 elevator.update();
+
             }
             else
             {
                 elevator.setUsePID(false);
             }
-
+            telemetry.addData("POS", elevator.getPosition());
+            telemetry.addData("TARGET", elevator.getTarget());
             telemetry.update();
         }
 
