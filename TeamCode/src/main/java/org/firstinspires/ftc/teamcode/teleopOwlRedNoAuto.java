@@ -11,6 +11,9 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
@@ -19,11 +22,10 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
 
 @Config
-@TeleOp(name = "TeleOp Red Alliance", group = "main")
-public class teleopOwlRed extends LinearOpMode {
+@TeleOp(name = "TeleOp Red Alliance No Autonomous", group = "main")
+public class teleopOwlRedNoAuto extends LinearOpMode {
 
     gamepad gamepad;
     ElevatorSpinnerLibraryPID spinner;
@@ -55,6 +57,10 @@ public class teleopOwlRed extends LinearOpMode {
     public static ElevatorMovement elevatorMovement = ElevatorMovement.SPIN;
     @Override
     public void runOpMode() throws InterruptedException {
+        //        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + Math.toRadians(startPoseRightH));
+        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"), "" + 0);
+//        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("SpinnerValue.txt"), "" + 0);
+
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         gamepad.setRedAlliance(true);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
@@ -67,7 +73,7 @@ public class teleopOwlRed extends LinearOpMode {
         dip = new dip(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
-        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
+        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.ZERO_RED);
         resetElevator = new ElapsedTime();
 
         // wait till after init
@@ -335,13 +341,13 @@ public class teleopOwlRed extends LinearOpMode {
                 }
                 if(gamepad1.right_stick_button)
                 {
-                    gamepad.setCanTwist(true);
-                    spinner.setSlowMove(false);
+                    gamepad.setCanTwist(false);
+                    spinner.setSlowMove(true);
                 }
                 else
                 {
-                    gamepad.setCanTwist(false);
-                    spinner.setSlowMove(true);
+                    gamepad.setCanTwist(true);
+                    spinner.setSlowMove(false);
                 }
 
                 if(gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1 && elevator.getUsePID() == false && spinner.getUsePID() == false)
@@ -388,16 +394,18 @@ public class teleopOwlRed extends LinearOpMode {
 
         elevator.setPower(powerSlowElevator);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+
+        if(!withoutPID())
+        {
+            hand.intake();
+        }
+
         switch (elevatorLevel)
         {
             case 0:
-
+                hand.intake();
                 if(resetElevator.seconds() > .67 && pidToggles())
                 {
-                    if(!withoutPID())
-                    {
-                        hand.intake();
-                    }
                     elevator.setUsePID(true);
                     spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.SHARED_RED);
                 }
@@ -407,12 +415,9 @@ public class teleopOwlRed extends LinearOpMode {
                 }
                 break;
             case 1:
+                hand.intake();
                 if(resetElevator.seconds() > 1.3 && pidToggles())
                 {
-                    if(!withoutPID())
-                    {
-                        hand.intake();
-                    }
                     elevator.setUsePID(true);
                     spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
                 }
@@ -422,12 +427,9 @@ public class teleopOwlRed extends LinearOpMode {
                 }
                 break;
             case 2:
+                hand.intake();
                 if(resetElevator.seconds() > .8 && pidToggles())
                 {
-                    if(!withoutPID())
-                    {
-                        hand.intake();
-                    }
                     elevator.setUsePID(true);
                     spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
                 }

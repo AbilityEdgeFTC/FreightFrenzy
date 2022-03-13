@@ -22,7 +22,7 @@ public class ElevatorSpinnerLibraryPID {
     public static double kI = 0;
     public static double kD = 0;
     double target = 0;
-    public static double maxPower = 0.65;
+    public static double maxPower = 0.5;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     boolean slowMove = false;
@@ -39,7 +39,8 @@ public class ElevatorSpinnerLibraryPID {
         ZERO_DO_NOT_USE,
         SHARED_RED,
         SHARED_BLUE,
-        RIGHT
+        RIGHT,
+        READ_FILE
     }
 
     public static SpinnerState spinnerState = SpinnerState.ZERO_DO_NOT_USE;
@@ -109,6 +110,8 @@ public class ElevatorSpinnerLibraryPID {
                 case SHARED_BLUE:
                     target = LEFT_ANGLE_SHARED;
                     break;
+                case READ_FILE:
+
             }
 
             motor.setPower(controller.calculate(target - ZERO_ANGLE + newOffset, encoderTicksToRadians(motor.getCurrentPosition())));

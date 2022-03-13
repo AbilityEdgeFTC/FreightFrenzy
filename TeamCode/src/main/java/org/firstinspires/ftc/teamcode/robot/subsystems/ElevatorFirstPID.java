@@ -27,7 +27,7 @@ public class ElevatorFirstPID {
     boolean usePID = true;
     public static double maxPower = 0.7;
     double startHeight = 0;
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
     public enum ElevatorLevel {
         ZERO,
