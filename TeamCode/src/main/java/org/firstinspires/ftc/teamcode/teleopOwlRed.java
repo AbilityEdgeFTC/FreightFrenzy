@@ -40,7 +40,6 @@ public class teleopOwlRed extends LinearOpMode {
     double position = 0;
     ElapsedTime resetElevator;
 
-
     enum ElevatorMovement
     {
         SPIN,

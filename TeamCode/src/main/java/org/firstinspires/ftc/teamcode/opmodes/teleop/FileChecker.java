@@ -38,13 +38,14 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 
 @Config
 @TeleOp(name = "File Testing", group = "testing")
 public class FileChecker extends LinearOpMode {
 
-    ElevatorSpinnerLibraryPID spinner;
+    SpinnerFirstPID spinner;
     ElevatorFirstPID elevator;
 
     @Override
@@ -52,11 +53,11 @@ public class FileChecker extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        spinner = new ElevatorSpinnerLibraryPID(hardwareMap);
+        spinner = new SpinnerFirstPID(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.ZERO_RED);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
 
         // Wait for the game to start (driver presses PLAY)

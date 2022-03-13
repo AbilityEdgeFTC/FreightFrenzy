@@ -129,38 +129,6 @@ public class ElevatorSpinnerLibraryPID {
 
     }
 
-    public void updateAuto()
-    {
-        switch (spinnerState)
-        {
-            case ZERO_DO_NOT_USE:
-                target = 0;
-                break;
-            case LEFT:
-                target = LEFT_ANGLE;
-                break;
-            case RIGHT:
-                target = RIGHT_ANGLE;
-                break;
-            case ZERO_RED:
-                target = ZERO_ANGLE_RED;
-                ZERO_ANGLE = ZERO_ANGLE_RED;
-                break;
-            case ZERO_BLUE:
-                target = ZERO_ANGLE_BLUE;
-                ZERO_ANGLE = ZERO_ANGLE_BLUE;
-                break;
-            case SHARED_RED:
-                target = RIGHT_ANGLE_SHARED;
-                break;
-            case SHARED_BLUE:
-                target = LEFT_ANGLE_SHARED;
-                break;
-        }
-
-        motor.setPower(controller.calculate(target - ZERO_ANGLE + newOffset, encoderTicksToRadians(motor.getCurrentPosition())));
-    }
-
     public static double encoderTicksToRadians(int ticks) {
         return Math.toRadians((ticks * 360) / TICKS_PER_REV);
     }
