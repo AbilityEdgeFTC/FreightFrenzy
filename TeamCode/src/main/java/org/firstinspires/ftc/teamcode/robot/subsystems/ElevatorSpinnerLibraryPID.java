@@ -22,7 +22,7 @@ public class ElevatorSpinnerLibraryPID {
     public static double kI = 0;
     public static double kD = 0;
     int target = 0;
-    public static double maxPower = 0.5;
+    public static double maxPower = 0.4;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     boolean slowMove = false;
@@ -164,13 +164,26 @@ public class ElevatorSpinnerLibraryPID {
         }
         else
         {
-            if(slowMove && gamepad1.right_stick_x != 0)
+            if(slowMove && gamepad1.right_stick_x != 0 && !gamepad1.right_stick_button)
             {
                 motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
             }
-            if(gamepad2.right_stick_x != 0)
+            if(gamepad2.right_stick_x != 0 && !gamepad2.right_stick_button)
             {
                 motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
+            }
+            if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
+            {
+                motor.setPower(0);
+            }
+
+            if(slowMove && gamepad1.right_stick_x != 0 && gamepad1.right_stick_button)
+            {
+                motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower/2, maxPower/2));
+            }
+            if(gamepad2.right_stick_x != 0 && gamepad2.right_stick_button)
+            {
+                motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower/2, maxPower/2));
             }
             if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
             {
@@ -284,5 +297,13 @@ public class ElevatorSpinnerLibraryPID {
 
     public void setZERO_ANGLE(int ZERO_ANGLE) {
         this.ZERO_ANGLE = ZERO_ANGLE;
+    }
+
+    public static double getMaxPower() {
+        return maxPower;
+    }
+
+    public static void setMaxPower(double maxPower) {
+        ElevatorSpinnerLibraryPID.maxPower = maxPower;
     }
 }

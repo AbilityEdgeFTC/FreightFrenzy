@@ -147,14 +147,14 @@ public class teleopOwlBlue extends LinearOpMode {
     {
         position = hand.getPos();
 
-        if(cGamepad2.rightBumperOnce() && hand.getPos() >= 0.05)
+        if(cGamepad2.rightBumperOnce() && hand.getPos() >= 0.03)
         {
-            position -= 0.05;
+            position -= 0.03;
             hand.moveTo(position);
         }
-        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= 0.95)
+        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= 0.97)
         {
-            position += 0.05;
+            position += 0.03;
             hand.moveTo(position);
         }
     }
@@ -163,12 +163,12 @@ public class teleopOwlBlue extends LinearOpMode {
     {
         positionDip = dip.getPos();
 
-        if(cGamepad2.dpadDownOnce() && dip.getPos() <= 0.9)
+        if(cGamepad2.dpadDownOnce() && dip.getPos() >= 0.1)
         {
             positionDip -= 0.1;
             dip.moveTo(positionDip);
         }
-        else if(cGamepad2.dpadUpOnce() && dip.getPos() > 0.1)
+        else if(cGamepad2.dpadUpOnce() && dip.getPos() <= 0.9)
         {
             positionDip += 0.1;
             dip.moveTo(positionDip);

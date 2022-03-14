@@ -164,14 +164,14 @@ public class teleopOwlRed extends LinearOpMode {
     {
         positionDip = dip.getPos();
 
-        if(cGamepad2.dpadDownOnce() && dip.getPos() <= 0.9)
+        if(cGamepad2.dpadDownOnce() && dip.getPos() >= 0.01)
         {
-            positionDip -= 0.1;
+            positionDip -= 0.01;
             dip.moveTo(positionDip);
         }
-        else if(cGamepad2.dpadUpOnce() && dip.getPos() > 0.1)
+        else if(cGamepad2.dpadUpOnce() && dip.getPos() <= 0.99)
         {
-            positionDip += 0.1;
+            positionDip += 0.01;
             dip.moveTo(positionDip);
         }
 

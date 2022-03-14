@@ -101,9 +101,13 @@ public class ElevatorFirstPID {
         else
         {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            if(gamepad.left_stick_y != 0)
+            if(gamepad.left_stick_y != 0 && !gamepad.left_stick_button)
             {
                 motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower, maxPower));
+            }
+            else if(gamepad.left_stick_y != 0 && gamepad.left_stick_button)
+            {
+                motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower/2, maxPower/2));
             }
             else
             {
@@ -259,5 +263,13 @@ public class ElevatorFirstPID {
 
     public static void setZeroHeight(double zeroHeight) {
         ZERO_HEIGHT = zeroHeight;
+    }
+
+    public static double getMaxPower() {
+        return maxPower;
+    }
+
+    public static void setMaxPower(double maxPower) {
+        ElevatorFirstPID.maxPower = maxPower;
     }
 }
