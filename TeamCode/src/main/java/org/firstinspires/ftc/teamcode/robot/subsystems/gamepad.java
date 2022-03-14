@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 @Config
 public class gamepad {
 
-    public static boolean DEBUG = true;
-    public static boolean redAlliance = false;
+    public static boolean DEBUG = false;
+    public static boolean redAlliance = true;
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
     Telemetry telemetry;
@@ -34,11 +34,12 @@ public class gamepad {
     double rightPower_f;
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
-    public static double mainPower = .85, slowPower = .6, multiplier = .9;
-    public static boolean slowMove = false, isCentricDrive = true;
+    public static double mainPower = .8, multiplier = .9;
+    public static boolean slowMove = false, isCentricDrive = true, canTwist = true, goSlow = false;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
     public static double startH = 0;
+
     //public static String allianceColor;
 
     /**
@@ -64,23 +65,16 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        try
-        {
-            startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
-        }catch (NumberFormatException e)
-        {
-            startH = 0;
-        }
 
-        if(DEBUG && redAlliance)
+        if(redAlliance)
         {
             startH = 0;
-            startH -= Math.PI/2; // red
+            startH -= (Math.PI + Math.PI/2); // red
         }
-        else if(DEBUG && !redAlliance)
+        else
         {
             startH = 0;
-            startH -= Math.PI + Math.PI/2; // blue
+            startH -= Math.PI/2; // blue
         }
 
         this.drivetrain = new SampleMecanumDrive(hardwareMap);
@@ -93,22 +87,48 @@ public class gamepad {
     public void update() {
         cGamepad1.update();
         cGamepad2.update();
+        //drivetrain.update();
 
-        getGamepadDirections();
+        if(cGamepad1.dpadDownOnce())
+        {
+            if(redAlliance)
+            {
+                startH = 0;
+                startH -= (Math.PI + Math.PI/2); // red
+                this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
+            }
+            else if(!redAlliance)
+            {
+                startH = 0;
+                startH -= Math.PI/2; // blue
+                this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
+            }
+        }
 
-        if (gamepad1.right_stick_button || gamepad1.left_stick_button) {
-            slowMove = true;
+        if(cGamepad1.dpadUpOnce())
+        {
+            goSlow = !goSlow;
+        }
+
+        if(goSlow)
+        {
+            power = 0.25;
         }
         else
         {
-            slowMove = false;
-        }
-
-        if (slowMove) {
-            power = slowPower;
-        } else {
             power = mainPower;
         }
+
+        if(gamepad1.left_stick_button)
+        {
+            power = 1;
+        }
+        else
+        {
+            power = mainPower;
+        }
+
+        getGamepadDirections();
 
         if(cGamepad1.XOnce())
         {
@@ -134,7 +154,14 @@ public class gamepad {
     {
         drive = -gamepad1.left_stick_y;
         strafe = gamepad1.left_stick_x;
-        twist = gamepad1.right_stick_x * multiplier;
+        if(canTwist)
+        {
+            twist = gamepad1.right_stick_x * multiplier;
+        }
+        else
+        {
+            twist = 0;
+        }
     }
 
     public void regularDrive()
@@ -147,6 +174,11 @@ public class gamepad {
 
     public void centricDrive()
     {
+//        Vector2d input = new Vector2d(
+//                -gamepad1.left_stick_y,
+//                -gamepad1.left_stick_x
+//        ).rotated(-drivetrain.getExternalHeading());
+
         Vector2d input = new Vector2d(
                 -gamepad1.left_stick_y,
                 gamepad1.left_stick_x
@@ -186,5 +218,25 @@ public class gamepad {
     public void saveIMUHeading()
     {
         ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + getIMU());
+    }
+
+    public static void setSlowMove(boolean slowMove) {
+        gamepad.slowMove = slowMove;
+    }
+
+    public static void setRedAlliance(boolean redAlliance) {
+        gamepad.redAlliance = redAlliance;
+    }
+
+    public static boolean isCanTwist() {
+        return canTwist;
+    }
+
+    public static void setCanTwist(boolean canTwist) {
+        gamepad.canTwist = canTwist;
+    }
+
+    public void setPower(double power) {
+        this.power = power;
     }
 }

@@ -1,44 +1,19 @@
-/*
-The MIT License (MIT)
-
-Copyright © 2021 Checkmate Robotics
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the “Software”), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
-following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
 package org.firstinspires.ftc.teamcode.robot.roadrunner.localizers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.spartronics4915.lib.T265Camera;
-
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.util.PoseUtil;
-
 import java.util.List;
 
 /**
  * Localizer using both the tracking wheels and the realsense camera
  */
 public class DoubleLocalizer implements Localizer {
-    private final RealsenseLocalizer realsenseLocalizer;
+    private final T265Localizer realsenseLocalizer;
     private SampleMecanumDrive mecanumLocalizer;
 
     private ConfidenceTracker confidenceTracker = ConfidenceTracker.HIGH;
@@ -58,7 +33,7 @@ public class DoubleLocalizer implements Localizer {
      */
     public DoubleLocalizer(HardwareMap hardwareMap) {
         super();
-        realsenseLocalizer = new RealsenseLocalizer(hardwareMap);
+        realsenseLocalizer = new T265Localizer(hardwareMap);
         mecanumLocalizer = new SampleMecanumDrive(hardwareMap);
     }
 
@@ -104,14 +79,10 @@ public class DoubleLocalizer implements Localizer {
     @Override
     public void update() {
         List<Double> wheelVelocities = mecanumLocalizer.getWheelVelocities();
-        realsenseLocalizer.sendOdometry(
-                PoseUtil.inchesToMeters(
-                    new Pose2d(wheelVelocities.get(0), wheelVelocities.get(2))
-            )
-        );
+        realsenseLocalizer.sendOdometry(new Pose2d(wheelVelocities.get(0) * 0.0254, wheelVelocities.get(2) * 0.0254));
 
         // Get an update from the camera
-        T265Camera.CameraUpdate update = realsenseLocalizer.getRawUpdate();
+        T265Camera.CameraUpdate update = realsenseLocalizer.up;
 
         // Update the pose of the least confident localizer
         switch (update.confidence) {
@@ -126,6 +97,11 @@ public class DoubleLocalizer implements Localizer {
                     confidenceTracker = ConfidenceTracker.HIGH;
                 }
         }
+    }
+
+    public void stop()
+    {
+        realsenseLocalizer.stop();
     }
 
 }

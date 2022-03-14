@@ -8,6 +8,7 @@ package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -31,6 +32,7 @@ public class intake {
      */
     public intake(HardwareMap hardwareMap) {
         this.mI = hardwareMap.get(DcMotorEx.class, "mI");
+        this.mI.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /**
@@ -40,7 +42,7 @@ public class intake {
     public intake(HardwareMap hardwareMap, double power) {
         this.power = power;
         this.mI = hardwareMap.get(DcMotorEx.class, "mI");
-        this.mI.setDirection(DcMotor.Direction.REVERSE);
+        this.mI.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /**
@@ -53,6 +55,7 @@ public class intake {
         this.power = power;
         this.mI = mI;
         this.telemetry = telemetry;
+        this.mI.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /**

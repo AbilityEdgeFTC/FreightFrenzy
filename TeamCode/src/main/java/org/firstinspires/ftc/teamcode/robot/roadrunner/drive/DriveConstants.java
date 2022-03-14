@@ -32,8 +32,6 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    //public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(16, 0, 4.7,
-    //        14.1);
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(31, 0, 13,
             13.6);
 
@@ -66,8 +64,8 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 70;
-    public static double MAX_ACCEL = 70;
+    public static double MAX_VEL = 60;
+    public static double MAX_ACCEL = 65;
     public static double MAX_ANG_VEL = 7.314444541931152;
     public static double MAX_ANG_ACCEL = 7.314444541931152;
 
@@ -83,4 +81,11 @@ public class DriveConstants {
         // see https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
         return 32767 / ticksPerSecond;
     }
+
+    public static void setMaxVel(double maxVel) {
+        MAX_VEL = maxVel;
+    }
+
+    public static void setMaxVAcc(double maxAcc) { MAX_ACCEL = maxAcc; }
+
 }

@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 
 /*
@@ -13,7 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 21,HUB_LEVEL2 = 19,HUB_LEVEL1 = 17;
+    public static double HUB_LEVEL3 = 21.5,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5,AUTO_LEFT_LEVEL = 20.3,DUCK_RED_LEVEL = 8.7;
     public static double SHARED_HUB = 5.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
@@ -22,13 +25,18 @@ public class ElevatorFirstPID {
     public static double SPOOL_RADIUS = 0.75; // in
     double power = 1;
     boolean usePID = true;
+    public static double maxPower = 0.85;
+    double startHeight = 0;
+    public static boolean DEBUG = false;
 
     public enum ElevatorLevel {
         ZERO,
         SHARED_HUB,
         HUB_LEVEL1,
         HUB_LEVEL2,
-        HUB_LEVEL3
+        HUB_LEVEL3,
+        AUTO_LEFT_LEVEL,
+        DUCK_RED_LEVEL
     }
 
     public static ElevatorLevel elevatorLevel = ElevatorLevel.ZERO;
@@ -47,6 +55,15 @@ public class ElevatorFirstPID {
         this.cGamepad = new cGamepad(gamepad);
     }
 
+    public ElevatorFirstPID(HardwareMap hardwareMap)
+    {
+        this.motor = hardwareMap.get(DcMotorEx.class, "mE");
+        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.motor.setDirection(DcMotor.Direction.REVERSE);
+    }
+
     public void update() {
         cGamepad.update();
 
@@ -55,7 +72,7 @@ public class ElevatorFirstPID {
             switch (elevatorLevel)
             {
                 case ZERO:
-                    target = ZERO_HEIGHT;
+                    target = 0;
                     break;
                 case SHARED_HUB:
                     target = SHARED_HUB;
@@ -69,6 +86,12 @@ public class ElevatorFirstPID {
                 case HUB_LEVEL3:
                     target = HUB_LEVEL3;
                     break;
+                case DUCK_RED_LEVEL:
+                    target = DUCK_RED_LEVEL;
+                    break;
+                case AUTO_LEFT_LEVEL:
+                    target = AUTO_LEFT_LEVEL;
+                    break;
             }
 
             motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT));
@@ -78,7 +101,52 @@ public class ElevatorFirstPID {
         else
         {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            motor.setPower(Range.clip(-gamepad.left_stick_y, -power, power));
+            if(gamepad.left_stick_y != 0)
+            {
+                motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower, maxPower));
+            }
+            else
+            {
+                motor.setPower(0);
+            }
+        }
+    }
+
+    public void updateAuto()
+    {
+//        AUTO_LEFT_LEVEL = encoderTicksToInches(580);
+//        DUCK_RED_LEVEL = encoderTicksToInches(220);
+
+        if(usePID)
+        {
+            switch (elevatorLevel)
+            {
+                case ZERO:
+                    target = 0;
+                    break;
+                case SHARED_HUB:
+                    target = SHARED_HUB;
+                    break;
+                case HUB_LEVEL1:
+                    target = HUB_LEVEL1;
+                    break;
+                case HUB_LEVEL2:
+                    target = HUB_LEVEL2;
+                    break;
+                case HUB_LEVEL3:
+                    target = HUB_LEVEL3;
+                    break;
+                case DUCK_RED_LEVEL:
+                    target = DUCK_RED_LEVEL;
+                    break;
+                case AUTO_LEFT_LEVEL:
+                    target = AUTO_LEFT_LEVEL;
+                    break;
+            }
+
+            motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT));
+            motor.setPower(power);
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
     }
 
@@ -93,6 +161,11 @@ public class ElevatorFirstPID {
     public int getPosition()
     {
         return motor.getCurrentPosition();
+    }
+
+    public double getHeight()
+    {
+        return encoderTicksToInches(motor.getCurrentPosition());
     }
 
     public double getTarget()
@@ -130,5 +203,61 @@ public class ElevatorFirstPID {
 
     public void setPower(double power) {
         this.power = power;
+    }
+
+    public static double getHubLevel3() {
+        return HUB_LEVEL3;
+    }
+
+    public static void setHubLevel3(double hubLevel3) {
+        HUB_LEVEL3 = hubLevel3;
+    }
+
+    public static double getHubLevel2() {
+        return HUB_LEVEL2;
+    }
+
+    public static void setHubLevel2(double hubLevel2) {
+        HUB_LEVEL2 = hubLevel2;
+    }
+
+    public static double getHubLevel1() {
+        return HUB_LEVEL1;
+    }
+
+    public static void setHubLevel1(double hubLevel1) {
+        HUB_LEVEL1 = hubLevel1;
+    }
+
+    public static double getAutoLeftLevel() {
+        return AUTO_LEFT_LEVEL;
+    }
+
+    public static void setAutoLeftLevel(double autoLeftLevel) {
+        AUTO_LEFT_LEVEL = autoLeftLevel;
+    }
+
+    public static double getDuckRedLevel() {
+        return DUCK_RED_LEVEL;
+    }
+
+    public static void setDuckRedLevel(double duckRedLevel) {
+        DUCK_RED_LEVEL = duckRedLevel;
+    }
+
+    public static double getSharedHub() {
+        return SHARED_HUB;
+    }
+
+    public static void setSharedHub(double sharedHub) {
+        SHARED_HUB = sharedHub;
+    }
+
+    public static double getZeroHeight() {
+        return ZERO_HEIGHT;
+    }
+
+    public static void setZeroHeight(double zeroHeight) {
+        ZERO_HEIGHT = zeroHeight;
     }
 }

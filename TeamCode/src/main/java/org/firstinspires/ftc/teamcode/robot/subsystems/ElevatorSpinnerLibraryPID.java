@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 
 /*
@@ -14,15 +15,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class ElevatorSpinnerLibraryPID {
 
-    double RIGHT_ANGLE = 0, RIGHT_ANGLE_SHARED = 0, LEFT_ANGLE = 0, LEFT_ANGLE_SHARED = 0, ZERO_ANGLE = 0;
+    public static int RIGHT_ANGLE = 225, RIGHT_ANGLE_SHARED = 150, LEFT_ANGLE = -225, LEFT_ANGLE_SHARED = -150, ZERO_ANGLE_RED = 330, ZERO_ANGLE_BLUE = -280, ZERO_ANGLE = 0;
     public static double power = 0.2;
     boolean usePID = true;
     public static double kP = 6;
     public static double kI = 0;
     public static double kD = 0;
-    double target = 0;
+    int target = 0;
+    public static double maxPower = 0.5;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
+    boolean slowMove = false;
+    int newOffset = 0;
     DcMotorEx motor;
     BasicPID PID = new BasicPID(new PIDCoefficients(kP, kI, kD));
     AngleController controller = new AngleController(PID);
@@ -35,32 +39,37 @@ public class ElevatorSpinnerLibraryPID {
         ZERO_DO_NOT_USE,
         SHARED_RED,
         SHARED_BLUE,
-        RIGHT
+        RIGHT,
+        READ_FILE
     }
 
     public static SpinnerState spinnerState = SpinnerState.ZERO_DO_NOT_USE;
 
-    Gamepad gamepad;
-    cGamepad cGamepad;
+    Gamepad gamepad2, gamepad1;
+    cGamepad cGamepad2;
 
-    public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap, Gamepad gamepad)
+    public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mS");
         this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        this.gamepad = gamepad;
-        this.cGamepad = new cGamepad(gamepad);
-        ZERO_ANGLE = encoderTicksToRadians(315);
-        LEFT_ANGLE_SHARED = encoderTicksToRadians(-150);
-        LEFT_ANGLE = encoderTicksToRadians(-200);
-        RIGHT_ANGLE_SHARED = encoderTicksToRadians(150);
-        RIGHT_ANGLE = encoderTicksToRadians(200);
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
+        this.cGamepad2 = new cGamepad(gamepad2);
+    }
+
+    public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap)
+    {
+        this.motor = hardwareMap.get(DcMotorEx.class, "mS");
+        this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void update()
     {
-        cGamepad.update();
+        cGamepad2.update();
 
         if(usePID)
         {
@@ -76,10 +85,12 @@ public class ElevatorSpinnerLibraryPID {
                     target = RIGHT_ANGLE;
                     break;
                 case ZERO_RED:
-                    target = ZERO_ANGLE;
+                    //target = ZERO_ANGLE_RED;
+                    ZERO_ANGLE = ZERO_ANGLE_RED;
                     break;
                 case ZERO_BLUE:
-                    target = ZERO_ANGLE;
+                    //target = ZERO_ANGLE_BLUE;
+                    ZERO_ANGLE = ZERO_ANGLE_BLUE;
                     break;
                 case SHARED_RED:
                     target = RIGHT_ANGLE_SHARED;
@@ -87,13 +98,84 @@ public class ElevatorSpinnerLibraryPID {
                 case SHARED_BLUE:
                     target = LEFT_ANGLE_SHARED;
                     break;
+                case READ_FILE:
+
             }
 
-            motor.setPower(controller.calculate(target - ZERO_ANGLE, encoderTicksToRadians(motor.getCurrentPosition())));
+            motor.setPower(controller.calculate(encoderTicksToRadians(target - ZERO_ANGLE + newOffset), encoderTicksToRadians(motor.getCurrentPosition())));
+
         }
         else
         {
-            motor.setPower(gamepad.right_stick_x);
+            if(slowMove && gamepad1.right_stick_x != 0)
+            {
+                motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
+            }
+            if(gamepad2.right_stick_x != 0)
+            {
+                motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
+            }
+            if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
+            {
+                motor.setPower(0);
+            }
+
+        }
+
+    }
+
+    public void updateNoAuto()
+    {
+        cGamepad2.update();
+
+        if(usePID)
+        {
+            switch (spinnerState)
+            {
+                case ZERO_DO_NOT_USE:
+                    target = 0;
+                    break;
+                case LEFT:
+                    target = LEFT_ANGLE;
+                    break;
+                case RIGHT:
+                    target = RIGHT_ANGLE;
+                    break;
+                case ZERO_RED:
+                    target = ZERO_ANGLE_RED;
+                    ZERO_ANGLE = ZERO_ANGLE_RED;
+                    break;
+                case ZERO_BLUE:
+                    target = ZERO_ANGLE_BLUE;
+                    ZERO_ANGLE = ZERO_ANGLE_BLUE;
+                    break;
+                case SHARED_RED:
+                    target = RIGHT_ANGLE_SHARED;
+                    break;
+                case SHARED_BLUE:
+                    target = LEFT_ANGLE_SHARED;
+                    break;
+                case READ_FILE:
+
+            }
+
+            motor.setPower(controller.calculate(encoderTicksToRadians(target - ZERO_ANGLE + newOffset), encoderTicksToRadians(motor.getCurrentPosition())));
+
+        }
+        else
+        {
+            if(slowMove && gamepad1.right_stick_x != 0)
+            {
+                motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
+            }
+            if(gamepad2.right_stick_x != 0)
+            {
+                motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
+            }
+            if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
+            {
+                motor.setPower(0);
+            }
 
         }
 
@@ -117,7 +199,7 @@ public class ElevatorSpinnerLibraryPID {
         return target;
     }
 
-    public void setTarget(double newTarget)
+    public void setTarget(int newTarget)
     {
         target = newTarget;
     }
@@ -140,4 +222,67 @@ public class ElevatorSpinnerLibraryPID {
         ElevatorSpinnerLibraryPID.spinnerState = spinnerState;
     }
 
+    public boolean isSlowMove() {
+        return slowMove;
+    }
+
+    public void setSlowMove(boolean slowMove) {
+        this.slowMove = slowMove;
+    }
+
+    public int getRIGHT_ANGLE() {
+        return RIGHT_ANGLE;
+    }
+
+    public void setRIGHT_ANGLE(int RIGHT_ANGLE) {
+        this.RIGHT_ANGLE = RIGHT_ANGLE;
+    }
+
+    public int getRIGHT_ANGLE_SHARED() {
+        return RIGHT_ANGLE_SHARED;
+    }
+
+    public void setRIGHT_ANGLE_SHARED(int RIGHT_ANGLE_SHARED) {
+        this.RIGHT_ANGLE_SHARED = RIGHT_ANGLE_SHARED;
+    }
+
+    public int getLEFT_ANGLE() {
+        return LEFT_ANGLE;
+    }
+
+    public void setLEFT_ANGLE(int LEFT_ANGLE) {
+        this.LEFT_ANGLE = LEFT_ANGLE;
+    }
+
+    public int getLEFT_ANGLE_SHARED() {
+        return LEFT_ANGLE_SHARED;
+    }
+
+    public void setLEFT_ANGLE_SHARED(int LEFT_ANGLE_SHARED) {
+        this.LEFT_ANGLE_SHARED = LEFT_ANGLE_SHARED;
+    }
+
+    public int getZERO_ANGLE_RED() {
+        return ZERO_ANGLE_RED;
+    }
+
+    public void setZERO_ANGLE_RED(int ZERO_ANGLE_RED) {
+        this.ZERO_ANGLE_RED = ZERO_ANGLE_RED;
+    }
+
+    public int getZERO_ANGLE_BLUE() {
+        return ZERO_ANGLE_BLUE;
+    }
+
+    public void setZERO_ANGLE_BLUE(int ZERO_ANGLE_BLUE) {
+        this.ZERO_ANGLE_BLUE = ZERO_ANGLE_BLUE;
+    }
+
+    public int getZERO_ANGLE() {
+        return ZERO_ANGLE;
+    }
+
+    public void setZERO_ANGLE(int ZERO_ANGLE) {
+        this.ZERO_ANGLE = ZERO_ANGLE;
+    }
 }

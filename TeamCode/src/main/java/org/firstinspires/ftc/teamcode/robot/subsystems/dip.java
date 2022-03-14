@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class dip {
 
     Servo sD;
-    public static double releasingPosition = .55, holdingPosition = 0.13;
+    public static double releasingPosition = .55, holdingPosition = .04;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
@@ -51,4 +51,12 @@ public class dip {
         telemetry.update();
     }
 
+    public double getPos() {
+        return sD.getPosition();
+    }
+
+    public void moveTo(double position)
+    {
+        sD.setPosition(position);
+    }
 }

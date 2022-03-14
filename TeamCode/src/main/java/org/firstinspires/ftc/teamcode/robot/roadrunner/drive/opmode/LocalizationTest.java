@@ -8,9 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.RealsenseLocalizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
+//import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -22,6 +21,10 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
 @TeleOp(group = "drive")
 @Config
 public class LocalizationTest extends LinearOpMode {
+
+    public static double startPoseLeftX = -35;
+    public static double startPoseLeftY = -60;
+    public static double startPoseLeftH = 90;
 
     enum RobotLocalizer
     {
@@ -35,7 +38,7 @@ public class LocalizationTest extends LinearOpMode {
 
     Pose2d poseEstimate;
     Trajectory trajectory;
-    public static AlwaysOnePos.RobotLocalizer localizer = AlwaysOnePos.RobotLocalizer.Camera;
+    public static AlwaysOnePos.RobotLocalizer localizer = AlwaysOnePos.RobotLocalizer.Mecanum;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -50,9 +53,11 @@ public class LocalizationTest extends LinearOpMode {
                 drive.setLocalizer(t265Localizer);
                 break;
             case Both:
-                drive.setLocalizer(new DoubleLocalizer(hardwareMap));
+                //drive.setLocalizer(new DoubleLocalizer(hardwareMap));
                 break;
         }
+
+        drive.setPoseEstimate(new Pose2d(startPoseLeftX, startPoseLeftY, startPoseLeftH));
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -75,5 +80,7 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
+
+        t265Localizer.stop();
     }
 }

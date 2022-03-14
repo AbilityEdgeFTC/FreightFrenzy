@@ -16,9 +16,8 @@ public class hand {
 
     Servo sL, sR;
     Telemetry telemetry;
-    public static double intakePos = 0.07;
-    public static double /*level1Hub = 1, level2Hub = .8, */level3Hub = .65, levelSharedHub = .9;
-    public static double offset = 0;
+    public static double intakePos = 0;
+    public static double level1Hub = .95, level2Hub = .8, level3Hub = .6, levelSharedHub = 1, levelDuck = 0.75;
 
     public enum HandPos
     {
@@ -26,7 +25,8 @@ public class hand {
         SHARED_HUB,
         ONE_HUB,
         TWO_HUB,
-        THREE_HUB
+        THREE_HUB,
+        DUCK
     }
 
     public HandPos handPos = HandPos.INTAKE;
@@ -73,47 +73,50 @@ public class hand {
     {
         handPos = HandPos.INTAKE;
         sL.setPosition(intakePos);
-        sR.setPosition(intakePos-offset);
+        sR.setPosition(intakePos);
     }
 
     public void shared()
     {
         handPos = HandPos.SHARED_HUB;
         sL.setPosition(levelSharedHub);
-        sR.setPosition(levelSharedHub-offset);
+        sR.setPosition(levelSharedHub);
     }
 
     // spin dip servo to intake positions, and holding servo to hold position.
     public void level1()
     {
         handPos = HandPos.ONE_HUB;
-//        sL.setPosition(level1Hub);
-//        sR.setPosition(level1Hub);
-        sL.setPosition(level3Hub);
-        sR.setPosition(level3Hub-offset);
+        sL.setPosition(level1Hub);
+        sR.setPosition(level1Hub);
     }
 
     public void level2()
     {
         handPos = HandPos.TWO_HUB;
-//        sL.setPosition(level2Hub);
-//        sR.setPosition(level2Hub);
-        sL.setPosition(level3Hub);
-        sR.setPosition(level3Hub-offset);
+        sL.setPosition(level2Hub);
+        sR.setPosition(level2Hub);
     }
 
     public void level3()
     {
         handPos = HandPos.THREE_HUB;
         sL.setPosition(level3Hub);
-        sR.setPosition(level3Hub-offset);
+        sR.setPosition(level3Hub);
     }
 
 
     public void moveTo(double position)
     {
         sL.setPosition(position);
-        sR.setPosition(position-offset);
+        sR.setPosition(position);
+    }
+
+    public void levelDuck()
+    {
+        handPos = HandPos.DUCK;
+        sL.setPosition(levelDuck);
+        sR.setPosition(levelDuck);
     }
 
     // display position of servo's.
