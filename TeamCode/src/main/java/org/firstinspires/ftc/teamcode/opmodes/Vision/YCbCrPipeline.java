@@ -19,33 +19,33 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class YCbCrPipeline extends OpenCvPipeline
 {
 
-    public static double lowValuesTSEY = 51;
-    public static double highValuesTSEY = 173;
-    public static double lowValuesTSEB = 146;
-    public static double highValuesTSEB = 204;
-    public static double lowValuesTSER = 40;
-    public static double highValuesTSER = 125;
+    public static double lowValuesTSEY = 115;
+    public static double highValuesTSEY = 210;
+    public static double lowValuesTSEB = 138;
+    public static double highValuesTSEB = 168;
+    public static double lowValuesTSER = 32;
+    public static double highValuesTSER = 103;
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
     Mat inputYCbCr = new Mat(1280,720,0);
 
     // creating 3 rectangles(sections) for checking the colors inside them.
     final Rect LEFT_SEC = new Rect(
-            new Point(426.666667,300),//mask.cols()/7, mask.rows()/5 * 2
-            new Point(0,720));//mask.cols()/7 * 2, mask.rows()/5 * 4)
+            new Point(550.666667,0),//mask.cols()/7, mask.rows()/5 * 2
+            new Point(200,500));//mask.cols()/7 * 2, mask.rows()/5 * 4)
 
 
     final Rect CENTER_SEC = new Rect(
-            new Point(853.333334,300),
-            new Point(426.666667,720));
+            new Point(803.333334,0),
+            new Point(550.666667,500));
 
     final Rect RIGHT_SEC = new Rect(
-            new Point(1280,300),
-            new Point(853.333334,720));
+            new Point(1080,0),
+            new Point(803.333334,500));
 
     public static boolean DEBUG = true;
 
-    public static double threshold = 10000;
+    public static double threshold = 1000;
 
     // the list of locations that can be
     public enum Location{

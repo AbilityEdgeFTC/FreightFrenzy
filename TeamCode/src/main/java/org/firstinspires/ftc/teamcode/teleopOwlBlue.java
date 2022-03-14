@@ -11,6 +11,9 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
@@ -35,9 +38,8 @@ public class teleopOwlBlue extends LinearOpMode {
     cGamepad cGamepad1, cGamepad2;
     public static double powerIntake = 1, powerSlowElevator = .6, powerElevator = 1;
     boolean canIntake = true;
-    double position = 0;
+    double position = 0, positionDip = 0;
     ElapsedTime resetElevator;
-
 
     enum ElevatorMovement
     {
@@ -49,29 +51,29 @@ public class teleopOwlBlue extends LinearOpMode {
         DIP
     }
 
-    public static int elevatorLevel = 3;
-
+    int elevatorLevel = 3;
     public static ElevatorMovement elevatorMovement = ElevatorMovement.SPIN;
+
     @Override
     public void runOpMode() throws InterruptedException {
+        gamepad.setRedAlliance(false);
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
-        gamepad.setRedAlliance(true);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new ElevatorSpinnerLibraryPID(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
-        carousel = new carousel(hardwareMap);
+        carousel = new carousel(hardwareMap, gamepad2);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
-        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.ZERO_BLUE);
         resetElevator = new ElapsedTime();
+        spinner.setZERO_ANGLE_BLUE(spinner.getPosition());
+        spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.ZERO_BLUE);
+        spinner.update();
 
         // wait till after init
         waitForStart();
-
-        //intakeFixingThread.start();
 
         while (opModeIsActive()) {
             cGamepad1.update();
@@ -79,27 +81,49 @@ public class teleopOwlBlue extends LinearOpMode {
             gamepad.update();
             elevator.update();
             spinner.update();
-            intakeToggles();
+            carouselGamepad2();
+            gamepad1And2TriggerIntake();
             elevatorSwitch();
             resetElevatorMidMoving();
-            pidToggles();
-            carouselSpinning();
+            turnOnOfPidByUserAndReturnIfItWasChanged();
             if(withoutPID())
             {
-                handMoving();
+                manual2ServoHandMoving();
+                manual1ServoDipMoving();
             }
-            elevatorLeveling();
-            //telemetry.addData("Sec", sharedTime.seconds());
+            gamepad2SwitchingLevels();
+//            telemetry.addData("LEFT ANGLE:", spinner.getLEFT_ANGLE());
+//            telemetry.addData("RIGHT ANGLE:", spinner.getRIGHT_ANGLE());
+//            telemetry.addData("LEFT ANGLE SHARED:", spinner.getLEFT_ANGLE_SHARED());
+//            telemetry.addData("RIGHT ANGLE SHARED:", spinner.getRIGHT_ANGLE_SHARED());
+//            telemetry.addData("TARGET:", spinner.getTarget());
+//            telemetry.addData("POS:", spinner.getPosition());
+//            telemetry.addData("ZERO ANGLE:", spinner.getZERO_ANGLE());
+//            telemetry.addData("LEFT ANGLE BLUE:", spinner.getZERO_ANGLE_BLUE());
+//            telemetry.addData("LEFT ANGLE RED:", spinner.getZERO_ANGLE_RED());
             telemetry.update();
         }
 
         gamepad.saveIMUHeading();
-
-        //intake.exitThread();
-        //intakeFixingThread.interrupt();
     }
 
-    void elevatorLeveling()
+    void carouselGamepad2()
+    {
+        if(gamepad2.dpad_right)
+        {
+            carousel.spin(false, false);
+        }
+        else if(gamepad2.dpad_left)
+        {
+            carousel.spin(true, true);
+        }
+        else
+        {
+            carousel.stop();
+        }
+    }
+
+    void gamepad2SwitchingLevels()
     {
         if(gamepad2.a)
         {
@@ -119,24 +143,40 @@ public class teleopOwlBlue extends LinearOpMode {
         }
     }
 
-    void handMoving()
+    void manual2ServoHandMoving()
     {
         position = hand.getPos();
 
-        if(cGamepad2.rightBumperOnce() && hand.getPos() <= 0.99)
+        if(cGamepad2.rightBumperOnce() && hand.getPos() >= 0.05)
         {
-            position -= 0.01;
+            position -= 0.05;
             hand.moveTo(position);
         }
-        else if(cGamepad2.leftBumperOnce() && hand.getPos() > 0.01)
+        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= 0.95)
         {
-            position += 0.01;
+            position += 0.05;
             hand.moveTo(position);
+        }
+    }
+
+    void manual1ServoDipMoving()
+    {
+        positionDip = dip.getPos();
+
+        if(cGamepad2.dpadDownOnce() && dip.getPos() <= 0.9)
+        {
+            positionDip -= 0.1;
+            dip.moveTo(positionDip);
+        }
+        else if(cGamepad2.dpadUpOnce() && dip.getPos() > 0.1)
+        {
+            positionDip += 0.1;
+            dip.moveTo(positionDip);
         }
 
     }
 
-    boolean pidToggles()
+    boolean turnOnOfPidByUserAndReturnIfItWasChanged()
     {
         if(gamepad2.left_stick_button || gamepad2.right_stick_y != 0 || gamepad2.right_stick_x != 0 || gamepad2.left_stick_y != 0 || gamepad2.left_stick_x != 0 && !gamepad2.right_stick_button)
         {
@@ -144,50 +184,16 @@ public class teleopOwlBlue extends LinearOpMode {
             elevator.setUsePID(false);
             return false;
         }
-        else if(gamepad2.right_stick_button || gamepad1.left_bumper && !gamepad2.left_stick_button && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
+        else if(gamepad2.right_stick_button || gamepad1.left_bumper && !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.SPIN)
         {
             spinner.setUsePID(true);
             elevator.setUsePID(true);
-            switch (hand.getHandPos())
-            {
-                case SHARED_HUB:
-                    hand.shared();
-                    break;
-                case INTAKE:
-                    //hand.intake();
-                    break;
-                case ONE_HUB:
-                    hand.level1();
-                    break;
-                case TWO_HUB:
-                    hand.level2();
-                    break;
-                case THREE_HUB:
-                    hand.level3();
-                    break;
-            }
         }
 
         return true;
     }
 
-    void carouselSpinning()
-    {
-        if(gamepad2.dpad_right)
-        {
-            carousel.spin(false, true);
-        }
-        else if(gamepad2.dpad_left)
-        {
-            carousel.spin(true, true);
-        }
-        else
-        {
-            carousel.stop();
-        }
-    }
-
-    void intakeToggles()
+    void gamepad1And2TriggerIntake()
     {
         if ((gamepad1.right_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad2.left_trigger == 0) && (gamepad1.left_trigger == 0))
         {
@@ -215,14 +221,15 @@ public class teleopOwlBlue extends LinearOpMode {
         }
 
 
-        powerIntake();
+        toggleIntake();
     }
 
-    void powerIntake()
+    void toggleIntake()
     {
         if(frontIntake && canIntake)
         {
             intake.powerIntake(powerIntake);
+
         }
         else if(backIntake && canIntake)
         {
@@ -232,41 +239,52 @@ public class teleopOwlBlue extends LinearOpMode {
         {
             intake.stop();
         }
+
+    }
+
+    void autoDipMoving()
+    {
+        if(!withoutPID())
+        {
+            dip.holdFreight();
+        }
+    }
+
+    void manualServoMoving()
+    {
+        if(withoutPID())
+        {
+            manual2ServoHandMoving();
+            manual1ServoDipMoving();
+        }
     }
 
     void elevatorSwitch() {
         switch (elevatorMovement) {
             case SPIN:
                 resetElevator();
-                elevator.update();
-                spinner.update();
                 spinner.setSlowMove(false);
-                if(withoutPID())
-                {
-                    handMoving();
-                }
+                manualServoMoving();
                 gamepad.setCanTwist(true);
 
                 if (gamepad1.right_bumper)
                 {
+                    spinner.setUsePID(true);
+                    elevator.setUsePID(true);
                     spinner.setSlowMove(true);
                     gamepad.setCanTwist(false);
+
                     powerElevator = powerSlowElevator;
                     elevator.setPower(powerElevator);
-                    //intake.spinIntake = false;
                     frontIntake = false;
                     backIntake = false;
                     canIntake = false;
-                    if(!withoutPID())
-                    {
-                        dip.holdFreight();
-                    }
+
+                    autoDipMoving();
 
                     switch (elevatorLevel)
                     {
                         case 0:
-                            spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.SHARED_BLUE);
-                            elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
                             elevatorMovement = ElevatorMovement.SHARED;
                             break;
                         case 1:
@@ -278,54 +296,52 @@ public class teleopOwlBlue extends LinearOpMode {
                         case 3:
                             elevatorMovement = ElevatorMovement.LEVEL3;
                             break;
-                        default:
-                            elevator.setUsePID(false);
                     }
+
+                    resetElevator.reset();
                 }
                 break;
             case LEVEL1:
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
-                if(!withoutPID())
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
+                if(!withoutPID() && resetElevator.seconds() > .5)
                 {
                     hand.level1();
+                    elevatorMovement = ElevatorMovement.DIP;
                 }
-                elevatorMovement = ElevatorMovement.DIP;
                 break;
             case LEVEL2:
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
-                if(!withoutPID())
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
+                if(!withoutPID() && resetElevator.seconds() > .4)
                 {
                     hand.level2();
+                    elevatorMovement = ElevatorMovement.DIP;
                 }
-                elevatorMovement = ElevatorMovement.DIP;
                 break;
             case LEVEL3:
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                if(!withoutPID())
+                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
+                if(!withoutPID() && resetElevator.seconds() > .1)
                 {
                     hand.level3();
+                    elevatorMovement = ElevatorMovement.DIP;
                 }
-                elevatorMovement = ElevatorMovement.DIP;
                 break;
             case SHARED:
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
                 spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.SHARED_BLUE);
-                if(!withoutPID())
+                if(!withoutPID() && resetElevator.seconds() > .5)
                 {
                     hand.shared();
+                    elevatorMovement = ElevatorMovement.DIP;
                 }
-                elevatorMovement = ElevatorMovement.DIP;
                 break;
             case DIP:
                 elevator.update();
                 spinner.update();
                 spinner.setUsePID(false);
-                if(withoutPID())
-                {
-                    handMoving();
-                }
+                manualServoMoving();
                 if(gamepad1.right_stick_button)
                 {
                     gamepad.setCanTwist(true);
@@ -337,22 +353,44 @@ public class teleopOwlBlue extends LinearOpMode {
                     spinner.setSlowMove(true);
                 }
 
-                if(gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1 && elevator.getUsePID() == false && spinner.getUsePID() == false)
+                if(gamepad1.left_bumper || gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1)
                 {
                     dip.releaseFreight();
-                }
 
-                if(gamepad1.left_bumper)
-                {
-                    if(!withoutPID())
+                    switch (elevatorLevel) {
+                        case 0:
+                            spinner.setLEFT_ANGLE_SHARED(spinner.getPosition() + spinner.getZERO_ANGLE());
+                            elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                            break;
+                        case 1:
+                            spinner.setLEFT_ANGLE(spinner.getPosition() + spinner.getZERO_ANGLE());
+                            elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                            break;
+                        case 2:
+                            spinner.setLEFT_ANGLE(spinner.getPosition() + spinner.getZERO_ANGLE());
+                            elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                            break;
+                        case 3:
+                            spinner.setLEFT_ANGLE(spinner.getPosition() + spinner.getZERO_ANGLE());
+                            elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                            break;
+                    }
+
+                    switch (elevatorLevel)
                     {
-                        dip.releaseFreight();
+                        case 0:
+                            spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.SHARED_BLUE);
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                            spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
+                            break;
                     }
 
                     gamepad.setCanTwist(true);
                     resetElevator.reset();
 
-                    //intake.spinIntake = true;
                     canIntake = true;
                     frontIntake = true;
 
@@ -373,6 +411,8 @@ public class teleopOwlBlue extends LinearOpMode {
 
     void resetElevator()
     {
+        elevator.update();
+        spinner.update();
 
         if(!withoutPID())
         {
@@ -381,60 +421,53 @@ public class teleopOwlBlue extends LinearOpMode {
 
         elevator.setPower(powerSlowElevator);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+
         switch (elevatorLevel)
         {
             case 0:
-
-                spinner.setUsePID(true);
-                if(resetElevator.seconds() > .67 && pidToggles())
+                if(!withoutPID())
                 {
-                    if(!withoutPID())
-                    {
-                        hand.intake();
-                    }
+                    hand.intake();
+                }
+                if(resetElevator.seconds() > .67 && turnOnOfPidByUserAndReturnIfItWasChanged())
+                {
                     elevator.setUsePID(true);
                 }
                 else
                 {
                     elevator.setUsePID(false);
                 }
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.SHARED_BLUE);
                 break;
             case 1:
-                spinner.setUsePID(true);
-                if(resetElevator.seconds() > 1.3 && pidToggles())
+                if(!withoutPID())
                 {
-                    if(!withoutPID())
-                    {
-                        hand.intake();
-                    }
+                    hand.intake();
+                }
+                if(resetElevator.seconds() > 1.3 && turnOnOfPidByUserAndReturnIfItWasChanged())
+                {
                     elevator.setUsePID(true);
                 }
                 else
                 {
                     elevator.setUsePID(false);
                 }
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
                 break;
             case 2:
-                spinner.setUsePID(true);
-                if(resetElevator.seconds() > .8 && pidToggles())
+                if(!withoutPID())
                 {
-                    if(!withoutPID())
-                    {
-                        hand.intake();
-                    }
+                    hand.intake();
+                }
+                if(resetElevator.seconds() > 1 && turnOnOfPidByUserAndReturnIfItWasChanged())
+                {
                     elevator.setUsePID(true);
                 }
                 else
                 {
                     elevator.setUsePID(false);
                 }
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
                 break;
             case 3:
-                spinner.setUsePID(true);
-                if(resetElevator.seconds() > .6 && pidToggles())
+                if(resetElevator.seconds() > .6 && turnOnOfPidByUserAndReturnIfItWasChanged())
                 {
                     if(!withoutPID())
                     {
@@ -446,9 +479,11 @@ public class teleopOwlBlue extends LinearOpMode {
                 {
                     elevator.setUsePID(false);
                 }
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.LEFT);
                 break;
         }
+
+        elevator.update();
+        spinner.update();
 
         canIntake = true;
     }
@@ -458,7 +493,6 @@ public class teleopOwlBlue extends LinearOpMode {
         if(gamepad1.left_bumper && elevatorMovement != ElevatorMovement.SPIN)
         {
             elevatorMovement = ElevatorMovement.SPIN;
-            //intake.spinIntake = true;
             canIntake = true;
             frontIntake = true;
         }
@@ -475,7 +509,6 @@ public class teleopOwlBlue extends LinearOpMode {
                     hand.shared();
                     break;
                 case INTAKE:
-                    //hand.intake();
                     break;
                 case ONE_HUB:
                     hand.level1();

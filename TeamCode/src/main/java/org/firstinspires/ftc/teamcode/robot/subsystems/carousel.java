@@ -55,7 +55,9 @@ public class carousel {
             } else {
                 sCL.setPower(-powerCarousel);
             }
-        } else if (!isRed) {
+        }
+        else
+        {
             if (reverse) {
                 sCR.setPower(powerCarousel);
             } else {
@@ -74,22 +76,6 @@ public class carousel {
     public void displayTelemetry(){
         telemetry.addLine("Power at: " + powerCarousel);
         telemetry.update();
-    }
-
-    public void update(boolean isRed)
-    {
-        if(gamepad.dpad_right)
-        {
-            spin(false, isRed);
-        }
-        else if(gamepad.dpad_left)
-        {
-            spin(true, !isRed);
-        }
-        else
-        {
-            stop();
-        }
     }
 
 }

@@ -78,7 +78,8 @@ public class AutoTesting extends LinearOpMode {
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
         DriveConstants.setMaxVel(80);
 
-        MarkerCallback elevetorVision = new MarkerCallback()
+        // half length and spinnner and close dip
+        MarkerCallback elevetorVisionA = new MarkerCallback()
         {
             @Override
             public void onMarkerReached() {
@@ -114,6 +115,82 @@ public class AutoTesting extends LinearOpMode {
             }
         };
 
+        // hand servo
+        MarkerCallback elevetorVisionB = new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached() {
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                powerElevator = powerElevatorFast;
+                elevator.setPower(powerElevatorFast);
+
+                dip.holdFreight();
+
+                switch (placeFreightIn)
+                {
+                    case MIN:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
+                        hand.level1();
+                        break;
+                    case MID:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
+                        hand.level2();
+                        break;
+                    case MAX:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                        hand.level3();
+                        break;
+                }
+
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+        // all length
+        MarkerCallback elevetorVisionC = new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached() {
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                powerElevator = powerElevatorFast;
+                elevator.setPower(powerElevatorFast);
+
+                dip.holdFreight();
+
+                switch (placeFreightIn)
+                {
+                    case MIN:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
+                        hand.level1();
+                        break;
+                    case MID:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
+                        hand.level2();
+                        break;
+                    case MAX:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                        hand.level3();
+                        break;
+                }
+
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+
+        // also here, first dip servo relase, then half length elevator, then hand servo intake
         MarkerCallback elevetorClose =  new MarkerCallback()
         {
             @Override
@@ -144,7 +221,7 @@ public class AutoTesting extends LinearOpMode {
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .lineToSplineHeading(new Pose2d(poseEntrance.getX()+0.5, poseEntrance.getY(), poseEntrance.getHeading()))
-                .addTemporalMarker(elevetorVision)
+                //.addTemporalMarker(elevetorVision)
                 .waitSeconds(.8)
                 .addDisplacementMarker(elevetorClose)
                 .waitSeconds(4)
@@ -179,6 +256,7 @@ public class AutoTesting extends LinearOpMode {
                     }
                     break;
             }
+            telemetry.update();
         }
 
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);

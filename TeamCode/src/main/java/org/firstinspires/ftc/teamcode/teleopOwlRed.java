@@ -57,8 +57,8 @@ public class teleopOwlRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         gamepad.setRedAlliance(true);
+        gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new ElevatorSpinnerLibraryPID(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
@@ -77,35 +77,51 @@ public class teleopOwlRed extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            if(gamepad1.y)
-            {
-                spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.ZERO_RED);
-            }
             cGamepad1.update();
             cGamepad2.update();
             gamepad.update();
             elevator.update();
             spinner.update();
-            carousel.update(true);
+            carouselGamepad2();
             gamepad1And2TriggerIntake();
             elevatorSwitch();
             resetElevatorMidMoving();
             turnOnOfPidByUserAndReturnIfItWasChanged();
-            manualServoMoving();
+            if(withoutPID())
+            {
+                manual2ServoHandMoving();
+                manual1ServoDipMoving();
+            }
             gamepad2SwitchingLevels();
-            telemetry.addData("LEFT ANGLE:", spinner.getLEFT_ANGLE());
-            telemetry.addData("RIGHT ANGLE:", spinner.getRIGHT_ANGLE());
-            telemetry.addData("LEFT ANGLE SHARED:", spinner.getLEFT_ANGLE_SHARED());
-            telemetry.addData("RIGHT ANGLE SHARED:", spinner.getRIGHT_ANGLE_SHARED());
-            telemetry.addData("TARGET:", spinner.getTarget());
-            telemetry.addData("POS:", spinner.getPosition());
-            telemetry.addData("ZERO ANGLE:", spinner.getZERO_ANGLE());
-            telemetry.addData("LEFT ANGLE BLUE:", spinner.getZERO_ANGLE_BLUE());
-            telemetry.addData("LEFT ANGLE RED:", spinner.getZERO_ANGLE_RED());
+//            telemetry.addData("LEFT ANGLE:", spinner.getLEFT_ANGLE());
+//            telemetry.addData("RIGHT ANGLE:", spinner.getRIGHT_ANGLE());
+//            telemetry.addData("LEFT ANGLE SHARED:", spinner.getLEFT_ANGLE_SHARED());
+//            telemetry.addData("RIGHT ANGLE SHARED:", spinner.getRIGHT_ANGLE_SHARED());
+//            telemetry.addData("TARGET:", spinner.getTarget());
+//            telemetry.addData("POS:", spinner.getPosition());
+//            telemetry.addData("ZERO ANGLE:", spinner.getZERO_ANGLE());
+//            telemetry.addData("LEFT ANGLE BLUE:", spinner.getZERO_ANGLE_BLUE());
+//            telemetry.addData("LEFT ANGLE RED:", spinner.getZERO_ANGLE_RED());
             telemetry.update();
         }
 
         gamepad.saveIMUHeading();
+    }
+
+    void carouselGamepad2()
+    {
+        if(gamepad2.dpad_right)
+        {
+            carousel.spin(false, true);
+        }
+        else if(gamepad2.dpad_left)
+        {
+            carousel.spin(true, false);
+        }
+        else
+        {
+            carousel.stop();
+        }
     }
 
     void gamepad2SwitchingLevels()
@@ -132,17 +148,16 @@ public class teleopOwlRed extends LinearOpMode {
     {
         position = hand.getPos();
 
-        if(cGamepad2.rightBumperOnce() && hand.getPos() <= 0.99)
+        if(cGamepad2.rightBumperOnce() && hand.getPos() >= 0.05)
         {
-            position -= 0.01;
+            position -= 0.05;
             hand.moveTo(position);
         }
-        else if(cGamepad2.leftBumperOnce() && hand.getPos() > 0.01)
+        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= 0.95)
         {
-            position += 0.01;
+            position += 0.05;
             hand.moveTo(position);
         }
-
     }
 
     void manual1ServoDipMoving()
@@ -308,7 +323,7 @@ public class teleopOwlRed extends LinearOpMode {
             case LEVEL3:
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
                 spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.RIGHT);
-                if(!withoutPID() && resetElevator.seconds() > .3)
+                if(!withoutPID() && resetElevator.seconds() > .1)
                 {
                     hand.level3();
                     elevatorMovement = ElevatorMovement.DIP;
@@ -339,15 +354,11 @@ public class teleopOwlRed extends LinearOpMode {
                     spinner.setSlowMove(true);
                 }
 
-                if(gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1)
+                if(gamepad1.left_bumper || gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1)
                 {
                     dip.releaseFreight();
-                }
 
-                if(gamepad2.right_stick_button && gamepad2.left_stick_button)
-                {
-                    switch (elevatorLevel)
-                    {
+                    switch (elevatorLevel) {
                         case 0:
                             spinner.setRIGHT_ANGLE_SHARED(spinner.getPosition() + spinner.getZERO_ANGLE());
                             elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
@@ -364,36 +375,6 @@ public class teleopOwlRed extends LinearOpMode {
                             spinner.setRIGHT_ANGLE(spinner.getPosition() + spinner.getZERO_ANGLE());
                             elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
                             break;
-                    }
-                }
-
-                if(gamepad1.left_bumper)
-                {
-
-                    switch (elevatorLevel)
-                    {
-                        case 0:
-                            spinner.setRIGHT_ANGLE_SHARED(spinner.getPosition() + spinner.getZERO_ANGLE());
-                            elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                            break;
-                        case 1:
-                            spinner.setRIGHT_ANGLE(spinner.getPosition() + spinner.getZERO_ANGLE());
-                            elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                            break;
-                        case 2:
-                            spinner.setRIGHT_ANGLE(spinner.getPosition() + spinner.getZERO_ANGLE());
-                            elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                            break;
-                        case 3:
-                            spinner.setRIGHT_ANGLE(spinner.getPosition() + spinner.getZERO_ANGLE());
-                            elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                            break;
-                    }
-
-
-                    if(!withoutPID())
-                    {
-                        dip.releaseFreight();
                     }
 
                     switch (elevatorLevel)
@@ -445,7 +426,10 @@ public class teleopOwlRed extends LinearOpMode {
         switch (elevatorLevel)
         {
             case 0:
-                hand.intake();
+                if(!withoutPID())
+                {
+                    hand.intake();
+                }
                 if(resetElevator.seconds() > .67 && turnOnOfPidByUserAndReturnIfItWasChanged())
                 {
                     elevator.setUsePID(true);
@@ -456,7 +440,10 @@ public class teleopOwlRed extends LinearOpMode {
                 }
                 break;
             case 1:
-                hand.intake();
+                if(!withoutPID())
+                {
+                    hand.intake();
+                }
                 if(resetElevator.seconds() > 1.3 && turnOnOfPidByUserAndReturnIfItWasChanged())
                 {
                     elevator.setUsePID(true);
@@ -467,7 +454,10 @@ public class teleopOwlRed extends LinearOpMode {
                 }
                 break;
             case 2:
-                hand.intake();
+                if(!withoutPID())
+                {
+                    hand.intake();
+                }
                 if(resetElevator.seconds() > 1 && turnOnOfPidByUserAndReturnIfItWasChanged())
                 {
                     elevator.setUsePID(true);
@@ -478,7 +468,7 @@ public class teleopOwlRed extends LinearOpMode {
                 }
                 break;
             case 3:
-                if(resetElevator.seconds() > .9 && turnOnOfPidByUserAndReturnIfItWasChanged())
+                if(resetElevator.seconds() > .6 && turnOnOfPidByUserAndReturnIfItWasChanged())
                 {
                     if(!withoutPID())
                     {
