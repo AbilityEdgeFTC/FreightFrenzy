@@ -107,15 +107,15 @@ public class ElevatorSpinnerLibraryPID {
         }
         else
         {
-            if(slowMove || gamepad2.right_stick_x != 0)
+            if(slowMove && gamepad1.right_stick_x != 0)
             {
                 motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
             }
-            if(slowMove || gamepad2.right_stick_x != 0)
+            if(gamepad2.right_stick_x != 0)
             {
                 motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
             }
-            if(gamepad2.right_stick_x == 0 || gamepad1.right_stick_x == 0)
+            if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
             {
                 motor.setPower(0);
             }

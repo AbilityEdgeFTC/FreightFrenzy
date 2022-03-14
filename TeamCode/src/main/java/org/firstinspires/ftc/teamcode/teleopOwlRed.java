@@ -252,6 +252,7 @@ public class teleopOwlRed extends LinearOpMode {
                     spinner.setUsePID(true);
                     spinner.setSlowMove(true);
                     gamepad.setCanTwist(false);
+                    elevator.setUsePID(true);
                     powerElevator = powerSlowElevator;
                     elevator.setPower(powerElevator);
                     frontIntake = false;
@@ -266,7 +267,6 @@ public class teleopOwlRed extends LinearOpMode {
                     switch (elevatorLevel)
                     {
                         case 0:
-                            elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
                             elevatorMovement = ElevatorMovement.SHARED;
                             break;
                         case 1:
@@ -278,42 +278,42 @@ public class teleopOwlRed extends LinearOpMode {
                         case 3:
                             elevatorMovement = ElevatorMovement.LEVEL3;
                             break;
-                        default:
-                            elevator.setUsePID(false);
                     }
+
+                    resetElevator.reset();
                 }
                 break;
             case LEVEL1:
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
-                if(!withoutPID())
+                if(!withoutPID() && resetElevator.seconds() > .5)
                 {
                     hand.level1();
+                    elevatorMovement = ElevatorMovement.DIP;
                 }
-                elevatorMovement = ElevatorMovement.DIP;
                 break;
             case LEVEL2:
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
-                if(!withoutPID())
+                if(!withoutPID() && resetElevator.seconds() > .4)
                 {
                     hand.level2();
+                    elevatorMovement = ElevatorMovement.DIP;
                 }
-                elevatorMovement = ElevatorMovement.DIP;
                 break;
             case LEVEL3:
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                if(!withoutPID())
+                if(!withoutPID() && resetElevator.seconds() > .3)
                 {
                     hand.level3();
+                    elevatorMovement = ElevatorMovement.DIP;
                 }
-                elevatorMovement = ElevatorMovement.DIP;
                 break;
             case SHARED:
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
-                if(!withoutPID())
+                if(!withoutPID() && resetElevator.seconds() > .5)
                 {
                     hand.shared();
+                    elevatorMovement = ElevatorMovement.DIP;
                 }
-                elevatorMovement = ElevatorMovement.DIP;
                 break;
             case DIP:
                 elevator.update();
@@ -334,7 +334,7 @@ public class teleopOwlRed extends LinearOpMode {
                     spinner.setSlowMove(false);
                 }
 
-                if(gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1 && elevator.getUsePID() == false && spinner.getUsePID() == false)
+                if(gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1)
                 {
                     dip.releaseFreight();
                 }
@@ -384,6 +384,11 @@ public class teleopOwlRed extends LinearOpMode {
                             elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
                             break;
                     }
+                }
+
+                switch (elevatorLevel)
+                {
+                    case 0:
                 }
 
                 if(gamepad1.left_bumper)

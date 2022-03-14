@@ -65,13 +65,6 @@ public class gamepad {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        try
-        {
-            startH = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
-        }catch (NumberFormatException e)
-        {
-            startH = 0;
-        }
 
         if(DEBUG && redAlliance)
         {
@@ -96,6 +89,22 @@ public class gamepad {
         cGamepad2.update();
         drivetrain.update();
 
+        if(cGamepad1.dpadDownOnce())
+        {
+            if(redAlliance)
+            {
+                startH = 0;
+                startH -= (Math.PI + Math.PI/2); // red
+                this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
+            }
+            else if(!redAlliance)
+            {
+                startH = 0;
+                startH -= Math.PI/2; // blue
+                this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
+            }
+        }
+
         if(cGamepad1.dpadUpOnce())
         {
             goSlow = !goSlow;
@@ -103,7 +112,7 @@ public class gamepad {
 
         if(goSlow)
         {
-            power = 0.1;
+            power = 0.25;
         }
         else
         {

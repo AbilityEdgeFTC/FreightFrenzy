@@ -25,7 +25,7 @@ public class ElevatorFirstPID {
     public static double SPOOL_RADIUS = 0.75; // in
     double power = 1;
     boolean usePID = true;
-    public static double maxPower = 0.7;
+    public static double maxPower = 0.85;
     double startHeight = 0;
     public static boolean DEBUG = false;
 
@@ -101,7 +101,14 @@ public class ElevatorFirstPID {
         else
         {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower, maxPower));
+            if(gamepad.left_stick_y != 0)
+            {
+                motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower, maxPower));
+            }
+            else
+            {
+                motor.setPower(0);
+            }
         }
     }
 
