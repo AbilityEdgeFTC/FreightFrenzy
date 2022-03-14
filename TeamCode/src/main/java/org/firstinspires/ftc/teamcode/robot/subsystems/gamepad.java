@@ -66,12 +66,12 @@ public class gamepad {
         mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        if(DEBUG && redAlliance)
+        if(redAlliance)
         {
             startH = 0;
             startH -= (Math.PI + Math.PI/2); // red
         }
-        else if(DEBUG && !redAlliance)
+        else
         {
             startH = 0;
             startH -= Math.PI/2; // blue
@@ -87,7 +87,7 @@ public class gamepad {
     public void update() {
         cGamepad1.update();
         cGamepad2.update();
-        drivetrain.update();
+        //drivetrain.update();
 
         if(cGamepad1.dpadDownOnce())
         {
@@ -113,6 +113,15 @@ public class gamepad {
         if(goSlow)
         {
             power = 0.25;
+        }
+        else
+        {
+            power = mainPower;
+        }
+
+        if(gamepad1.left_stick_button)
+        {
+            power = 1;
         }
         else
         {

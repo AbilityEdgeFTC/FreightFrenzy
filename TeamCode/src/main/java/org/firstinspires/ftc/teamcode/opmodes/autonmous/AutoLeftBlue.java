@@ -7,40 +7,36 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.opmodes.Vision.YCbCrPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorLibraryPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
-/*
- * This is a simple routine to test translational drive capabilities.
- */
 @Config
-@Autonomous(name = "Left Blue FULL", group = "red")
+@Autonomous(name = "Left Blue FULL", group = "Autonomous")
 public class AutoLeftBlue extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = 60;
     double startPoseRightH = 270;
-    public static double poseEntranceX = 17.5;
-    public static double poseEntranceY = 62;
+    public static double poseEntranceX = 15;
+    public static double poseEntranceY = 63.5;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 50;
-    public static double poseCollectY = 62;
+    public static double poseCollectX = 47.5;
+    public static double poseCollectY = 64;
     public static double poseCollectH = 180;
-    public static double poseHubX = 16.5;
-    public static double poseHubY = 61;
-    public static double poseHubH = 180;
-    public static double poseHelpX = 9;
-    public static double poseHelpY = 50;
+    public static double poseHelpX =9;
+    public static double poseHelpY = 52;
     public static double poseHelpH = 180;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
@@ -48,7 +44,7 @@ public class AutoLeftBlue extends LinearOpMode {
     intake intake;
     dip dip;
     boolean canIntake = true;
-    public static double powerSlowElevator = .6, powerElevator = 1;
+    public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
     TrajectorySequence main;
 
@@ -61,11 +57,13 @@ public class AutoLeftBlue extends LinearOpMode {
 
     levels placeFreightIn = levels.MAX;
 
-    public static int elevatorLevel = 3;
+    OpenCvWebcam webcam;
+    YCbCrPipeline pipeline;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
+        initPipeline();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
@@ -77,50 +75,62 @@ public class AutoLeftBlue extends LinearOpMode {
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
-        Pose2d poseHub = new Pose2d(poseHubX, poseHubY, Math.toRadians(poseHubH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
+        DriveConstants.setMaxVel(80);
+
+        MarkerCallback elevetorVision = new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached() {
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                powerElevator = powerElevatorFast;
+                elevator.setPower(powerElevatorFast);
+                canIntake = false;
+
+                dip.holdFreight();
+
+                switch (placeFreightIn)
+                {
+                    case MIN:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
+                        hand.level1();
+                        break;
+                    case MID:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
+                        hand.level2();
+                        break;
+                    case MAX:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                        hand.level3();
+                        break;
+                }
+
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
 
         MarkerCallback elevetorOpen = new MarkerCallback()
         {
             @Override
             public void onMarkerReached() {
-                switch (placeFreightIn)
-                {
-                    case MIN:
-                        elevatorLevel = 1;
-                        break;
-                    case MID:
-                        elevatorLevel = 2;
-                        break;
-                    case MAX:
-                        elevatorLevel = 3;
-                        break;
-                }
+                elevator.updateAuto();
+                spinner.updateAuto();
 
-                powerElevator = powerSlowElevator;
-                elevator.setPower(powerElevator);
+                powerElevator = powerElevatorFast;
+                elevator.setPower(powerElevatorFast);
                 canIntake = false;
 
                 dip.holdFreight();
 
-                switch (elevatorLevel)
-                {
-                    case 1:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
-                        hand.level1();
-                        break;
-                    case 2:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
-                        hand.level2();
-                        break;
-                    case 3:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                        hand.level3();
-                        break;
-                }
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                hand.level3();
 
                 elevator.updateAuto();
                 spinner.updateAuto();
@@ -133,11 +143,15 @@ public class AutoLeftBlue extends LinearOpMode {
             public void onMarkerReached(){
                 elevator.updateAuto();
                 spinner.updateAuto();
+                powerElevator = powerSlowElevator;
+                dip.releaseFreight();
+                elevator.updateAuto();
+                spinner.updateAuto();
                 canIntake = true;
-                hand.intake();
-                elevator.setPower(powerSlowElevator);
+                elevator.setPower(powerElevator);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                hand.intake();
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
                 elevator.updateAuto();
                 spinner.updateAuto();
             }
@@ -149,6 +163,8 @@ public class AutoLeftBlue extends LinearOpMode {
             public void onMarkerReached(){
                 dip.getFreight();
                 intake.intakeForward();
+                elevator.updateAuto();
+                spinner.updateAuto();
             }
         };
 
@@ -156,8 +172,9 @@ public class AutoLeftBlue extends LinearOpMode {
         {
             @Override
             public void onMarkerReached(){
-                dip.getFreight();
                 intake.intakeBackward();
+                elevator.updateAuto();
+                spinner.updateAuto();
             }
         };
 
@@ -169,69 +186,127 @@ public class AutoLeftBlue extends LinearOpMode {
          */
 
         main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .forward(7)
-                .lineToLinearHeading(poseHelp)
-                .lineToLinearHeading(poseHub)
-                .addTemporalMarker(elevetorOpen)
+                .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(poseEntrance.getX()+0.5, poseEntrance.getY(), poseEntrance.getHeading()))
+                .addTemporalMarker(elevetorVision)
                 .waitSeconds(.8)
                 .addDisplacementMarker(elevetorClose)
-                .splineToLinearHeading(poseEntrance,poseEntranceH)
                 .addTemporalMarker(intakeForward)
+                .waitSeconds(0.3)
                 .lineToSplineHeading(poseCollect)
+                .waitSeconds(.7)
                 .addTemporalMarker(intakeBackword)
                 .lineToSplineHeading(poseEntrance)
-                .splineToLinearHeading(poseHub,poseHubH)
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.8)
+                .waitSeconds(.75)
                 .addDisplacementMarker(elevetorClose)
-                .splineToLinearHeading(poseEntrance,poseEntranceH)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
+                .waitSeconds(0.3)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 3.5, poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(.7)
                 .addTemporalMarker(intakeBackword)
+                .waitSeconds(.2)
                 .lineToSplineHeading(poseEntrance)
-                .splineToLinearHeading(poseHub,poseHubH)
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.8)
+                .waitSeconds(.75)
                 .addDisplacementMarker(elevetorClose)
-                .splineToLinearHeading(poseEntrance,poseEntranceH)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
+                .waitSeconds(0.3)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 7.5, poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(.7)
                 .addTemporalMarker(intakeBackword)
+                .waitSeconds(.2)
                 .lineToSplineHeading(poseEntrance)
-                .splineToLinearHeading(poseHub,poseHubH)
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.8)
+                .waitSeconds(.75)
                 .addDisplacementMarker(elevetorClose)
-                .splineToLinearHeading(poseEntrance,poseEntranceH)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
-                .lineToSplineHeading(poseEntrance)
-                .splineToLinearHeading(poseHub,poseHubH)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.8)
-                .addDisplacementMarker(elevetorClose)
-                .splineToLinearHeading(poseEntrance,poseEntranceH)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
+                .waitSeconds(0.3)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10.5, poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(.7)
                 .addTemporalMarker(intakeBackword)
+                .waitSeconds(.2)
                 .lineToSplineHeading(poseEntrance)
-                .splineToLinearHeading(poseHub,poseHubH)
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.8)
+                .waitSeconds(.75)
                 .addDisplacementMarker(elevetorClose)
-                .splineToLinearHeading(poseEntrance,poseEntranceH)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()))
                 .build();
 
         dip.getFreight();
 
+        while (!opModeIsActive() && !isStopRequested())
+        {
+            telemetry.addData("BARCODE LOCATION: ", pipeline.getLocation());
+            switch (pipeline.getLocation())
+            {
+                case Left:
+                    placeFreightIn = levels.MIN;
+                    break;
+                case Center:
+                    placeFreightIn = levels.MID;
+                    break;
+                case Right:
+                    placeFreightIn = levels.MAX;
+                    break;
+                case Not_Found:
+                    int random = (int)(Math.random() * 2) + 1;
+                    switch (random)
+                    {
+                        case 1:
+                            placeFreightIn = levels.MID; // RED, blue = 2
+                            break;
+                        case 2:
+                            placeFreightIn = levels.MIN; // RED, blue = 2
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_BLUE);
+
         waitForStart();
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
+        webcam.stopStreaming();
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.updateAuto();
         elevator.updateAuto();
 
         drive.followTrajectorySequence(main);
+        spinner.updateAuto();
+    }
+
+    public void initPipeline()
+    {
+        //setting up webcam from config, and displaying it in the teleop controller.
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
+        pipeline = new YCbCrPipeline();
+        pipeline.telemetry = telemetry;
+        pipeline.DEBUG = false;
+        pipeline.setRedAlliance(false);
+
+        webcam.setPipeline(pipeline);
+        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                FtcDashboard.getInstance().startCameraStream(webcam,0);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+            }
+        });
     }
 
 

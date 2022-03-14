@@ -47,7 +47,7 @@ public class ElevatorFirstPID {
     public ElevatorFirstPID(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
-        //this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);

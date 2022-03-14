@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.autonmous;
+package org.firstinspires.ftc.teamcode.opmodes.autonmous.t265;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

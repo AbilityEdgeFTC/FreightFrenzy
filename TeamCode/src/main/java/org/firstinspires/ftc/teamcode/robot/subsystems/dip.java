@@ -51,4 +51,12 @@ public class dip {
         telemetry.update();
     }
 
+    public double getPos() {
+        return sD.getPosition();
+    }
+
+    public void moveTo(double position)
+    {
+        sD.setPosition(position);
+    }
 }

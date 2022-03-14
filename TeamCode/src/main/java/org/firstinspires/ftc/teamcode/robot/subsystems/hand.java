@@ -16,8 +16,8 @@ public class hand {
 
     Servo sL, sR;
     Telemetry telemetry;
-    public static double intakePos = 0.07;
-    public static double level1Hub = 1, level2Hub = .85, level3Hub = .65, levelSharedHub = .9, levelDuck = 0.815;
+    public static double intakePos = 0.00;
+    public static double level1Hub = 1, level2Hub = .78, level3Hub = .58, levelSharedHub = .83, levelDuck = 0.75;
 
     public enum HandPos
     {

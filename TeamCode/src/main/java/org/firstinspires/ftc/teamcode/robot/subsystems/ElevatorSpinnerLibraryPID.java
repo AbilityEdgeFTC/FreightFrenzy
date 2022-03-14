@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class ElevatorSpinnerLibraryPID {
 
-    int RIGHT_ANGLE = 225, RIGHT_ANGLE_SHARED = 150, LEFT_ANGLE = -225, LEFT_ANGLE_SHARED = -150, ZERO_ANGLE_RED = 330, ZERO_ANGLE_BLUE = -280, ZERO_ANGLE = 0;
+    public static int RIGHT_ANGLE = 225, RIGHT_ANGLE_SHARED = 150, LEFT_ANGLE = -225, LEFT_ANGLE_SHARED = -150, ZERO_ANGLE_RED = 330, ZERO_ANGLE_BLUE = -280, ZERO_ANGLE = 0;
     public static double power = 0.2;
     boolean usePID = true;
     public static double kP = 6;
@@ -90,6 +90,63 @@ public class ElevatorSpinnerLibraryPID {
                     break;
                 case ZERO_BLUE:
                     //target = ZERO_ANGLE_BLUE;
+                    ZERO_ANGLE = ZERO_ANGLE_BLUE;
+                    break;
+                case SHARED_RED:
+                    target = RIGHT_ANGLE_SHARED;
+                    break;
+                case SHARED_BLUE:
+                    target = LEFT_ANGLE_SHARED;
+                    break;
+                case READ_FILE:
+
+            }
+
+            motor.setPower(controller.calculate(encoderTicksToRadians(target - ZERO_ANGLE + newOffset), encoderTicksToRadians(motor.getCurrentPosition())));
+
+        }
+        else
+        {
+            if(slowMove && gamepad1.right_stick_x != 0)
+            {
+                motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
+            }
+            if(gamepad2.right_stick_x != 0)
+            {
+                motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
+            }
+            if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
+            {
+                motor.setPower(0);
+            }
+
+        }
+
+    }
+
+    public void updateNoAuto()
+    {
+        cGamepad2.update();
+
+        if(usePID)
+        {
+            switch (spinnerState)
+            {
+                case ZERO_DO_NOT_USE:
+                    target = 0;
+                    break;
+                case LEFT:
+                    target = LEFT_ANGLE;
+                    break;
+                case RIGHT:
+                    target = RIGHT_ANGLE;
+                    break;
+                case ZERO_RED:
+                    target = ZERO_ANGLE_RED;
+                    ZERO_ANGLE = ZERO_ANGLE_RED;
+                    break;
+                case ZERO_BLUE:
+                    target = ZERO_ANGLE_BLUE;
                     ZERO_ANGLE = ZERO_ANGLE_BLUE;
                     break;
                 case SHARED_RED:

@@ -67,30 +67,32 @@ public class AutoLeftRed extends LinearOpMode {
     SampleMecanumDrive drive;
     TrajectorySequence main;
 
-    public static int elevatorLevel = 1;
+    OpenCvWebcam webcam;
+    YCbCrPipeline pipeline;
 
-    //OpenCvWebcam webcam;
-    //YCbCrPipeline pipeline;
+    enum levels
+    {
+        MIN,
+        MID,
+        MAX
+    }
+
+    levels placeFreightIn = levels.MAX;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-        //        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + Math.toRadians(startPoseRightH));
-        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"), "" + 0);
-//        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("SpinnerValue.txt"), "" + 0);
-
+        initPipeline();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
         spinner = new SpinnerFirstPID(hardwareMap);
-        //spinner = new ElevatorSpinnerLibraryPID(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
         carousel = new carousel(hardwareMap);
         DriveConstants.setMaxVel(60);
         DriveConstants.setMaxVAcc(40);
-
 
         Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
@@ -112,10 +114,26 @@ public class AutoLeftRed extends LinearOpMode {
 
                 dip.holdFreight();
 
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.DUCK_ANGLE);
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.DUCK_RED_LEVEL);
-                hand.levelDuck();
+                switch (placeFreightIn)
+                {
+                    case MIN:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.DUCK_ANGLE);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.DUCK_RED_LEVEL);
+                        hand.levelDuck();
+                        break;
+                    case MID:
+//                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+//                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
+                        hand.level2();
+                        break;
+                    case MAX:
+//                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+//                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                        hand.level3();
+                        break;
+                }
 
+                hand.levelDuck();
 
                 elevator.updateAuto();
                 spinner.updateAuto();
@@ -162,7 +180,6 @@ public class AutoLeftRed extends LinearOpMode {
                 elevator.updateAuto();
                 spinner.updateAuto();
                 hand.intake();
-//                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                 elevator.updateAuto();
                 spinner.updateAuto();
             }
@@ -178,7 +195,6 @@ public class AutoLeftRed extends LinearOpMode {
                 canIntake = true;
                 elevator.setPower(powerElevator);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-//                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                 elevator.updateAuto();
                 spinner.updateAuto();
             }
@@ -228,10 +244,7 @@ public class AutoLeftRed extends LinearOpMode {
             SampleMecanumDrive.getAccelerationConstraint(20))
          */
 
-        //initPipeline();
-
         main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-
                 .addTemporalMarker(elevetorOpen)
                 .waitSeconds(1.1)
                 .addTemporalMarker(elevetorCloseA)
@@ -268,22 +281,35 @@ public class AutoLeftRed extends LinearOpMode {
 
         dip.getFreight();
 
-        /*while (!opModeIsActive())
+        while (!opModeIsActive())
         {
             telemetry.addData("BARCODE LOCATION: ", pipeline.getLocation());
             switch (pipeline.getLocation())
             {
                 case Left:
-                    placeFreightIn = levels.MIN; // RED, blue = 3
+                    placeFreightIn = levels.MAX; // RED, blue = 3
                     break;
                 case Center:
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
-                    placeFreightIn = levels.MAX; // RED, blue = 1
+                    placeFreightIn = levels.MIN; // RED, blue = 1
+                    break;
+                case Not_Found:
+                    int random = (int)(Math.random() * 2) + 1;
+                    switch (random)
+                    {
+                        case 1:
+                            placeFreightIn = levels.MID; // RED, blue = 2
+                            break;
+                        case 2:
+                            placeFreightIn = levels.MIN; // RED, blue = 2
+                            break;
+                    }
                     break;
             }
-        }*/
+        }
+
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
 
         waitForStart();
@@ -293,13 +319,9 @@ public class AutoLeftRed extends LinearOpMode {
         elevator.updateAuto();
 
         drive.followTrajectorySequence(main);
-
-//        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + drive.getExternalHeading());
-        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"), "" + elevator.getPosition());
-//        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("SpinnerValue.txt"), "" + spinner.getPosition());
     }
 
-    /*public void initPipeline()
+    public void initPipeline()
     {
         //setting up webcam from config, and displaying it in the teleop controller.
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -319,22 +341,6 @@ public class AutoLeftRed extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                /*
-                 * Tell the webcam to start streaming images to us! Note that you must make sure
-                 * the resolution you specify is supported by the camera. If it is not, an exception
-                 * will be thrown.
-                 *
-                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
-                 * supports streaming from the webcam in the uncompressed YUV image format. This means
-                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
-                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
-                 *
-                 * Also, we specify the rotation that the webcam is used in. This is so that the image
-                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
-                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
-                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
-                 * away from the user.
-
                 webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
                 FtcDashboard.getInstance().startCameraStream(webcam,0);
             }
@@ -345,7 +351,7 @@ public class AutoLeftRed extends LinearOpMode {
 
             }
         });
-    }*/
+    }
 
 
 }

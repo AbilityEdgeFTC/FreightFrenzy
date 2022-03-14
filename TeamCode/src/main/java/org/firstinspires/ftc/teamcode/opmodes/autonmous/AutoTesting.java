@@ -7,18 +7,13 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.opmodes.Vision.YCbCrPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorLibraryPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
@@ -32,8 +27,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red FULL", group = "Autonomous")
-public class AutoRightRed extends LinearOpMode {
+@Autonomous(name = "AutoTesting", group = "Autonomous")
+public class AutoTesting extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -60;
@@ -50,9 +45,7 @@ public class AutoRightRed extends LinearOpMode {
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
     hand hand;
-    intake intake;
     dip dip;
-    boolean canIntake = true;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
     TrajectorySequence main;
@@ -77,13 +70,11 @@ public class AutoRightRed extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
         spinner = new SpinnerFirstPID(hardwareMap);
-        intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
 
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
-        Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
         DriveConstants.setMaxVel(80);
 
@@ -96,7 +87,6 @@ public class AutoRightRed extends LinearOpMode {
 
                 powerElevator = powerElevatorFast;
                 elevator.setPower(powerElevatorFast);
-                canIntake = false;
 
                 dip.holdFreight();
 
@@ -124,28 +114,6 @@ public class AutoRightRed extends LinearOpMode {
             }
         };
 
-        MarkerCallback elevetorOpen = new MarkerCallback()
-        {
-            @Override
-            public void onMarkerReached() {
-                elevator.updateAuto();
-                spinner.updateAuto();
-
-                powerElevator = powerElevatorFast;
-                elevator.setPower(powerElevatorFast);
-                canIntake = false;
-
-                dip.holdFreight();
-
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                hand.level3();
-
-                elevator.updateAuto();
-                spinner.updateAuto();
-            }
-        };
-
         MarkerCallback elevetorClose =  new MarkerCallback()
         {
             @Override
@@ -156,32 +124,10 @@ public class AutoRightRed extends LinearOpMode {
                 dip.releaseFreight();
                 elevator.updateAuto();
                 spinner.updateAuto();
-                canIntake = true;
                 elevator.setPower(powerElevator);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
                 hand.intake();
                 spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                elevator.updateAuto();
-                spinner.updateAuto();
-            }
-        };
-
-        MarkerCallback intakeForward =  new MarkerCallback()
-        {
-            @Override
-            public void onMarkerReached(){
-                dip.getFreight();
-                intake.intakeForward();
-                elevator.updateAuto();
-                spinner.updateAuto();
-            }
-        };
-
-        MarkerCallback intakeBackword =  new MarkerCallback()
-        {
-            @Override
-            public void onMarkerReached(){
-                intake.intakeBackward();
                 elevator.updateAuto();
                 spinner.updateAuto();
             }
@@ -194,7 +140,6 @@ public class AutoRightRed extends LinearOpMode {
             SampleMecanumDrive.getAccelerationConstraint(20))
          */
 
-
         main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -202,47 +147,7 @@ public class AutoRightRed extends LinearOpMode {
                 .addTemporalMarker(elevetorVision)
                 .waitSeconds(.8)
                 .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(poseCollect)
-                .waitSeconds(.7)
-                .addTemporalMarker(intakeBackword)
-                .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.75)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 3.5, poseCollect.getY(), poseCollect.getHeading()))
-                .waitSeconds(.7)
-                .addTemporalMarker(intakeBackword)
-                .waitSeconds(.2)
-                .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.75)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 7.5, poseCollect.getY(), poseCollect.getHeading()))
-                .waitSeconds(.7)
-                .addTemporalMarker(intakeBackword)
-                .waitSeconds(.2)
-                .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.75)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10.5, poseCollect.getY(), poseCollect.getHeading()))
-                .waitSeconds(.7)
-                .addTemporalMarker(intakeBackword)
-                .waitSeconds(.2)
-                .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.75)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(4)
                 .build();
 
         dip.getFreight();
@@ -284,7 +189,6 @@ public class AutoRightRed extends LinearOpMode {
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.updateAuto();
         elevator.updateAuto();
-
         drive.followTrajectorySequence(main);
         spinner.updateAuto();
     }

@@ -11,9 +11,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
@@ -24,8 +22,8 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 @Config
-@TeleOp(name = "TeleOp Red Alliance", group = "main")
-public class teleopOwlRed extends LinearOpMode {
+@TeleOp(name = "TeleOp Red No Auto", group = "main")
+public class teleopOwlRedNoAuto extends LinearOpMode {
 
     gamepad gamepad;
     ElevatorSpinnerLibraryPID spinner;
@@ -69,9 +67,8 @@ public class teleopOwlRed extends LinearOpMode {
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
         resetElevator = new ElapsedTime();
-        spinner.setZERO_ANGLE_RED(spinner.getPosition());
         spinner.setSpinnerState(ElevatorSpinnerLibraryPID.SpinnerState.ZERO_RED);
-        spinner.update();
+        spinner.updateNoAuto();
 
         // wait till after init
         waitForStart();
@@ -85,7 +82,7 @@ public class teleopOwlRed extends LinearOpMode {
             cGamepad2.update();
             gamepad.update();
             elevator.update();
-            spinner.update();
+            spinner.updateNoAuto();
             carousel.update(true);
             gamepad1And2TriggerIntake();
             elevatorSwitch();
@@ -325,7 +322,7 @@ public class teleopOwlRed extends LinearOpMode {
                 break;
             case DIP:
                 elevator.update();
-                spinner.update();
+                spinner.updateNoAuto();
                 spinner.setUsePID(false);
                 manualServoMoving();
                 if(gamepad1.right_stick_button)
@@ -432,7 +429,7 @@ public class teleopOwlRed extends LinearOpMode {
     void resetElevator()
     {
         elevator.update();
-        spinner.update();
+        spinner.updateNoAuto();
 
         if(!withoutPID())
         {
@@ -494,7 +491,7 @@ public class teleopOwlRed extends LinearOpMode {
         }
 
         elevator.update();
-        spinner.update();
+        spinner.updateNoAuto();
 
         canIntake = true;
     }

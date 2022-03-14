@@ -19,18 +19,12 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class YCbCrPipeline extends OpenCvPipeline
 {
 
-    public static double lowValuesRedY = 73;
-    public static double highValuesRedY = 113;
-    public static double lowValuesRedB = 176;
-    public static double highValuesRedB = 220;
-    public static double lowValuesRedR = 96;
-    public static double highValuesRedR = 116;
-    public static double lowValuesBlueY = 0;
-    public static double highValuesBlueY = 221;
-    public static double lowValuesBlueB = 99;
-    public static double highValuesBlueB = 139;
-    public static double lowValuesBlueR = 134;
-    public static double highValuesBlueR = 190;
+    public static double lowValuesTSEY = 51;
+    public static double highValuesTSEY = 173;
+    public static double lowValuesTSEB = 146;
+    public static double highValuesTSEB = 204;
+    public static double lowValuesTSER = 40;
+    public static double highValuesTSER = 125;
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
     Mat inputYCbCr = new Mat(1280,720,0);
@@ -61,7 +55,7 @@ public class YCbCrPipeline extends OpenCvPipeline
         Not_Found
     }
 
-    public Location location;
+    public Location location = Location.Not_Found;
 
     // color for the rectangles to show on the screen
     Scalar colorBarcodeRect = new Scalar(0, 255, 0);
@@ -75,22 +69,12 @@ public class YCbCrPipeline extends OpenCvPipeline
     @Override
     public Mat processFrame(Mat input) {
         // HSV low and high values for our team shipping element.
-        Scalar lowValuesRED = new Scalar(lowValuesRedY, lowValuesRedB, lowValuesRedR);
-        Scalar highValuesRED = new Scalar(highValuesRedY, highValuesRedB, highValuesRedR);
-        Scalar lowValuesBLUE = new Scalar(lowValuesBlueY, lowValuesBlueB, lowValuesBlueR);
-        Scalar highValuesBLUE = new Scalar(highValuesBlueY, highValuesBlueB, highValuesBlueR);
+        Scalar lowValuesTSE = new Scalar(lowValuesTSEY, lowValuesTSEB, lowValuesTSER);
+        Scalar highValuesTSE = new Scalar(highValuesTSEY, highValuesTSEB, highValuesTSER);
 
         Imgproc.cvtColor(input, inputYCbCr, Imgproc.COLOR_RGB2YCrCb);
 
-        // turning all colors not between the low and high values to black and the rest white.
-        if(redAlliance)
-        {
-            Core.inRange(inputYCbCr, lowValuesRED, highValuesRED, mask);
-        }
-        else
-        {
-            Core.inRange(inputYCbCr, lowValuesBLUE, highValuesBLUE, mask);
-        }
+        Core.inRange(inputYCbCr, lowValuesTSE, highValuesTSE, mask);
 
         // taking sections from the mask to another mat
         Mat left = mask.submat(LEFT_SEC);
