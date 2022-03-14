@@ -53,6 +53,10 @@ public class FileChecker extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        //        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + Math.toRadians(startPoseRightH));
+        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"), "" + 0);
+        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("SpinnerValue.txt"), "" + 0);
+
         spinner = new SpinnerFirstPID(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -63,21 +67,5 @@ public class FileChecker extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        spinner.setUsePID(false);
-        elevator.setUsePID(false);
-
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-            spinner.updateAuto();
-            elevator.updateAuto();
-            drive.update();
-            telemetry.addData("POS:", spinner.getPosition());
-            telemetry.update();
-
-        }
-
-        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + drive.getExternalHeading());
-        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"), "" + elevator.getPosition());
-        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("SpinnerValue.txt"), "" + spinner.getPosition());
     }
 }

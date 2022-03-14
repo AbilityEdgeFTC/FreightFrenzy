@@ -38,18 +38,17 @@ public class AutoRightRed extends LinearOpMode {
     double startPoseRightX = 13;
     double startPoseRightY = -60;
     double startPoseRightH = 90;
-    public static double poseEntranceX = 14.3;
-    public static double poseEntranceY = -63.2;
+    public static double poseEntranceX = 15;
+    public static double poseEntranceY = -63.5;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 51.6;
-    public static double poseCollectY = -63.2;
+    public static double poseCollectX = 47.5;
+    public static double poseCollectY = -64;
     public static double poseCollectH = 180;
     public static double poseHelpX =9;
     public static double poseHelpY = -52;
     public static double poseHelpH = 180;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
-    //ElevatorSpinnerLibraryPID spinner;
     hand hand;
     intake intake;
     dip dip;
@@ -70,21 +69,17 @@ public class AutoRightRed extends LinearOpMode {
 
     public static int elevatorLevel = 3;
 
-    //OpenCvWebcam webcam;
-    //YCbCrPipeline pipeline;
+    OpenCvWebcam webcam;
+    YCbCrPipeline pipeline;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-//        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + Math.toRadians(startPoseRightH));
-        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"), "" + 0);
-//        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("SpinnerValue.txt"), "" + 0);
-
+        //initPipeline();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
         spinner = new SpinnerFirstPID(hardwareMap);
-        //spinner = new ElevatorSpinnerLibraryPID(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
@@ -93,9 +88,9 @@ public class AutoRightRed extends LinearOpMode {
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
-        DriveConstants.setMaxVel(70);
+        DriveConstants.setMaxVel(80);
 
-        MarkerCallback elevetorOpen = new MarkerCallback()
+        MarkerCallback elevetorVision = new MarkerCallback()
         {
             @Override
             public void onMarkerReached() {
@@ -138,6 +133,28 @@ public class AutoRightRed extends LinearOpMode {
                         hand.level3();
                         break;
                 }
+
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+        MarkerCallback elevetorOpen = new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached() {
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                powerElevator = powerElevatorFast;
+                elevator.setPower(powerElevatorFast);
+                canIntake = false;
+
+                dip.holdFreight();
+
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                hand.level3();
 
                 elevator.updateAuto();
                 spinner.updateAuto();
@@ -192,97 +209,99 @@ public class AutoRightRed extends LinearOpMode {
             SampleMecanumDrive.getAccelerationConstraint(20))
          */
 
-        //initPipeline();
 
         main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(poseEntrance.getX(), poseEntrance.getY(), poseEntrance.getHeading()))
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.9)
+                .lineToSplineHeading(new Pose2d(poseEntrance.getX()+0.5, poseEntrance.getY(), poseEntrance.getHeading()))
+                .addTemporalMarker(elevetorVision)
+                .waitSeconds(.8)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
                 .waitSeconds(0.3)
                 .lineToSplineHeading(poseCollect)
-                .turn(Math.toRadians(-10))
-                .turn(Math.toRadians(10))
+                .waitSeconds(.7)
                 .addTemporalMarker(intakeBackword)
+//                .turn(Math.toRadians(-10))
+//                .turn(Math.toRadians(10))
                 .lineToSplineHeading(poseEntrance)
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.85)
+                .waitSeconds(.75)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
                 .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 2.2, poseCollect.getY(), poseCollect.getHeading()))
-                .turn(Math.toRadians(-10))
-                .turn(Math.toRadians(10))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 3.5, poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(.7)
+//                .turn(Math.toRadians(-10))
+//                .turn(Math.toRadians(10))
                 .addTemporalMarker(intakeBackword)
+                .waitSeconds(.2)
                 .lineToSplineHeading(poseEntrance)
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.85)
+                .waitSeconds(.75)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
                 .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 8, poseCollect.getY(), poseCollect.getHeading()))
-                .turn(Math.toRadians(-13))
-                .turn(Math.toRadians(13))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 7.5, poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(.7)
+//                .turn(Math.toRadians(-13))
+//                .turn(Math.toRadians(13))
                 .addTemporalMarker(intakeBackword)
+                .waitSeconds(.2)
                 .lineToSplineHeading(poseEntrance)
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.85)
+                .waitSeconds(.75)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
                 .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 8.9, poseCollect.getY(), poseCollect.getHeading()))
-                .turn(Math.toRadians(-15))
-                .turn(Math.toRadians(15))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10.5, poseCollect.getY(), poseCollect.getHeading()))
+                .waitSeconds(.7)
+//                .turn(Math.toRadians(-15))
+//                .turn(Math.toRadians(15))
                 .addTemporalMarker(intakeBackword)
+                .waitSeconds(.2)
                 .lineToSplineHeading(poseEntrance)
                 .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.85)
+                .waitSeconds(.75)
                 .addDisplacementMarker(elevetorClose)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(70, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(60))
-                .turn(Math.PI/4)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()))
                 .build();
 
         dip.getFreight();
 
-        /*while (!opModeIsActive())
+        while (!opModeIsActive())
         {
-            telemetry.addData("BARCODE LOCATION: ", pipeline.getLocation());
-            switch (pipeline.getLocation())
-            {
-                case Left:
-                    placeFreightIn = levels.MIN; // RED, blue = 3
-                    break;
-                case Center:
-                    placeFreightIn = levels.MID; // RED, blue = 2
-                    break;
-                case Right:
-                    placeFreightIn = levels.MAX; // RED, blue = 1
-                    break;
-            }
-        }*/
+//            telemetry.addData("BARCODE LOCATION: ", pipeline.getLocation());
+//            switch (pipeline.getLocation())
+//            {
+//                case Left:
+//                    placeFreightIn = levels.MIN; // RED, blue = 3
+//                    break;
+//                case Center:
+//                    placeFreightIn = levels.MID; // RED, blue = 2
+//                    break;
+//                case Right:
+//                    placeFreightIn = levels.MAX; // RED, blue = 1
+//                    break;
+//            }
+        }
+
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
 
         waitForStart();
+        //webcam.stopStreaming();
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.updateAuto();
         elevator.updateAuto();
 
         drive.followTrajectorySequence(main);
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         spinner.updateAuto();
-
-//        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + drive.getExternalHeading());
-        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"), "" + elevator.getPosition());
-//        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("SpinnerValue.txt"), "" + spinner.getPosition());
+        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt"), "" + Math.toRadians(startPoseRightH));
     }
 
-    /*public void initPipeline()
+    public void initPipeline()
     {
         //setting up webcam from config, and displaying it in the teleop controller.
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -302,22 +321,6 @@ public class AutoRightRed extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                /*
-                 * Tell the webcam to start streaming images to us! Note that you must make sure
-                 * the resolution you specify is supported by the camera. If it is not, an exception
-                 * will be thrown.
-                 *
-                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
-                 * supports streaming from the webcam in the uncompressed YUV image format. This means
-                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
-                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
-                 *
-                 * Also, we specify the rotation that the webcam is used in. This is so that the image
-                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
-                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
-                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
-                 * away from the user.
-
                 webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
                 FtcDashboard.getInstance().startCameraStream(webcam,0);
             }
@@ -328,7 +331,7 @@ public class AutoRightRed extends LinearOpMode {
 
             }
         });
-    }*/
+    }
 
 
 }

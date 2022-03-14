@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 22,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5,AUTO_LEFT_LEVEL = 18,DUCK_RED_LEVEL = 10.5;
+    public static double HUB_LEVEL3 = 21.5,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5,AUTO_LEFT_LEVEL = 20.3,DUCK_RED_LEVEL = 8.7;
     public static double SHARED_HUB = 5.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
@@ -47,24 +47,12 @@ public class ElevatorFirstPID {
     public ElevatorFirstPID(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
-        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
-
-        try {
-            ZERO_HEIGHT = encoderTicksToInches(Integer.parseInt(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"))));
-        }catch (NumberFormatException e)
-        {
-            ZERO_HEIGHT = 0;
-        }
-
-        if(DEBUG)
-        {
-            ZERO_HEIGHT = 0;
-        }
     }
 
     public ElevatorFirstPID(HardwareMap hardwareMap)
@@ -74,18 +62,6 @@ public class ElevatorFirstPID {
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
-
-        try {
-            ZERO_HEIGHT = encoderTicksToInches(Integer.parseInt(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("ElevatorValue.txt"))));
-        }catch (NumberFormatException e)
-        {
-            ZERO_HEIGHT = 0;
-        }
-
-        if(DEBUG)
-        {
-            ZERO_HEIGHT = 0;
-        }
     }
 
     public void update() {
@@ -220,5 +196,61 @@ public class ElevatorFirstPID {
 
     public void setPower(double power) {
         this.power = power;
+    }
+
+    public static double getHubLevel3() {
+        return HUB_LEVEL3;
+    }
+
+    public static void setHubLevel3(double hubLevel3) {
+        HUB_LEVEL3 = hubLevel3;
+    }
+
+    public static double getHubLevel2() {
+        return HUB_LEVEL2;
+    }
+
+    public static void setHubLevel2(double hubLevel2) {
+        HUB_LEVEL2 = hubLevel2;
+    }
+
+    public static double getHubLevel1() {
+        return HUB_LEVEL1;
+    }
+
+    public static void setHubLevel1(double hubLevel1) {
+        HUB_LEVEL1 = hubLevel1;
+    }
+
+    public static double getAutoLeftLevel() {
+        return AUTO_LEFT_LEVEL;
+    }
+
+    public static void setAutoLeftLevel(double autoLeftLevel) {
+        AUTO_LEFT_LEVEL = autoLeftLevel;
+    }
+
+    public static double getDuckRedLevel() {
+        return DUCK_RED_LEVEL;
+    }
+
+    public static void setDuckRedLevel(double duckRedLevel) {
+        DUCK_RED_LEVEL = duckRedLevel;
+    }
+
+    public static double getSharedHub() {
+        return SHARED_HUB;
+    }
+
+    public static void setSharedHub(double sharedHub) {
+        SHARED_HUB = sharedHub;
+    }
+
+    public static double getZeroHeight() {
+        return ZERO_HEIGHT;
+    }
+
+    public static void setZeroHeight(double zeroHeight) {
+        ZERO_HEIGHT = zeroHeight;
     }
 }

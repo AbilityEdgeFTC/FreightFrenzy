@@ -15,18 +15,18 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class ElevatorSpinnerLibraryPID {
 
-    double RIGHT_ANGLE = 0, RIGHT_ANGLE_SHARED = 0, LEFT_ANGLE = 0, LEFT_ANGLE_SHARED = 0, ZERO_ANGLE_RED = 0, ZERO_ANGLE_BLUE = 0, ZERO_ANGLE = 0;
+    int RIGHT_ANGLE = 225, RIGHT_ANGLE_SHARED = 150, LEFT_ANGLE = -225, LEFT_ANGLE_SHARED = -150, ZERO_ANGLE_RED = 330, ZERO_ANGLE_BLUE = -280, ZERO_ANGLE = 0;
     public static double power = 0.2;
     boolean usePID = true;
     public static double kP = 6;
     public static double kI = 0;
     public static double kD = 0;
-    double target = 0;
+    int target = 0;
     public static double maxPower = 0.5;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     boolean slowMove = false;
-    double newOffset = 0;
+    int newOffset = 0;
     DcMotorEx motor;
     BasicPID PID = new BasicPID(new PIDCoefficients(kP, kI, kD));
     AngleController controller = new AngleController(PID);
@@ -57,12 +57,6 @@ public class ElevatorSpinnerLibraryPID {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.cGamepad2 = new cGamepad(gamepad2);
-        ZERO_ANGLE_RED = encoderTicksToRadians(330);
-        ZERO_ANGLE_BLUE = encoderTicksToRadians(-280);
-        LEFT_ANGLE_SHARED = encoderTicksToRadians(-150);
-        LEFT_ANGLE = encoderTicksToRadians(-225);
-        RIGHT_ANGLE_SHARED = encoderTicksToRadians(150);
-        RIGHT_ANGLE = encoderTicksToRadians(225);
     }
 
     public ElevatorSpinnerLibraryPID(HardwareMap hardwareMap)
@@ -71,12 +65,6 @@ public class ElevatorSpinnerLibraryPID {
         this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        ZERO_ANGLE_RED = encoderTicksToRadians(330);
-        ZERO_ANGLE_BLUE = encoderTicksToRadians(-280);
-        LEFT_ANGLE_SHARED = encoderTicksToRadians(-150);
-        LEFT_ANGLE = encoderTicksToRadians(-225);
-        RIGHT_ANGLE_SHARED = encoderTicksToRadians(150);
-        RIGHT_ANGLE = encoderTicksToRadians(225);
     }
 
     public void update()
@@ -97,11 +85,11 @@ public class ElevatorSpinnerLibraryPID {
                     target = RIGHT_ANGLE;
                     break;
                 case ZERO_RED:
-                    target = ZERO_ANGLE_RED;
+                    //target = ZERO_ANGLE_RED;
                     ZERO_ANGLE = ZERO_ANGLE_RED;
                     break;
                 case ZERO_BLUE:
-                    target = ZERO_ANGLE_BLUE;
+                    //target = ZERO_ANGLE_BLUE;
                     ZERO_ANGLE = ZERO_ANGLE_BLUE;
                     break;
                 case SHARED_RED:
@@ -114,7 +102,7 @@ public class ElevatorSpinnerLibraryPID {
 
             }
 
-            motor.setPower(controller.calculate(target - ZERO_ANGLE + newOffset, encoderTicksToRadians(motor.getCurrentPosition())));
+            motor.setPower(controller.calculate(encoderTicksToRadians(target - ZERO_ANGLE + newOffset), encoderTicksToRadians(motor.getCurrentPosition())));
 
         }
         else
@@ -122,10 +110,14 @@ public class ElevatorSpinnerLibraryPID {
             if(slowMove || gamepad2.right_stick_x != 0)
             {
                 motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
-                if(gamepad2.right_stick_x != 0)
-                {
-                    motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
-                }
+            }
+            if(slowMove || gamepad2.right_stick_x != 0)
+            {
+                motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
+            }
+            if(gamepad2.right_stick_x == 0 || gamepad1.right_stick_x == 0)
+            {
+                motor.setPower(0);
             }
 
         }
@@ -150,7 +142,7 @@ public class ElevatorSpinnerLibraryPID {
         return target;
     }
 
-    public void setTarget(double newTarget)
+    public void setTarget(int newTarget)
     {
         target = newTarget;
     }
@@ -181,8 +173,59 @@ public class ElevatorSpinnerLibraryPID {
         this.slowMove = slowMove;
     }
 
-    public void saveOffset()
-    {
-        newOffset = encoderTicksToRadians(motor.getCurrentPosition()) - ZERO_ANGLE;
+    public int getRIGHT_ANGLE() {
+        return RIGHT_ANGLE;
+    }
+
+    public void setRIGHT_ANGLE(int RIGHT_ANGLE) {
+        this.RIGHT_ANGLE = RIGHT_ANGLE;
+    }
+
+    public int getRIGHT_ANGLE_SHARED() {
+        return RIGHT_ANGLE_SHARED;
+    }
+
+    public void setRIGHT_ANGLE_SHARED(int RIGHT_ANGLE_SHARED) {
+        this.RIGHT_ANGLE_SHARED = RIGHT_ANGLE_SHARED;
+    }
+
+    public int getLEFT_ANGLE() {
+        return LEFT_ANGLE;
+    }
+
+    public void setLEFT_ANGLE(int LEFT_ANGLE) {
+        this.LEFT_ANGLE = LEFT_ANGLE;
+    }
+
+    public int getLEFT_ANGLE_SHARED() {
+        return LEFT_ANGLE_SHARED;
+    }
+
+    public void setLEFT_ANGLE_SHARED(int LEFT_ANGLE_SHARED) {
+        this.LEFT_ANGLE_SHARED = LEFT_ANGLE_SHARED;
+    }
+
+    public int getZERO_ANGLE_RED() {
+        return ZERO_ANGLE_RED;
+    }
+
+    public void setZERO_ANGLE_RED(int ZERO_ANGLE_RED) {
+        this.ZERO_ANGLE_RED = ZERO_ANGLE_RED;
+    }
+
+    public int getZERO_ANGLE_BLUE() {
+        return ZERO_ANGLE_BLUE;
+    }
+
+    public void setZERO_ANGLE_BLUE(int ZERO_ANGLE_BLUE) {
+        this.ZERO_ANGLE_BLUE = ZERO_ANGLE_BLUE;
+    }
+
+    public int getZERO_ANGLE() {
+        return ZERO_ANGLE;
+    }
+
+    public void setZERO_ANGLE(int ZERO_ANGLE) {
+        this.ZERO_ANGLE = ZERO_ANGLE;
     }
 }

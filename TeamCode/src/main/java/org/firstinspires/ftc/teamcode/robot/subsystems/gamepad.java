@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 @Config
 public class gamepad {
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
     public static boolean redAlliance = true;
     Gamepad gamepad1, gamepad2;
     DcMotor mFL, mBL, mFR, mBR;
@@ -34,8 +34,8 @@ public class gamepad {
     double rightPower_f;
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
-    public static double mainPower = .75, multiplier = .9;
-    public static boolean slowMove = false, isCentricDrive = true, canTwist = true;
+    public static double mainPower = .8, multiplier = .9;
+    public static boolean slowMove = false, isCentricDrive = true, canTwist = true, goSlow = false;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
     public static double startH = 0;
@@ -94,6 +94,21 @@ public class gamepad {
     public void update() {
         cGamepad1.update();
         cGamepad2.update();
+        drivetrain.update();
+
+        if(cGamepad1.dpadUpOnce())
+        {
+            goSlow = !goSlow;
+        }
+
+        if(goSlow)
+        {
+            power = 0.1;
+        }
+        else
+        {
+            power = mainPower;
+        }
 
         getGamepadDirections();
 
