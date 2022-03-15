@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 @Config
-@TeleOp(name = "TeleOp Red Alliance", group = "main")
+@TeleOp(name = "TeleOp RED Alliance", group = "red")
 public class teleopOwlRed extends LinearOpMode {
 
     gamepad gamepad;

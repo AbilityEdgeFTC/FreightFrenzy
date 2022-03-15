@@ -27,7 +27,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red NEWWWW", group = "Autonomous")
+@Autonomous(name = "Left Blue NEWWWW", group = "Autonomous Blue")
 public class AutoLeftBlueNew extends LinearOpMode {
 
     double startPoseRightX = 13;
@@ -341,6 +341,8 @@ public class AutoLeftBlueNew extends LinearOpMode {
                         .waitSeconds(.2)
                         .lineToSplineHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(30))
+                        .turn(Math.toRadians(2.45))
+                        .turn(Math.toRadians(-2.45))
                         .waitSeconds(2)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
@@ -351,6 +353,8 @@ public class AutoLeftBlueNew extends LinearOpMode {
                         .addTemporalMarker(intakeForward)
                         .lineToSplineHeading(new Pose2d(poseCollect.getX() + 6.5, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(30))
+                        .turn(Math.toRadians(2.45))
+                        .turn(Math.toRadians(-2.45))
                         .waitSeconds(2)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
@@ -361,6 +365,8 @@ public class AutoLeftBlueNew extends LinearOpMode {
                         .addTemporalMarker(intakeForward)
                         .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(30))
+                        .turn(Math.toRadians(2.45))
+                        .turn(Math.toRadians(-2.45))
                         .waitSeconds(2)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
@@ -371,6 +377,8 @@ public class AutoLeftBlueNew extends LinearOpMode {
                         .addTemporalMarker(intakeForward)
                         .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(30))
+                        .turn(Math.toRadians(1.5))
+                        .turn(Math.toRadians(-1.5))
                         .waitSeconds(4)
                         .addTemporalMarker(intakeBackword)
                         .build();
