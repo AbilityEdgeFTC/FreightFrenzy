@@ -345,10 +345,10 @@ public class AutoLeftRed extends LinearOpMode {
                     .waitSeconds(runCarouselFor)
                     .addTemporalMarker(carouselOff)
                     .addTemporalMarker(intakeDuck)
-                    .strafeRight(5)
+                    .strafeLeft(5)
                     .back(6)
-                    .strafeRight(16)
                     .strafeLeft(16)
+                    .strafeRight(16)
                     .lineToLinearHeading(poseParkingHelp)
                     .addTemporalMarker(intakeStop)
                     .lineToLinearHeading(poseParkinga)
@@ -367,45 +367,6 @@ public class AutoLeftRed extends LinearOpMode {
                             SampleMecanumDrive.getAccelerationConstraint(80))
                     .build();
                 break;
-            /*case MAX:
-                main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                        .addTemporalMarker(elevetorDuckLevel3)
-                        .waitSeconds(1.1)
-                        .addTemporalMarker(elevetorCloseA)
-                        .waitSeconds(.4)
-                        .addTemporalMarker(elevetorCloseB)
-                        .waitSeconds(1.5)
-                        .addTemporalMarker(elevetorCloseC)
-                        .waitSeconds(.5)
-                        .forward(carouselHelp)
-                        .lineToLinearHeading(poseCarousel)
-                        .addTemporalMarker(carouselOnn)
-                        .waitSeconds(runCarouselFor)
-                        .addTemporalMarker(carouselOff)
-                        .addTemporalMarker(intakeDuck)
-                        .strafeRight(5)
-                        .back(6)
-                        .strafeRight(16)
-                        .strafeLeft(16)
-                        .lineToLinearHeading(poseParkingHelp)
-                        .addTemporalMarker(intakeStop)
-                        .lineToLinearHeading(poseParkinga)
-                        .addTemporalMarker(elevetorClose)
-                        .addTemporalMarker(elevetorDuckLevel3)
-                        .waitSeconds(1)
-                        .addTemporalMarker(elevetorCloseA)
-                        .waitSeconds(.7)
-                        .addTemporalMarker(elevetorCloseB)
-                        .waitSeconds(.5)
-                        .addTemporalMarker(elevetorCloseC)
-                        .waitSeconds(.5)
-                        .lineToLinearHeading(poseParkingb)
-                        .waitSeconds(.6)
-                        .lineToLinearHeading(poseParkingc,SampleMecanumDrive.getVelocityConstraint(70, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                SampleMecanumDrive.getAccelerationConstraint(80))
-                        .build();
-                break;
-*/
         }
 
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
