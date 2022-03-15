@@ -22,16 +22,7 @@ public class carousel {
     //motor carousel
     CRServo sCL, sCR;
     Telemetry telemetry;
-    Gamepad gamepad;
     public static double powerCarousel = 1;
-
-    // 2 constructors for 2 options, construct the carousel with and without telementry.
-    /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public carousel(HardwareMap hardwareMap, Gamepad gamepad) {
-        this.sCL = hardwareMap.get(CRServo.class, "sCL");
-        this.sCR = hardwareMap.get(CRServo.class, "sCR");
-        this.gamepad = gamepad;
-    }
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
@@ -50,9 +41,12 @@ public class carousel {
     // spin carousel motor with power, option for reversed is added.
     public void spin(boolean reverse, boolean isRed){
         if (isRed) {
-            if (reverse) {
+            if (reverse)
+            {
                 sCL.setPower(powerCarousel);
-            } else {
+            }
+            else
+            {
                 sCL.setPower(-powerCarousel);
             }
         }

@@ -95,17 +95,17 @@ public class AutoTesting extends LinearOpMode {
                 {
                     case MIN:
                         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                         hand.level1();
                         break;
                     case MID:
                         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                         hand.level2();
                         break;
                     case MAX:
                         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                         hand.level3();
                         break;
                 }
@@ -131,18 +131,12 @@ public class AutoTesting extends LinearOpMode {
                 switch (placeFreightIn)
                 {
                     case MIN:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
                         hand.level1();
                         break;
                     case MID:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
                         hand.level2();
                         break;
                     case MAX:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
                         hand.level3();
                         break;
                 }
@@ -168,19 +162,9 @@ public class AutoTesting extends LinearOpMode {
                 switch (placeFreightIn)
                 {
                     case MIN:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
-                        hand.level1();
-                        break;
                     case MID:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
-                        hand.level2();
-                        break;
                     case MAX:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                        hand.level3();
                         break;
                 }
 
@@ -191,19 +175,46 @@ public class AutoTesting extends LinearOpMode {
 
 
         // also here, first dip servo relase, then half length elevator, then hand servo intake
-        MarkerCallback elevetorClose =  new MarkerCallback()
+        MarkerCallback elevetorCloseA =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                elevator.updateAuto();
+                spinner.updateAuto();
+                dip.releaseFreight();
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+        MarkerCallback elevetorCloseB =  new MarkerCallback()
         {
             @Override
             public void onMarkerReached(){
                 elevator.updateAuto();
                 spinner.updateAuto();
                 powerElevator = powerSlowElevator;
-                dip.releaseFreight();
+                elevator.setPower(powerElevator);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                 elevator.updateAuto();
                 spinner.updateAuto();
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                elevator.updateAuto();
+                spinner.updateAuto();
+                hand.intake();
+            }
+        };
+
+        MarkerCallback elevetorCloseC =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                elevator.updateAuto();
+                spinner.updateAuto();
+                powerElevator = powerSlowElevator;
                 elevator.setPower(powerElevator);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-                hand.intake();
                 spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                 elevator.updateAuto();
                 spinner.updateAuto();
@@ -221,10 +232,18 @@ public class AutoTesting extends LinearOpMode {
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .lineToSplineHeading(new Pose2d(poseEntrance.getX()+0.5, poseEntrance.getY(), poseEntrance.getHeading()))
-                //.addTemporalMarker(elevetorVision)
+                .addTemporalMarker(elevetorVisionA)
                 .waitSeconds(.8)
-                .addDisplacementMarker(elevetorClose)
-                .waitSeconds(4)
+                .addTemporalMarker(elevetorVisionB)
+                .waitSeconds(.3)
+                .addTemporalMarker(elevetorVisionC)
+                .waitSeconds(.6)
+                .addTemporalMarker(elevetorCloseA)
+                .waitSeconds(.35)
+                .addTemporalMarker(elevetorCloseB)
+                .waitSeconds(1.2)
+                .addTemporalMarker(elevetorCloseC)
+                .waitSeconds(.9)
                 .build();
 
         dip.getFreight();

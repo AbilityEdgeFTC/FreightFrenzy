@@ -17,7 +17,7 @@ public class hand {
     Servo sL, sR;
     Telemetry telemetry;
     public static double intakePos = 0;
-    public static double level1Hub = .95, level2Hub = .8, level3Hub = .6, levelSharedHub = 1, levelDuck = 0.75;
+    public static double level1Hub = .88, level2Hub = .775, level3Hub = .6, levelSharedHub = 1, levelDuck3 = 0.6, levelDuck2 = 0.78, levelDuck1 = 1;
 
     public enum HandPos
     {
@@ -26,7 +26,9 @@ public class hand {
         ONE_HUB,
         TWO_HUB,
         THREE_HUB,
-        DUCK
+        DUCK1,
+        DUCK2,
+        DUCK3
     }
 
     public HandPos handPos = HandPos.INTAKE;
@@ -112,11 +114,25 @@ public class hand {
         sR.setPosition(position);
     }
 
-    public void levelDuck()
+    public void level3Duck()
     {
-        handPos = HandPos.DUCK;
-        sL.setPosition(levelDuck);
-        sR.setPosition(levelDuck);
+        handPos = HandPos.DUCK3;
+        sL.setPosition(levelDuck3);
+        sR.setPosition(levelDuck3);
+    }
+
+    public void level2Duck()
+    {
+        handPos = HandPos.DUCK2;
+        sL.setPosition(levelDuck2);
+        sR.setPosition(levelDuck2);
+    }
+
+    public void level1Duck()
+    {
+        handPos = HandPos.DUCK1;
+        sL.setPosition(levelDuck1);
+        sR.setPosition(levelDuck1);
     }
 
     // display position of servo's.

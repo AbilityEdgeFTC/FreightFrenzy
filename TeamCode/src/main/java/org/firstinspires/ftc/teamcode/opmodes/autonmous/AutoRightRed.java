@@ -38,8 +38,8 @@ public class AutoRightRed extends LinearOpMode {
     double startPoseRightX = 13;
     double startPoseRightY = -60;
     double startPoseRightH = 90;
-    public static double poseEntranceX = 15;
-    public static double poseEntranceY = -63.5;
+    public static double poseEntranceX = 13;
+    public static double poseEntranceY = -63.7;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 47.5;
     public static double poseCollectY = -64;
@@ -86,43 +86,6 @@ public class AutoRightRed extends LinearOpMode {
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
         DriveConstants.setMaxVel(80);
-
-        MarkerCallback elevetorVision = new MarkerCallback()
-        {
-            @Override
-            public void onMarkerReached() {
-                elevator.updateAuto();
-                spinner.updateAuto();
-
-                powerElevator = powerElevatorFast;
-                elevator.setPower(powerElevatorFast);
-                canIntake = false;
-
-                dip.holdFreight();
-
-                switch (placeFreightIn)
-                {
-                    case MIN:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
-                        hand.level1();
-                        break;
-                    case MID:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
-                        hand.level2();
-                        break;
-                    case MAX:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                        hand.level3();
-                        break;
-                }
-
-                elevator.updateAuto();
-                spinner.updateAuto();
-            }
-        };
 
         MarkerCallback elevetorOpen = new MarkerCallback()
         {
@@ -187,63 +150,148 @@ public class AutoRightRed extends LinearOpMode {
             }
         };
 
+        // half length and spinnner and close dip
+        MarkerCallback elevetorVisionA = new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached() {
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                powerElevator = powerElevatorFast;
+                elevator.setPower(powerElevatorFast);
+
+                dip.holdFreight();
+
+                switch (placeFreightIn)
+                {
+                    case MIN:
+                    case MID:
+                    case MAX:
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
+                        break;
+                }
+
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+        // hand servo
+        MarkerCallback elevetorVisionB = new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached() {
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                powerElevator = powerElevatorFast;
+                elevator.setPower(powerElevatorFast);
+
+                dip.holdFreight();
+
+                switch (placeFreightIn)
+                {
+                    case MIN:
+                        hand.level1();
+                        break;
+                    case MID:
+                        hand.level2();
+                        break;
+                    case MAX:
+                        hand.level3();
+                        break;
+                }
+
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+        // all length
+        MarkerCallback elevetorVisionC = new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached() {
+                elevator.updateAuto();
+                spinner.updateAuto();
+
+                powerElevator = powerElevatorFast;
+                elevator.setPower(powerElevatorFast);
+
+                dip.holdFreight();
+
+                switch (placeFreightIn)
+                {
+                    case MIN:
+                    case MID:
+                    case MAX:
+                        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                        break;
+                }
+
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+
+        // also here, first dip servo relase, then half length elevator, then hand servo intake
+        MarkerCallback elevetorCloseA =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                elevator.updateAuto();
+                spinner.updateAuto();
+                dip.releaseFreight();
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+        MarkerCallback elevetorCloseB =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                dip.holdFreight();
+                elevator.updateAuto();
+                spinner.updateAuto();
+                powerElevator = powerSlowElevator;
+                elevator.setPower(powerElevator);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
+                elevator.updateAuto();
+                spinner.updateAuto();
+                hand.intake();
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
+        MarkerCallback elevetorCloseC =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                dip.getFreight();
+                elevator.updateAuto();
+                spinner.updateAuto();
+                powerElevator = powerSlowElevator;
+                elevator.setPower(powerElevator);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                elevator.updateAuto();
+                spinner.updateAuto();
+            }
+        };
+
         drive.setPoseEstimate(startPoseRight);
 
         /*
             SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
             SampleMecanumDrive.getAccelerationConstraint(20))
          */
-
-
-        main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
-                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(poseEntrance.getX()+0.5, poseEntrance.getY(), poseEntrance.getHeading()))
-                .addTemporalMarker(elevetorVision)
-                .waitSeconds(.8)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(poseCollect)
-                .waitSeconds(.7)
-                .addTemporalMarker(intakeBackword)
-                .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.75)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 3.5, poseCollect.getY(), poseCollect.getHeading()))
-                .waitSeconds(.7)
-                .addTemporalMarker(intakeBackword)
-                .waitSeconds(.2)
-                .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.75)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 7.5, poseCollect.getY(), poseCollect.getHeading()))
-                .waitSeconds(.7)
-                .addTemporalMarker(intakeBackword)
-                .waitSeconds(.2)
-                .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.75)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .waitSeconds(0.3)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10.5, poseCollect.getY(), poseCollect.getHeading()))
-                .waitSeconds(.7)
-                .addTemporalMarker(intakeBackword)
-                .waitSeconds(.2)
-                .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.75)
-                .addDisplacementMarker(elevetorClose)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()))
-                .build();
 
         dip.getFreight();
 
@@ -259,21 +307,123 @@ public class AutoRightRed extends LinearOpMode {
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
+                case Not_Found:
                     placeFreightIn = levels.MAX; // RED, blue = 1
                     break;
-                case Not_Found:
-                    int random = (int)(Math.random() * 2) + 1;
-                    switch (random)
-                    {
-                        case 1:
-                            placeFreightIn = levels.MID; // RED, blue = 2
-                            break;
-                        case 2:
-                            placeFreightIn = levels.MIN; // RED, blue = 2
-                            break;
-                    }
-                    break;
             }
+            telemetry.update();
+        }
+
+        switch (placeFreightIn)
+        {
+            case MIN:
+            case MID:
+                main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                        .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+2.5, poseEntrance.getY(), poseEntrance.getHeading()))
+                        .addTemporalMarker(elevetorVisionA)
+                        .waitSeconds(.2)
+                        .addTemporalMarker(elevetorVisionB)
+                        .waitSeconds(1)
+                        .addTemporalMarker(elevetorVisionC)
+                        .waitSeconds(.6)
+                        .addTemporalMarker(elevetorCloseA)
+                        .waitSeconds(.5)
+                        .addTemporalMarker(elevetorCloseB)
+                        .waitSeconds(1.35)
+                        .addTemporalMarker(elevetorCloseC)
+                        .addTemporalMarker(intakeForward)
+                        .lineToSplineHeading(poseCollect)
+                        .waitSeconds(1.25)
+                        .addTemporalMarker(intakeBackword)
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY()-2.5, poseEntrance.getHeading()))
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 6.5, poseCollect.getY(), poseCollect.getHeading()))
+                        .waitSeconds(1.25)
+                        .addTemporalMarker(intakeBackword)
+                        .waitSeconds(.2)
+                        .lineToSplineHeading(poseEntrance)
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 7.5, poseCollect.getY(), poseCollect.getHeading()))
+                        .waitSeconds(1.25)
+                        .addTemporalMarker(intakeBackword)
+                        .waitSeconds(.2)
+                        .lineToSplineHeading(poseEntrance)
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10.5, poseCollect.getY(), poseCollect.getHeading()))
+                        .waitSeconds(1.25)
+                        .addTemporalMarker(intakeBackword)
+                        .waitSeconds(.2)
+                        .lineToSplineHeading(poseEntrance)
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()))
+                        .build();
+                break;
+            case MAX:
+                main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                        .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+0.5, poseEntrance.getY(), poseEntrance.getHeading()))
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.8)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .waitSeconds(0.3)
+                        .lineToSplineHeading(poseCollect)
+                        .waitSeconds(.7)
+                        .addTemporalMarker(intakeBackword)
+                        .lineToSplineHeading(poseEntrance)
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .waitSeconds(0.3)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 3.5, poseCollect.getY(), poseCollect.getHeading()))
+                        .waitSeconds(.7)
+                        .addTemporalMarker(intakeBackword)
+                        .waitSeconds(.2)
+                        .lineToSplineHeading(poseEntrance)
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .waitSeconds(0.3)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 7.5, poseCollect.getY(), poseCollect.getHeading()))
+                        .waitSeconds(.7)
+                        .addTemporalMarker(intakeBackword)
+                        .waitSeconds(.2)
+                        .lineToSplineHeading(poseEntrance)
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .waitSeconds(0.3)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10.5, poseCollect.getY(), poseCollect.getHeading()))
+                        .waitSeconds(.7)
+                        .addTemporalMarker(intakeBackword)
+                        .waitSeconds(.2)
+                        .lineToSplineHeading(poseEntrance)
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()))
+                        .build();
+                break;
+
         }
 
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);

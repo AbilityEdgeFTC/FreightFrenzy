@@ -62,7 +62,7 @@ public class teleopOwlRed extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new ElevatorSpinnerLibraryPID(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
-        carousel = new carousel(hardwareMap, gamepad2);
+        carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
@@ -93,15 +93,6 @@ public class teleopOwlRed extends LinearOpMode {
                 manual1ServoDipMoving();
             }
             gamepad2SwitchingLevels();
-//            telemetry.addData("LEFT ANGLE:", spinner.getLEFT_ANGLE());
-//            telemetry.addData("RIGHT ANGLE:", spinner.getRIGHT_ANGLE());
-//            telemetry.addData("LEFT ANGLE SHARED:", spinner.getLEFT_ANGLE_SHARED());
-//            telemetry.addData("RIGHT ANGLE SHARED:", spinner.getRIGHT_ANGLE_SHARED());
-//            telemetry.addData("TARGET:", spinner.getTarget());
-//            telemetry.addData("POS:", spinner.getPosition());
-//            telemetry.addData("ZERO ANGLE:", spinner.getZERO_ANGLE());
-//            telemetry.addData("LEFT ANGLE BLUE:", spinner.getZERO_ANGLE_BLUE());
-//            telemetry.addData("LEFT ANGLE RED:", spinner.getZERO_ANGLE_RED());
             telemetry.update();
         }
 
@@ -185,7 +176,7 @@ public class teleopOwlRed extends LinearOpMode {
             elevator.setUsePID(false);
             return false;
         }
-        else if(gamepad2.right_stick_button || gamepad1.left_bumper && !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.SPIN)
+        else if((gamepad2.left_trigger == 1 && gamepad2.right_trigger == 1) || gamepad1.left_bumper && !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.SPIN)
         {
             spinner.setUsePID(true);
             elevator.setUsePID(true);

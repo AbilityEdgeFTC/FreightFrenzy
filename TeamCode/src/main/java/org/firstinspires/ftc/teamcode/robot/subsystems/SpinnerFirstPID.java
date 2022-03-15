@@ -14,11 +14,13 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class SpinnerFirstPID {
 
-    public static int RIGHT_ANGLE = 230;
+    public static int RIGHT_ANGLE = 250;
     public static int LEFT_ANGLE = -230;
     public static int ZERO_ANGLE = 330;
-    public static int LEFT_AUTO_ANGLE = 132;
-    public static int DUCK_ANGLE = -143;
+    public static int LEFT_AUTO_ANGLE_RED = 143;
+    public static int LEFT_AUTO_ANGLE_BLUE = -143;
+    public static int DUCK_ANGLE_RED = -155;
+    public static int DUCK_ANGLE_BLUE = 143;
     public static double power = 1;
     public static boolean usePID = true;
     int target = 0;
@@ -33,8 +35,10 @@ public class SpinnerFirstPID {
         ZERO_BLUE,
         ZERO_DO_NOT_USE,
         RIGHT,
-        LEFT_AUTO_ANGLE,
-        DUCK_ANGLE
+        LEFT_AUTO_ANGLE_RED,
+        LEFT_AUTO_ANGLE_BLUE,
+        DUCK_ANGLE_RED,
+        DUCK_ANGLE_BLUE
     }
 
     public static SpinnerState spinnerState = SpinnerState.ZERO_DO_NOT_USE;
@@ -81,12 +85,6 @@ public class SpinnerFirstPID {
                 case ZERO_BLUE:
                     target = ZERO_ANGLE;
                     break;
-                case DUCK_ANGLE:
-                    target = DUCK_ANGLE;
-                    break;
-                case LEFT_AUTO_ANGLE:
-                    target = LEFT_AUTO_ANGLE;
-                    break;
             }
 
             motor.setTargetPosition(target - ZERO_ANGLE);
@@ -121,11 +119,17 @@ public class SpinnerFirstPID {
                 case ZERO_BLUE:
                     target = ZERO_ANGLE;
                     break;
-                case DUCK_ANGLE:
-                    target = DUCK_ANGLE;
+                case LEFT_AUTO_ANGLE_RED:
+                    target = LEFT_AUTO_ANGLE_RED;
                     break;
-                case LEFT_AUTO_ANGLE:
-                    target = LEFT_AUTO_ANGLE;
+                case LEFT_AUTO_ANGLE_BLUE:
+                    target = LEFT_AUTO_ANGLE_BLUE;
+                    break;
+                case DUCK_ANGLE_BLUE:
+                    target = DUCK_ANGLE_BLUE;
+                    break;
+                case DUCK_ANGLE_RED:
+                    target = DUCK_ANGLE_RED;
                     break;
             }
 

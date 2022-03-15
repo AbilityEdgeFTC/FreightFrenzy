@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 21.5,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5,AUTO_LEFT_LEVEL = 20.3,DUCK_RED_LEVEL = 8.7;
+    public static double HUB_LEVEL3 = 21.5,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5,AUTO_LEFT_LEVEL = 20.3,DUCK_RED_LEVEL = 8.7,MID = 6, LEFT_HELP = 16;
     public static double SHARED_HUB = 5.5;
     public static double ZERO_HEIGHT = 0;
     DcMotorEx motor;
@@ -36,7 +36,8 @@ public class ElevatorFirstPID {
         HUB_LEVEL2,
         HUB_LEVEL3,
         AUTO_LEFT_LEVEL,
-        DUCK_RED_LEVEL
+        DUCK_LEVEL,
+        MID
     }
 
     public static ElevatorLevel elevatorLevel = ElevatorLevel.ZERO;
@@ -86,11 +87,11 @@ public class ElevatorFirstPID {
                 case HUB_LEVEL3:
                     target = HUB_LEVEL3;
                     break;
-                case DUCK_RED_LEVEL:
-                    target = DUCK_RED_LEVEL;
-                    break;
                 case AUTO_LEFT_LEVEL:
-                    target = AUTO_LEFT_LEVEL;
+                    target = LEFT_HELP;
+                    break;
+                case MID:
+                    target = MID;
                     break;
             }
 
@@ -140,11 +141,14 @@ public class ElevatorFirstPID {
                 case HUB_LEVEL3:
                     target = HUB_LEVEL3;
                     break;
-                case DUCK_RED_LEVEL:
+                case DUCK_LEVEL:
                     target = DUCK_RED_LEVEL;
                     break;
                 case AUTO_LEFT_LEVEL:
                     target = AUTO_LEFT_LEVEL;
+                    break;
+                case MID:
+                    target = MID;
                     break;
             }
 

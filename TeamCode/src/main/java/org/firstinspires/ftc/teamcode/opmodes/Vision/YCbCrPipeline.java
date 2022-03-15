@@ -31,13 +31,13 @@ public class YCbCrPipeline extends OpenCvPipeline
 
     // creating 3 rectangles(sections) for checking the colors inside them.
     final Rect LEFT_SEC = new Rect(
-            new Point(550.666667,0),//mask.cols()/7, mask.rows()/5 * 2
+            new Point(500.666667,0),//mask.cols()/7, mask.rows()/5 * 2
             new Point(200,500));//mask.cols()/7 * 2, mask.rows()/5 * 4)
 
 
     final Rect CENTER_SEC = new Rect(
             new Point(803.333334,0),
-            new Point(550.666667,500));
+            new Point(500.666667,500));
 
     final Rect RIGHT_SEC = new Rect(
             new Point(1080,0),
