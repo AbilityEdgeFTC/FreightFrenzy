@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
  */
 @Config
 @TeleOp(name = "Elevator Testing", group = "testing")
+@Disabled
 public class ElevatorOpMode extends LinearOpMode {
 
     ElevatorFirstPID elevator;

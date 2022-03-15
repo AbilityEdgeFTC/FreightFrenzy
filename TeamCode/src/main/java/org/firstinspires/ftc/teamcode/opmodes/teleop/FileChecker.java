@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ReadWriteFile;
@@ -43,6 +44,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 
 @Config
 @TeleOp(name = "File Testing", group = "testing")
+@Disabled
 public class FileChecker extends LinearOpMode {
 
     SpinnerFirstPID spinner;

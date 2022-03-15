@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.Vision;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,6 +12,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @TeleOp(name = "RAW Camera", group = "vision")
+@Disabled
 public class Camera extends LinearOpMode {
 
     OpenCvWebcam webcam;

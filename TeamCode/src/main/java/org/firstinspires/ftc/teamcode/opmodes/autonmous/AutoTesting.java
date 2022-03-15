@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -28,6 +29,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  */
 @Config
 @Autonomous(name = "AutoTesting", group = "Autonomous")
+@Disabled
 public class AutoTesting extends LinearOpMode {
 
     double startPoseRightX = 13;
@@ -300,7 +302,6 @@ public class AutoTesting extends LinearOpMode {
         pipeline = new YCbCrPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
-        pipeline.setRedAlliance(true);
 
 
         webcam.setPipeline(pipeline);

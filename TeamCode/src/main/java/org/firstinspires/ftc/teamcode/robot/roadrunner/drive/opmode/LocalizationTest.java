@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.roadrunner.drive.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
  */
 @TeleOp(group = "drive")
 @Config
+@Disabled
 public class LocalizationTest extends LinearOpMode {
 
     public static double startPoseLeftX = -35;
