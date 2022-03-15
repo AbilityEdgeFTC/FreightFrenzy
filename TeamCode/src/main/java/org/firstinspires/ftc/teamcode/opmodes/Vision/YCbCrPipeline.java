@@ -124,13 +124,5 @@ public class YCbCrPipeline extends OpenCvPipeline
         this.location = location;
     }
 
-    public static boolean isRedAlliance() {
-        return redAlliance;
-    }
-
-    public static void setRedAlliance(boolean redAlliance) {
-        YCbCrPipeline.redAlliance = redAlliance;
-    }
-
     public void setTelementry(Telemetry telemetry){ this.telemetry = telemetry; }
 }

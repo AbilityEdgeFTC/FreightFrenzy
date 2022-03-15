@@ -40,7 +40,6 @@ public class teleopOwlRed extends LinearOpMode {
     boolean canIntake = true;
     double position = 0, positionDip = 0;
     ElapsedTime resetElevator;
-    public static boolean withAuto = true;
 
     enum ElevatorMovement
     {
@@ -139,14 +138,14 @@ public class teleopOwlRed extends LinearOpMode {
     {
         position = hand.getPos();
 
-        if(cGamepad2.rightBumperOnce() && hand.getPos() >= 0.05)
+        if(cGamepad2.rightBumperOnce() && hand.getPos() >= 0.03)
         {
-            position -= 0.05;
+            position -= 0.03;
             hand.moveTo(position);
         }
-        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= 0.95)
+        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= 0.97)
         {
-            position += 0.05;
+            position += 0.03;
             hand.moveTo(position);
         }
     }

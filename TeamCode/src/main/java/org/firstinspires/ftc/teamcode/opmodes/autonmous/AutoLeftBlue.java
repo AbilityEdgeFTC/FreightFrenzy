@@ -35,17 +35,17 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name = "Left Blue FULL", group = "Autonomous")
 public class AutoLeftBlue extends LinearOpMode {
 
-    double startPoseRightX = 13;
-    double startPoseRightY = 60;
-    double startPoseRightH = 270;
-    public static double poseEntranceX = 15;
-    public static double poseEntranceY = 63.5;
+    double startPoseLeftX = 13;
+    double startPoseLeftY = -60;
+    double startPoseLeftH = 90;
+    public static double poseEntranceX = 13;
+    public static double poseEntranceY = -63.7;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 47.5;
-    public static double poseCollectY = 64;
+    public static double poseCollectY = -64;
     public static double poseCollectH = 180;
     public static double poseHelpX =9;
-    public static double poseHelpY = 52;
+    public static double poseHelpY = -52;
     public static double poseHelpH = 180;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
@@ -81,7 +81,7 @@ public class AutoLeftBlue extends LinearOpMode {
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
 
-        Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
+        Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
@@ -255,6 +255,7 @@ public class AutoLeftBlue extends LinearOpMode {
         {
             @Override
             public void onMarkerReached(){
+                dip.holdFreight();
                 elevator.updateAuto();
                 spinner.updateAuto();
                 powerElevator = powerSlowElevator;
@@ -262,10 +263,10 @@ public class AutoLeftBlue extends LinearOpMode {
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                 elevator.updateAuto();
                 spinner.updateAuto();
+                hand.intake();
                 spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
                 elevator.updateAuto();
                 spinner.updateAuto();
-                hand.intake();
             }
         };
 
@@ -273,6 +274,7 @@ public class AutoLeftBlue extends LinearOpMode {
         {
             @Override
             public void onMarkerReached(){
+                dip.getFreight();
                 elevator.updateAuto();
                 spinner.updateAuto();
                 powerElevator = powerSlowElevator;
@@ -284,7 +286,7 @@ public class AutoLeftBlue extends LinearOpMode {
             }
         };
 
-        drive.setPoseEstimate(startPoseRight);
+        drive.setPoseEstimate(startPoseLeft);
 
         /*
             SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -299,13 +301,13 @@ public class AutoLeftBlue extends LinearOpMode {
             switch (pipeline.getLocation())
             {
                 case Left:
+                case Not_Found:
                     placeFreightIn = levels.MAX; // RED, blue = 3
                     break;
                 case Center:
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
-                case Not_Found:
                     placeFreightIn = levels.MIN; // RED, blue = 1
                     break;
             }
@@ -319,31 +321,29 @@ public class AutoLeftBlue extends LinearOpMode {
                 main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                         .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+0.5, poseEntrance.getY(), poseEntrance.getHeading()))
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+2.5, poseEntrance.getY(), poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorVisionA)
-                        .waitSeconds(.8)
+                        .waitSeconds(.2)
                         .addTemporalMarker(elevetorVisionB)
-                        .waitSeconds(.3)
+                        .waitSeconds(1)
                         .addTemporalMarker(elevetorVisionC)
                         .waitSeconds(.6)
                         .addTemporalMarker(elevetorCloseA)
-                        .waitSeconds(.35)
+                        .waitSeconds(.5)
                         .addTemporalMarker(elevetorCloseB)
-                        .waitSeconds(1.2)
+                        .waitSeconds(1.35)
                         .addTemporalMarker(elevetorCloseC)
                         .addTemporalMarker(intakeForward)
-                        .waitSeconds(0.3)
                         .lineToSplineHeading(poseCollect)
-                        .waitSeconds(.7)
+                        .waitSeconds(1.25)
                         .addTemporalMarker(intakeBackword)
-                        .lineToSplineHeading(poseEntrance)
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY()-2.5, poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
                         .waitSeconds(.75)
                         .addDisplacementMarker(elevetorClose)
                         .addTemporalMarker(intakeForward)
-                        .waitSeconds(0.3)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 3.5, poseCollect.getY(), poseCollect.getHeading()))
-                        .waitSeconds(.7)
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 6.5, poseCollect.getY(), poseCollect.getHeading()))
+                        .waitSeconds(1.25)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
                         .lineToSplineHeading(poseEntrance)
@@ -351,9 +351,8 @@ public class AutoLeftBlue extends LinearOpMode {
                         .waitSeconds(.75)
                         .addDisplacementMarker(elevetorClose)
                         .addTemporalMarker(intakeForward)
-                        .waitSeconds(0.3)
                         .lineToSplineHeading(new Pose2d(poseCollect.getX() + 7.5, poseCollect.getY(), poseCollect.getHeading()))
-                        .waitSeconds(.7)
+                        .waitSeconds(1.25)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
                         .lineToSplineHeading(poseEntrance)
@@ -361,9 +360,8 @@ public class AutoLeftBlue extends LinearOpMode {
                         .waitSeconds(.75)
                         .addDisplacementMarker(elevetorClose)
                         .addTemporalMarker(intakeForward)
-                        .waitSeconds(0.3)
                         .lineToSplineHeading(new Pose2d(poseCollect.getX() + 10.5, poseCollect.getY(), poseCollect.getHeading()))
-                        .waitSeconds(.7)
+                        .waitSeconds(1.25)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
                         .lineToSplineHeading(poseEntrance)
@@ -428,7 +426,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
         }
 
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_BLUE);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
 
         waitForStart();
         webcam.stopStreaming();
@@ -451,7 +449,6 @@ public class AutoLeftBlue extends LinearOpMode {
         pipeline = new YCbCrPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
-        pipeline.setRedAlliance(true);
 
 
         webcam.setPipeline(pipeline);

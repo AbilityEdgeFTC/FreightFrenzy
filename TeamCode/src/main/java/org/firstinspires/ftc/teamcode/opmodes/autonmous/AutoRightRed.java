@@ -449,7 +449,6 @@ public class AutoRightRed extends LinearOpMode {
         pipeline = new YCbCrPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
-        pipeline.setRedAlliance(true);
 
 
         webcam.setPipeline(pipeline);

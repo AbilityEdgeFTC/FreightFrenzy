@@ -154,14 +154,14 @@ public class teleopOwlBlue extends LinearOpMode {
     {
         positionDip = dip.getPos();
 
-        if(cGamepad2.dpadDownOnce() && dip.getPos() >= 0.1)
+        if(cGamepad2.dpadDownOnce() && dip.getPos() >= 0.01)
         {
-            positionDip -= 0.1;
+            positionDip -= 0.01;
             dip.moveTo(positionDip);
         }
-        else if(cGamepad2.dpadUpOnce() && dip.getPos() <= 0.9)
+        else if(cGamepad2.dpadUpOnce() && dip.getPos() <= 0.99)
         {
-            positionDip += 0.1;
+            positionDip += 0.01;
             dip.moveTo(positionDip);
         }
 
@@ -175,7 +175,7 @@ public class teleopOwlBlue extends LinearOpMode {
             elevator.setUsePID(false);
             return false;
         }
-        else if(gamepad2.right_stick_button || gamepad1.left_bumper && !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.SPIN)
+        else if((gamepad2.left_trigger == 1 && gamepad2.right_trigger == 1) || gamepad1.left_bumper && !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.SPIN)
         {
             spinner.setUsePID(true);
             elevator.setUsePID(true);
