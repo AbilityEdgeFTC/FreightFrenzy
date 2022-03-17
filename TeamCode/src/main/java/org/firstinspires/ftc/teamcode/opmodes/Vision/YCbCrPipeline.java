@@ -19,12 +19,18 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class YCbCrPipeline extends OpenCvPipeline
 {
 
-    public static double lowValuesTSEY = 115;
-    public static double highValuesTSEY = 210;
-    public static double lowValuesTSEB = 138;
-    public static double highValuesTSEB = 168;
-    public static double lowValuesTSER = 32;
-    public static double highValuesTSER = 103;
+//    public static double lowValuesTSEY = 4;
+//    public static double highValuesTSEY = 27;
+//    public static double lowValuesTSEB = 105;
+//    public static double highValuesTSEB = 128;
+//    public static double lowValuesTSER = 98;
+//    public static double highValuesTSER = 172;
+    public static double lowValuesTSEY = 142;
+    public static double highValuesTSEY = 176;
+    public static double lowValuesTSEB = 116;
+    public static double highValuesTSEB = 200;
+    public static double lowValuesTSER = 62;
+    public static double highValuesTSER = 135;
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
     Mat inputYCbCr = new Mat(1280,720,0);
@@ -72,7 +78,8 @@ public class YCbCrPipeline extends OpenCvPipeline
         Scalar lowValuesTSE = new Scalar(lowValuesTSEY, lowValuesTSEB, lowValuesTSER);
         Scalar highValuesTSE = new Scalar(highValuesTSEY, highValuesTSEB, highValuesTSER);
 
-        Imgproc.cvtColor(input, inputYCbCr, Imgproc.COLOR_RGB2YCrCb);
+        //Imgproc.cvtColor(input, inputYCbCr, Imgproc.COLOR_RGB2YCrCb);
+        Imgproc.cvtColor(input, inputYCbCr, Imgproc.COLOR_RGB2HSV);
 
         Core.inRange(inputYCbCr, lowValuesTSE, highValuesTSE, mask);
 

@@ -334,7 +334,7 @@ public class AutoLeftRed extends LinearOpMode {
                     .addTemporalMarker(elevetorVisionC)
                     .waitSeconds(.6)
                     .addTemporalMarker(elevetorCloseA)
-                    .waitSeconds(.4)
+                    .waitSeconds(.8)
                     .addTemporalMarker(elevetorCloseB)
                     .waitSeconds(1.5)
                     .addTemporalMarker(elevetorCloseC)

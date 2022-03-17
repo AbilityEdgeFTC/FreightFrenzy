@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.ReadWriteFile;
@@ -32,7 +33,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red FULL", group = "Autonomous Red")
+@Autonomous(name = "Right Red OLD", group = "Autonomous Red")
+@Disabled
 public class AutoRightRed extends LinearOpMode {
 
     double startPoseRightX = 13;
@@ -329,7 +331,7 @@ public class AutoRightRed extends LinearOpMode {
                         .addTemporalMarker(elevetorVisionC)
                         .waitSeconds(.6)
                         .addTemporalMarker(elevetorCloseA)
-                        .waitSeconds(.5)
+                        .waitSeconds(.8)
                         .addTemporalMarker(elevetorCloseB)
                         .waitSeconds(1.35)
                         .addTemporalMarker(elevetorCloseC)

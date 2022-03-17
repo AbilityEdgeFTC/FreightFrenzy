@@ -177,7 +177,7 @@ public class teleopOwlRed extends LinearOpMode {
         }
         else if((gamepad2.left_trigger == 1 && gamepad2.right_trigger == 1) || gamepad1.left_bumper && !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.SPIN)
         {
-            spinner.setUsePID(true);
+            spinner.setUsePID(false);
             elevator.setUsePID(true);
         }
 
@@ -260,7 +260,7 @@ public class teleopOwlRed extends LinearOpMode {
 
                 if (gamepad1.right_bumper)
                 {
-                    spinner.setUsePID(true);
+                    spinner.setUsePID(false);
                     elevator.setUsePID(true);
                     spinner.setSlowMove(true);
                     gamepad.setCanTwist(false);
@@ -492,7 +492,7 @@ public class teleopOwlRed extends LinearOpMode {
 
     boolean withoutPID()
     {
-        if(elevator.getUsePID() == true || spinner.getUsePID() == true && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
+        if(elevator.getUsePID() == true || spinner.getUsePID() == false && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
         {
             switch (hand.getHandPos())
             {

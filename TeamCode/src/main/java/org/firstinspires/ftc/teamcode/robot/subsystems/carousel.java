@@ -53,9 +53,9 @@ public class carousel {
         else
         {
             if (reverse) {
-                sCR.setPower(powerCarousel);
-            } else {
                 sCR.setPower(-powerCarousel);
+            } else {
+                sCR.setPower(powerCarousel);
             }
         }
     }

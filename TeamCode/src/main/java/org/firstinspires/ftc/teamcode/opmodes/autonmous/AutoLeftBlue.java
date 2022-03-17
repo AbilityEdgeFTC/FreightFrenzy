@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.ReadWriteFile;
@@ -32,7 +33,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Left Blue FULL", group = "Autonomous Blue")
+@Autonomous(name = "Left Blue OLD", group = "Autonomous Blue")
+@Disabled
 public class AutoLeftBlue extends LinearOpMode {
 
     double startPoseLeftX = 13;
@@ -85,7 +87,7 @@ public class AutoLeftBlue extends LinearOpMode {
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
-        DriveConstants.setMaxVel(80);
+        DriveConstants.setMaxVel(70);
 
         MarkerCallback elevetorOpen = new MarkerCallback()
         {
@@ -329,7 +331,7 @@ public class AutoLeftBlue extends LinearOpMode {
                         .addTemporalMarker(elevetorVisionC)
                         .waitSeconds(.6)
                         .addTemporalMarker(elevetorCloseA)
-                        .waitSeconds(.5)
+                        .waitSeconds(.8)
                         .addTemporalMarker(elevetorCloseB)
                         .waitSeconds(1.35)
                         .addTemporalMarker(elevetorCloseC)

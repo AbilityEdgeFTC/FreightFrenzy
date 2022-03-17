@@ -38,17 +38,17 @@ public class AutoRightBlue extends LinearOpMode {
     double startPoseRightX = -35;
     double startPoseRightY = 60;
     double startPoseRightH = 270;
-    public static double poseCarouselX = -62.2;
-    public static double poseCarouselY = 59.5;
+    public static double poseCarouselX = -59.7;
+    public static double poseCarouselY = 59;
     public static double poseCarouselH = 275;
     public static double carouselHelp = 15;
     public static double poseParkHelpX = -56;
     public static double poseParkHelpY = 3;
     public static double poseParkHelpH = 180;
-    public static double poseParkaX = 6;
-    public static double poseParkaY = 3;
+    public static double poseParkaX = 8;
+    public static double poseParkaY = 8;
     public static double poseParkaH = 180;
-    public static double poseParkbX = 7;
+    public static double poseParkbX = 5.5;
     public static double poseParkbY = 50;
     public static double poseParkbH = 180;
     public static double poseParkcX = 58;
@@ -334,7 +334,7 @@ public class AutoRightBlue extends LinearOpMode {
                         .addTemporalMarker(elevetorVisionC)
                         .waitSeconds(.6)
                         .addTemporalMarker(elevetorCloseA)
-                        .waitSeconds(.4)
+                        .waitSeconds(.8)
                         .addTemporalMarker(elevetorCloseB)
                         .waitSeconds(1.5)
                         .addTemporalMarker(elevetorCloseC)

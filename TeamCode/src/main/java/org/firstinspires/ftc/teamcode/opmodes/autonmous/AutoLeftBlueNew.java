@@ -27,17 +27,17 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Left Blue NEWWWW", group = "Autonomous Blue")
+@Autonomous(name = "Left Blue FULL", group = "Autonomous Red")
 public class AutoLeftBlueNew extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = 60;
-    double startPoseRightH = 90;
-    public static double poseEntranceX = 13;
-    public static double poseEntranceY = 63.7;
+    double startPoseRightH = 270;
+    public static double poseEntranceX = 10.3;
+    public static double poseEntranceY = 65.7;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 47.5;
-    public static double poseCollectY = 64;
+    public static double poseCollectX = 53.5;
+    public static double poseCollectY = 65.7;
     public static double poseCollectH = 180;
     public static double poseHelpX =9;
     public static double poseHelpY = 52;
@@ -182,6 +182,14 @@ public class AutoLeftBlueNew extends LinearOpMode {
             }
         };
 
+        MarkerCallback intakeStop =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                intake.stop();
+            }
+        };
+
         // hand servo
         MarkerCallback elevetorVisionB = new MarkerCallback()
         {
@@ -250,6 +258,9 @@ public class AutoLeftBlueNew extends LinearOpMode {
                 spinner.updateAuto();
                 dip.releaseFreight();
                 spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+                powerElevator = powerSlowElevator;
+                elevator.setPower(powerElevator);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                 elevator.updateAuto();
                 spinner.updateAuto();
             }
@@ -259,12 +270,12 @@ public class AutoLeftBlueNew extends LinearOpMode {
         {
             @Override
             public void onMarkerReached(){
-                dip.holdFreight();
-                elevator.updateAuto();
-                spinner.updateAuto();
+                dip.getFreight();
                 powerElevator = powerSlowElevator;
                 elevator.setPower(powerElevator);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
+                elevator.updateAuto();
+                spinner.updateAuto();
                 elevator.updateAuto();
                 spinner.updateAuto();
                 hand.intake();
@@ -305,14 +316,14 @@ public class AutoLeftBlueNew extends LinearOpMode {
             switch (pipeline.getLocation())
             {
                 case Left:
-                    placeFreightIn = levels.MIN; // RED, blue = 3
+                case Not_Found:
+                    placeFreightIn = levels.MAX; // RED, blue = 3
                     break;
                 case Center:
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
-                case Not_Found:
-                    placeFreightIn = levels.MAX; // RED, blue = 1
+                    placeFreightIn = levels.MIN; // RED, blue = 1
                     break;
             }
             telemetry.update();
@@ -333,54 +344,34 @@ public class AutoLeftBlueNew extends LinearOpMode {
                         .addTemporalMarker(elevetorVisionC)
                         .waitSeconds(.6)
                         .addTemporalMarker(elevetorCloseA)
-                        .waitSeconds(.5)
+                        .waitSeconds(.8)
                         .addTemporalMarker(elevetorCloseB)
-                        .waitSeconds(1.35)
+                        .waitSeconds(2)
                         .addTemporalMarker(elevetorCloseC)
                         .addTemporalMarker(intakeForward)
                         .waitSeconds(.2)
                         .lineToSplineHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(30))
-                        .turn(Math.toRadians(2.45))
-                        .turn(Math.toRadians(-2.45))
                         .waitSeconds(2)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
-                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY()+2.5, poseEntrance.getHeading()))
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY(), poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
                         .waitSeconds(.75)
                         .addDisplacementMarker(elevetorClose)
                         .addTemporalMarker(intakeForward)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 6.5, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .lineToSplineHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(30))
-                        .turn(Math.toRadians(2.45))
-                        .turn(Math.toRadians(-2.45))
                         .waitSeconds(2)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
-                        .lineToSplineHeading(poseEntrance)
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY(), poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
                         .waitSeconds(.75)
                         .addDisplacementMarker(elevetorClose)
-                        .addTemporalMarker(intakeForward)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .addTemporalMarker(intakeStop)
+                        .lineToSplineHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(30))
-                        .turn(Math.toRadians(2.45))
-                        .turn(Math.toRadians(-2.45))
-                        .waitSeconds(2)
-                        .addTemporalMarker(intakeBackword)
-                        .waitSeconds(.2)
-                        .lineToSplineHeading(poseEntrance)
-                        .addTemporalMarker(elevetorOpen)
-                        .waitSeconds(.75)
-                        .addDisplacementMarker(elevetorClose)
-                        .addTemporalMarker(intakeForward)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                SampleMecanumDrive.getAccelerationConstraint(30))
-                        .turn(Math.toRadians(1.5))
-                        .turn(Math.toRadians(-1.5))
-                        .waitSeconds(4)
-                        .addTemporalMarker(intakeBackword)
                         .build();
                 break;
             case MAX:
@@ -398,7 +389,18 @@ public class AutoLeftBlueNew extends LinearOpMode {
                         .waitSeconds(2)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
-                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY()+2.5, poseEntrance.getHeading()))
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY(), poseEntrance.getHeading()))
+                        .addTemporalMarker(elevetorOpen)
+                        .waitSeconds(.75)
+                        .addDisplacementMarker(elevetorClose)
+                        .addTemporalMarker(intakeForward)
+                        .waitSeconds(.2)
+                        .lineToSplineHeading(poseCollect, SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getAccelerationConstraint(30))
+                        .waitSeconds(2)
+                        .addTemporalMarker(intakeBackword)
+                        .waitSeconds(.2)
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY(), poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
                         .waitSeconds(.75)
                         .addDisplacementMarker(elevetorClose)
@@ -408,35 +410,24 @@ public class AutoLeftBlueNew extends LinearOpMode {
                         .waitSeconds(2)
                         .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
-                        .lineToSplineHeading(poseEntrance)
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+4.5, poseEntrance.getY(), poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
                         .waitSeconds(.75)
                         .addDisplacementMarker(elevetorClose)
                         .addTemporalMarker(intakeForward)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                SampleMecanumDrive.getAccelerationConstraint(30))
-                        .waitSeconds(2)
-                        .addTemporalMarker(intakeBackword)
                         .waitSeconds(.2)
-                        .lineToSplineHeading(poseEntrance)
-                        .addTemporalMarker(elevetorOpen)
-                        .waitSeconds(.75)
-                        .addDisplacementMarker(elevetorClose)
-                        .addTemporalMarker(intakeForward)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 12, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 6.5, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(30))
-                        .waitSeconds(4)
-                        .addTemporalMarker(intakeBackword)
                         .build();
                 break;
 
         }
 
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_BLUE);
 
         waitForStart();
         webcam.stopStreaming();
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.updateAuto();
         elevator.updateAuto();
