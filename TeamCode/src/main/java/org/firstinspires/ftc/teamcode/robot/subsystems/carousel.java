@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class carousel {
 
-    //motor carousel
+    //2 servos for carousel
     CRServo sCL, sCR;
     Telemetry telemetry;
     public static double powerCarousel = 1;
@@ -38,7 +38,8 @@ public class carousel {
         this.telemetry = telemetry;
     }
 
-    // spin carousel motor with power, option for reversed is added.
+    // spin carousel servos with power, option for reversed is added/red alliance is there to 2 which side should the
+    // servos spin, and which servos.
     public void spin(boolean reverse, boolean isRed){
         if (isRed) {
             if (reverse)
@@ -60,16 +61,9 @@ public class carousel {
         }
     }
 
-    // stop carousel motor.
+    // stop both of the servos.
     public void stop(){
         sCL.setPower(0);
         sCR.setPower(0);
     }
-
-    // display power of motor.
-    public void displayTelemetry(){
-        telemetry.addLine("Power at: " + powerCarousel);
-        telemetry.update();
-    }
-
 }

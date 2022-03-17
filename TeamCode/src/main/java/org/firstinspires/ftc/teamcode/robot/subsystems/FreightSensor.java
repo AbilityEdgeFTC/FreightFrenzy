@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-
+/*
+USING A FORCE SENSOR
+ */
 @Config
 public class FreightSensor {
 

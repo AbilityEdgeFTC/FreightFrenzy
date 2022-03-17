@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 /*
- * Hardware class for an elevator or linear lift driven by a pulley system.
+ * Hardware class for our elevator spinner using firsts set target position
  */
 @Config
 public class SpinnerFirstPID {
@@ -156,19 +156,9 @@ public class SpinnerFirstPID {
         return motor.getCurrentPosition();
     }
 
-    public double getTargetRadians()
-    {
-        return encoderTicksToRadians(target);
-    }
-
     public int getTarget()
     {
         return target;
-    }
-
-    public void setTarget(int newTarget)
-    {
-        target = newTarget;
     }
 
     public void setUsePID(boolean usePID)

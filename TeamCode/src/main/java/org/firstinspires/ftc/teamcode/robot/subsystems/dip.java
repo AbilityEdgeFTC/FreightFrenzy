@@ -31,30 +31,27 @@ public class dip {
         this.telemetry = telemetry;
     }
 
-    // spin dip servo to intake positions, and holding servo to hold position.
+    // move dip servo to intake position.
     public void getFreight() {
         sD.setPosition(releasingPosition);
     }
 
-    // spin holding servo to push position.
+    // move dip servo to releasing position.
     public void releaseFreight() {
         sD.setPosition(releasingPosition);
     }
 
-    // spin holding servo to push position.
+    // move dip servo to holding position.
     public void holdFreight() {
         sD.setPosition(holdingPosition);
     }
-    // display position of servo's.
-    public void displayTelemetry(){
-        telemetry.addLine("Servo Dip at: " + sD.getPosition());
-        telemetry.update();
-    }
 
+    // get dip servo position
     public double getPos() {
         return sD.getPosition();
     }
 
+    // move to custom position
     public void moveTo(double position)
     {
         sD.setPosition(position);

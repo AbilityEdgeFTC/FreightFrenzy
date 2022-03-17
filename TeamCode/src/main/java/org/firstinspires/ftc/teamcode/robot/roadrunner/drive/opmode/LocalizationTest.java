@@ -40,7 +40,7 @@ public class LocalizationTest extends LinearOpMode {
 
     Pose2d poseEstimate;
     Trajectory trajectory;
-    public static AlwaysOnePos.RobotLocalizer localizer = AlwaysOnePos.RobotLocalizer.Mecanum;
+    public static RobotLocalizer localizer = RobotLocalizer.Mecanum;
 
     @Override
     public void runOpMode() throws InterruptedException {

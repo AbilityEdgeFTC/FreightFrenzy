@@ -40,8 +40,6 @@ public class gamepad {
     SampleMecanumDrive drivetrain;
     public static double startH = 0;
 
-    //public static String allianceColor;
-
     /**
      * constructor for gamepad
      * @param gamepad1 the gamepad1 object from teleop
@@ -87,7 +85,6 @@ public class gamepad {
     public void update() {
         cGamepad1.update();
         cGamepad2.update();
-        //drivetrain.update();
 
         if(cGamepad1.dpadDownOnce())
         {
@@ -174,11 +171,6 @@ public class gamepad {
 
     public void centricDrive()
     {
-//        Vector2d input = new Vector2d(
-//                -gamepad1.left_stick_y,
-//                -gamepad1.left_stick_x
-//        ).rotated(-drivetrain.getExternalHeading());
-
         Vector2d input = new Vector2d(
                 -gamepad1.left_stick_y,
                 gamepad1.left_stick_x
@@ -188,26 +180,6 @@ public class gamepad {
         leftPower_b = Range.clip(input.getX() + twist - input.getY(), -power, power);
         rightPower_f = Range.clip(input.getX() - twist - input.getY(), -power, power);
         rightPower_b = Range.clip(input.getX() - twist + input.getY(), -power, power);
-    }
-
-    public double GetmFLPower()
-    {
-        return mFL.getPower();
-    }
-
-    public double GetmFRPower()
-    {
-        return mFR.getPower();
-    }
-
-    public double GetmBLPower()
-    {
-        return mBL.getPower();
-    }
-
-    public double GetmBRPower()
-    {
-        return mBR.getPower();
     }
 
     public double getIMU()

@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 
 /*
- * Hardware class for an elevator or linear lift driven by a pulley system.
+ * Hardware class for our elevator using FIRST'S set target position.
  */
 @Config
 public class ElevatorFirstPID {
@@ -26,7 +26,6 @@ public class ElevatorFirstPID {
     double power = 1;
     boolean usePID = true;
     public static double maxPower = 0.85;
-    double startHeight = 0;
     public static boolean DEBUG = false;
 
     public enum ElevatorLevel {
@@ -119,9 +118,6 @@ public class ElevatorFirstPID {
 
     public void updateAuto()
     {
-//        AUTO_LEFT_LEVEL = encoderTicksToInches(580);
-//        DUCK_RED_LEVEL = encoderTicksToInches(220);
-
         if(usePID)
         {
             switch (elevatorLevel)
@@ -152,12 +148,15 @@ public class ElevatorFirstPID {
                     break;
             }
 
-            motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT));
+            motor.setTargetPosition(inchesToEncoderTicks(target));
             motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
     }
 
+    /**
+    ALOT OF GETTER AND SETTERS :)
+     */
     public static double encoderTicksToInches(int ticks) {
         return SPOOL_RADIUS * 2 * Math.PI * ticks / TICKS_PER_REV;
     }
@@ -171,26 +170,15 @@ public class ElevatorFirstPID {
         return motor.getCurrentPosition();
     }
 
-    public double getHeight()
-    {
-        return encoderTicksToInches(motor.getCurrentPosition());
-    }
-
     public double getTarget()
     {
         return target;
-    }
-
-    public void setTarget(double newTarget)
-    {
-        target = newTarget;
     }
 
     public void setUsePID(boolean usePID)
     {
         this.usePID = usePID;
     }
-
 
     public static ElevatorLevel getElevatorLevel() {
         return elevatorLevel;
@@ -221,40 +209,16 @@ public class ElevatorFirstPID {
         HUB_LEVEL3 = hubLevel3;
     }
 
-    public static double getHubLevel2() {
-        return HUB_LEVEL2;
-    }
-
     public static void setHubLevel2(double hubLevel2) {
         HUB_LEVEL2 = hubLevel2;
-    }
-
-    public static double getHubLevel1() {
-        return HUB_LEVEL1;
     }
 
     public static void setHubLevel1(double hubLevel1) {
         HUB_LEVEL1 = hubLevel1;
     }
 
-    public static double getAutoLeftLevel() {
-        return AUTO_LEFT_LEVEL;
-    }
-
     public static void setAutoLeftLevel(double autoLeftLevel) {
         AUTO_LEFT_LEVEL = autoLeftLevel;
-    }
-
-    public static double getDuckRedLevel() {
-        return DUCK_RED_LEVEL;
-    }
-
-    public static void setDuckRedLevel(double duckRedLevel) {
-        DUCK_RED_LEVEL = duckRedLevel;
-    }
-
-    public static double getSharedHub() {
-        return SHARED_HUB;
     }
 
     public static void setSharedHub(double sharedHub) {
@@ -265,15 +229,4 @@ public class ElevatorFirstPID {
         return ZERO_HEIGHT;
     }
 
-    public static void setZeroHeight(double zeroHeight) {
-        ZERO_HEIGHT = zeroHeight;
-    }
-
-    public static double getMaxPower() {
-        return maxPower;
-    }
-
-    public static void setMaxPower(double maxPower) {
-        ElevatorFirstPID.maxPower = maxPower;
-    }
 }

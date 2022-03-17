@@ -34,11 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogInputController;
-import com.qualcomm.robotcore.hardware.AnalogSensor;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.firstinspires.ftc.teamcode.robot.subsystems.threads.IntakeFixingThread;
 
 @Config
 @TeleOp(name = "Force sensor Testing", group = "testing")
@@ -48,17 +45,11 @@ public class SensorAnalogFSR extends LinearOpMode {
     //AnalogSensor freightSensor;  // Hardware Device Object
     AnalogInput freightSensor;
     public static double voltageThreshold = (float) 0.00000000000000001;
-    IntakeFixingThread intakeFixingThread;
     @Override
     public void runOpMode() {
 
         freightSensor = hardwareMap.get(AnalogInput.class, "freightSensor");
         intake intake = new intake(hardwareMap);
-        //intakeFixingThread = new IntakeFixingThread(hardwareMap, telemetry);
-        //analogInputController = hardwareMap.get(AnalogInputController.class, "freightSensor");
-        //analogInput = new AnalogInput(analogInputController, 0);
-
-        intakeFixingThread.start();
 
         waitForStart();
 
@@ -74,7 +65,5 @@ public class SensorAnalogFSR extends LinearOpMode {
             telemetry.update();
         }
 
-        intakeFixingThread.exitThread();
-        intakeFixingThread.interrupt();
     }
 }

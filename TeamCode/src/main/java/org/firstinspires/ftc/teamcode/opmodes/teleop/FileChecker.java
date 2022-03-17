@@ -42,6 +42,9 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 
+/*
+tried to work with some files to set offsets, but at the end we didn't use this.
+ */
 @Config
 @TeleOp(name = "File Testing", group = "testing")
 @Disabled

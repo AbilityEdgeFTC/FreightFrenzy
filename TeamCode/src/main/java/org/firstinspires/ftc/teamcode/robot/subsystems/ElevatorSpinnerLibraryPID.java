@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 /*
- * Hardware class for an elevator or linear lift driven by a pulley system.
+ * Hardware class for our elevator spinner using custom aggressive pid.
  */
 @Config
 public class ElevatorSpinnerLibraryPID {
@@ -26,7 +26,6 @@ public class ElevatorSpinnerLibraryPID {
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     boolean slowMove = false;
-    int newOffset = 0;
     DcMotorEx motor;
     BasicPID PID = new BasicPID(new PIDCoefficients(kP, kI, kD));
     AngleController controller = new AngleController(PID);
@@ -39,8 +38,7 @@ public class ElevatorSpinnerLibraryPID {
         ZERO_DO_NOT_USE,
         SHARED_RED,
         SHARED_BLUE,
-        RIGHT,
-        READ_FILE
+        RIGHT
     }
 
     public static SpinnerState spinnerState = SpinnerState.ZERO_DO_NOT_USE;
@@ -98,11 +96,9 @@ public class ElevatorSpinnerLibraryPID {
                 case SHARED_BLUE:
                     target = LEFT_ANGLE_SHARED;
                     break;
-                case READ_FILE:
-
             }
 
-            motor.setPower(controller.calculate(encoderTicksToRadians(target - ZERO_ANGLE + newOffset), encoderTicksToRadians(motor.getCurrentPosition())));
+            motor.setPower(controller.calculate(encoderTicksToRadians(target - ZERO_ANGLE), encoderTicksToRadians(motor.getCurrentPosition())));
 
         }
         else
@@ -155,11 +151,9 @@ public class ElevatorSpinnerLibraryPID {
                 case SHARED_BLUE:
                     target = LEFT_ANGLE_SHARED;
                     break;
-                case READ_FILE:
-
             }
 
-            motor.setPower(controller.calculate(encoderTicksToRadians(target - ZERO_ANGLE + newOffset), encoderTicksToRadians(motor.getCurrentPosition())));
+            motor.setPower(controller.calculate(encoderTicksToRadians(target - ZERO_ANGLE), encoderTicksToRadians(motor.getCurrentPosition())));
 
         }
         else
@@ -207,16 +201,6 @@ public class ElevatorSpinnerLibraryPID {
         return motor.getCurrentPosition();
     }
 
-    public double getTarget()
-    {
-        return target;
-    }
-
-    public void setTarget(int newTarget)
-    {
-        target = newTarget;
-    }
-
     public boolean getUsePID()
     {
         return usePID;
@@ -243,16 +227,8 @@ public class ElevatorSpinnerLibraryPID {
         this.slowMove = slowMove;
     }
 
-    public int getRIGHT_ANGLE() {
-        return RIGHT_ANGLE;
-    }
-
     public void setRIGHT_ANGLE(int RIGHT_ANGLE) {
         this.RIGHT_ANGLE = RIGHT_ANGLE;
-    }
-
-    public int getRIGHT_ANGLE_SHARED() {
-        return RIGHT_ANGLE_SHARED;
     }
 
     public void setRIGHT_ANGLE_SHARED(int RIGHT_ANGLE_SHARED) {
@@ -283,27 +259,11 @@ public class ElevatorSpinnerLibraryPID {
         this.ZERO_ANGLE_RED = ZERO_ANGLE_RED;
     }
 
-    public int getZERO_ANGLE_BLUE() {
-        return ZERO_ANGLE_BLUE;
-    }
-
     public void setZERO_ANGLE_BLUE(int ZERO_ANGLE_BLUE) {
         this.ZERO_ANGLE_BLUE = ZERO_ANGLE_BLUE;
     }
 
     public int getZERO_ANGLE() {
         return ZERO_ANGLE;
-    }
-
-    public void setZERO_ANGLE(int ZERO_ANGLE) {
-        this.ZERO_ANGLE = ZERO_ANGLE;
-    }
-
-    public static double getMaxPower() {
-        return maxPower;
-    }
-
-    public static void setMaxPower(double maxPower) {
-        ElevatorSpinnerLibraryPID.maxPower = maxPower;
     }
 }

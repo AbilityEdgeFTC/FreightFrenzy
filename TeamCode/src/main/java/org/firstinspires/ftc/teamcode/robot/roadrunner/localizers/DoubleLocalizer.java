@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Localizer using both the tracking wheels and the realsense camera
+ * DOES NOT WORK - HASN'T BEEN TESTED!!!!!
  */
 public class DoubleLocalizer implements Localizer {
     private final T265Localizer realsenseLocalizer;

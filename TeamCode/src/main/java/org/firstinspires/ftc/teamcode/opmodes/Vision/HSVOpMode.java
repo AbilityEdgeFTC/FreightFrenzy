@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.Vision;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -40,20 +39,17 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp(name = "HSV OpMode", group = "vision")
-@Disabled
+@TeleOp(name = "YCbCr OpMode", group = "vision")
 public class HSVOpMode extends LinearOpMode {
 
     OpenCvWebcam webcam;
+    HSVPipeline pipeline;
 
     @Override
     public void runOpMode() {
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        HSVPipeline pipeline = new HSVPipeline();
-        pipeline.telemetry = telemetry;
 
         initPipeline();
-        webcam.setPipeline(pipeline);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -62,7 +58,6 @@ public class HSVOpMode extends LinearOpMode {
         while (opModeIsActive()) {
 
             telemetry.addData("Barcode Location:",pipeline.getLocation());
-            telemetry.update();
         }
 
         //STOP streaming when opmode is done.
@@ -76,7 +71,7 @@ public class HSVOpMode extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
-        HSVPipeline pipeline = new HSVPipeline();
+        pipeline = new HSVPipeline();
         pipeline.telemetry = telemetry;
         pipeline.DEBUG = false;
 

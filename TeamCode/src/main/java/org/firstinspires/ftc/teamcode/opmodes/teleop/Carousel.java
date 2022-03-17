@@ -59,8 +59,6 @@ public class Carousel extends LinearOpMode {
 
             carousel.spin(reverse, isRed);
 
-            carousel.displayTelemetry();
-
         }
     }
 }
