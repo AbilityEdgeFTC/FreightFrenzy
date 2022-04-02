@@ -266,4 +266,12 @@ public class ElevatorSpinnerLibraryPID {
     public int getZERO_ANGLE() {
         return ZERO_ANGLE;
     }
+
+    public static double getMaxPower() {
+        return maxPower;
+    }
+
+    public static void setMaxPower(double maxPower) {
+        ElevatorSpinnerLibraryPID.maxPower = maxPower;
+    }
 }

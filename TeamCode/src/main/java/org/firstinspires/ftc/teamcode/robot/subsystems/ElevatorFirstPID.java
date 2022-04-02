@@ -229,4 +229,11 @@ public class ElevatorFirstPID {
         return ZERO_HEIGHT;
     }
 
+    public static double getMaxPower() {
+        return maxPower;
+    }
+
+    public static void setMaxPower(double maxPower) {
+        ElevatorFirstPID.maxPower = maxPower;
+    }
 }

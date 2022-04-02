@@ -15,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class hand {
 
     Servo sL, sR;
-    Telemetry telemetry;
     public static double intakePos = 0;
     public static double level1Hub = .88, level2Hub = .775, level3Hub = .6, levelSharedHub = 1, levelDuck3 = 0.6, levelDuck2 = 0.78, levelDuck1 = 1;
 
