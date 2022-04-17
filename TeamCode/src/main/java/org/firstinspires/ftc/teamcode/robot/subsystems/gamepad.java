@@ -116,7 +116,7 @@ public class gamepad {
             power = mainPower;
         }
 
-        if(gamepad1.left_stick_button)
+        if(gamepad1.left_stick_button || gamepad2.dpad_down)
         {
             power = 1;
         }

@@ -34,10 +34,10 @@ public class AutoRightRedMTI extends LinearOpMode {
     double startPoseRightY = -60;
     double startPoseRightH = 90;
     public double poseEntranceX = 9.2;
-    public double poseEntranceY = -62.5;
+    public double poseEntranceY = -64;
     public double poseEntranceH = 180;
-    public double poseCollectX = 59;
-    public double poseCollectY = -62;
+    public double poseCollectX = 60;
+    public double poseCollectY = -64;
     public double poseCollectH = 180;
     public double poseHelpX = 7;
     public double poseHelpY = -50;
@@ -302,6 +302,7 @@ public class AutoRightRedMTI extends LinearOpMode {
             }
         };
 
+
         drive.setPoseEstimate(startPoseRight);
 
         /*
@@ -395,47 +396,48 @@ public class AutoRightRedMTI extends LinearOpMode {
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                         .lineToSplineHeading(new Pose2d(poseEntrance.getX() + 5, poseEntrance.getY()-3.5, poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
-                        .waitSeconds(2)
+                        .waitSeconds(1)
                         .addTemporalMarker(elevetorClose)
                         .waitSeconds(.5)
                         .addTemporalMarker(intakeForward)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX() - 4, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() +.5, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(35))
                         .turn(Math.toRadians(9))
                         .turn(Math.toRadians(-9))
                         .waitSeconds(1)
                         .addTemporalMarker(intakeBackword)
-                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()+1.5, poseEntrance.getY() + 2, poseEntrance.getHeading()))
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()-5, poseEntrance.getY() + 3.5, poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
-                        .waitSeconds(.75)
+                        .waitSeconds(.8)
                         .addDisplacementMarker(elevetorClose)
                         .addTemporalMarker(intakeForward)
                         .waitSeconds(.1)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX() - 3, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() + 1, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(35))
                         .turn(Math.toRadians(10))
                         .turn(Math.toRadians(-10))
                         .waitSeconds(1)
                         .addTemporalMarker(intakeBackword)
-                        .lineToSplineHeading(new Pose2d(poseEntrance.getX(), poseEntrance.getY() + 3.5, poseEntrance.getHeading()))
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()-6, poseEntrance.getY() + 5, poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
-                        .waitSeconds(.75)
+                        .waitSeconds(.8)
                         .addDisplacementMarker(elevetorClose)
                         .addTemporalMarker(intakeForward)
                         .waitSeconds(.1)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX() - 2, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX() +2, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(35))
                         .turn(Math.toRadians(13))
                         .turn(Math.toRadians(-13))
                         .waitSeconds(1)
                         .addTemporalMarker(intakeBackword)
-                        .lineToSplineHeading(new Pose2d(poseEntrance.getX(), poseEntrance.getY() + 5, poseEntrance.getHeading()))
+                        .lineToSplineHeading(new Pose2d(poseEntrance.getX()-7, poseEntrance.getY() + 6.5, poseEntrance.getHeading()))
                         .addTemporalMarker(elevetorOpen)
-                        .waitSeconds(.75)
+                        .waitSeconds(.8)
                         .addDisplacementMarker(elevetorClose)
                         .addTemporalMarker(intakeStop)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX()+3, poseCollect.getY(), poseCollect.getHeading()), SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(50))
+                        .addTemporalMarker(intakeStop)
                         .build();
                 break;
 

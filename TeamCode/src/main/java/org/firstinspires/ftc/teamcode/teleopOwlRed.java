@@ -98,7 +98,10 @@ public class teleopOwlRed extends LinearOpMode {
                 manual1ServoDipMoving();
             }
             gamepad2SwitchingLevels();
+
+
             telemetry.update();
+
         }
 
         gamepad.saveIMUHeading();
@@ -160,7 +163,7 @@ public class teleopOwlRed extends LinearOpMode {
     {
         positionDip = dip.getPos();
 
-        if(cGamepad2.dpadDownOnce() && dip.getPos() >= 0.02)
+        /*if(cGamepad2.dpadDownOnce() && dip.getPos() >= 0.02)
         {
             positionDip -= 0.02;
             dip.moveTo(positionDip);
@@ -169,7 +172,7 @@ public class teleopOwlRed extends LinearOpMode {
         {
             positionDip += 0.02;
             dip.moveTo(positionDip);
-        }
+        }*/
 
     }
 

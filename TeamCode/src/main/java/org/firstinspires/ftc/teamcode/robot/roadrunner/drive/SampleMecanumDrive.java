@@ -65,8 +65,6 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    T265Localizer t265Localizer;
-
     private TrajectorySequenceRunner trajectorySequenceRunner;
 
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
@@ -155,7 +153,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setLocalizer(new MecanumLocalizer(this, true));
-        //setLocalizer(t265Localizer);
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
