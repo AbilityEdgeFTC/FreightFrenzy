@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -59,7 +58,7 @@ public class AutoLeftRed265 extends LinearOpMode {
     levels placeFreightIn = levels.MAX;*/
 
     TrajectorySequence carouselGo,hub,parking;
-    T265Localizer t265Localizer;
+    //T265Localizer t265Localizer;
 
 
     @Override
@@ -71,8 +70,8 @@ public class AutoLeftRed265 extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         drive.setPoseEstimate(startPoseLeft);
-        t265Localizer = new T265Localizer(hardwareMap);
-        drive.setLocalizer(t265Localizer);
+        //t265Localizer = new T265Localizer(hardwareMap);
+        //drive.setLocalizer(t265Localizer);
 
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
         Pose2d poseParkinga = new Pose2d(poseParkaX, poseParkaY, Math.toRadians(poseParkaH));
@@ -112,7 +111,7 @@ public class AutoLeftRed265 extends LinearOpMode {
 
         drive.followTrajectorySequence(carouselGo);
         drive.followTrajectorySequence(parking);
-        t265Localizer.stop();
+        //t265Localizer.stop();
     }
 
     /*void runCarousel() throws InterruptedException
