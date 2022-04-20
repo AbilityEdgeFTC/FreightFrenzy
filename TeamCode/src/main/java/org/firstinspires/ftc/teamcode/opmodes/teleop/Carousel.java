@@ -30,35 +30,35 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
+import org.firstinspires.ftc.teamcode.robot.subsystems.carusela;
+
+import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 
 @Config
 @TeleOp(name = "Carousel Testing", group = "testing")
 public class Carousel extends LinearOpMode {
-
-    public static boolean reverse = true;
-    public static boolean isRed = true;
+    int flag = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        carousel carousel = new carousel(hardwareMap, telemetry);
+        carusela carousel = new carusela(hardwareMap, telemetry, gamepad1);
+        cGamepad gamepad = new cGamepad(gamepad1);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            carousel.spin(reverse, isRed);
-
+            while(gamepad.X() && flag != 0) {
+                flag = carousel.spinCarousel();
+            }
+            carousel.stopCarrosel();
         }
     }
 }
