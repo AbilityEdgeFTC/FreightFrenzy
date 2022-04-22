@@ -30,7 +30,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name = "AutoTesting", group = "Autonomous Red")
 @Disabled
 public class AutoTesting extends LinearOpMode {
-
+    
+    double DistanceFromCarrierCube;
     double startPoseRightX = 13;
     double startPoseRightY = -60;
     double startPoseRightH = 90;
