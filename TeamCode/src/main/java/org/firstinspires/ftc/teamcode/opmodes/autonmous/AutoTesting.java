@@ -30,8 +30,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name = "AutoTesting", group = "Autonomous Red")
 @Disabled
 public class AutoTesting extends LinearOpMode {
-    
-    double DistanceFromCarrierCube;
+
     double startPoseRightX = 13;
     double startPoseRightY = -60;
     double startPoseRightH = 90;
@@ -51,6 +50,7 @@ public class AutoTesting extends LinearOpMode {
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
     TrajectorySequence main;
+
 
     enum levels
     {
@@ -79,6 +79,12 @@ public class AutoTesting extends LinearOpMode {
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
         DriveConstants.setMaxVel(80);
+
+
+
+
+
+
 
         // half length and spinnner and close dip
         MarkerCallback elevetorVisionA = new MarkerCallback()
@@ -322,6 +328,13 @@ public class AutoTesting extends LinearOpMode {
             }
         });
     }
+
+
+
+
+
+
+
 
 
 }
