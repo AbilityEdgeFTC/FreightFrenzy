@@ -4,7 +4,16 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TankVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -24,6 +33,12 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.MAX_ACCEL;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -322,6 +337,15 @@ public class AutoLeftRed extends LinearOpMode {
         {
             case MIN:
             case MID:
+//                TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), false,
+//                        MinVelocityConstraint(listOf(
+//                                TranslationalVelocityConstraint(50.0),
+//                                RectangleMaskConstraint(20.0, 20.0, 40.0, 40.0,
+//                                        TranslationalVelocityConstraint(10.0))
+//                        )),
+//                        ProfileAccelerationConstraint(50.0))
+//                        .splineTo(Vector2d(40.0, 60.0), PI / 2)
+//                        .build();
             case MAX:
                 main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                     .addTemporalMarker(elevetorVisionA)
