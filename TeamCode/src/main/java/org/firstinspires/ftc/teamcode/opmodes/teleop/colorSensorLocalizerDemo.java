@@ -54,6 +54,8 @@ public class colorSensorLocalizerDemo extends LinearOpMode {
     double oldYCords = y_cord;
     ColorSensor sensor;
 
+    float[] hsv = {0, 0, 0};
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
@@ -67,7 +69,7 @@ public class colorSensorLocalizerDemo extends LinearOpMode {
         while(opModeIsActive()) {
 
             if (inMinMax(minRed, maxRed, sensor.red()) && inMinMax(minGreen, maxGreen, sensor.green()) && inMinMax(minBlue, maxBlue, sensor.blue())) {
-                y_cord = 10; //--
+                y_cord = 10;
             }
 
             if (gamepad.YOnce()) {
@@ -78,7 +80,10 @@ public class colorSensorLocalizerDemo extends LinearOpMode {
             telemetry.addData("Red:  ", sensor.red());
             telemetry.addData("Green:  ", sensor.green());
             telemetry.addData("Blue: ", sensor.blue());
-
+            Color.RGBToHSV(sensor.red(), sensor.green(), sensor.blue(), hsv);
+            telemetry.addData("Red: ", hsv[0]);
+            telemetry.addData("Green:  ", hsv[1]);
+            telemetry.addData("Blue: ", hsv[2]);
             telemetry.update();
         }
 
