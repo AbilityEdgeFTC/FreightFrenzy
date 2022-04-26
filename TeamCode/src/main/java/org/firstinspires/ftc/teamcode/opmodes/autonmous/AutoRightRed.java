@@ -4,7 +4,15 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -13,6 +21,7 @@ import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -22,6 +31,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.Arrays;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -329,11 +340,19 @@ public class AutoRightRed extends LinearOpMode {
             telemetry.update();
         }
 
+        TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
+                new TranslationalVelocityConstraint(50),
+                new RectangleMaskConstraint(20,20,40,40,
+                        new TranslationalVelocityConstraint(10))));
+
+        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(50);
+
+
         switch (placeFreightIn)
         {
             case MIN:
             case MID:
-                main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                main = new TrajectorySequenceBuilder(drive.getPoseEstimate(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                         .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                         .lineToSplineHeading(new Pose2d(poseEntrance.getX()+2.5, poseEntrance.getY(), poseEntrance.getHeading()))
@@ -375,7 +394,7 @@ public class AutoRightRed extends LinearOpMode {
                         .build();
                 break;
             case MAX:
-                main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                main = new TrajectorySequenceBuilder(drive.getPoseEstimate(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                         .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL/1.5, DriveConstants.MAX_ANG_VEL/2, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                         .lineToSplineHeading(new Pose2d(poseEntrance.getX()+2.5, poseEntrance.getY(), poseEntrance.getHeading()))
@@ -469,3 +488,18 @@ public class AutoRightRed extends LinearOpMode {
 
 
 }
+    // java mask code
+//    MaskTest maskTest = new MaskTest(20,20,40,40,
+//            new TranslationalVelocityConstraint(10));
+//
+//    TrajectoryVelocityConstraint velConstraint1 = new MinVelocityConstraint(Arrays.asList(
+//            new TranslationalVelocityConstraint(50),
+//            maskTest));
+//
+//    TrajectoryAccelerationConstraint accelConstraint1 = new ProfileAccelerationConstraint(50);
+//
+//    Trajectory traj1 = new TrajectoryBuilder(drive.getPoseEstimate(), velConstraint1, accelConstraint1)
+//            .splineTo(new Vector2d(40, 60), Math.PI / 2)
+//            .build();
+//
+//                drive.followTrajectory(traj);
