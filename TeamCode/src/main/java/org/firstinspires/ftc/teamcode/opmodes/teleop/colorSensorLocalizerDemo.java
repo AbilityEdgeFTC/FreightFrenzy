@@ -36,6 +36,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carusela;
@@ -43,38 +44,36 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.carusela;
 
 
 @Config
-@TeleOp(name = "colorSensor Testing", group = "testing")
-public class colorSen extends LinearOpMode {
-    public static double y_cord = 30;//--
+@TeleOp(name = "colorSensor Testing LOCALIZER", group = "testing")
+public class colorSensorLocalizerDemo extends LinearOpMode {
+    double y_cord = 30;
+
+    public static int minRed = 200, minGreen = 200, minBlue = 200;
+    public static int maxRed = 255, maxGreen = 255, maxBlue = 255;
+
     double oldYCords = y_cord;
-    int flag;
-    RevColorSensorV3 sensor;
-    public static int SCALE_FACTOR = 1;
-    float hsvValues[] = {0F, 0F, 0F};
+    ColorSensor sensor;
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        sensor = hardwareMap.get(RevColorSensorV3.class, "colorSensor");
+        sensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         cGamepad gamepad = new cGamepad(gamepad1);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         while(opModeIsActive()) {
-            Color.RGBToHSV((int) (sensor.red() * SCALE_FACTOR),
-                    (int) (sensor.green() * SCALE_FACTOR),
-                    (int) (sensor.blue() * SCALE_FACTOR),
-                    hsvValues);
-            //if("white".equals(sensor.alpha())){}
-            if (sensor.red() == sensor.blue() && sensor.green() == sensor.blue() && sensor.red() == sensor.green() && sensor.red() == 255) {
+
+            if (inMinMax(minRed, maxRed, sensor.red()) && inMinMax(minGreen, maxGreen, sensor.green()) && inMinMax(minBlue, maxBlue, sensor.blue())) {
                 y_cord = 10; //--
-                flag = 1;
             }
-            if (flag == 1 && gamepad.YOnce()) {
-                y_cord = oldYCords;//--
-                flag = 0;
+
+            if (gamepad.YOnce()) {
+                y_cord = oldYCords;
             }
+
             telemetry.addData("Alpha: ", sensor.alpha());
             telemetry.addData("Red:  ", sensor.red());
             telemetry.addData("Green:  ", sensor.green());
@@ -84,5 +83,10 @@ public class colorSen extends LinearOpMode {
         }
 
 
+    }
+
+    boolean inMinMax(int min, int max, int value)
+    {
+        return min <= value && value <= max;
     }
 }
