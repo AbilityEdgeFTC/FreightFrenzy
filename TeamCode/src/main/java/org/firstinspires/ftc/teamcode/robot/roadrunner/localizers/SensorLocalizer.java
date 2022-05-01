@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.drive.MecanumDrive.MecanumLocalizer;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -20,20 +21,17 @@ import org.jetbrains.annotations.Nullable;
 public class SensorLocalizer implements Localizer {
     SampleMecanumDrive mecanumDrive;
     MecanumLocalizer mecanumLocalizer;
-    ModernRoboticsI2cRangeSensor distanceSensorWallRed, distanceSensorWallBlue;
-    ColorSensor colorSensor;
-    public static double redWhite = 0, blueWhite = 0, greenWhite = 0;
+    ModernRoboticsI2cColorSensor colorSensor;
+    public static double redWhite = 240, blueWhite = 240, greenWhite = 240;
     public static double whiteMax = 255;
-    public static double warehouseLineX = 0;
+    public static double warehouseLineX = 28.5 + 4.72;
     boolean isRed;
 
     public SensorLocalizer(HardwareMap hardwareMap, boolean isRed)
     {
         mecanumDrive = new SampleMecanumDrive(hardwareMap);
         mecanumLocalizer = new MecanumLocalizer(mecanumDrive, true);
-        distanceSensorWallRed = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsR");
-        distanceSensorWallBlue = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsB");
-        colorSensor = hardwareMap.get(RevColorSensorV3.class, "csG");
+        colorSensor = hardwareMap.get(ModernRoboticsI2cColorSensor.class, "csG");
         this.isRed = isRed;
     }
 
@@ -63,17 +61,6 @@ public class SensorLocalizer implements Localizer {
         if(compareValueR() && compareValueB() && compareValueG())
         {
             setPoseEstimate(new Pose2d(warehouseLineX, getPoseEstimate().getY(), getPoseEstimate().getHeading()));
-        }
-
-        if(isRed)
-        {
-            double distanceFromWallRed = -distanceSensorWallRed.cmOptical();
-            setPoseEstimate(new Pose2d(getPoseEstimate().getX(), distanceFromWallRed / 2.54, getPoseEstimate().getHeading()));
-        }
-        else
-        {
-            double distanceFromWallBlue = distanceSensorWallBlue.cmOptical();
-            setPoseEstimate(new Pose2d(getPoseEstimate().getX(), distanceFromWallBlue / 2.54, getPoseEstimate().getHeading()));
         }
     }
 
