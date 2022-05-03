@@ -4,32 +4,49 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-@Autonomous(name = "sensors", group = "Autonomous sensors")
-@Config
+    @Config
+    @Autonomous
+ public class Sensors extends LinearOpMode {
 
-public class Sensors extends LinearOpMode {
 
-    DistanceSensor intakeDistance = hardwareMap.get(DistanceSensor.class, "intakeDistance");
     double DistanceFromCarrierFreight;
+     boolean InWarehouse;
+
+    ModernRoboticsI2cColorSensor WarehouseColorSensor = hardwareMap.get(ModernRoboticsI2cColorSensor.class ,"WarehouseColorSensor");
+     DistanceSensor intakeDistance = hardwareMap.get(DistanceSensor.class, "intakeDistance");
 
 
-    void getDistance(){
 
-        DistanceFromCarrierFreight = intakeDistance.getDistance(DistanceUnit.CM);
-        telemetry.addData("intakeDistance" , DistanceFromCarrierFreight);
+     public void runOpMode() throws InterruptedException {
+        while (opModeIsActive()){
+            telemetry.addData("WarehouseDetected" , InWarehouse);
+            telemetry.addData("ColorNumber" , WarehouseColorSensor.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER));
+        }
 
-    }
+         WarehouseColorSensor.enableLed(true);
+        while (WarehouseColorSensor.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) != 16){
 
-    public void runOpMode() throws InterruptedException {
+            if(WarehouseColorSensor.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) == 16){
+                InWarehouse = true;
 
+                //Put whatever the robot need to do while he has detected the color white
+            }
+            //Put whatever the robot need to do while he hasnt detected the color white
 
-        /* if(DistacneFromCarrierFreight > 20){
+        }
 
-        ..........
+         DistanceFromCarrierFreight = intakeDistance.getDistance(DistanceUnit.CM);
+         telemetry.addData("intakeDistance" , DistanceFromCarrierFreight);
 
+        if(DistanceFromCarrierFreight > 20){
+
+            System.out.println("A Freight is in the robot");
         }
 
 
@@ -39,6 +56,6 @@ public class Sensors extends LinearOpMode {
 
 
 
-         */
+
     }
 }
