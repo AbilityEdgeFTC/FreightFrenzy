@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.FreightSensor;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -39,6 +40,7 @@ public class teleopOwlBlue extends LinearOpMode {
     intake intake;
     hand hand;
     dip dip;
+    FreightSensor freightSensor;
     private boolean frontIntake = false, backIntake = false;
     cGamepad cGamepad1, cGamepad2;
     public static double powerIntake = 1, powerSlowElevator = .6, powerElevator = 1;
@@ -70,6 +72,7 @@ public class teleopOwlBlue extends LinearOpMode {
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
+        freightSensor = new FreightSensor(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
         resetElevator = new ElapsedTime();
@@ -102,7 +105,17 @@ public class teleopOwlBlue extends LinearOpMode {
 
         gamepad.saveIMUHeading();
     }
+    void thereIsFreight() {
+        if (freightSensor.getDistanceOptical() >0)
+        {
+            canIntake = false;
 
+        }
+        else
+        {
+            canIntake = true;
+        }
+    }
     void carouselGamepad2()
     {
         if(gamepad2.dpad_right)
