@@ -27,6 +27,7 @@ public class SpinnerFirstPID {
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     DcMotorEx motor;
+    int offset = 0;
 
     public enum SpinnerState
     {
@@ -59,7 +60,7 @@ public class SpinnerFirstPID {
     public SpinnerFirstPID(HardwareMap hardwareMap)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mS");
-        this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        offset = motor.getCurrentPosition();
         this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
@@ -87,7 +88,7 @@ public class SpinnerFirstPID {
                     break;
             }
 
-            motor.setTargetPosition(target - ZERO_ANGLE);
+            motor.setTargetPosition(target - ZERO_ANGLE + offset);
             motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }

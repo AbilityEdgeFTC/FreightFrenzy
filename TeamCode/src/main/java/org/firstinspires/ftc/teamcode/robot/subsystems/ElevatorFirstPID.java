@@ -16,17 +16,25 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 21.5,HUB_LEVEL2 = 10.5,HUB_LEVEL1 = 10.5,AUTO_LEFT_LEVEL = 20.3,DUCK_RED_LEVEL = 8.7,MID = 6, LEFT_HELP = 16;
+    public static double HUB_LEVEL3 = 21.5;
+    public static double HUB_LEVEL2 = 10.5;
+    public static double HUB_LEVEL1 = 10.5;
+    public static double AUTO_LEFT_LEVEL = 20.3;
+    public static double DUCK_RED_LEVEL = 8.7;
+    public static double MID = 6;
     public static double SHARED_HUB = 5.5;
     public static double ZERO_HEIGHT = 0;
-    DcMotorEx motor;
-    double target;
     public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
-    double power = 1;
-    boolean usePID = true;
     public static double maxPower = 0.85;
     public static boolean DEBUG = false;
+    double power = 1;
+    boolean usePID = true;
+    public static int offset = 0;
+    DcMotorEx motor;
+    double target;
+    Gamepad gamepad;
+    cGamepad cGamepad;
 
     public enum ElevatorLevel {
         ZERO,
@@ -41,13 +49,10 @@ public class ElevatorFirstPID {
 
     public static ElevatorLevel elevatorLevel = ElevatorLevel.ZERO;
 
-    Gamepad gamepad;
-    cGamepad cGamepad;
-
     public ElevatorFirstPID(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
-        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        offset = motor.getCurrentPosition();
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
@@ -86,15 +91,12 @@ public class ElevatorFirstPID {
                 case HUB_LEVEL3:
                     target = HUB_LEVEL3;
                     break;
-                case AUTO_LEFT_LEVEL:
-                    target = LEFT_HELP;
-                    break;
                 case MID:
                     target = MID;
                     break;
             }
 
-            motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT));
+            motor.setTargetPosition(inchesToEncoderTicks(target - ZERO_HEIGHT) + offset);
             motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
@@ -118,40 +120,38 @@ public class ElevatorFirstPID {
 
     public void updateAuto()
     {
-        if(usePID)
+        switch (elevatorLevel)
         {
-            switch (elevatorLevel)
-            {
-                case ZERO:
-                    target = 0;
-                    break;
-                case SHARED_HUB:
-                    target = SHARED_HUB;
-                    break;
-                case HUB_LEVEL1:
-                    target = HUB_LEVEL1;
-                    break;
-                case HUB_LEVEL2:
-                    target = HUB_LEVEL2;
-                    break;
-                case HUB_LEVEL3:
-                    target = HUB_LEVEL3;
-                    break;
-                case DUCK_LEVEL:
-                    target = DUCK_RED_LEVEL;
-                    break;
-                case AUTO_LEFT_LEVEL:
-                    target = AUTO_LEFT_LEVEL;
-                    break;
-                case MID:
-                    target = MID;
-                    break;
-            }
-
-            motor.setTargetPosition(inchesToEncoderTicks(target));
-            motor.setPower(power);
-            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            case ZERO:
+                target = 0;
+                break;
+            case SHARED_HUB:
+                target = SHARED_HUB;
+                break;
+            case HUB_LEVEL1:
+                target = HUB_LEVEL1;
+                break;
+            case HUB_LEVEL2:
+                target = HUB_LEVEL2;
+                break;
+            case HUB_LEVEL3:
+                target = HUB_LEVEL3;
+                break;
+            case DUCK_LEVEL:
+                target = DUCK_RED_LEVEL;
+                break;
+            case AUTO_LEFT_LEVEL:
+                target = AUTO_LEFT_LEVEL;
+                break;
+            case MID:
+                target = MID;
+                break;
         }
+
+        motor.setTargetPosition(inchesToEncoderTicks(target));
+        motor.setPower(power);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
     }
 
     /**
@@ -165,6 +165,11 @@ public class ElevatorFirstPID {
         return (int)Math.round((inches * TICKS_PER_REV) / (SPOOL_RADIUS * 2 * Math.PI));
     }
 
+    public static int getOffset()
+    {
+        return offset;
+    }
+
     public int getPosition()
     {
         return motor.getCurrentPosition();
@@ -173,6 +178,11 @@ public class ElevatorFirstPID {
     public double getTarget()
     {
         return target;
+    }
+
+    public int getTargetPosition()
+    {
+        return motor.getCurrentPosition();
     }
 
     public void setUsePID(boolean usePID)
