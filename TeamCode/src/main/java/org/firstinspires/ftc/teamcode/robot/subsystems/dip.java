@@ -56,4 +56,12 @@ public class dip {
     {
         sD.setPosition(position);
     }
+
+    public static double getReleasingPosition() {
+        return releasingPosition;
+    }
+
+    public static double getHoldingPosition() {
+        return holdingPosition;
+    }
 }

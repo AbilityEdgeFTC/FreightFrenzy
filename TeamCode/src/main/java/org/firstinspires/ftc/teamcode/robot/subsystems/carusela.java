@@ -55,19 +55,27 @@ public class carusela{
             elapsed2.reset();
             flag = false;
         }
+
         adding = (MAXPOWER - MINPOWER) / time;
         powerGiven = MINPOWER;
-        if(elapsed1.seconds() == 1.0){
-            mC.setPower(powerGiven);
-            if(powerGiven <= MAXPOWER)
-                powerGiven += adding;
-            displayTelemetry();
-            if (elapsed2.seconds() == time){
-                stopCarrosel();
-                return 0;
-            }
-            elapsed1.reset();
+
+        mC.setPower(powerGiven);
+
+        if(powerGiven <= MAXPOWER)
+            powerGiven += adding;
+
+        if (elapsed2.seconds() == time){
+            stopCarrosel();
+            return 0;
         }
+
+        elapsed1.reset();
+
+        telemetry.addData("Elapsed 1: ", elapsed1.seconds());
+        telemetry.addData("Elapsed 1: ", elapsed2.seconds());
+        telemetry.addData("Power: ", mC.getPower());
+        telemetry.update();
+
         return 1;
     }
 
@@ -75,12 +83,7 @@ public class carusela{
         mC.setPower(0);
         elapsed1.reset();
         elapsed2.reset();
+        flag = true;
     }
-    // dispaly the data
-    public void displayTelemetry(){
-        if (telemetry != null){
-            telemetry.addLine("Power at: " + powerGiven);
-            telemetry.update();
-        }
-    }
+
 }

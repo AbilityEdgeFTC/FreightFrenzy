@@ -31,8 +31,8 @@ TO ADD COMMENTS. SO FOR NOW, EVERY PART THAT YOU DONT GET, PLEASE!!!!! ASK ME.
 MY PHONE NUMBER IS: 050-474-7845
  */
 @Config
-@TeleOp(name = "TeleOp RED Alliance", group = "red")
-public class teleopOwlRed extends LinearOpMode {
+@TeleOp(name = "RED TeleOp - Driver Control", group = "DriverControl")
+public class teleOp extends LinearOpMode {
 
     gamepad gamepad;
     Spinner spinner;
@@ -41,16 +41,15 @@ public class teleopOwlRed extends LinearOpMode {
     intake intake;
     hand hand;
     dip dip;
-    private boolean frontIntake = false, backIntake = false;
+    boolean frontIntake = false, backIntake = false, canIntake = true;
     cGamepad cGamepad1, cGamepad2;
     public static double powerIntake = 1, powerSlowElevator = .6, powerElevator = 1;
-    boolean canIntake = true;
     double positionDip = 0;
     ElapsedTime resetElevator;
 
     enum ElevatorMovement
     {
-        SPIN,
+        CLOSED,
         LEVEL1,
         LEVEL2,
         LEVEL3,
@@ -59,7 +58,7 @@ public class teleopOwlRed extends LinearOpMode {
     }
 
     int elevatorLevel = 3;
-    public static ElevatorMovement elevatorMovement = ElevatorMovement.SPIN;
+    public static ElevatorMovement elevatorMovement = ElevatorMovement.CLOSED;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -218,7 +217,7 @@ public class teleopOwlRed extends LinearOpMode {
             return false;
         }
         else if((gamepad2.left_trigger == 1 && gamepad2.right_trigger == 1) || gamepad1.left_bumper &&
-                !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.SPIN)
+                !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.CLOSED)
         {
             elevator.setUsePID(true);
         }
@@ -287,18 +286,19 @@ public class teleopOwlRed extends LinearOpMode {
     }
 
     /**
-     * Functions check that the pid is on, and we move the dip box to a closing position.
+     * Function gets a position to move the dip, and if the pid is on so move to that position.
+     * @param position the poisiton to move the dip
      */
-    void closeDipBox()
+    void moveAutomaticallyDip(double position)
     {
         if(!withoutPID())
         {
-            dip.holdFreight();
+            dip.moveTo(position);
         }
     }
 
     /**
-     * Function checks that the pid is off, and turns off manual hand and dip servo control.
+     * Function checks that the pid is off, and turns on manual hand and dip servo control.
      */
     void manualServoMoving()
     {
@@ -311,25 +311,35 @@ public class teleopOwlRed extends LinearOpMode {
 
     void elevatorSwitch() {
         switch (elevatorMovement) {
-            case SPIN:
+            case CLOSED:
+                // while elevator is closed, spinner manual moving should be regular, and the gamepad 1 should let the user
+                // to spin the robot and not the spinner
                 resetElevator();
                 spinner.setSlowMove(false);
                 gamepad.setCanTwist(true);
 
+                // user wants to open elevator
                 if (gamepad1.right_bumper)
                 {
+                    // turn on pid if it was off, spinner movement should be slower and the gamepad1 should twist the spinner
+                    // not the robot
                     elevator.setUsePID(true);
                     spinner.setSlowMove(true);
                     gamepad.setCanTwist(false);
 
-                    powerElevator = powerSlowElevator;
-                    elevator.setPower(powerElevator);
+                    // open elevator slowly??? idk way lemme check this
+                    //powerElevator = powerSlowElevator;
+                    //elevator.setPower(powerElevator);
+
+                    // turn of intake, and the option for intake
                     frontIntake = false;
                     backIntake = false;
                     canIntake = false;
 
-                    closeDipBox();
+                    // move to closing dip position
+                    moveAutomaticallyDip(dip.getHoldingPosition());
 
+                    // go to the next state by the elevator level
                     switch (elevatorLevel)
                     {
                         case 0:
@@ -346,183 +356,223 @@ public class teleopOwlRed extends LinearOpMode {
                             break;
                     }
 
-                    resetElevator.reset();
+                    //resetElevator.reset();
                 }
                 break;
             case LEVEL1:
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1);
-                dip.holdFreight();
-                if(!withoutPID() && resetElevator.seconds() > .5)
-                {
-                    hand.level1();
-                    elevatorMovement = ElevatorMovement.DIP;
-                }
+                // move elevator to the target, and add a delay for the opening of the hand
+                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1, .5, hand.getLevel1Hub());
                 break;
             case LEVEL2:
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2);
-                dip.holdFreight();
-                if(!withoutPID() && resetElevator.seconds() > .4)
-                {
-                    hand.level2();
-                    elevatorMovement = ElevatorMovement.DIP;
-                }
+                // move elevator to the target, and add a delay for the opening of the hand
+                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2, .4, hand.getLevel2Hub());
                 break;
             case LEVEL3:
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                dip.holdFreight();
-                if(!withoutPID() && resetElevator.seconds() > .1)
-                {
-                    hand.level3();
-                    elevatorMovement = ElevatorMovement.DIP;
-                }
+                // move elevator to the target, and add a delay for the opening of the hand
+                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3, .1, hand.getLevel3Hub());
                 break;
             case SHARED:
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
-                dip.holdFreight();
-                if(!withoutPID() && resetElevator.seconds() > .5)
-                {
-                    hand.shared();
-                    elevatorMovement = ElevatorMovement.DIP;
-                }
+                // move elevator to the target, and add a delay for the opening of the hand
+                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.SHARED_HUB, .5, hand.getLevelSharedHub());
                 break;
             case DIP:
+                // this will be in a loop, so update elevator and turn on manual servo moving
                 elevator.update();
                 manualServoMoving();
+
+                // if gp1 right stick button is on, so we want to twist the robot and not spinner
                 if(gamepad1.right_stick_button)
                 {
                     gamepad.setCanTwist(true);
                     spinner.setSlowMove(false);
                 }
+                // else we want to twist spinner not robot
                 else
                 {
                     gamepad.setCanTwist(false);
                     spinner.setSlowMove(true);
                 }
 
+                // user wants to close elevator
                 if(gamepad1.left_bumper || gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1)
                 {
-                    spinner.setMaxPower(.4);
-                    elevator.setMaxPower(.85);
+                    // release freight
                     dip.releaseFreight();
 
-                    switch (elevatorLevel) {
-                        case 0:
-                            elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                            break;
-                        case 1:
-                            elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                            break;
-                        case 2:
-                            elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                            break;
-                        case 3:
-                            elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                            break;
-                    }
+                    // make spinner slower and close elevator faster
+                    spinner.setMaxPower(.4);
+                    elevator.setMaxPower(.85);
 
-                    gamepad.setCanTwist(true);
+                    // save the current position of the elevator
+                    saveCurrentHubLevel();
+
+                    // reset eelvator timer
                     resetElevator.reset();
 
+                    // let the intake work and turn it on forwardly
                     canIntake = true;
                     frontIntake = true;
 
-                    elevatorMovement = ElevatorMovement.SPIN;
+                    // go to the closing state
+                    elevatorMovement = ElevatorMovement.CLOSED;
                 }
                 break;
             default:
-                elevatorMovement = ElevatorMovement.SPIN;
+                elevatorMovement = ElevatorMovement.CLOSED;
                 break;
         }
     }
 
+    /**
+     * Function sees which level is the elevator now, and saves it that way the next time we go to that level, it goes to the
+     * lastly closed position.
+     */
+    void saveCurrentHubLevel()
+    {
+        switch (elevatorLevel) {
+            case 0:
+                elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                break;
+            case 1:
+                elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                break;
+            case 2:
+                elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                break;
+            case 3:
+                elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                break;
+        }
+    }
+
+    /**
+     * Function seta new targel level, closes the dip and waits a delay till we move the hand
+     * @param elevatorLevel new elevator level
+     * @param delay the amount to wait before opening the hand
+     * @param pos where should the hand move to
+     */
+    void setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel elevatorLevel, double delay, double pos)
+    {
+        // set new elevator level
+        elevator.setElevatorLevel(elevatorLevel);
+
+        // close dip
+        dip.holdFreight();
+
+        // wait the delay(if with pid on ofc)
+        if(!withoutPID() && resetElevator.seconds() > delay)
+        {
+            // move hand to the pos and go on to the next state in the finite state machine.
+            hand.moveTo(pos);
+            elevatorMovement = ElevatorMovement.DIP;
+        }
+    }
+
+    /**
+     * Function resets the dip, slowly closes the elevator, let's the intake to turn on, and closes the hand with/without delay.
+     */
     void resetElevator()
     {
-        elevator.update();
+        // open dip
+        moveAutomaticallyDip(dip.getReleasingPosition());
 
-        if(!withoutPID())
-        {
-            dip.releaseFreight();
-        }
+        // close slowly elevator
+        slowCloseElevator();
 
-        elevator.setPower(powerSlowElevator);
-        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-
+        // close the hand with a delay
         switch (elevatorLevel)
         {
             case 0:
-                //if(!withoutPID())
-                //{
-                    hand.intake();
-                //}
-                if(resetElevator.seconds() > .67 && turnOnOfPidByUserAndReturnIfItWasChanged())
-                {
-                    elevator.setUsePID(true);
-                }
-                else
-                {
-                    elevator.setUsePID(false);
-                }
+                delayEleavtorCloseAndReturnHand(.63);
                 break;
             case 1:
-                //if(!withoutPID())
-                //{
-                    hand.intake();
-                //}
-                if(resetElevator.seconds() > 1.3 && turnOnOfPidByUserAndReturnIfItWasChanged())
-                {
-                    elevator.setUsePID(true);
-                }
-                else
-                {
-                    elevator.setUsePID(false);
-                }
+                delayEleavtorCloseAndReturnHand(1.3);
                 break;
             case 2:
-                //if(!withoutPID())
-                //{
-                    hand.intake();
-                //}
-                if(resetElevator.seconds() > 1 && turnOnOfPidByUserAndReturnIfItWasChanged())
-                {
-                    elevator.setUsePID(true);
-                }
-                else
-                {
-                    elevator.setUsePID(false);
-                }
+                delayEleavtorCloseAndReturnHand(1);
                 break;
             case 3:
-                if(resetElevator.seconds() > .6 && turnOnOfPidByUserAndReturnIfItWasChanged())
-                {
-                    //if(!withoutPID())
-                    //{
-                        hand.intake();
-                    //}
-                    elevator.setUsePID(true);
-                }
-                else
-                {
-                    elevator.setUsePID(false);
-                }
+                delayFullRetractionOfElevator(.6);
                 break;
         }
 
+        // robot can intake, and update the elevator
         elevator.update();
-
         canIntake = true;
     }
 
+    /**
+     * Function closes the elevator with a slower poer
+     */
+    void slowCloseElevator()
+    {
+        elevator.setPower(powerSlowElevator);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+    }
+
+    /**
+     * Function returns delays the retraction of the hand to intake position, and elevator closing
+     * @param delay the delay till the full elevator retraction
+     */
+    void delayFullRetractionOfElevator(double delay)
+    {
+        // wait delay long
+        if(resetElevator.seconds() > delay && turnOnOfPidByUserAndReturnIfItWasChanged())
+        {
+            // return hand
+            hand.intake();
+
+            // turn on pid
+            elevator.setUsePID(true);
+        }
+        else
+        {
+            elevator.setUsePID(false);
+        }
+    }
+
+    /**
+     * Function returns the hand to intake position, and adds a delay till the elevator will close
+     * @param delay the delay till the elevator closes
+     */
+    void delayEleavtorCloseAndReturnHand(double delay)
+    {
+        // return hand to intake pos
+        hand.intake();
+
+        // check if delay has gone by, if yes turn on pid and return elevator, else, don't
+        if(resetElevator.seconds() > delay && turnOnOfPidByUserAndReturnIfItWasChanged())
+        {
+            elevator.setUsePID(true);
+        }
+        else
+        {
+            elevator.setUsePID(false);
+        }
+    }
+
+    /**
+     * Check if the user wants the reset the elevator while it's moving in the finite state machine, if so
+     * reset and turn on intake
+     */
     void resetElevatorMidMoving()
     {
-        if(gamepad1.left_bumper && elevatorMovement != ElevatorMovement.SPIN)
+        // does user want to reset mid moving, and the elevator isn't closed?
+        if(gamepad1.left_bumper && elevatorMovement != ElevatorMovement.CLOSED)
         {
-            elevatorMovement = ElevatorMovement.SPIN;
+            // reset elevator logic
+            elevatorMovement = ElevatorMovement.CLOSED;
+
+            // turn on intake
             canIntake = true;
             frontIntake = true;
         }
 
     }
 
+    /**
+     * Function check is elevator pid is on and at level 0, if so set the hand to the correct position and return false, else return true
+     */
     boolean withoutPID()
     {
         if(elevator.getUsePID() == true && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)

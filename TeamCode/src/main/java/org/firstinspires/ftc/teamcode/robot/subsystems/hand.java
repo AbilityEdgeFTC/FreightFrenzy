@@ -112,4 +112,36 @@ public class hand {
     public void setHandPos(HandPos handPos) {
         this.handPos = handPos;
     }
+
+    public static double getIntakePos() {
+        return intakePos;
+    }
+
+    public static double getLevel1Hub() {
+        return level1Hub;
+    }
+
+    public static double getLevel2Hub() {
+        return level2Hub;
+    }
+
+    public static double getLevel3Hub() {
+        return level3Hub;
+    }
+
+    public static double getLevelSharedHub() {
+        return levelSharedHub;
+    }
+
+    public static double getLevelDuck3() {
+        return levelDuck3;
+    }
+
+    public static double getLevelDuck2() {
+        return levelDuck2;
+    }
+
+    public static double getLevelDuck1() {
+        return levelDuck1;
+    }
 }

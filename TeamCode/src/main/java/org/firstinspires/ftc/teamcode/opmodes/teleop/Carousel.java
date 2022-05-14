@@ -48,14 +48,14 @@ public class Carousel extends LinearOpMode {
         telemetry.update();
 
         carusela carousel = new carusela(hardwareMap, telemetry, gamepad1);
-        cGamepad gamepad = new cGamepad(gamepad1);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            while(gamepad.X() && flag != 0) {
+
+            while(gamepad1.x && flag != 0) {
                 flag = carousel.spinCarousel();
             }
             carousel.stopCarrosel();
