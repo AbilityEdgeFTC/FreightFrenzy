@@ -33,14 +33,11 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import android.graphics.Color;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
-import org.firstinspires.ftc.teamcode.robot.subsystems.carusela;
-
 
 
 @Config

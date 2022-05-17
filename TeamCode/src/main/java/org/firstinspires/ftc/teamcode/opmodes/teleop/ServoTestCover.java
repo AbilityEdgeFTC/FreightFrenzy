@@ -30,35 +30,34 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.carusela;
-
-import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
-
+// .3 is throw freight
+// 1 is out freight from intake
 @Config
-@TeleOp(name = "Carousel Testing", group = "testing")
-public class Carousel extends LinearOpMode {
-    int flag = 1;
+@TeleOp(name = "Servo Testing Cover", group = "testing")
+public class ServoTestCover extends LinearOpMode {
+
+    Servo servo;
+    public static double position = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        carusela carousel = new carusela(hardwareMap, telemetry, gamepad1);
+        servo = hardwareMap.get(Servo.class, "sC");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
 
-            while(gamepad1.x && flag != 0) {
-                flag = carousel.spinCarousel();
-            }
-            carousel.stopCarrosel();
+        while (opModeIsActive()) {
+            servo.setPosition(position);
         }
     }
 }

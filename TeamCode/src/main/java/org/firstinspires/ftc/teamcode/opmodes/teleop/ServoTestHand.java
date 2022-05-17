@@ -30,40 +30,33 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-
+// .3 is throw freight
+// 1 is out freight from intake
 @Config
-@TeleOp(name = "Force sensor Testing", group = "testing")
-@Disabled
-public class SensorAnalogFSR extends LinearOpMode {
+@TeleOp(name = "Servo Testing Hand", group = "testing")
+public class ServoTestHand extends LinearOpMode {
 
-    //AnalogSensor freightSensor;  // Hardware Device Object
-    AnalogInput freightSensor;
-    public static double voltageThreshold = (float) 0.00000000000000001;
+    Servo servo;
+    public static double position = 0;
+
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
-        freightSensor = hardwareMap.get(AnalogInput.class, "freightSensor");
-        intake intake = new intake(hardwareMap);
+        servo = hardwareMap.get(Servo.class, "sH");
 
+        // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        // run until the end of the match (driver presses STOP)
+
         while (opModeIsActive()) {
-
-            if(freightSensor.getVoltage() > voltageThreshold){
-                intake.intakeForward();
-            } else {
-                intake.stop();
-            }
-
-            telemetry.addData("Sensor Value", freightSensor.getVoltage());
-            telemetry.update();
+            servo.setPosition(position);
         }
-
     }
 }

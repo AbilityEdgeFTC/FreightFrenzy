@@ -8,8 +8,6 @@ import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants;
@@ -57,7 +55,7 @@ public class AutoRightBlue extends LinearOpMode {
     hand hand;
     intake intake;
     dip dip;
-    carousel carousel;
+    //carousel carousel;
     boolean canIntake = true;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
@@ -85,7 +83,7 @@ public class AutoRightBlue extends LinearOpMode {
         spinner = new SpinnerFirstPID(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
-        carousel = new carousel(hardwareMap);
+        //carousel = new carousel(hardwareMap);
         dip = new dip(hardwareMap);
         DriveConstants.setMaxVel(60);
         DriveConstants.setMaxVAcc(40);
@@ -100,13 +98,13 @@ public class AutoRightBlue extends LinearOpMode {
         MarkerCallback carouselOnn = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                carousel.spin(false,false);
+                //carousel.spin(false,true);
             }
         };
         MarkerCallback carouselOff = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                carousel.stop();
+                //carousel.stop();
             }
         };
         MarkerCallback intakeDuck =  new MarkerCallback()

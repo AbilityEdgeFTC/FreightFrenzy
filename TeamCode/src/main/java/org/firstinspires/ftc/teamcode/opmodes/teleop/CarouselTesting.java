@@ -30,39 +30,33 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 
 @Config
-@TeleOp(name = "Servo Hand Testing", group = "testing")
-@Disabled
-public class HandServosTest extends LinearOpMode {
-
-    Servo left;
-    Servo right;
-    public static double position = 0.07;
+@TeleOp(name = "Carousel Testing", group = "testing")
+public class CarouselTesting extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        right = hardwareMap.get(Servo.class, "sRight");
-        left = hardwareMap.get(Servo.class, "sLeft");
-        right.setDirection(Servo.Direction.REVERSE);
+        Carousel carousel = new Carousel(hardwareMap, telemetry, gamepad1);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-
         while (opModeIsActive()) {
-            right.setPosition(position);
-            left.setPosition(position);
+
+            while(gamepad1.x) {
+                carousel.spinCarousel();
+            }
+
+            carousel.stopCarousel();
+            carousel.displayTelemetry();
         }
     }
 }

@@ -1,8 +1,3 @@
-/**
- * Created by Ability Edge#18273
- * - Elior Yousefi
- */
-
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -11,25 +6,14 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
-
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorSpinnerLibraryPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Spinner;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
-import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.gamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
-
-/**
-FOR ANY QUESTIONS PLEASE ASK ME, ELIOR YOUSEFI FROM ABILITY EDGE #18273. THIS CODE IS VERY COMPLEX AND YET, IM A LAZY
-TO ADD COMMENTS. SO FOR NOW, EVERY PART THAT YOU DONT GET, PLEASE!!!!! ASK ME.
-MY PHONE NUMBER IS: 050-474-7845
- */
 @Config
 @TeleOp(name = "RED TeleOp - Driver Control", group = "DriverControl")
 public class teleOp extends LinearOpMode {
@@ -37,13 +21,20 @@ public class teleOp extends LinearOpMode {
     gamepad gamepad;
     Spinner spinner;
     ElevatorFirstPID elevator;
-    carousel carousel;
+    //carousel carousel;
     intake intake;
     hand hand;
     dip dip;
-    boolean frontIntake = false, backIntake = false, canIntake = true;
     cGamepad cGamepad1, cGamepad2;
-    public static double powerIntake = 1, powerSlowElevator = .6, powerElevator = 1;
+    public static double powerIntake = 1, powerSlowElevator = .6;
+    public static double firstLevelHandDelay = 0.5, secondLevelHandDelay = .4;
+    public static double thirdLevelHandDelay = .1, shareLevelHandDelay = 0.5;
+    public static double spinnerSlowerPower = 0.4;
+    public static double elevatorFastPower = 0.85;
+    public static double closingHandDelayShare = 0.63, closingHandDelayLevel1 = 1.3;
+    public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .6;
+    double MIN_MANUAL_HAND_MOVING = 0.03, MAX_MANUAL_HAND_MOVING = 1 - MIN_MANUAL_HAND_MOVING;
+    boolean frontIntake = false, backIntake = false, canIntake = true;
     double positionDip = 0;
     ElapsedTime resetElevator;
 
@@ -67,7 +58,7 @@ public class teleOp extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new Spinner(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
-        carousel = new carousel(hardwareMap);
+        //carousel = new carousel(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
@@ -84,7 +75,7 @@ public class teleOp extends LinearOpMode {
             gamepad.update();
             elevator.update();
             spinner.updateGamepad();
-            toggleCarouselGP2();
+            //toggleCarouselGP2();
             toggleIntakesGP1GP2();
             elevatorSwitch();
             resetElevatorMidMoving();
@@ -102,7 +93,7 @@ public class teleOp extends LinearOpMode {
     /**
      * Function changes the state of carousel(on,off) by the dpad left and right.
      */
-    void toggleCarouselGP2()
+    /*void toggleCarouselGP2()
     {
         if(gamepad2.dpad_right)
         {
@@ -116,7 +107,7 @@ public class teleOp extends LinearOpMode {
         {
             carousel.stop();
         }
-    }
+    }*/
 
     /**
      * Function gets a elevator level, and check if the current position of the elevator is greater than it's offset so that
@@ -168,16 +159,16 @@ public class teleOp extends LinearOpMode {
         double position = hand.getPos();
 
         // check if the user wants to make the hand go up or down, and it can(0-1 range)
-        if(cGamepad2.rightBumperOnce() && hand.getPos() >= 0.03)
+        if(cGamepad2.rightBumperOnce() && hand.getPos() >= MIN_MANUAL_HAND_MOVING)
         {
             // if so, go up
-            position -= 0.03;
+            position -= MIN_MANUAL_HAND_MOVING;
             hand.moveTo(position);
         }
-        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= 0.97)
+        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= MAX_MANUAL_HAND_MOVING)
         {
             // else if so, go down
-            position += 0.03;
+            position += MIN_MANUAL_HAND_MOVING;
             hand.moveTo(position);
         }
     }
@@ -361,19 +352,19 @@ public class teleOp extends LinearOpMode {
                 break;
             case LEVEL1:
                 // move elevator to the target, and add a delay for the opening of the hand
-                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1, .5, hand.getLevel1Hub());
+                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1, firstLevelHandDelay, hand.getLevel1Hub());
                 break;
             case LEVEL2:
                 // move elevator to the target, and add a delay for the opening of the hand
-                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2, .4, hand.getLevel2Hub());
+                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2, secondLevelHandDelay, hand.getLevel2Hub());
                 break;
             case LEVEL3:
                 // move elevator to the target, and add a delay for the opening of the hand
-                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3, .1, hand.getLevel3Hub());
+                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3, thirdLevelHandDelay, hand.getLevel3Hub());
                 break;
             case SHARED:
                 // move elevator to the target, and add a delay for the opening of the hand
-                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.SHARED_HUB, .5, hand.getLevelSharedHub());
+                setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.SHARED_HUB, shareLevelHandDelay, hand.getLevelSharedHub());
                 break;
             case DIP:
                 // this will be in a loop, so update elevator and turn on manual servo moving
@@ -400,13 +391,13 @@ public class teleOp extends LinearOpMode {
                     dip.releaseFreight();
 
                     // make spinner slower and close elevator faster
-                    spinner.setMaxPower(.4);
-                    elevator.setMaxPower(.85);
+                    spinner.setMaxPower(spinnerSlowerPower);
+                    elevator.setMaxPower(elevatorFastPower);
 
                     // save the current position of the elevator
                     saveCurrentHubLevel();
 
-                    // reset eelvator timer
+                    // reset elvator timer
                     resetElevator.reset();
 
                     // let the intake work and turn it on forwardly
@@ -483,16 +474,16 @@ public class teleOp extends LinearOpMode {
         switch (elevatorLevel)
         {
             case 0:
-                delayEleavtorCloseAndReturnHand(.63);
+                delayEleavtorCloseAndReturnHand(closingHandDelayShare);
                 break;
             case 1:
-                delayEleavtorCloseAndReturnHand(1.3);
+                delayEleavtorCloseAndReturnHand(closingHandDelayLevel1);
                 break;
             case 2:
-                delayEleavtorCloseAndReturnHand(1);
+                delayEleavtorCloseAndReturnHand(closingHandDelayLevel2);
                 break;
             case 3:
-                delayFullRetractionOfElevator(.6);
+                delayFullRetractionOfElevator(closingHandDelayLevel3);
                 break;
         }
 

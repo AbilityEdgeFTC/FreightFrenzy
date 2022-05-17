@@ -4,25 +4,9 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.path.Path;
-import com.acmerobotics.roadrunner.path.PathBuilder;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
-import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TankVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
-import com.arcrobotics.ftclib.trajectory.TrajectoryGenerator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.teamcode.robot.subsystems.carousel;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
@@ -38,13 +22,6 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
-
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.MAX_ACCEL;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -78,7 +55,7 @@ public class AutoLeftRed extends LinearOpMode {
     hand hand;
     intake intake;
     dip dip;
-    carousel carousel;
+    //carousel carousel;
     boolean canIntake = true;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
@@ -106,7 +83,7 @@ public class AutoLeftRed extends LinearOpMode {
         spinner = new SpinnerFirstPID(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
-        carousel = new carousel(hardwareMap);
+        //carousel = new carousel(hardwareMap);
         dip = new dip(hardwareMap);
         DriveConstants.setMaxVel(60);
         DriveConstants.setMaxVAcc(40);
@@ -121,13 +98,13 @@ public class AutoLeftRed extends LinearOpMode {
         MarkerCallback carouselOnn = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                carousel.spin(false,true);
+                //carousel.spin(false,true);
             }
         };
         MarkerCallback carouselOff = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                carousel.stop();
+                //carousel.stop();
             }
         };
         MarkerCallback intakeDuck =  new MarkerCallback()
