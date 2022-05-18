@@ -35,8 +35,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-// .3 is throw freight
-// 1 is out freight from intake
+// .15 close
+// .5
 @Config
 @TeleOp(name = "Servo Testing Cover", group = "testing")
 public class ServoTestCover extends LinearOpMode {

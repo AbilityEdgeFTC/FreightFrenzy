@@ -49,6 +49,7 @@ public class ServoTestHand extends LinearOpMode {
         telemetry.update();
 
         servo = hardwareMap.get(Servo.class, "sH");
+        servo.setDirection(Servo.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
