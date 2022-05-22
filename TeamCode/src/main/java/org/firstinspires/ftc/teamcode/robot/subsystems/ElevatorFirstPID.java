@@ -27,7 +27,7 @@ public class ElevatorFirstPID {
     public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
     public static double maxPower = 0.85;
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = true;
     double power = 1;
     boolean usePID = true;
     public static int offset = 0;
@@ -52,7 +52,16 @@ public class ElevatorFirstPID {
     public ElevatorFirstPID(HardwareMap hardwareMap, Gamepad gamepad)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
-        offset = motor.getCurrentPosition();
+        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if(DEBUG)
+        {
+            offset = 0;
+        }
+        else
+        {
+            offset = Integer.parseInt(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("ElevatorEncoderValue.txt")));
+            offset = motor.getCurrentPosition();
+        }
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);

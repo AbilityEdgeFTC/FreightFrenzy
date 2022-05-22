@@ -52,7 +52,7 @@ public class CarouselTesting extends LinearOpMode {
         while (opModeIsActive()) {
 
             while(gamepad1.x) {
-                carousel.spinCarousel();
+                carousel.spinCarousel(false);
             }
 
             carousel.stopCarousel();

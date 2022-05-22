@@ -1,16 +1,10 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.util.ReadWriteFile;
-
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
 
 @Config
 @TeleOp(name = "Field Drive Testing", group = "test")
@@ -23,11 +17,16 @@ public class teleopDrive extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         mFL = hardwareMap.get(DcMotor.class, "mFL");
         mBL = hardwareMap.get(DcMotor.class, "mBL");
         mBR = hardwareMap.get(DcMotor.class, "mBR");
         mFR = hardwareMap.get(DcMotor.class, "mFR");
+        this.mFL.setDirection(DcMotor.Direction.REVERSE);
+        this.mBL.setDirection(DcMotor.Direction.REVERSE);
+        mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // wait till after init
         waitForStart();
@@ -41,6 +40,16 @@ public class teleopDrive extends LinearOpMode {
             leftPower_b = Range.clip(drive + twist - strafe, -power, power);
             rightPower_f = Range.clip(drive - twist - strafe, -power, power);
             rightPower_b = Range.clip(drive - twist + strafe, -power, power);
+
+            mFL.setPower(leftPower_f);
+            mBL.setPower(leftPower_b);
+            mFR.setPower(rightPower_f);
+            mBR.setPower(rightPower_b);
+
+            telemetry.addData("drive", drive);
+            telemetry.addData("twist", twist);
+            telemetry.addData("strafe", strafe);
+            telemetry.update();
         }
 
     }

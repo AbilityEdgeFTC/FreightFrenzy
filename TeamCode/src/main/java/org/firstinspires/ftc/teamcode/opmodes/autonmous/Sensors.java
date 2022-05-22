@@ -10,13 +10,13 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-    @Config
-    @Autonomous
- public class Sensors extends LinearOpMode {
-
+@Config
+@Autonomous
+public class Sensors extends LinearOpMode {
 
     double DistanceFromCarrierFreight;
-     boolean InWarehouse;
+    boolean InWarehouse;
+    public static double distance = 10;
 
     ModernRoboticsI2cColorSensor WarehouseColorSensor = hardwareMap.get(ModernRoboticsI2cColorSensor.class ,"WarehouseColorSensor");
      DistanceSensor intakeDistance = hardwareMap.get(DistanceSensor.class, "intakeDistance");
@@ -24,12 +24,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
      public void runOpMode() throws InterruptedException {
-        while (opModeIsActive()){
+        while (opModeIsActive())
+        {
             telemetry.addData("WarehouseDetected" , InWarehouse);
             telemetry.addData("ColorNumber" , WarehouseColorSensor.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER));
         }
 
-         WarehouseColorSensor.enableLed(true);
+        WarehouseColorSensor.enableLed(true);
+
         while (WarehouseColorSensor.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) != 16){
 
             if(WarehouseColorSensor.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) == 16){
@@ -41,21 +43,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
         }
 
-         DistanceFromCarrierFreight = intakeDistance.getDistance(DistanceUnit.CM);
-         telemetry.addData("intakeDistance" , DistanceFromCarrierFreight);
+        DistanceFromCarrierFreight = intakeDistance.getDistance(DistanceUnit.CM);
+        telemetry.addData("intakeDistance" , DistanceFromCarrierFreight);
 
-        if(DistanceFromCarrierFreight > 20){
+        if(DistanceFromCarrierFreight > distance){
 
-            System.out.println("A Freight is in the robot");
+            telemetry.addLine();
         }
 
-
-
-
-
-
-
-
-
+        telemetry.update();
     }
 }

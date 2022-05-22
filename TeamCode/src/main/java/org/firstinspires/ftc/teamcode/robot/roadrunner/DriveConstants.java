@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot.roadrunner.drive;
+package org.firstinspires.ftc.teamcode.robot.roadrunner;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -32,8 +32,8 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(31, 0, 13,
-            13.6);
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(20, 0, 9,
+            13.25);
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -44,8 +44,8 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.889765; // in
-    public static double GEAR_RATIO = 1.5145; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 12.74; // in
+    public static double GEAR_RATIO = 1.5 *  1.0127742864; // output (wheel) speed / input (motor) speed
+    public static double TRACK_WIDTH = 13; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -64,10 +64,26 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 60;
-    public static double MAX_ACCEL = 65;
-    public static double MAX_ANG_VEL = 7.314444541931152;
-    public static double MAX_ANG_ACCEL = 7.314444541931152;
+    public static double MAX_VEL = 70;
+    public static double MAX_ACCEL = 70;
+    public static double MAX_ANG_VEL = 7.706666469573975;
+    public static double MAX_ANG_ACCEL = 7.706666469573975;
+
+    public static void setMaxVel(double maxVel) {
+        MAX_VEL = maxVel;
+    }
+
+    public static void setMaxAccel(double maxAccel) {
+        MAX_ACCEL = maxAccel;
+    }
+
+    public static void setMaxAngVel(double maxAngVel) {
+        MAX_ANG_VEL = maxAngVel;
+    }
+
+    public static void setMaxAngAccel(double maxAngAccel) {
+        MAX_ANG_ACCEL = maxAngAccel;
+    }
 
     public static double encoderTicksToInches(double ticks) {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
@@ -81,11 +97,4 @@ public class DriveConstants {
         // see https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
         return 32767 / ticksPerSecond;
     }
-
-    public static void setMaxVel(double maxVel) {
-        MAX_VEL = maxVel;
-    }
-
-    public static void setMaxVAcc(double maxAcc) { MAX_ACCEL = maxAcc; }
-
 }

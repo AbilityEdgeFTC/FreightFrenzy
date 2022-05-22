@@ -5,7 +5,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Spinner;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
@@ -21,10 +25,11 @@ public class teleOp extends LinearOpMode {
     gamepad gamepad;
     Spinner spinner;
     ElevatorFirstPID elevator;
-    //carousel carousel;
+    Carousel carousel;
     intake intake;
     hand hand;
     dip dip;
+    Cover cover;
     cGamepad cGamepad1, cGamepad2;
     public static double powerIntake = 1, powerSlowElevator = .6;
     public static double firstLevelHandDelay = 0.5, secondLevelHandDelay = .4;
@@ -35,6 +40,7 @@ public class teleOp extends LinearOpMode {
     public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .6;
     double MIN_MANUAL_HAND_MOVING = 0.03, MAX_MANUAL_HAND_MOVING = 1 - MIN_MANUAL_HAND_MOVING;
     boolean frontIntake = false, backIntake = false, canIntake = true;
+    public static double delayCloseCover = 1;
     double positionDip = 0;
     ElapsedTime resetElevator;
 
@@ -58,10 +64,11 @@ public class teleOp extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new Spinner(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
-        //carousel = new carousel(hardwareMap);
+        carousel = new Carousel(hardwareMap , gamepad2);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
+        cover = new Cover(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
         resetElevator = new ElapsedTime();
@@ -75,14 +82,13 @@ public class teleOp extends LinearOpMode {
             gamepad.update();
             elevator.update();
             spinner.updateGamepad();
-            //toggleCarouselGP2();
             toggleIntakesGP1GP2();
             elevatorSwitch();
             resetElevatorMidMoving();
             turnOnOfPidByUserAndReturnIfItWasChanged();
             manualServoMoving();
             switchElevatorLevelsGP2();
-
+            spinCarousel();
             telemetry.update();
 
         }
@@ -93,21 +99,21 @@ public class teleOp extends LinearOpMode {
     /**
      * Function changes the state of carousel(on,off) by the dpad left and right.
      */
-    /*void toggleCarouselGP2()
+    void spinCarousel()
     {
         if(gamepad2.dpad_right)
         {
-            carousel.spin(false, true);
+            carousel.spinCarousel(false);
         }
         else if(gamepad2.dpad_left)
         {
-            carousel.spin(true, false);
+            carousel.spinCarousel( true);
         }
         else
         {
-            carousel.stop();
+            carousel.stopCarousel();
         }
-    }*/
+    }
 
     /**
      * Function gets a elevator level, and check if the current position of the elevator is greater than it's offset so that
@@ -318,6 +324,7 @@ public class teleOp extends LinearOpMode {
                     spinner.setSlowMove(true);
                     gamepad.setCanTwist(false);
 
+
                     // open elevator slowly??? idk way lemme check this
                     //powerElevator = powerSlowElevator;
                     //elevator.setPower(powerElevator);
@@ -326,6 +333,8 @@ public class teleOp extends LinearOpMode {
                     frontIntake = false;
                     backIntake = false;
                     canIntake = false;
+
+                    cover.openCover();
 
                     // move to closing dip position
                     moveAutomaticallyDip(dip.getHoldingPosition());
@@ -520,6 +529,13 @@ public class teleOp extends LinearOpMode {
         {
             elevator.setUsePID(false);
         }
+
+        if(resetElevator.seconds() > delayCloseCover && turnOnOfPidByUserAndReturnIfItWasChanged())
+        {
+            cover.closeCover();
+        }
+
+
     }
 
     /**

@@ -13,55 +13,43 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 @Config
-public class dip {
+public class Cover {
 
-    Servo sD;
-    public static double releasingPosition = .5, holdingPosition = .05;
+    Servo sC;
+    public static double openingPosition = .5, closingPosition = .15;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public dip(HardwareMap hardwareMap) {
-        this.sD = hardwareMap.get(Servo.class, "sD");
+    public Cover(HardwareMap hardwareMap) {
+        this.sC = hardwareMap.get(Servo.class, "sC");
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public dip(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.sD = hardwareMap.get(Servo.class, "sD");
+    public Cover(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.sC = hardwareMap.get(Servo.class, "sC");
         this.telemetry = telemetry;
     }
 
     // move dip servo to intake position.
-    public void getFreight() {
-        sD.setPosition(releasingPosition);
+    public void closeCover() {
+        sC.setPosition(closingPosition);
     }
 
     // move dip servo to releasing position.
-    public void releaseFreight() {
-        sD.setPosition(releasingPosition);
-    }
-
-    // move dip servo to holding position.
-    public void holdFreight() {
-        sD.setPosition(holdingPosition);
+    public void openCover() {
+        sC.setPosition(openingPosition);
     }
 
     // get dip servo position
     public double getPos() {
-        return sD.getPosition();
+        return sC.getPosition();
     }
 
     // move to custom position
     public void moveTo(double position)
     {
-        sD.setPosition(position);
+        sC.setPosition(position);
     }
 
-    public static double getReleasingPosition() {
-        return releasingPosition;
-    }
-
-    public static double getHoldingPosition() {
-        return holdingPosition;
-    }
 }

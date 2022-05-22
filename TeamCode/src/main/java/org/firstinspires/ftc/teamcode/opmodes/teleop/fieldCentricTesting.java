@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 
 @Config
 @TeleOp(name = "Field Centric Testing", group = "test")
@@ -51,6 +51,11 @@ public class fieldCentricTesting extends LinearOpMode {
             leftPower_b = Range.clip(input.getX() + twist - input.getY(), -power, power);
             rightPower_f = Range.clip(input.getX() - twist - input.getY(), -power, power);
             rightPower_b = Range.clip(input.getX() - twist + input.getY(), -power, power);
+
+            mFL.setPower(leftPower_f);
+            mBL.setPower(leftPower_b);
+            mFR.setPower(rightPower_f);
+            mBR.setPower(rightPower_b);
 
             telemetry.addData("STARTING IMU", startingHeading);
             telemetry.addData("IMU", drive.getRawExternalHeading());

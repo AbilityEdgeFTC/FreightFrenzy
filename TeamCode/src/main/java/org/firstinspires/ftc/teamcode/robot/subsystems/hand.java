@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Config
 public class hand {
 
-    Servo sL, sR;
+    Servo sH;
     public static double intakePos = 0;
     public static double level1Hub = .9, level2Hub = .7, level3Hub = .55, levelSharedHub = 1, levelDuck3 = 0.6, levelDuck2 = 0.78, levelDuck1 = 1;
 
@@ -33,71 +33,61 @@ public class hand {
     public HandPos handPos = HandPos.INTAKE;
 
     public hand(HardwareMap hardwareMap) {
-        this.sR = hardwareMap.get(Servo.class, "sRight");
-        this.sL = hardwareMap.get(Servo.class, "sLeft");
-        this.sR.setDirection(Servo.Direction.REVERSE);
+        this.sH = hardwareMap.get(Servo.class, "sH");
+        this.sH.setDirection(Servo.Direction.REVERSE);
     }
 
     public void intake()
     {
         handPos = HandPos.INTAKE;
-        sL.setPosition(intakePos);
-        sR.setPosition(intakePos);
+        sH.setPosition(intakePos);
     }
 
     public void shared()
     {
         handPos = HandPos.SHARED_HUB;
-        sL.setPosition(levelSharedHub);
-        sR.setPosition(levelSharedHub);
+        sH.setPosition(levelSharedHub);
     }
 
     public void level1()
     {
         handPos = HandPos.ONE_HUB;
-        sL.setPosition(level1Hub);
-        sR.setPosition(level1Hub);
+        sH.setPosition(level1Hub);
     }
 
     public void level2()
     {
         handPos = HandPos.TWO_HUB;
-        sL.setPosition(level2Hub);
-        sR.setPosition(level2Hub);
+        sH.setPosition(level2Hub);
     }
 
     public void level3()
     {
         handPos = HandPos.THREE_HUB;
-        sL.setPosition(level3Hub);
-        sR.setPosition(level3Hub);
+        sH.setPosition(level3Hub);
     }
 
     public void moveTo(double position)
     {
-        sL.setPosition(position);
-        sR.setPosition(position);
+        sH.setPosition(position);
     }
 
     public void level3Duck()
     {
         handPos = HandPos.DUCK3;
-        sL.setPosition(levelDuck3);
-        sR.setPosition(levelDuck3);
+        sH.setPosition(levelDuck3);
     }
 
     public void level2Duck()
     {
         handPos = HandPos.DUCK2;
-        sL.setPosition(levelDuck2);
-        sR.setPosition(levelDuck2);
+        sH.setPosition(levelDuck2);
     }
 
     public void level1Duck()
     {
         handPos = HandPos.DUCK1;
-        sL.setPosition(levelDuck1);
-        sR.setPosition(levelDuck1);
+        sH.setPosition(levelDuck1);
     }
 
     public HandPos getHandPos() {
@@ -105,7 +95,7 @@ public class hand {
     }
 
     public double getPos() {
-        return sL.getPosition();
+        return sH.getPosition();
     }
 
 

@@ -44,7 +44,9 @@ public class Carousel {
     }
 
 
-    public void spinCarousel(){
+    public void spinCarousel(boolean reverse){
+
+
 
         if(getSeconds() > delay && newSpin)
         {
@@ -55,7 +57,14 @@ public class Carousel {
             powerGiven += addingBy;
         }
 
-        mC.setPower(powerGiven);
+        if(reverse) {
+
+            mC.setPower(-powerGiven);
+
+
+        }else {
+            mC.setPower(powerGiven);
+        }
     }
 
     public void displayTelemetry()
