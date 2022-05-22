@@ -32,7 +32,7 @@ public class MMRightRed {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(70, 70, Math.toRadians(270), Math.toRadians(270), 12.805)
+                .setConstraints(70, 70, 7.706666469573975, 7.706666469573975, 13)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPoseRight)
                                 .lineToLinearHeading(poseHelp)
