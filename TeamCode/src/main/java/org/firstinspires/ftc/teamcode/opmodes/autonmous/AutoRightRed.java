@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -49,6 +50,7 @@ public class AutoRightRed extends LinearOpMode {
     hand hand;
     intake intake;
     dip dip;
+    Cover cover;
     boolean canIntake = true;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
@@ -83,6 +85,7 @@ public class AutoRightRed extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
         spinner = new SpinnerFirstPID(hardwareMap);
+        cover = new Cover(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);

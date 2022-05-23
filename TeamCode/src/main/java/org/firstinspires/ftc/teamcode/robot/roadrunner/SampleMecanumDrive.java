@@ -70,7 +70,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private DcMotorEx mFL, mBL, mBR, mFR;
     private List<DcMotorEx> motors;
     DcMotor motorSpinner, motorElevator;
 
@@ -98,12 +98,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        mFL= hardwareMap.get(DcMotorEx.class, "mFL");
+        mBL = hardwareMap.get(DcMotorEx.class, "mBL");
+        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
+        mFR = hardwareMap.get(DcMotorEx.class, "mFR");
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        motors = Arrays.asList(mFL, mBL, mBR, mFR);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -121,10 +121,10 @@ public class SampleMecanumDrive extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "mFL");
-        leftRear = hardwareMap.get(DcMotorEx.class, "mBL");
-        rightRear = hardwareMap.get(DcMotorEx.class, "mBR");
-        rightFront = hardwareMap.get(DcMotorEx.class, "mFR");
+        mFL = hardwareMap.get(DcMotorEx.class, "mFL");
+        mBL = hardwareMap.get(DcMotorEx.class, "mBL");
+        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
+        mFR = hardwareMap.get(DcMotorEx.class, "mFR");
 
         motorSpinner = hardwareMap.get(DcMotorEx.class, "mS");
         motorSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -133,8 +133,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         motorSpinner.setPower(0);
         motorElevator.setPower(0);
 
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        mFL.setDirection(DcMotorSimple.Direction.REVERSE);
+        mBL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setLocalizer(new MecanumLocalizer(this, true));
 
@@ -283,10 +283,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
+        mFL.setPower(v);
+        mBL.setPower(v1);
+        mBR.setPower(v2);
+        mFR.setPower(v3);
     }
 
     @Override

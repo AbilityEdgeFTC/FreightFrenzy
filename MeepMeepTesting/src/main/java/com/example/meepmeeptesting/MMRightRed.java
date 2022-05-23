@@ -24,10 +24,15 @@ public class MMRightRed {
         double poseHelpY = -50;
         double poseHelpH = 180;
 
+        //Cordinates for each course
+        double cylceX2 = 56;
+        double cycleY2 = -52;
+
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
+        Vector2d poseCollectCycle2 = new Vector2d(cylceX2 , cycleY2);
 //        Pose2d poseHub = new Pose2d(poseHubX, poseHubY, Math.toRadians(poseHubH));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -36,24 +41,33 @@ public class MMRightRed {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPoseRight)
                                 .lineToLinearHeading(poseHelp)
-                                .lineToSplineHeading(poseEntrance)
+                               .lineToSplineHeading(poseEntrance)
                                 .waitSeconds(.8)
                                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                                 .lineToSplineHeading(poseEntrance)
                                 .waitSeconds(.8)
                                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                                .lineToSplineHeading(poseEntrance)
+                                .lineToConstantHeading(new Vector2d(poseCollectCycle2.getX(), poseCollectCycle2.getY()))
                                 .waitSeconds(.8)
                                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                                 .lineToSplineHeading(poseEntrance)
                                 .waitSeconds(.8)
                                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                                .lineToSplineHeading(new Pose2d(poseCollect.getX() , poseCollect.getY()+5, poseCollect.getHeading()))
+                                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                                 .lineToSplineHeading(poseEntrance)
+                                .waitSeconds(.8)
+                                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                                .lineToConstantHeading(new Vector2d(poseCollectCycle2.getX()+2, poseCollectCycle2.getY()-15))
                                 .waitSeconds(.8)
                                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                                 .lineToSplineHeading(poseEntrance)
                                 .waitSeconds(.8)
                                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                                .lineToSplineHeading(new Pose2d(poseCollect.getX()+4 , poseCollect.getY(), poseCollect.getHeading()))
+                                .lineToSplineHeading(new Pose2d(poseCollect.getX() , poseCollect.getY(), poseCollect.getHeading()))
+                                .lineToSplineHeading(poseEntrance)
+                                .lineToSplineHeading(new Pose2d(poseCollect.getX(),poseCollect.getY(),poseCollect.getHeading()))
                                 .build()
                 );
 
