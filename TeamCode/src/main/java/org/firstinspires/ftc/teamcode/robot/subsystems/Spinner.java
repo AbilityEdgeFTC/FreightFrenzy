@@ -42,24 +42,23 @@ public class Spinner {
         {
             motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
         }
-        if(gamepad2.right_stick_x != 0 && !gamepad2.right_stick_button)
+        else if(gamepad2.right_stick_x != 0 && !gamepad2.right_stick_button)
         {
             motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
         }
-        if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
+        else if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
         {
             motor.setPower(0);
         }
-
-        if(slowMove && gamepad1.right_stick_x != 0 && gamepad1.right_stick_button)
+        else if(slowMove && gamepad1.right_stick_x != 0 && gamepad1.right_stick_button)
         {
             motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower/2, maxPower/2));
         }
-        if(gamepad2.right_stick_x != 0 && gamepad2.right_stick_button)
+        else if(gamepad2.right_stick_x != 0 && gamepad2.right_stick_button)
         {
             motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower/2, maxPower/2));
         }
-        if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
+        else if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
         {
             motor.setPower(0);
         }

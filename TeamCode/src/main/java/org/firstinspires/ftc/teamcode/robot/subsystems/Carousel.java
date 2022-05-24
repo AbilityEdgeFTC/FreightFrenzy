@@ -16,7 +16,7 @@ public class Carousel {
     DcMotor mC;
     double powerGiven = 0;
     public static double addingBy = 0.25;
-    public static double MAX_POWER = 0.45; //configerable
+    public static double MAX_POWER = 0.5; //configerable
     public static double MIN_POWER = 0.3;
     public static double delay = 1.2;
     public static double startAccel = .19;
@@ -46,8 +46,6 @@ public class Carousel {
 
     public void spinCarousel(boolean reverse){
 
-
-
         if(getSeconds() > delay && newSpin)
         {
             powerGiven += startAccel;
@@ -57,12 +55,12 @@ public class Carousel {
             powerGiven += addingBy;
         }
 
-        if(reverse) {
-
+        if(reverse)
+        {
             mC.setPower(-powerGiven);
-
-
-        }else {
+        }
+        else
+        {
             mC.setPower(powerGiven);
         }
     }

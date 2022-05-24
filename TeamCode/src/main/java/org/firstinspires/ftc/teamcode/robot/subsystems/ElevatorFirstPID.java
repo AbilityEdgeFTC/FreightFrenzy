@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 21.5;
+    public static double HUB_LEVEL3 = 23.5;
     public static double HUB_LEVEL2 = 10.5;
     public static double HUB_LEVEL1 = 10.5;
     public static double AUTO_LEFT_LEVEL = 20.3;
@@ -53,15 +53,15 @@ public class ElevatorFirstPID {
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mE");
         this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if(DEBUG)
-        {
-            offset = 0;
-        }
-        else
-        {
-            offset = Integer.parseInt(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("ElevatorEncoderValue.txt")));
-            offset = motor.getCurrentPosition();
-        }
+//        if(DEBUG)
+//        {
+//            offset = 0;
+//        }
+//        else
+//        {
+//            offset = Integer.parseInt(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("ElevatorEncoderValue.txt")));
+//            offset = motor.getCurrentPosition();
+//        }
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.motor.setDirection(DcMotor.Direction.REVERSE);
