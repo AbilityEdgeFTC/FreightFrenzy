@@ -5,17 +5,23 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ReadWriteFile;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -26,6 +32,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.Arrays;
+
 /*
  * This is a simple routine to test translational drive capabilities.
  */
@@ -35,23 +43,24 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class AutoLeftRed extends LinearOpMode {
 
     double startPoseLeftX = -35;
-    double startPoseLeftY = -60;
+    double startPoseLeftY = -72 + 17.72;
     double startPoseLeftH = 90;
-    public static double poseCarouselX = -62.2;
-    public static double poseCarouselY = -59.5;
+
+    public static double poseCarouselX = -59.5;
+    public static double poseCarouselY = -57.5;
     public static double poseCarouselH = 95;
     public static double carouselHelp = 15;
-    public static double poseParkHelpX = -56;
-    public static double poseParkHelpY = -3;
+    public static double poseParkHelpX = -40;
+    public static double poseParkHelpY = -6;
     public static double poseParkHelpH = 180;
-    public static double poseParkaX = 6;
-    public static double poseParkaY = -3;
+    public static double poseParkaX = 7.5;
+    public static double poseParkaY = -6;
     public static double poseParkaH = 180;
-    public static double poseParkbX = 7;
-    public static double poseParkbY = -50;
+    public static double poseParkbX = 7.5;
+    public static double poseParkbY = -45;
     public static double poseParkbH = 180;
-    public static double poseParkcX = 58;
-    public static double poseParkcY = -50;
+    public static double poseParkcX = 50;
+    public static double poseParkcY = -45;
     public static double poseParkcH = 180;
     public static double runCarouselFor = 4;
     ElevatorFirstPID elevator;
@@ -59,7 +68,7 @@ public class AutoLeftRed extends LinearOpMode {
     hand hand;
     intake intake;
     dip dip;
-    //carousel carousel;
+    Carousel carousel;
     boolean canIntake = true;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
@@ -87,7 +96,7 @@ public class AutoLeftRed extends LinearOpMode {
         spinner = new SpinnerFirstPID(hardwareMap);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
-        //carousel = new carousel(hardwareMap);
+        carousel = new Carousel(hardwareMap);
         dip = new dip(hardwareMap);
         DriveConstants.setMaxVel(60);
         DriveConstants.setMaxAccel(40);
@@ -102,13 +111,13 @@ public class AutoLeftRed extends LinearOpMode {
         MarkerCallback carouselOnn = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                //carousel.spin(false,true);
+                carousel.spinCarouselNoAccel(false);
             }
         };
         MarkerCallback carouselOff = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                //carousel.stop();
+                carousel.stopCarouselNoAccel();
             }
         };
         MarkerCallback intakeDuck =  new MarkerCallback()
@@ -326,7 +335,7 @@ public class AutoLeftRed extends LinearOpMode {
             case MID:
             case MAX:
                 main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                    .addTemporalMarker(elevetorVisionA)
+                     .addTemporalMarker(elevetorVisionA)
                     .waitSeconds(.8)
                     .addTemporalMarker(elevetorVisionB)
                     .waitSeconds(1.2)

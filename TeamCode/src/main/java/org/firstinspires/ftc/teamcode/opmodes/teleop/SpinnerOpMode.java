@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
  */
 @Config
 @TeleOp(name = "Elevator Spinner Testing", group = "testing")
-@Disabled
 public class SpinnerOpMode extends LinearOpMode {
 
     SpinnerFirstPID elevator;

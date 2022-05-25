@@ -34,6 +34,12 @@ public class Carousel {
         this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
+    public Carousel(HardwareMap hardwareMap) {
+        this.mC = hardwareMap.get(DcMotor.class, "mC");
+        this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
     public Carousel(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1) {
         clock = NanoClock.system();

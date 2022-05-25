@@ -14,8 +14,8 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class SpinnerFirstPID {
 
-    public static int RIGHT_ANGLE = 120;
-    public static int LEFT_ANGLE = -120;
+    public static int RIGHT_ANGLE = 250;
+    public static int LEFT_ANGLE = -250;
     public static int ZERO_ANGLE = 330;
     public static int LEFT_AUTO_ANGLE_RED = 143;
     public static int LEFT_AUTO_ANGLE_BLUE = -143;
@@ -27,7 +27,6 @@ public class SpinnerFirstPID {
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     DcMotorEx motor;
-    int offset = 0;
 
     public enum SpinnerState
     {
@@ -60,9 +59,9 @@ public class SpinnerFirstPID {
     public SpinnerFirstPID(HardwareMap hardwareMap)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mS");
-        offset = motor.getCurrentPosition();
         this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         this.motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void update()
@@ -88,7 +87,7 @@ public class SpinnerFirstPID {
                     break;
             }
 
-            motor.setTargetPosition(target - ZERO_ANGLE + offset);
+            motor.setTargetPosition(target - ZERO_ANGLE);
             motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
