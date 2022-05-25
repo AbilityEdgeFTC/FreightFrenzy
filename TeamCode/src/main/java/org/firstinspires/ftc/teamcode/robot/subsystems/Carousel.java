@@ -65,6 +65,17 @@ public class Carousel {
         }
     }
 
+    public void spinCarouselNoAccel(boolean reverse){
+        if(reverse)
+        {
+            mC.setPower(-MIN_POWER);
+        }
+        else
+        {
+            mC.setPower(MIN_POWER);
+        }
+    }
+
     public void displayTelemetry()
     {
         telemetry.addData("Power: ", powerGiven);
@@ -83,6 +94,10 @@ public class Carousel {
         newSpin = true;
         offset = clock.seconds();
         powerGiven = MIN_POWER;
+    }
+
+    public void stopCarouselNoAccel(){
+        mC.setPower(0);
     }
 
 }
