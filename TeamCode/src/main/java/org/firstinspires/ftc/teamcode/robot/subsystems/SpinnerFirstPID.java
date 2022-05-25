@@ -14,8 +14,8 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class SpinnerFirstPID {
 
-    public static int RIGHT_ANGLE = 250;
-    public static int LEFT_ANGLE = -250;
+    public static int RIGHT_ANGLE = 120;
+    public static int LEFT_ANGLE = -120;
     public static int ZERO_ANGLE = 330;
     public static int LEFT_AUTO_ANGLE_RED = 143;
     public static int LEFT_AUTO_ANGLE_BLUE = -143;
