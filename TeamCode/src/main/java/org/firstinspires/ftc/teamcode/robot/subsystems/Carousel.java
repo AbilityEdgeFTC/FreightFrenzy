@@ -18,7 +18,7 @@ public class Carousel {
     public static double addingBy = 0.25;
     public static double MAX_POWER = 0.5; //configerable
     public static double MIN_POWER = 0.3;
-    public static double delay = 1.2;
+    public static double delay = 1.1;
     public static double startAccel = .19;
     NanoClock clock;
     double offset = 0;

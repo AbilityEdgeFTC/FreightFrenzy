@@ -24,7 +24,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 public class teleOp extends LinearOpMode {
 
     gamepad gamepad;
-    //Spinner spinner;
     SpinnerPID spinner;
     ElevatorFirstPID elevator;
     Carousel carousel;
@@ -35,11 +34,11 @@ public class teleOp extends LinearOpMode {
     cGamepad cGamepad1, cGamepad2;
     public static double powerIntake = 1, powerSlowElevator = .6;
     public static double firstLevelHandDelay = 0.5, secondLevelHandDelay = .4;
-    public static double thirdLevelHandDelay = .5, shareLevelHandDelay = 0.5;
+    public static double thirdLevelHandDelay = .18, shareLevelHandDelay = 0.25;
     public static double spinnerSlowerPower = 0.4;
     public static double elevatorFastPower = 0.85;
     public static double sharedLevelElevatorGoBackDelay = 1, sharedLevelElevatorCloseDelay = 1;
-    public static double closingHandDelayShare = 0.63, closingHandDelayLevel1 = 1.3;
+    public static double closingHandDelayShare = .65, closingHandDelayLevel1 = 1.3;
     public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .5;
     double MIN_MANUAL_HAND_MOVING = 0.03, MAX_MANUAL_HAND_MOVING = 1 - MIN_MANUAL_HAND_MOVING;
     boolean frontIntake = false, backIntake = false, canIntake = true;
@@ -66,7 +65,6 @@ public class teleOp extends LinearOpMode {
         gamepad.setRedAlliance(true);
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
-//        spinner = new Spinner(hardwareMap, gamepad1, gamepad2);
         spinner = new SpinnerPID(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
         carousel = new Carousel(hardwareMap , gamepad2);
@@ -161,6 +159,16 @@ public class teleOp extends LinearOpMode {
                 hand.level2();
             }
         }
+        else if (gamepad1.y)
+        {
+            elevatorLevel = 0;
+
+            if(elevatorMovement != ElevatorMovement.CLOSED)
+            {
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
+                hand.shared();
+            }
+        }
     }
 
     /**
@@ -218,25 +226,31 @@ public class teleOp extends LinearOpMode {
     {
         // these are the spinner/elevator manual buttons, so we check if user has changed them(moved), if so turn off/turn on pid
         // for a temp time, else turn on pid.
-        if(gamepad2.left_stick_button || /*gamepad2.right_stick_y != 0 || gamepad2.right_stick_x != 0
-                || */gamepad2.left_stick_y != 0 /* && !gamepad2.right_stick_button*/)
+        if(gamepad2.right_stick_x != 0 || gamepad2.right_stick_button && elevatorMovement == ElevatorMovement.CLOSED)
         {
-            elevator.setUsePID(false);
-            if(gamepad2.start)
-            {
-                elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-            }
+            spinner.setUsePID(false);
             return false;
         }
-        else if((gamepad2.left_trigger == 1 && gamepad2.right_trigger == 1) || gamepad1.left_bumper &&
-                !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.CLOSED)
+        else if(elevatorMovement == ElevatorMovement.CLOSED)
+        {
+            spinner.setUsePID(true);
+        }
+
+        if(gamepad2.left_stick_y != 0 || gamepad2.left_stick_button && elevatorMovement == ElevatorMovement.CLOSED)
+        {
+            elevator.setUsePID(false);
+            return false;
+        }
+        else if(elevatorMovement == ElevatorMovement.CLOSED && gamepad2.right_stick_x == 0)
         {
             elevator.setUsePID(true);
         }
 
-        if(gamepad2.start)
+        if((gamepad2.left_trigger == 1 && gamepad2.right_trigger == 1) || gamepad1.left_bumper &&
+                !gamepad2.left_stick_button && elevatorMovement != ElevatorMovement.CLOSED)
         {
-            elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+            elevator.setUsePID(true);
+            spinner.setUsePID(true);
         }
 
         return true;
@@ -339,6 +353,7 @@ public class teleOp extends LinearOpMode {
                 {
                     resetElevator();
                 }
+                spinner.setUsePID(true);
                 spinner.setSlowMove(false);
                 gamepad.setCanTwist(true);
 
@@ -349,6 +364,7 @@ public class teleOp extends LinearOpMode {
                     // not the robot
                     elevator.setUsePID(true);
                     spinner.setSlowMove(true);
+                    spinner.setUsePID(false);
                     gamepad.setCanTwist(false);
 
 
@@ -413,11 +429,13 @@ public class teleOp extends LinearOpMode {
                 {
                     gamepad.setCanTwist(true);
                     spinner.setSlowMove(false);
+                    spinner.setUsePID(true);
                 }
                 // else we want to twist spinner not robot
                 else
                 {
                     gamepad.setCanTwist(false);
+                    spinner.setUsePID(false);
                     spinner.setSlowMove(true);
                 }
 
@@ -432,6 +450,7 @@ public class teleOp extends LinearOpMode {
                     // make spinner slower and close elevator faster
                     spinner.setMaxPower(spinnerSlowerPower);
                     elevator.setMaxPower(elevatorFastPower);
+                    elevator.setUsePID(true);
 
                     // save the current position of the elevator
                     saveCurrentHubLevel();
@@ -516,20 +535,24 @@ public class teleOp extends LinearOpMode {
 
     void closeSharedHubElevator()
     {
-        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
 
         // wait the delay(if with pid on ofc)
         if(!withoutPID())
         {
             // move to closing dip position
             dip.getFreight();
+        }
 
+        if(resetElevator.seconds() > closingHandDelayShare / 2)
+        {
+            elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
         }
 
         if(!withoutPID() && resetElevator.seconds() > closingHandDelayShare)
         {
             // move hand to the pos and go on to the next state in the finite state machine.
             hand.intake();
+
         }
 
         if(!withoutPID() && resetElevator.seconds() > closingHandDelayShare + sharedLevelElevatorCloseDelay)

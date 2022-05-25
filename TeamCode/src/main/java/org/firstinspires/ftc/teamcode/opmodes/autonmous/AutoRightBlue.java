@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
@@ -30,6 +31,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  */
 @Config
 @Autonomous(name = "Right Blue FULL", group = "Autonomous Blue")
+@Disabled
 public class AutoRightBlue extends LinearOpMode {
 
     double startPoseRightX = -35;
