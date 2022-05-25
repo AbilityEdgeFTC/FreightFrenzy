@@ -35,22 +35,27 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name = "AutoTesting", group = "Autonomous  Red")
 public class AutoTesting extends LinearOpMode {
 
-
     double startPoseRightX = 13;
-    double startPoseRightY = -60;
+    double startPoseRightY = -62;
     double startPoseRightH = 90;
     double poseEntranceX = 13;
     double poseEntranceY = -64;
     double poseEntranceH = 180;
     double poseCollectX = 50;
-    double poseCollectY = -62;
+    double poseCollectY = -64;
     double poseCollectH = 180;
     double poseHelpX = 7;
     double poseHelpY = -50;
     double poseHelpH = 180;
 
-    double cylceX2 = 56;
-    double cycleY2 = -52;
+    //Cordinates for each course
+    double cylceX2 = 60;
+    double cycleY2 = -59;
+    double cycleH2 = 45;
+
+    double cylceX3 = 60;
+    double cycleY3 = -63;
+    double cycleH3 = -45;
 
 
     ElevatorFirstPID elevator;
@@ -138,69 +143,70 @@ public class AutoTesting extends LinearOpMode {
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
         Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         Pose2d poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
-        Vector2d poseCollectCycle2 = new Vector2d(cylceX2, cycleY2);
-//        Pose2d poseHub = new Pose2d(poseHubX, poseHubY, Math.toRadians(poseHubH));
+        Pose2d poseCollectCycle2 = new Pose2d(cylceX2 , cycleY2, Math.toRadians(cycleH2));
+        Pose2d poseCollectCycle3 = new Pose2d(cylceX3 , cycleY3, Math.toRadians(cycleH3));
+
 
 
         DriveConstants.setMaxVel(70);
 
-        main = drive.trajectorySequenceBuilder(startPoseRight)
-                .lineToLinearHeading(poseHelp)
-                .lineToSplineHeading(poseEntrance)
+       // main = drive.trajectorySequenceBuilder(startPoseRight)
+              //  .lineToLinearHeading(poseHelp)
+                //.lineToSplineHeading(poseEntrance)
                // .addTemporalMarker(openCover)
               //  .waitSeconds(1)
                // .addTemporalMarker(elevatorOpen)
-                .waitSeconds(.8)
+              // .waitSeconds(.8)
               //  .addTemporalMarker(elevetorClose)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToSplineHeading(poseEntrance)
+              //  .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+               // .lineToSplineHeading(poseEntrance)
               //  .addTemporalMarker(openCover)
                // .waitSeconds(1)
               //  .addTemporalMarker(elevatorOpen)
-                .waitSeconds(.8)
+              //  .waitSeconds(.8)
               //  .addTemporalMarker(elevetorClose)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToConstantHeading(new Vector2d(poseCollectCycle2.getX(), poseCollectCycle2.getY()))
-                .waitSeconds(.8)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToSplineHeading(poseEntrance)
+               // .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+               // .lineToConstantHeading(new Vector2d(poseCollectCycle2.getX(), poseCollectCycle2.getY()))
+              //  .waitSeconds(.8)
+              //  .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                //.lineToSplineHeading(poseEntrance)
               //  .addTemporalMarker(openCover)
             //    .waitSeconds(1)
               //  .addTemporalMarker(elevatorOpen)
-                .waitSeconds(.8)
+               // .waitSeconds(.8)
               //  .addTemporalMarker(elevetorClose)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY() + 5, poseCollect.getHeading()))
-                .waitSeconds(.8)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToSplineHeading(poseEntrance)
+               // .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+            //    .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY() + 5, poseCollect.getHeading()))
+               // .waitSeconds(.8)
+               // .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+              //  .lineToSplineHeading(poseEntrance)
              //   .addTemporalMarker(openCover)
             //    .waitSeconds(1)
              //   .addTemporalMarker(elevatorOpen)
-                .waitSeconds(.8)
+              //  .waitSeconds(.8)
              //   .addTemporalMarker(elevetorClose)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToConstantHeading(new Vector2d(poseCollectCycle2.getX() + 2, poseCollectCycle2.getY() - 15))
-                .waitSeconds(.8)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+              //  .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+              //  .lineToConstantHeading(new Vector2d(poseCollectCycle2.getX() + 2, poseCollectCycle2.getY() - 15))
+               // .waitSeconds(.8)
+               // .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
              //   .lineToSplineHeading(poseEntrance)
             //    .addTemporalMarker(openCover)
             //    .waitSeconds(1)
               //  .addTemporalMarker(elevatorOpen)
-                .waitSeconds(.8)
+             //   .waitSeconds(.8)
                 //.addTemporalMarker(elevetorClose)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX() + 4, poseCollect.getY(), poseCollect.getHeading()))
-                .waitSeconds(.8)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToSplineHeading(poseEntrance)
+             //   .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+              //  .lineToSplineHeading(new Pose2d(poseCollect.getX() + 4, poseCollect.getY(), poseCollect.getHeading()))
+            //    .waitSeconds(.8)
+                //.lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+               // .lineToSplineHeading(poseEntrance)
                 //.addTemporalMarker(openCover)
                 //.waitSeconds(1)
               //  .addTemporalMarker(elevatorOpen)
-                .waitSeconds(.8)
+               // .waitSeconds(.8)
                // .addTemporalMarker(elevetorClose)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .build();
+              //  .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+           //     .build();
 
 
 
