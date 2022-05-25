@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class dip {
 
     Servo sD;
-    public static double releasingPosition = .55, holdingPosition = .04;
+    public static double releasingPosition = .6, holdingPosition = .05;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
@@ -31,32 +31,37 @@ public class dip {
         this.telemetry = telemetry;
     }
 
-    // spin dip servo to intake positions, and holding servo to hold position.
+    // move dip servo to intake position.
     public void getFreight() {
         sD.setPosition(releasingPosition);
     }
 
-    // spin holding servo to push position.
+    // move dip servo to releasing position.
     public void releaseFreight() {
         sD.setPosition(releasingPosition);
     }
 
-    // spin holding servo to push position.
+    // move dip servo to holding position.
     public void holdFreight() {
         sD.setPosition(holdingPosition);
     }
-    // display position of servo's.
-    public void displayTelemetry(){
-        telemetry.addLine("Servo Dip at: " + sD.getPosition());
-        telemetry.update();
-    }
 
+    // get dip servo position
     public double getPos() {
         return sD.getPosition();
     }
 
+    // move to custom position
     public void moveTo(double position)
     {
         sD.setPosition(position);
+    }
+
+    public static double getReleasingPosition() {
+        return releasingPosition;
+    }
+
+    public static double getHoldingPosition() {
+        return holdingPosition;
     }
 }

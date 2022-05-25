@@ -3,13 +3,12 @@ package org.firstinspires.ftc.teamcode.robot.roadrunner.drive.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
-//import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.DoubleLocalizer;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -20,6 +19,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.localizers.T265Localizer;
  */
 @TeleOp(group = "drive")
 @Config
+@Disabled
 public class LocalizationTest extends LinearOpMode {
 
     public static double startPoseLeftX = -35;
@@ -34,11 +34,10 @@ public class LocalizationTest extends LinearOpMode {
     }
 
     SampleMecanumDrive drive;
-    T265Localizer t265Localizer;
 
     Pose2d poseEstimate;
     Trajectory trajectory;
-    public static AlwaysOnePos.RobotLocalizer localizer = AlwaysOnePos.RobotLocalizer.Mecanum;
+    public static RobotLocalizer localizer = RobotLocalizer.Mecanum;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -49,8 +48,8 @@ public class LocalizationTest extends LinearOpMode {
             case Mecanum:
                 break;
             case Camera:
-                t265Localizer = new T265Localizer(hardwareMap);
-                drive.setLocalizer(t265Localizer);
+                //t265Localizer = new T265Localizer(hardwareMap);
+                //drive.setLocalizer(t265Localizer);
                 break;
             case Both:
                 //drive.setLocalizer(new DoubleLocalizer(hardwareMap));
@@ -81,6 +80,6 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.update();
         }
 
-        t265Localizer.stop();
+        //t265Localizer.stop();
     }
 }

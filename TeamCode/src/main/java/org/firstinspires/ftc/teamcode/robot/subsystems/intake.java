@@ -33,6 +33,7 @@ public class intake {
     public intake(HardwareMap hardwareMap) {
         this.mI = hardwareMap.get(DcMotorEx.class, "mI");
         this.mI.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mI.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -43,6 +44,7 @@ public class intake {
         this.power = power;
         this.mI = hardwareMap.get(DcMotorEx.class, "mI");
         this.mI.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mI.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -56,6 +58,7 @@ public class intake {
         this.mI = mI;
         this.telemetry = telemetry;
         this.mI.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.mI.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**

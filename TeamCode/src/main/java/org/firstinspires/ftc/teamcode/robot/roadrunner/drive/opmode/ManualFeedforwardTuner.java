@@ -10,19 +10,20 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 
 import java.util.Objects;
 
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants.kV;
 
 /*
  * This routine is designed to tune the open-loop feedforward coefficients. Although it may seem unnecessary,
@@ -41,6 +42,7 @@ import static org.firstinspires.ftc.teamcode.robot.roadrunner.drive.DriveConstan
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class ManualFeedforwardTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
 

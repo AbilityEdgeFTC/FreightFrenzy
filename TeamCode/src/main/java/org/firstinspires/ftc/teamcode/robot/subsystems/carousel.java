@@ -1,81 +1,109 @@
-/**
- * Created by Ability Edge#18273
- * - Elior Yousefi
- */
-
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
-import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.checkerframework.checker.units.qual.C;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
-public class carousel {
+public class Carousel {
 
-    //motor carousel
-    CRServo sCL, sCR;
+    DcMotor mC;
+    double powerGiven = 0;
+    public static double addingBy = 0.25;
+    public static double MAX_POWER = 0.5; //configerable
+    public static double MIN_POWER = 0.3;
+    public static double delay = 1.1;
+    public static double startAccel = .19;
+    NanoClock clock;
+    double offset = 0;
     Telemetry telemetry;
-    Gamepad gamepad;
-    public static double powerCarousel = 1;
+    boolean newSpin = true;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public carousel(HardwareMap hardwareMap, Gamepad gamepad) {
-        this.sCL = hardwareMap.get(CRServo.class, "sCL");
-        this.sCR = hardwareMap.get(CRServo.class, "sCR");
-        this.gamepad = gamepad;
+    public Carousel(HardwareMap hardwareMap, Gamepad gamepad1) {
+        clock = NanoClock.system();
+        this.mC = hardwareMap.get(DcMotor.class, "mC");
+        this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    // 2 constructors for 2 options, construct the carousel with and without telementry.
-    /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
-    public carousel(HardwareMap hardwareMap) {
-        this.sCL = hardwareMap.get(CRServo.class, "sCL");
-        this.sCR = hardwareMap.get(CRServo.class, "sCR");
+    public Carousel(HardwareMap hardwareMap) {
+        this.mC = hardwareMap.get(DcMotor.class, "mC");
+        this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, HARDWAREMAP, AND TELEMENTRY.  */
-    public carousel(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.sCL = hardwareMap.get(CRServo.class, "sCL");
-        this.sCR = hardwareMap.get(CRServo.class, "sCR");
+    public Carousel(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1) {
+        clock = NanoClock.system();
+        this.mC = hardwareMap.get(DcMotor.class, "mC");
+        this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
         this.telemetry = telemetry;
     }
 
-    // spin carousel motor with power, option for reversed is added.
-    public void spin(boolean reverse, boolean isRed){
-        if (isRed) {
-            if (reverse) {
-                sCL.setPower(powerCarousel);
-            } else {
-                sCL.setPower(-powerCarousel);
-            }
+
+    public void spinCarousel(boolean reverse){
+
+        if(getSeconds() > delay && newSpin)
+        {
+            powerGiven += startAccel;
+        }
+        else if(powerGiven < MAX_POWER)
+        {
+            powerGiven += addingBy;
+        }
+
+        if(reverse)
+        {
+            mC.setPower(-powerGiven);
         }
         else
         {
-            if (reverse) {
-                sCR.setPower(powerCarousel);
-            } else {
-                sCR.setPower(-powerCarousel);
-            }
+            mC.setPower(powerGiven);
         }
     }
 
-    // stop carousel motor.
-    public void stop(){
-        sCL.setPower(0);
-        sCR.setPower(0);
+    public void spinCarouselNoAccel(boolean reverse){
+        if(reverse)
+        {
+            mC.setPower(-MIN_POWER);
+        }
+        else
+        {
+            mC.setPower(MIN_POWER);
+        }
     }
 
-    // display power of motor.
-    public void displayTelemetry(){
-        telemetry.addLine("Power at: " + powerCarousel);
+    public void displayTelemetry()
+    {
+        telemetry.addData("Power: ", powerGiven);
+        telemetry.addData("Seconds: ", getSeconds());
+        telemetry.addData("Offset: ", offset);
         telemetry.update();
+    }
+
+    double getSeconds()
+    {
+        return clock.seconds() - offset;
+    }
+
+    public void stopCarousel(){
+        mC.setPower(0);
+        newSpin = true;
+        offset = clock.seconds();
+        powerGiven = MIN_POWER;
+    }
+
+    public void stopCarouselNoAccel(){
+        mC.setPower(0);
     }
 
 }

@@ -9,7 +9,6 @@ package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -19,7 +18,7 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 
 @Config
 public class gamepad {
@@ -34,13 +33,11 @@ public class gamepad {
     double rightPower_f;
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
-    public static double mainPower = .8, multiplier = .9;
+    public static double mainPower = .7, multiplier = .9;
     public static boolean slowMove = false, isCentricDrive = true, canTwist = true, goSlow = false;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
     public static double startH = 0;
-
-    //public static String allianceColor;
 
     /**
      * constructor for gamepad
@@ -77,6 +74,12 @@ public class gamepad {
             startH -= Math.PI/2; // blue
         }
 
+        if(DEBUG)
+        {
+            startH = 0;
+            startH -= (Math.PI + Math.PI/2); // red
+        }
+
         this.drivetrain = new SampleMecanumDrive(hardwareMap);
         this.drivetrain.setPoseEstimate(new Pose2d(0,0,startH));
         // We want to turn off velocity control for teleop
@@ -87,9 +90,8 @@ public class gamepad {
     public void update() {
         cGamepad1.update();
         cGamepad2.update();
-        //drivetrain.update();
 
-        if(cGamepad1.dpadDownOnce())
+        if(cGamepad1.XOnce())
         {
             if(redAlliance)
             {
@@ -119,7 +121,7 @@ public class gamepad {
             power = mainPower;
         }
 
-        if(gamepad1.left_stick_button)
+        if(gamepad1.left_stick_button || gamepad2.dpad_down)
         {
             power = 1;
         }
@@ -130,7 +132,7 @@ public class gamepad {
 
         getGamepadDirections();
 
-        if(cGamepad1.XOnce())
+        if(cGamepad1.dpadDownOnce())
         {
             isCentricDrive = !isCentricDrive;
         }
@@ -174,11 +176,6 @@ public class gamepad {
 
     public void centricDrive()
     {
-//        Vector2d input = new Vector2d(
-//                -gamepad1.left_stick_y,
-//                -gamepad1.left_stick_x
-//        ).rotated(-drivetrain.getExternalHeading());
-
         Vector2d input = new Vector2d(
                 -gamepad1.left_stick_y,
                 gamepad1.left_stick_x
@@ -188,26 +185,6 @@ public class gamepad {
         leftPower_b = Range.clip(input.getX() + twist - input.getY(), -power, power);
         rightPower_f = Range.clip(input.getX() - twist - input.getY(), -power, power);
         rightPower_b = Range.clip(input.getX() - twist + input.getY(), -power, power);
-    }
-
-    public double GetmFLPower()
-    {
-        return mFL.getPower();
-    }
-
-    public double GetmFRPower()
-    {
-        return mFR.getPower();
-    }
-
-    public double GetmBLPower()
-    {
-        return mBL.getPower();
-    }
-
-    public double GetmBRPower()
-    {
-        return mBR.getPower();
     }
 
     public double getIMU()
