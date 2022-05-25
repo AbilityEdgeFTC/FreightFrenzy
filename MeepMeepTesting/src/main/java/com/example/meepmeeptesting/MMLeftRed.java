@@ -11,7 +11,7 @@ public class MMLeftRed {
         MeepMeep meepMeep = new MeepMeep(800);
 
         double startPoseLeftX = -35;
-        double startPoseLeftY = -60;
+        double startPoseLeftY = -72 + 17.72;
         double startPoseLeftH = 90;
         double poseCarouselX = -59.5;
         double poseCarouselY = -57.5;
@@ -22,12 +22,12 @@ public class MMLeftRed {
         double carouselHelp = 15;
 
 
-        double poseParkHelpX = -27.5;
+        double poseParkHelpX = -40;
         double poseParkHelpY = -6;
         double poseParkHelpH = 180;
 
         double poseParkaX = 7.5;
-        double poseParkaY = -9;
+        double poseParkaY = -6;
         double poseParkaH = 180;
 
         double poseParkbX = 7.5;
@@ -66,7 +66,7 @@ public class MMLeftRed {
                                 .back(5)
                                 .forward(5)
                                 .lineToSplineHeading(poseParkingHelp)
-                                .splineToLinearHeading(poseParkinga,poseParkaH)
+                                .lineToSplineHeading(poseParkinga)
                                 .lineToLinearHeading(poseParkingb)
                                 .waitSeconds(.6)
                                 .lineToLinearHeading(poseParkingc)
