@@ -82,8 +82,10 @@ public class SpinnerFirstPID {
                     target = RIGHT_ANGLE;
                     break;
                 case ZERO_RED:
-                case ZERO_BLUE:
                     target = ZERO_ANGLE;
+                    break;
+                case ZERO_BLUE:
+                    target = -ZERO_ANGLE;
                     break;
             }
 
@@ -116,8 +118,10 @@ public class SpinnerFirstPID {
                     target = RIGHT_ANGLE;
                     break;
                 case ZERO_RED:
-                case ZERO_BLUE:
                     target = ZERO_ANGLE;
+                    break;
+                case ZERO_BLUE:
+                    target = -ZERO_ANGLE;
                     break;
                 case LEFT_AUTO_ANGLE_RED:
                     target = LEFT_AUTO_ANGLE_RED;

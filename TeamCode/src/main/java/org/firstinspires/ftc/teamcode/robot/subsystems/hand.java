@@ -16,7 +16,7 @@ public class hand {
 
     Servo sH;
     public static double intakePos = 0;
-    public static double level1Hub = .9, level2Hub = .7, level3Hub = .55, levelSharedHub = .8, levelDuck3 = 0.6, levelDuck2 = 0.78, levelDuck1 = 1;
+    public static double level1Hub = .9, level2Hub = .8, level3Hub = .55, levelSharedHub = .8, levelDuck3 = 0.6, levelDuck2 = 0.78, levelDuck1 = 1;
 
     public enum HandPos
     {

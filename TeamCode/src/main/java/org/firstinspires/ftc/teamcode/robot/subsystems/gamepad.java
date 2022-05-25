@@ -91,7 +91,7 @@ public class gamepad {
         cGamepad1.update();
         cGamepad2.update();
 
-        if(cGamepad1.dpadDownOnce())
+        if(cGamepad1.XOnce())
         {
             if(redAlliance)
             {
@@ -132,7 +132,7 @@ public class gamepad {
 
         getGamepadDirections();
 
-        if(cGamepad1.XOnce())
+        if(cGamepad1.dpadDownOnce())
         {
             isCentricDrive = !isCentricDrive;
         }

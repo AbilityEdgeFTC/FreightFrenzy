@@ -5,13 +5,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.Spinner;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -20,8 +18,8 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 @Config
-@TeleOp(name = "RED TeleOp - Driver Control", group = "DriverControl")
-public class teleOp extends LinearOpMode {
+@TeleOp(name = "Blue TeleOp - Driver Control", group = "BLUE")
+public class teleOpBlue extends LinearOpMode {
 
     gamepad gamepad;
     SpinnerPID spinner;
@@ -62,7 +60,7 @@ public class teleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        gamepad.setRedAlliance(true);
+        gamepad.setRedAlliance(false);
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new SpinnerPID(hardwareMap, gamepad1, gamepad2);
@@ -80,6 +78,7 @@ public class teleOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
             cGamepad1.update();
             cGamepad2.update();
             gamepad.update();
@@ -106,12 +105,12 @@ public class teleOp extends LinearOpMode {
     {
         if (gamepad2.dpad_right)
         {
-            carousel.spinCarousel(false);
+            carousel.spinCarousel(true);
             toggleIntakesGP1GP2();
         }
         else if(gamepad2.dpad_left)
         {
-            carousel.spinCarousel( true);
+            carousel.spinCarousel( false);
             toggleIntakesGP1GP2();
         }
         else
@@ -239,6 +238,10 @@ public class teleOp extends LinearOpMode {
         if(gamepad2.left_stick_y != 0 || gamepad2.left_stick_button && elevatorMovement == ElevatorMovement.CLOSED)
         {
             elevator.setUsePID(false);
+            if(gamepad2.start)
+            {
+                elevator.resetElevator();
+            }
             return false;
         }
         else if(elevatorMovement == ElevatorMovement.CLOSED && gamepad2.right_stick_x == 0)
@@ -441,8 +444,14 @@ public class teleOp extends LinearOpMode {
 
                 switchElevatorLevelsGP2();
 
+                if(gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1)
+                {
+                    // release freight
+                    dip.releaseFreight();
+                }
+
                 // user wants to close elevator
-                if(gamepad1.left_bumper || gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1)
+                if(gamepad1.left_bumper)
                 {
                     // release freight
                     dip.releaseFreight();

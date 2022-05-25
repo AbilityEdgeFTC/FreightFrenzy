@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 24;
+    public static double HUB_LEVEL3 = 23.7;
     public static double HUB_LEVEL2 = 10.5;
     public static double HUB_LEVEL1 = 10.5;
     public static double AUTO_LEFT_LEVEL = 20.3;
@@ -36,6 +37,7 @@ public class ElevatorFirstPID {
     double target;
     Gamepad gamepad;
     cGamepad cGamepad;
+    NanoClock clock;
 
     public enum ElevatorLevel {
         ZERO,
@@ -59,6 +61,7 @@ public class ElevatorFirstPID {
         this.motor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.gamepad = gamepad;
         this.cGamepad = new cGamepad(gamepad);
+        clock = NanoClock.system();
     }
 
     public ElevatorFirstPID(HardwareMap hardwareMap)
@@ -171,6 +174,10 @@ public class ElevatorFirstPID {
         return offset;
     }
 
+    public static void setOffset(int offset) {
+        ElevatorFirstPID.offset = offset;
+    }
+
     public int getPosition()
     {
         return motor.getCurrentPosition();
@@ -238,6 +245,11 @@ public class ElevatorFirstPID {
 
     public static void setZeroHeight(double zeroHeight) {
         ZERO_HEIGHT = ZERO_HEIGHT;
+    }
+
+    public void resetElevator()
+    {
+        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public static double getZeroHeight() {

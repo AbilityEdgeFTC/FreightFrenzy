@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 // .5
 @Config
 @TeleOp(name = "Servo Testing Cover", group = "testing")
+@Disabled
 public class ServoTestCover extends LinearOpMode {
 
     Servo servo;

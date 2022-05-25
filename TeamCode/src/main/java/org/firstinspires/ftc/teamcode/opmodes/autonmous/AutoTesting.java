@@ -33,6 +33,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  */
 @Config
 @Autonomous(name = "AutoTesting", group = "Autonomous  Red")
+@Disabled
 public class AutoTesting extends LinearOpMode {
 
     double startPoseRightX = 13;
