@@ -30,12 +30,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 
 @Config
 @TeleOp(name = "Carousel Testing", group = "testing")
+@Disabled
 public class CarouselTesting extends LinearOpMode {
 
     @Override

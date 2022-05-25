@@ -33,6 +33,7 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import android.graphics.Color;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -42,6 +43,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 
 @Config
 @TeleOp(name = "colorSensor Testing LOCALIZER", group = "testing")
+@Disabled
 public class colorSensorLocalizerDemo extends LinearOpMode {
     double y_cord = 30;
 
