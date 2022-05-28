@@ -44,7 +44,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = 72 - 17.72;
-    double startPoseRightH = 90;
+    double startPoseRightH = 270;
 
     public static double poseEntranceX = 12.5;
     public static double poseEntranceY = 58;

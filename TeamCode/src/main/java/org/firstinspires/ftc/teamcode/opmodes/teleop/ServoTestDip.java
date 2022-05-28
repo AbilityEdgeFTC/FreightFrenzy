@@ -39,7 +39,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 // 1 is out freight from intake
 @Config
 @TeleOp(name = "Servo Testing Dip", group = "testing")
-@Disabled
 public class ServoTestDip extends LinearOpMode {
 
     Servo servo;
