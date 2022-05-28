@@ -372,11 +372,6 @@ public class teleOpRed extends LinearOpMode {
                     spinner.setUsePID(false);
                     gamepad.setCanTwist(false);
 
-
-                    // open elevator slowly??? idk way lemme check this
-                    //powerElevator = powerSlowElevator;
-                    //elevator.setPower(powerElevator);
-
                     // turn of intake, and the option for intake
                     frontIntake = false;
                     backIntake = false;
