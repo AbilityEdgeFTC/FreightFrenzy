@@ -348,14 +348,14 @@ public class AutoLeftBlue extends LinearOpMode {
             switch (pipeline.getLocation())
             {
                 case Left:
-                    placeFreightIn = levels.MAX; // RED, blue = 3
+                    placeFreightIn = levels.MIN; // RED, blue = 3
                     break;
                 case Center:
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
                 case Not_Found:
-                    placeFreightIn = levels.MIN; // RED, blue = 1
+                    placeFreightIn = levels.MAX; // RED, blue = 1
                     break;
             }
             telemetry.update();
