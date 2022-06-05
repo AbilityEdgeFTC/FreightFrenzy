@@ -38,12 +38,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="ColorSensorTest")
-@Disabled
+
 public class ColorSensorTest extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     float [] rgb;
+    float alpaha;
+    float[] hsvColors;
     @Override
     public void runOpMode() {
 
@@ -59,13 +61,19 @@ public class ColorSensorTest extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive())
         {
-
-             rgb = sensorColor.getRGB();
+            alpaha=sensorColor.getAlpha();
+            rgb = sensorColor.getRGB();
+            hsvColors=sensorColor.getHSV();
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Red ", rgb[0]);
             telemetry.addData("Green", rgb[1]);
             telemetry.addData("Blue",rgb[2]);
+            telemetry.addData("Alpha: ",alpaha);
+            telemetry.addData("Hue: ",hsvColors[0]);
+            telemetry.addData("Saturation: ",hsvColors[1]);
+            telemetry.addData("Value: ",hsvColors[2]);
+
             telemetry.update();
         }
     }}

@@ -67,7 +67,7 @@ public class SensorColor {
     public float[] getRGB()
     {
         colors = colorSensor.getNormalizedColors();
-        rgbValues = new float[]{colors.red, colors.blue, colors.green};
+         float[] rgbValues ={colors.red, colors.blue, colors.green};
         return rgbValues;
     }
 
@@ -88,5 +88,6 @@ public class SensorColor {
         distance = colorSensor.getDistance(DistanceUnit.CM);
         return distance;
     }
+
 
 }
