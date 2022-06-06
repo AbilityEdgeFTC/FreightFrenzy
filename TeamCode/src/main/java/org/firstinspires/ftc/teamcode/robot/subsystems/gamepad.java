@@ -88,6 +88,7 @@ public class gamepad {
     }
 
     public void update() {
+        drivetrain.update();
         cGamepad1.update();
         cGamepad2.update();
 

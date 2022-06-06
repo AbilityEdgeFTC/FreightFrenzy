@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.opmodes.autonmous;
+package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Mask implements TrajectoryVelocityConstraint {
+public class RectangleMaskConstraint implements TrajectoryVelocityConstraint {
     double minX, minY, maxX, maxY;
     TrajectoryVelocityConstraint maxVelocity;
 
-    public Mask(double minX, double minY, double maxX, double maxY, TrajectoryVelocityConstraint maxVelocity) {
+    public RectangleMaskConstraint(double minX, double minY, double maxX, double maxY, TrajectoryVelocityConstraint maxVelocity) {
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;

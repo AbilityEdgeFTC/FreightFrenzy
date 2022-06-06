@@ -169,6 +169,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         );
     }
 
+    public double getLeaning()
+    {
+        return imu.getAngularOrientation().thirdAngle;
+    }
+
     public void turn(double angle) {
         turnAsync(angle);
         waitForIdle();
