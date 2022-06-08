@@ -106,10 +106,10 @@ public class AutoRightRedAsync extends LinearOpMode {
                 elevator.setPower(powerElevator);
 
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
 
                 elevator.updateAuto();
-                spinner.updateAuto();
+                //spinner.updateAuto();
 
                 hand.level3();
                 dip.holdFreight();
@@ -126,11 +126,11 @@ public class AutoRightRedAsync extends LinearOpMode {
 
                 hand.intake();
 
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
 
                 elevator.updateAuto();
-                spinner.updateAuto();
+                //spinner.updateAuto();
 
                 cover.closeCover();
             }
@@ -180,9 +180,9 @@ public class AutoRightRedAsync extends LinearOpMode {
         TrajectorySequence goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
                 .lineToSplineHeading(poseEntrance)
-                .addTemporalMarker(elevetorOpen)
+                //.addTemporalMarker(elevetorOpen)
                 .waitSeconds(.8)
-                .addTemporalMarker(elevetorClose)
+                //.addTemporalMarker(elevetorClose)
                 .build();
 
         TrajectorySequence straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
@@ -207,7 +207,14 @@ public class AutoRightRedAsync extends LinearOpMode {
                 .lineToSplineHeading(goToIntake)
                 .build();
 
+        //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
+
         waitForStart();
+
+        //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+       // //elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+        //spinner.updateAuto();
+        //elevator.updateAuto();
 
         ElapsedTime runningFor = new ElapsedTime();
 
@@ -256,7 +263,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                         drive.breakFollowing();
                         Pose2d currentPose = drive.getPoseEstimate();
                         TrajectorySequence parkNow = drive.trajectorySequenceBuilder(currentPose)
-                                .addTemporalMarker(elevetorClose)
+                                //.addTemporalMarker(elevetorClose)
                                 .lineToSplineHeading(goToIntake)
                                 .addTemporalMarker(intakeStop)
                                 .build();
@@ -277,7 +284,7 @@ public class AutoRightRedAsync extends LinearOpMode {
             drive.update();
 
             elevator.updateAuto();
-            spinner.updateAuto();
+            //spinner.updateAuto();
 
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();

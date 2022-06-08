@@ -17,7 +17,7 @@ public class SpinnerPID {
 
     public static double power = 0.1;
     boolean usePID = true;
-    public static double kP = 6;
+    public static double kP = 1;
     public static double kI = 0;
     public static double kD = 0;
     int pos = 0;

@@ -46,16 +46,6 @@ public class SpinnerFirstPID {
     Gamepad gamepad;
     cGamepad cGamepad;
 
-    public SpinnerFirstPID(HardwareMap hardwareMap, Gamepad gamepad)
-    {
-        this.motor = hardwareMap.get(DcMotorEx.class, "mS");
-        this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        this.motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        this.gamepad = gamepad;
-        this.cGamepad = new cGamepad(gamepad);
-    }
-
     public SpinnerFirstPID(HardwareMap hardwareMap)
     {
         this.motor = hardwareMap.get(DcMotorEx.class, "mS");
