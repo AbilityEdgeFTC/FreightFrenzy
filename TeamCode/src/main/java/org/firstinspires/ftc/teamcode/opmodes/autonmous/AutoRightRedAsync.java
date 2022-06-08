@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-
 import java.util.Arrays;
 
 /*
@@ -36,12 +35,12 @@ public class AutoRightRedAsync extends LinearOpMode {
     public static double startPoseRightY = -54.28;
     public static double startPoseRightH = 90;
 
-    public static double poseHelpX = 7;
-    public static double poseHelpY = -50;
-    public static double poseHelpH = 180;
-    public static double poseEntranceX = 12.5;
-    public static double poseEntranceY = -58;
-    public static double poseEntranceH = 180;
+    public static double poseFixAngleX = 7;
+    public static double poseFixAngleY = -50;
+    public static double poseFixAngleH = 180;
+    public static double poseHubX = 12.5;
+    public static double poseHubY = -58;
+    public static double poseHubH = 180;
     public static double poseIntakeX = 50;
     public static double poseIntakeY = -58;
     public static double poseIntakeH = 180;
@@ -89,11 +88,11 @@ public class AutoRightRedAsync extends LinearOpMode {
         Cover cover = new Cover(hardwareMap);
 
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, startPoseRightH);
-        Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
-        Pose2d poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
-        Pose2d goToIntake = new Pose2d(poseIntakeX, poseIntakeY, Math.toRadians(poseIntakeH));
-        Pose2d goToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
-        Pose2d goToIntakeThirty = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeThirtyH));
+        Pose2d poseFixAngle = new Pose2d(poseFixAngleX, poseFixAngleY, Math.toRadians(poseFixAngleH));
+        Pose2d poseHub = new Pose2d(poseHubX, poseHubY, Math.toRadians(poseHubH));
+        Pose2d poseGoToIntake = new Pose2d(poseIntakeX, poseIntakeY, Math.toRadians(poseIntakeH));
+        Pose2d poseGoToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
+        Pose2d poseGoToIntakeThirty = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeThirtyH));
 
         drive.setPoseEstimate(startPoseRight);
 
@@ -106,10 +105,10 @@ public class AutoRightRedAsync extends LinearOpMode {
                 elevator.setPower(powerElevator);
 
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
 
                 elevator.updateAuto();
-                //spinner.updateAuto();
+                spinner.updateAuto();
 
                 hand.level3();
                 dip.holdFreight();
@@ -126,11 +125,11 @@ public class AutoRightRedAsync extends LinearOpMode {
 
                 hand.intake();
 
-                //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
 
                 elevator.updateAuto();
-                //spinner.updateAuto();
+                spinner.updateAuto();
 
                 cover.closeCover();
             }
@@ -172,49 +171,49 @@ public class AutoRightRedAsync extends LinearOpMode {
 
         // Let's define our trajectories
         TrajectorySequence fixAngle = drive.trajectorySequenceBuilder(startPoseRight)
-                .lineToLinearHeading(poseHelp)
+                .lineToLinearHeading(poseFixAngle)
                 .build();
 
         // Second trajectory
         // Ensure that we call trajectory1.end() as the start for this one
         TrajectorySequence goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToSplineHeading(poseEntrance)
-                //.addTemporalMarker(elevetorOpen)
+                .lineToSplineHeading(poseHub)
+                .addTemporalMarker(elevetorOpen)
                 .waitSeconds(.8)
-                //.addTemporalMarker(elevetorClose)
+                .addTemporalMarker(elevetorClose)
                 .build();
 
         TrajectorySequence straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(goToIntake)
+                .lineToSplineHeading(poseGoToIntake)
                 .build();
 
         TrajectorySequence fifteenDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(goToIntake)
-                .splineTo(new Vector2d(goToIntakeFifteen.getX(), goToIntakeFifteen.getY()), goToIntakeFifteen.getHeading())
+                .lineToSplineHeading(poseGoToIntake)
+                .splineTo(new Vector2d(poseGoToIntakeFifteen.getX(), poseGoToIntakeFifteen.getY()), poseGoToIntakeFifteen.getHeading())
                 .build();
 
         TrajectorySequence thirtyDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(goToIntake)
-                .splineTo(new Vector2d(goToIntakeThirty.getX(), goToIntakeThirty.getY()), goToIntakeThirty.getHeading())
+                .lineToSplineHeading(poseGoToIntake)
+                .splineTo(new Vector2d(poseGoToIntakeThirty.getX(), poseGoToIntakeThirty.getY()), poseGoToIntakeThirty.getHeading())
                 .build();
 
         TrajectorySequence park = drive.trajectorySequenceBuilder(goToHub.end())
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(goToIntake)
+                .addTemporalMarker(intakeStop)
+                .lineToSplineHeading(poseGoToIntake)
                 .build();
 
-        //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
 
         waitForStart();
 
-        //spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-       // //elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-        //spinner.updateAuto();
-        //elevator.updateAuto();
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+        spinner.updateAuto();
+        elevator.updateAuto();
 
         ElapsedTime runningFor = new ElapsedTime();
 
@@ -263,8 +262,8 @@ public class AutoRightRedAsync extends LinearOpMode {
                         drive.breakFollowing();
                         Pose2d currentPose = drive.getPoseEstimate();
                         TrajectorySequence parkNow = drive.trajectorySequenceBuilder(currentPose)
-                                //.addTemporalMarker(elevetorClose)
-                                .lineToSplineHeading(goToIntake)
+                                .addTemporalMarker(elevetorClose)
+                                .lineToSplineHeading(poseGoToIntake)
                                 .addTemporalMarker(intakeStop)
                                 .build();
                         drive.followTrajectorySequenceAsync(parkNow);
@@ -284,7 +283,7 @@ public class AutoRightRedAsync extends LinearOpMode {
             drive.update();
 
             elevator.updateAuto();
-            //spinner.updateAuto();
+            spinner.updateAuto();
 
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();
