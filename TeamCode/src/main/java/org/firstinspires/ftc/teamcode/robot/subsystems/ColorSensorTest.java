@@ -46,6 +46,7 @@ public class ColorSensorTest extends LinearOpMode {
     float [] rgb;
     float alpaha;
     float[] hsvColors;
+    boolean passedWearHouse;
     @Override
     public void runOpMode() {
 
@@ -64,16 +65,20 @@ public class ColorSensorTest extends LinearOpMode {
             alpaha=sensorColor.getAlpha();
             rgb = sensorColor.getRGB();
             hsvColors=sensorColor.getHSV();
+
+            passedWearHouse= sensorColor.passedWearHouse();
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Red ", rgb[0]);
+          /*  telemetry.addData("Red ", rgb[0]);
             telemetry.addData("Green", rgb[1]);
             telemetry.addData("Blue",rgb[2]);
             telemetry.addData("Alpha: ",alpaha);
+            */
+
             telemetry.addData("Hue: ",hsvColors[0]);
             telemetry.addData("Saturation: ",hsvColors[1]);
             telemetry.addData("Value: ",hsvColors[2]);
-
+            telemetry.addData("Passed white line: ",passedWearHouse);
             telemetry.update();
         }
     }}

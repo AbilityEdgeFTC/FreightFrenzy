@@ -89,5 +89,9 @@ public class SensorColor {
         return distance;
     }
 
+    public boolean passedWearHouse()
+    {
+        return (hsvValues[2]>=0.47) && hsvValues[2]<=1;
+    }
 
 }
