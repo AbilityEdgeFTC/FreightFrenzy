@@ -36,36 +36,40 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "Distance Sensor Testing", group = "Sensor")
-public class DistanceSensorTesting extends LinearOpMode {
+public class DistanceSensor extends LinearOpMode {
 
     ModernRoboticsI2cRangeSensor rangeSensor;
 
-    public static double emptyBox = 10;
+    public static double emptyBox = 0;
     boolean hasFreight = false;
 
     @Override public void runOpMode() {
 
         // get a reference to our compass
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "distanceSensor");
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsC");
 
         // wait for the start button to be pressed
         waitForStart();
 
         while (opModeIsActive()) {
-            if(rangeSensor.cmOptical() < emptyBox)
+            if(rangeSensor.rawOptical() != emptyBox)
             {
+                telemetry.addData("freight in - ",rangeSensor.rawOptical());
+                telemetry.update();
                 hasFreight = true;
             }
             else
             {
+                telemetry.addData("freight not in - ",rangeSensor.rawOptical());
+                telemetry.update();
                 hasFreight = false;
             }
 
-            telemetry.addData("HAS FREIGHT:", hasFreight);
+            /*telemetry.addData("HAS FREIGHT:", hasFreight);
             telemetry.addData("raw ultrasonic", rangeSensor.rawUltrasonic());
             telemetry.addData("raw optical", rangeSensor.rawOptical());
             telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());
-            telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));
+            telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));*/
             telemetry.update();
         }
     }
