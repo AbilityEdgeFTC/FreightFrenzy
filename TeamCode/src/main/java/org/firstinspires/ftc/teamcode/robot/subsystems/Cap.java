@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-// 0 all the way down
+// 0,1 all the way down(the hand)
 // .4 all the way up
 
 @Config
@@ -21,6 +21,9 @@ public class Cap {
     Servo upDown;
     Servo hook;
     public static double hookDown = 0, hookUp = 0.4;
+    public static double getCap = 0, placeCap = 0.4, increment = 0.05;
+    public static double devideSpinnerPower = 4;
+    double position = placeCap;
     Gamepad gamepad;
     cGamepad cGamepad;
 
@@ -38,34 +41,36 @@ public class Cap {
 
     public void update()
     {
-        spin.setPower(gamepad.left_stick_x);
+        spin.setPower(gamepad.right_stick_x / devideSpinnerPower);
 
-        if(cGamepad.AOnce())
+        if(cGamepad.YOnce())
         {
-            toggleHookAngleFix = !toggleHookAngleFix;
+            position = placeCap;
+            toggleHookAngleFix = true;
+        }
+        else if(cGamepad.BOnce())
+        {
+            position = getCap;
+            toggleHookAngleFix = false;
+            hook.setPosition(hookDown);
+        }
+        else if(cGamepad.dpadUpOnce())
+        {
+            position += increment;
+        }
+        else if(cGamepad.dpadDownOnce())
+        {
+            position -= increment;
         }
 
-        upDown.setPosition(gamepad.left_stick_y);
+        upDown.setPosition(position);
 
-        if (!toggleHookAngleFix)
+        if(toggleHookAngleFix)
         {
-            if(cGamepad.YOnce())
-            {
-                hook.setPosition(hookUp);
-                toggleHookAngleFix = true;
-            }
-            else
-            {
-                if(cGamepad.BOnce())
-                {
-                    hook.setPosition(hookDown);
-                }
-            }
+            hook.setPosition(position);
         }
-        else
-        {
-            hook.setPosition(gamepad.right_stick_y);
-        }
+
+
     }
 
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.autonmous;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
@@ -9,9 +10,11 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
@@ -22,38 +25,42 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
+
 import java.util.Arrays;
 
 /*
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Auto - Right Red ASYNC", group = "Autonomous Red")
-public class AutoRightRedAsync extends LinearOpMode {
+@Autonomous(name = "Right Red OLD ASYNC", group = "Autonomous Red")
+public class AutoRightRedNotNewAsync extends LinearOpMode {
 
-    public static double startPoseRightX = 13;
-    public static double startPoseRightY = -54.28;
-    public static double startPoseRightH = 90;
+    double startPoseRightX = 13;
+    double startPoseRightY = -72 + 17.72;
+    double startPoseRightH = 90;
 
-    public static double poseFixAngleX = 7;
-    public static double poseFixAngleY = -50;
-    public static double poseFixAngleH = 180;
-    public static double poseHubX = 12.5;
-    public static double poseHubY = -58;
-    public static double poseHubH = 180;
-    public static double poseIntakeX = 60;
-    public static double poseIntakeY = -58;
-    public static double poseIntakeH = 180;
-    public static double poseIntakeFifteenX = 70;
-    public static double poseIntakeFifteenY = -57;
-    public static double poseIntakeFifteenH = 15;
-    public static double poseIntakeThirtyH = 30;
+    public static double poseEntranceX = 10;
+    public static double poseEntranceY = -60;
+    public static double poseEntranceH = 180;
+    public static double poseCollectX = 60;
+    public static double poseCollectY = -60;
+    public static double poseCollectH = 180;
+    public static double poseHelpX = 7;
+    public static double poseHelpY = -55;
+    public static double poseHelpH = 180;
+    public static double cylceX2 = 60;
+    public static double cycleY2 = -58;
+    public static double cycleH2 = 180;
 
     public static double GO_PARK_AT = 28;
     public static double powerSlowElevator = .7, powerElevator = 1, powerElevatorFast = 1;
     public static double elevatorDelay = 1;
+    double whiteLineX = 28.5;
 
-    int wentIntakeXTimes = 0;
+    double emptyBox = 0;
+
+    ModernRoboticsI2cRangeSensor rangeSensor;
+
     boolean hasFreight = false;
     double offset = 0;
     boolean firstTime = true;
@@ -67,8 +74,8 @@ public class AutoRightRedAsync extends LinearOpMode {
     Cover cover;
     ElapsedTime runningFor;
 
-    TrajectorySequence fixAngle, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
-    Pose2d startPoseRight, poseFixAngle, poseHub, poseGoToIntake, poseGoToIntakeFifteen, poseGoToIntakeThirty;
+    TrajectorySequence fixAngle, goToHub, intakeType1, park;
+    Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseCollectCycle2;
 
     enum State
     {
@@ -80,18 +87,11 @@ public class AutoRightRedAsync extends LinearOpMode {
         WAIT_ELEVATOR_DELAY
     }
 
-    enum intakePathType
-    {
-        STRAIGHT_PATH,
-        FIFTEEN_DEGREE_PATH,
-        THIRTY_DEGREE_PATH
-    }
-
     State currentState = State.IDLE;
-    intakePathType intakeType = intakePathType.STRAIGHT_PATH;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        DriveConstants.setMaxVel(65);
         DriveConstants.setMaxAccel(40);
 
         drive = new SampleMecanumDrive(hardwareMap);
@@ -102,12 +102,13 @@ public class AutoRightRedAsync extends LinearOpMode {
         dip = new dip(hardwareMap);
         cover = new Cover(hardwareMap);
 
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsC");
+
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
-        poseFixAngle = new Pose2d(poseFixAngleX, poseFixAngleY, Math.toRadians(poseFixAngleH));
-        poseHub = new Pose2d(poseHubX, poseHubY, Math.toRadians(poseHubH));
-        poseGoToIntake = new Pose2d(poseIntakeX, poseIntakeY, Math.toRadians(poseIntakeH));
-        poseGoToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
-        poseGoToIntakeThirty = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeThirtyH));
+        poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
+        poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
+        poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
+        poseCollectCycle2 = new Pose2d(cylceX2 , cycleY2, Math.toRadians(cycleH2));
 
         drive.setPoseEstimate(startPoseRight);
 
@@ -136,55 +137,41 @@ public class AutoRightRedAsync extends LinearOpMode {
             }
         };
 
-
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new TranslationalVelocityConstraint(80),
-                new RectangleMaskConstraint(35,-72,72,-35,
+                new TranslationalVelocityConstraint(60),
+                new RectangleMaskConstraint(50,-72,72,-50,
                         new TranslationalVelocityConstraint(10))));
 
-        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL);
-
+        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(30);
 
         // Let's define our trajectories
         fixAngle = drive.trajectorySequenceBuilder(startPoseRight)
-                .lineToLinearHeading(poseFixAngle)
+                .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL/1.8, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         // Second trajectory
         // Ensure that we call trajectory1.end() as the start for this one
         goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToSplineHeading(poseHub)
+                .lineToSplineHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL/2))
                 .build();
 
-        straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+        intakeType1 = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseGoToIntake)
-                .strafeLeft(2)
-                .build();
-
-        fifteenDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseGoToIntake)
-                .splineTo(new Vector2d(poseGoToIntakeFifteen.getX(), poseGoToIntakeFifteen.getY()), poseGoToIntakeFifteen.getHeading())
-                .lineToSplineHeading(poseGoToIntake)
-                .strafeLeft(2)
-                .build();
-
-        thirtyDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseGoToIntake)
-                .splineTo(new Vector2d(poseGoToIntakeThirty.getX(), poseGoToIntakeThirty.getY()), poseGoToIntakeThirty.getHeading())
-                .lineToSplineHeading(poseGoToIntake)
-                .strafeLeft(2)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                 .build();
 
         park = drive.trajectorySequenceBuilder(goToHub.end())
                 .addTemporalMarker(intakeStop)
-                .lineToSplineHeading(poseGoToIntake)
+                .lineToSplineHeading(poseCollect)
                 .build();
 
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
+
+        dip.getFreight();
+        cover.closeCover();
 
         waitForStart();
 
@@ -208,6 +195,21 @@ public class AutoRightRedAsync extends LinearOpMode {
                 currentState = State.LEAVE_EVERYTHING_AND_PARK;
             }
 
+            if(rangeSensor.rawOptical() != emptyBox)
+            {
+                hasFreight = true;
+            }
+            else
+            {
+                hasFreight = false;
+            }
+
+            if(passedWhiteLine())
+            {
+                Pose2d poseEstimate = drive.getPoseEstimate();
+                drive.setPoseEstimate(new Pose2d(whiteLineX, poseEstimate.getY(), poseEstimate.getHeading()));
+            }
+
             // We update drive continuously in the background, regardless of state
             drive.update();
 
@@ -222,35 +224,16 @@ public class AutoRightRedAsync extends LinearOpMode {
         }
     }
 
+    boolean passedWhiteLine()
+    {
+        return false;
+    }
+
     void changeState(State newState, TrajectorySequence traj)
     {
         if (!drive.isBusy()) {
             currentState = newState;
             drive.followTrajectorySequenceAsync(traj);
-        }
-    }
-
-    void changeStateIntake(State newState, TrajectorySequence traj)
-    {
-        if (!drive.isBusy()) {
-            currentState = newState;
-            drive.followTrajectorySequenceAsync(traj);
-
-            wentIntakeXTimes++;
-
-            switch (wentIntakeXTimes)
-            {
-                case 1:
-                    intakeType = intakePathType.STRAIGHT_PATH;
-                    break;
-                case 2:
-                    intakeType = intakePathType.FIFTEEN_DEGREE_PATH;
-                    break;
-                case 3:
-                    intakeType = intakePathType.THIRTY_DEGREE_PATH;
-                    wentIntakeXTimes = 0;
-                    break;
-            }
         }
     }
 
@@ -281,18 +264,7 @@ public class AutoRightRedAsync extends LinearOpMode {
 
                     closeElevator();
 
-                    switch (intakeType)
-                    {
-                        case STRAIGHT_PATH:
-                            changeStateIntake(State.INTAKE, straightLineIntake);
-                            break;
-                        case FIFTEEN_DEGREE_PATH:
-                            changeStateIntake(State.INTAKE, fifteenDegreeIntake);
-                            break;
-                        case THIRTY_DEGREE_PATH:
-                            changeStateIntake(State.INTAKE, thirtyDegreeIntake);
-                            break;
-                    }
+                    changeState(State.INTAKE, intakeType1);
                 }
                 break;
             case INTAKE:
@@ -313,7 +285,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                     Pose2d currentPose = drive.getPoseEstimate();
 
                     TrajectorySequence parkNow = drive.trajectorySequenceBuilder(currentPose)
-                            .lineToSplineHeading(poseGoToIntake)
+                            .lineToSplineHeading(poseCollect)
                             .build();
 
                     closeElevator();

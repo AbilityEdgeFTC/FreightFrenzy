@@ -34,21 +34,22 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.checkerframework.checker.units.qual.C;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Cap;
+
 // .15 close
 // .5
 @Config
-@TeleOp(name = "Servo Testing UpDown", group = "testing")
-public class ServoTestUpDown extends LinearOpMode {
+@TeleOp(name = "Cap testing", group = "testing")
+public class CapTesting extends LinearOpMode {
 
-    Servo servo;
-    public static double position = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        servo = hardwareMap.get(Servo.class, "sUpDown");
+        Cap cap = new Cap(hardwareMap, gamepad1);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -56,7 +57,7 @@ public class ServoTestUpDown extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
 
         while (opModeIsActive()) {
-            servo.setPosition(position);
+            cap.update();
         }
     }
 }
