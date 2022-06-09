@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 @Config
-@TeleOp(name = "Blue TeleOp - Driver Control", group = "BLUE")
+@TeleOp(name = "BLUE TeleOp - Driver Control", group = "BLUE")
 public class teleOpBlue extends LinearOpMode {
 
     gamepad gamepad;
@@ -105,12 +105,12 @@ public class teleOpBlue extends LinearOpMode {
     {
         if (gamepad2.dpad_right)
         {
-            carousel.spinCarousel(true);
+            carousel.spinCarousel(false);
             toggleIntakesGP1GP2();
         }
         else if(gamepad2.dpad_left)
         {
-            carousel.spinCarousel( false);
+            carousel.spinCarousel( true);
             toggleIntakesGP1GP2();
         }
         else
@@ -138,7 +138,7 @@ public class teleOpBlue extends LinearOpMode {
     void switchElevatorLevelsGP2()
     {
         // each button on game pad sets the target level of the elevator to a different level
-        if(gamepad2.y)
+        if(gamepad1.y)
         {
             elevatorLevel = 3;
 
@@ -158,7 +158,7 @@ public class teleOpBlue extends LinearOpMode {
                 hand.level2();
             }
         }
-        else if (gamepad1.y)
+        else if (gamepad2.y)
         {
             elevatorLevel = 0;
 
@@ -265,8 +265,8 @@ public class teleOpBlue extends LinearOpMode {
     void toggleIntakesGP1GP2()
     {
         /**
-        theres alot of if's because we want to make sure there isn't any collusion between the intake when 2 drivers are trying to power
-        it by accident...
+         theres alot of if's because we want to make sure there isn't any collusion between the intake when 2 drivers are trying to power
+         it by accident...
          but we just check if the gamepads want to power the intake, and which way.
          */
 
@@ -369,11 +369,6 @@ public class teleOpBlue extends LinearOpMode {
                     spinner.setSlowMove(true);
                     spinner.setUsePID(false);
                     gamepad.setCanTwist(false);
-
-
-                    // open elevator slowly??? idk way lemme check this
-                    //powerElevator = powerSlowElevator;
-                    //elevator.setPower(powerElevator);
 
                     // turn of intake, and the option for intake
                     frontIntake = false;
@@ -488,14 +483,20 @@ public class teleOpBlue extends LinearOpMode {
     void saveCurrentHubLevel()
     {
         switch (elevatorLevel) {
+            case 0:
+                elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                hand.setLevelSharedHub(hand.getPos());
             case 1:
                 elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                hand.setLevel1Hub(hand.getPos());
                 break;
             case 2:
                 elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                hand.setLevel2Hub(hand.getPos());
                 break;
             case 3:
                 elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                hand.setLevel3Hub(hand.getPos());
                 break;
         }
     }
@@ -691,7 +692,7 @@ public class teleOpBlue extends LinearOpMode {
      */
     boolean withoutPID()
     {
-        if(elevator.getUsePID() == true && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
+        if(/*elevator.getUsePID() == true && */elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
         {
             switch (hand.getHandPos())
             {

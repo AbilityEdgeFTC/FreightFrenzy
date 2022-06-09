@@ -27,15 +27,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-// .15 close
-// .5
+// 0 all the way down
+// .4 all the way up
 @Config
 @TeleOp(name = "Servo Testing Hook", group = "testing")
 public class ServoTestHook extends LinearOpMode {
@@ -48,7 +48,7 @@ public class ServoTestHook extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        servo = hardwareMap.get(Servo.class, "sC");
+        servo = hardwareMap.get(Servo.class, "sHook");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

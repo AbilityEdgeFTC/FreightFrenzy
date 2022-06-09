@@ -46,7 +46,7 @@ public class AutoRightRed extends LinearOpMode {
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
-    public static double poseEntranceX = 12.5;
+    public static double poseEntranceX = 13.5;
     public static double poseEntranceY = -58;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 50.5;
@@ -68,7 +68,7 @@ public class AutoRightRed extends LinearOpMode {
     dip dip;
     Cover cover;
     boolean canIntake = true;
-    public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
+    public static double powerSlowElevator = .7, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
     TrajectorySequence main;
     boolean useVision = true;
@@ -420,7 +420,8 @@ public class AutoRightRed extends LinearOpMode {
                         .waitSeconds(.8)
                         .addTemporalMarker(elevetorClose)
                         .addTemporalMarker(intakeStop)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX()+5, poseCollect.getY(), poseCollect.getHeading()))
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX()+5, poseCollect.getY(), poseCollect.getHeading()),SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getAccelerationConstraint(40))
                         .build();
                 break;
             case MAX:
@@ -470,7 +471,8 @@ public class AutoRightRed extends LinearOpMode {
                         .waitSeconds(.8)
                         .addTemporalMarker(elevetorClose)
                         .addTemporalMarker(intakeStop)
-                        .lineToSplineHeading(new Pose2d(poseCollect.getX()+5, poseCollect.getY(), poseCollect.getHeading()))
+                        .lineToSplineHeading(new Pose2d(poseCollect.getX()+5, poseCollect.getY(), poseCollect.getHeading()),SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                SampleMecanumDrive.getAccelerationConstraint(40))
                         .build();
                 break;
 

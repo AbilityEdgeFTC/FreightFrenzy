@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
+/* Copyright (c) 2021 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -27,37 +27,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-// .3 is throw freight
-// 1 is out freight from intake
-@Config
-@TeleOp(name = "Servo Testing Dip", group = "testing")
-public class ServoTestDip extends LinearOpMode {
+import org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor;
 
-    Servo servo;
-    public static double position = 0;
 
+@TeleOp(name="ColorSensorTest")
+@Disabled
+public class ColorSensorTest extends LinearOpMode {
+
+    // Declare OpMode members for each of the 4 motors.
+    private ElapsedTime runtime = new ElapsedTime();
+    float [] rgb;
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
+
+        org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor sensorColor = new SensorColor(hardwareMap);
+
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        servo = hardwareMap.get(Servo.class, "sD");
-
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        runtime.reset();
 
         // run until the end of the match (driver presses STOP)
+        while (opModeIsActive())
+        {
 
-        while (opModeIsActive()) {
-            servo.setPosition(position);
+             rgb = sensorColor.getRGB();
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Red ", rgb[0]);
+            telemetry.addData("Green", rgb[1]);
+            telemetry.addData("Blue",rgb[2]);
+            telemetry.update();
         }
-    }
-}
+    }}

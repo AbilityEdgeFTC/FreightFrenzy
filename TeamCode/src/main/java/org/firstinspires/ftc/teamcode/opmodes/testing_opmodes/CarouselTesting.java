@@ -27,40 +27,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.FreightSensor;
-
-// .15 close
-// .5
 @Config
-@TeleOp(name = "Distance Sensor Test", group = "testing")
-public class DistanceSensorTest extends LinearOpMode {
+@TeleOp(name = "Carousel Testing", group = "testing")
+@Disabled
+public class CarouselTesting extends LinearOpMode {
 
-    Servo servo;
-    public static double position = 0;
-    FreightSensor freightSensor;
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        servo = hardwareMap.get(Servo.class, "sC");
-        freightSensor = new FreightSensor(hardwareMap);
+        Carousel carousel = new Carousel(hardwareMap, telemetry, gamepad1);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-
         while (opModeIsActive()) {
-            telemetry.addData("Optical : ",freightSensor.getDistanceOptical());
 
+            while(gamepad1.x) {
+                carousel.spinCarousel(false);
+            }
+
+            carousel.stopCarousel();
+            carousel.displayTelemetry();
         }
     }
 }

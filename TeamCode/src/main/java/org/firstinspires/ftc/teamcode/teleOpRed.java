@@ -5,13 +5,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.Spinner;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -140,7 +138,7 @@ public class teleOpRed extends LinearOpMode {
     void switchElevatorLevelsGP2()
     {
         // each button on game pad sets the target level of the elevator to a different level
-        if(gamepad2.y)
+        if(gamepad1.y)
         {
             elevatorLevel = 3;
 
@@ -160,7 +158,7 @@ public class teleOpRed extends LinearOpMode {
                 hand.level2();
             }
         }
-        else if (gamepad1.y)
+        else if (gamepad2.y)
         {
             elevatorLevel = 0;
 
@@ -485,14 +483,20 @@ public class teleOpRed extends LinearOpMode {
     void saveCurrentHubLevel()
     {
         switch (elevatorLevel) {
+            case 0:
+                elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                hand.setLevelSharedHub(hand.getPos());
             case 1:
                 elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                hand.setLevel1Hub(hand.getPos());
                 break;
             case 2:
                 elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                hand.setLevel2Hub(hand.getPos());
                 break;
             case 3:
                 elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                hand.setLevel3Hub(hand.getPos());
                 break;
         }
     }
@@ -688,7 +692,7 @@ public class teleOpRed extends LinearOpMode {
      */
     boolean withoutPID()
     {
-        if(elevator.getUsePID() == true && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
+        if(/*elevator.getUsePID() == true && */elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
         {
             switch (hand.getHandPos())
             {

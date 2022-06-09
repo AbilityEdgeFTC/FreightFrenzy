@@ -1,18 +1,17 @@
-package org.firstinspires.ftc.teamcode.opmodes.autonmous;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @Config
-@Autonomous
+@TeleOp(name = "Sensors")
 @Disabled
 public class Sensors extends LinearOpMode {
 

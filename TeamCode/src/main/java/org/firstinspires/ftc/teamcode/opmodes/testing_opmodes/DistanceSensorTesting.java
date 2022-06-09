@@ -27,70 +27,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
-
-import android.graphics.Color;
-
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
-import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@TeleOp(name = "Distance Sensor Testing", group = "Sensor")
+public class DistanceSensorTesting extends LinearOpMode {
 
-@Config
-@TeleOp(name = "colorSensor Testing LOCALIZER", group = "testing")
-@Disabled
-public class colorSensorLocalizerDemo extends LinearOpMode {
-    double y_cord = 30;
+    ModernRoboticsI2cRangeSensor rangeSensor;
 
-    public static int minRed = 200, minGreen = 200, minBlue = 200;
-    public static int maxRed = 255, maxGreen = 255, maxBlue = 255;
+    public static double emptyBox = 10;
+    boolean hasFreight = false;
 
-    double oldYCords = y_cord;
-    ColorSensor sensor;
+    @Override public void runOpMode() {
 
-    float[] hsv = {0, 0, 0};
+        // get a reference to our compass
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "distanceSensor");
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        sensor = hardwareMap.get(ColorSensor.class, "colorSensor");
-        cGamepad gamepad = new cGamepad(gamepad1);
-
-        // Wait for the game to start (driver presses PLAY)
+        // wait for the start button to be pressed
         waitForStart();
-        while(opModeIsActive()) {
 
-            if (inMinMax(minRed, maxRed, sensor.red()) && inMinMax(minGreen, maxGreen, sensor.green()) && inMinMax(minBlue, maxBlue, sensor.blue())) {
-                y_cord = 10;
+        while (opModeIsActive()) {
+            if(rangeSensor.cmOptical() < emptyBox)
+            {
+                hasFreight = true;
+            }
+            else
+            {
+                hasFreight = false;
             }
 
-            if (gamepad.YOnce()) {
-                y_cord = oldYCords;
-            }
-
-            telemetry.addData("Alpha: ", sensor.alpha());
-            telemetry.addData("Red:  ", sensor.red());
-            telemetry.addData("Green:  ", sensor.green());
-            telemetry.addData("Blue: ", sensor.blue());
-            Color.RGBToHSV(sensor.red(), sensor.green(), sensor.blue(), hsv);
-            telemetry.addData("Red: ", hsv[0]);
-            telemetry.addData("Green:  ", hsv[1]);
-            telemetry.addData("Blue: ", hsv[2]);
+            telemetry.addData("HAS FREIGHT:", hasFreight);
+            telemetry.addData("raw ultrasonic", rangeSensor.rawUltrasonic());
+            telemetry.addData("raw optical", rangeSensor.rawOptical());
+            telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());
+            telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));
             telemetry.update();
         }
-
-
-    }
-
-    boolean inMinMax(int min, int max, int value)
-    {
-        return min <= value && value <= max;
     }
 }

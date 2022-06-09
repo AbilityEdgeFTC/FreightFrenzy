@@ -41,30 +41,43 @@ public class AutoRightRedAsync extends LinearOpMode {
     public static double poseHubX = 12.5;
     public static double poseHubY = -58;
     public static double poseHubH = 180;
-    public static double poseIntakeX = 50;
+    public static double poseIntakeX = 60;
     public static double poseIntakeY = -58;
     public static double poseIntakeH = 180;
-    public static double poseIntakeFifteenX = 60;
+    public static double poseIntakeFifteenX = 70;
     public static double poseIntakeFifteenY = -57;
     public static double poseIntakeFifteenH = 15;
     public static double poseIntakeThirtyH = 30;
 
-    public static double powerElevator = 1;
     public static double GO_PARK_AT = 28;
+    public static double powerSlowElevator = .7, powerElevator = 1, powerElevatorFast = 1;
+    public static double elevatorDelay = 1;
 
     int wentIntakeXTimes = 0;
     boolean hasFreight = false;
+    double offset = 0;
+    boolean firstTime = true;
 
     SampleMecanumDrive drive;
+    ElevatorFirstPID elevator;
+    SpinnerFirstPID spinner;
+    hand hand;
+    dip dip;
+    intake intake;
+    Cover cover;
+    ElapsedTime runningFor;
+
+    TrajectorySequence fixAngle, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
+    Pose2d startPoseRight, poseFixAngle, poseHub, poseGoToIntake, poseGoToIntakeFifteen, poseGoToIntakeThirty;
 
     enum State
     {
         FIX_ANGLE, // fix angle from start angle
         INTAKE, // go to intake
-        PLACE_IN_HUB, // go to placing hub position
-        PARK, // park position
         IDLE, // nothing
-        LEAVE_EVERYTHING_AND_PARK
+        LEAVE_EVERYTHING_AND_PARK,
+        OPEN_ELEVATOR,
+        WAIT_ELEVATOR_DELAY
     }
 
     enum intakePathType
@@ -80,60 +93,21 @@ public class AutoRightRedAsync extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         drive = new SampleMecanumDrive(hardwareMap);
-        ElevatorFirstPID elevator = new ElevatorFirstPID(hardwareMap);
-        SpinnerFirstPID spinner = new SpinnerFirstPID(hardwareMap);
-        hand hand = new hand(hardwareMap);
-        intake intake = new intake(hardwareMap);
-        dip dip = new dip(hardwareMap);
-        Cover cover = new Cover(hardwareMap);
+        elevator = new ElevatorFirstPID(hardwareMap);
+        spinner = new SpinnerFirstPID(hardwareMap);
+        hand = new hand(hardwareMap);
+        intake = new intake(hardwareMap);
+        dip = new dip(hardwareMap);
+        cover = new Cover(hardwareMap);
 
-        Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, startPoseRightH);
-        Pose2d poseFixAngle = new Pose2d(poseFixAngleX, poseFixAngleY, Math.toRadians(poseFixAngleH));
-        Pose2d poseHub = new Pose2d(poseHubX, poseHubY, Math.toRadians(poseHubH));
-        Pose2d poseGoToIntake = new Pose2d(poseIntakeX, poseIntakeY, Math.toRadians(poseIntakeH));
-        Pose2d poseGoToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
-        Pose2d poseGoToIntakeThirty = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeThirtyH));
+        startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
+        poseFixAngle = new Pose2d(poseFixAngleX, poseFixAngleY, Math.toRadians(poseFixAngleH));
+        poseHub = new Pose2d(poseHubX, poseHubY, Math.toRadians(poseHubH));
+        poseGoToIntake = new Pose2d(poseIntakeX, poseIntakeY, Math.toRadians(poseIntakeH));
+        poseGoToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
+        poseGoToIntakeThirty = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeThirtyH));
 
         drive.setPoseEstimate(startPoseRight);
-
-        MarkerCallback elevetorOpen = new MarkerCallback()
-        {
-            @Override
-            public void onMarkerReached() {
-                cover.openCover();
-
-                elevator.setPower(powerElevator);
-
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-
-                elevator.updateAuto();
-                spinner.updateAuto();
-
-                hand.level3();
-                dip.holdFreight();
-            }
-        };
-
-        MarkerCallback elevetorClose =  new MarkerCallback()
-        {
-            @Override
-            public void onMarkerReached(){
-                dip.releaseFreight();
-
-                elevator.setPower(powerElevator);
-
-                hand.intake();
-
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-
-                elevator.updateAuto();
-                spinner.updateAuto();
-
-                cover.closeCover();
-            }
-        };
 
         MarkerCallback intakeForward =  new MarkerCallback()
         {
@@ -163,45 +137,47 @@ public class AutoRightRedAsync extends LinearOpMode {
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
                 new TranslationalVelocityConstraint(80),
-                new RectangleMaskConstraint(40,-72,72,-40,
+                new RectangleMaskConstraint(35,-72,72,-35,
                         new TranslationalVelocityConstraint(10))));
 
-        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(80);
+        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(60);
 
 
         // Let's define our trajectories
-        TrajectorySequence fixAngle = drive.trajectorySequenceBuilder(startPoseRight)
+        fixAngle = drive.trajectorySequenceBuilder(startPoseRight)
                 .lineToLinearHeading(poseFixAngle)
                 .build();
 
         // Second trajectory
         // Ensure that we call trajectory1.end() as the start for this one
-        TrajectorySequence goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
+        goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
                 .lineToSplineHeading(poseHub)
-                .addTemporalMarker(elevetorOpen)
-                .waitSeconds(.8)
-                .addTemporalMarker(elevetorClose)
                 .build();
 
-        TrajectorySequence straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+        straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(poseGoToIntake)
+                .strafeLeft(2)
                 .build();
 
-        TrajectorySequence fifteenDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+        fifteenDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(poseGoToIntake)
                 .splineTo(new Vector2d(poseGoToIntakeFifteen.getX(), poseGoToIntakeFifteen.getY()), poseGoToIntakeFifteen.getHeading())
+                .lineToSplineHeading(poseGoToIntake)
+                .strafeLeft(2)
                 .build();
 
-        TrajectorySequence thirtyDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+        thirtyDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(poseGoToIntake)
                 .splineTo(new Vector2d(poseGoToIntakeThirty.getX(), poseGoToIntakeThirty.getY()), poseGoToIntakeThirty.getHeading())
+                .lineToSplineHeading(poseGoToIntake)
+                .strafeLeft(2)
                 .build();
 
-        TrajectorySequence park = drive.trajectorySequenceBuilder(goToHub.end())
+        park = drive.trajectorySequenceBuilder(goToHub.end())
                 .addTemporalMarker(intakeStop)
                 .lineToSplineHeading(poseGoToIntake)
                 .build();
@@ -210,69 +186,20 @@ public class AutoRightRedAsync extends LinearOpMode {
 
         waitForStart();
 
+        if (isStopRequested()) return;
+
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.updateAuto();
         elevator.updateAuto();
 
-        ElapsedTime runningFor = new ElapsedTime();
-
-        if (isStopRequested()) return;
+        runningFor = new ElapsedTime();
 
         currentState = State.FIX_ANGLE;
         drive.followTrajectorySequenceAsync(fixAngle);
 
         while (opModeIsActive() && !isStopRequested()) {
-            switch (currentState) {
-                case FIX_ANGLE:
-                    changeState(State.PLACE_IN_HUB, goToHub);
-                    break;
-                case PLACE_IN_HUB:
-                    switch (intakeType)
-                    {
-                        case STRAIGHT_PATH:
-                            changeStateIntake(State.INTAKE, straightLineIntake);
-                            break;
-                        case FIFTEEN_DEGREE_PATH:
-                            changeStateIntake(State.INTAKE, fifteenDegreeIntake);
-                            break;
-                        case THIRTY_DEGREE_PATH:
-                            changeStateIntake(State.INTAKE, thirtyDegreeIntake);
-                            break;
-                    }
-                    break;
-                case INTAKE:
-                    if(hasFreight)
-                    {
-                        drive.breakFollowing();
-                    }
-
-                    if (!drive.isBusy()) {
-                        currentState = State.PLACE_IN_HUB;
-                        drive.followTrajectorySequenceAsync(goToHub);
-                    }
-                    break;
-                case PARK:
-                    changeState(State.IDLE, park);
-                case IDLE:
-                    break;
-                case LEAVE_EVERYTHING_AND_PARK:
-                    if (drive.isBusy())
-                    {
-                        drive.breakFollowing();
-                        Pose2d currentPose = drive.getPoseEstimate();
-                        TrajectorySequence parkNow = drive.trajectorySequenceBuilder(currentPose)
-                                .addTemporalMarker(elevetorClose)
-                                .lineToSplineHeading(poseGoToIntake)
-                                .addTemporalMarker(intakeStop)
-                                .build();
-                        drive.followTrajectorySequenceAsync(parkNow);
-                    }
-                    else
-                    {
-                        changeState(State.IDLE, park);
-                    }
-            }
+            switchTrajs();
 
             if(runningFor.seconds() >= GO_PARK_AT)
             {
@@ -284,12 +211,12 @@ public class AutoRightRedAsync extends LinearOpMode {
 
             elevator.updateAuto();
             spinner.updateAuto();
-
-            // Read pose
-            Pose2d poseEstimate = drive.getPoseEstimate();
-
-            // Continually write pose to `PoseStorage`
-            PoseStorage.currentPose = poseEstimate;
+//
+//            // Read pose
+//            Pose2d poseEstimate = drive.getPoseEstimate();
+//
+//            // Continually write pose to `PoseStorage`
+//            PoseStorage.currentPose = poseEstimate;
         }
     }
 
@@ -325,4 +252,125 @@ public class AutoRightRedAsync extends LinearOpMode {
         }
     }
 
+    void switchTrajs()
+    {
+        switch (currentState) {
+            case FIX_ANGLE:
+                changeState(State.OPEN_ELEVATOR, goToHub);
+                break;
+            case OPEN_ELEVATOR:
+                if(!drive.isBusy())
+                {
+                    intake.stop();
+                    openElevator();
+                    currentState = State.WAIT_ELEVATOR_DELAY;
+                }
+                break;
+            case WAIT_ELEVATOR_DELAY:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelay)
+                {
+                    firstTime = true;
+
+                    closeElevator();
+
+                    switch (intakeType)
+                    {
+                        case STRAIGHT_PATH:
+                            changeStateIntake(State.INTAKE, straightLineIntake);
+                            break;
+                        case FIFTEEN_DEGREE_PATH:
+                            changeStateIntake(State.INTAKE, fifteenDegreeIntake);
+                            break;
+                        case THIRTY_DEGREE_PATH:
+                            changeStateIntake(State.INTAKE, thirtyDegreeIntake);
+                            break;
+                    }
+                }
+                break;
+            case INTAKE:
+                if(hasFreight)
+                {
+                    drive.breakFollowing();
+                }
+
+                if (!drive.isBusy()) {
+                    changeState(State.OPEN_ELEVATOR, goToHub);
+                }
+                break;
+            case LEAVE_EVERYTHING_AND_PARK:
+                if (drive.isBusy())
+                {
+                    drive.breakFollowing();
+
+                    Pose2d currentPose = drive.getPoseEstimate();
+
+                    TrajectorySequence parkNow = drive.trajectorySequenceBuilder(currentPose)
+                            .lineToSplineHeading(poseGoToIntake)
+                            .build();
+
+                    closeElevator();
+                    intake.stop();
+
+                    drive.followTrajectorySequenceAsync(parkNow);
+                }
+                else
+                {
+                    changeState(State.IDLE, park);
+                }
+                break;
+            case IDLE:
+                requestOpModeStop();
+                break;
+        }
+    }
+
+    void openElevator()
+    {
+        cover.openCover();
+
+        powerElevator = powerElevatorFast;
+        elevator.setPower(powerElevator);
+
+        elevator.updateAuto();
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+        spinner.updateAuto();
+
+
+        dip.holdFreight();
+
+        hand.level3();
+
+        elevator.updateAuto();
+        spinner.updateAuto();
+    }
+
+    void closeElevator()
+    {
+        dip.releaseFreight();
+
+        powerElevator = powerSlowElevator;
+        elevator.setPower(powerElevator);
+
+        elevator.updateAuto();
+        spinner.updateAuto();
+
+        dip.releaseFreight();
+
+        hand.intake();
+
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+
+        elevator.updateAuto();
+        spinner.updateAuto();
+
+        cover.closeCover();
+    }
 }

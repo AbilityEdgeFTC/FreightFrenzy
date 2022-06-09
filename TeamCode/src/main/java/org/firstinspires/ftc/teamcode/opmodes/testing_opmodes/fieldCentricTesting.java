@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -11,11 +11,11 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.teamcode.opmodes.autonmous.PoseStorage;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 
 @Config
 @TeleOp(name = "Field Centric Testing", group = "test")
-@Disabled
 public class fieldCentricTesting extends LinearOpMode {
 
     DcMotor mFL, mBL, mBR, mFR;
@@ -33,8 +33,7 @@ public class fieldCentricTesting extends LinearOpMode {
         mFR = hardwareMap.get(DcMotor.class, "mFR");
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        startingHeading = Double.parseDouble(ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile("RRheadingValue.txt")));
-        drive.setPoseEstimate(new Pose2d(0,0, startingHeading));
+        drive.setPoseEstimate(new Pose2d(0,0, -PoseStorage.currentPose.getHeading()));
 
         // wait till after init
         waitForStart();

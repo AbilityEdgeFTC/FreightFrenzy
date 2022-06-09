@@ -27,32 +27,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
+// .3 is throw freight
+// 1 is out freight from intake
 @Config
-@TeleOp(name = "Intake Testing", group = "testing")
-@Disabled
-public class Intake extends LinearOpMode {
+@TeleOp(name = "Servo Testing Dip", group = "testing")
+public class ServoTestDip extends LinearOpMode {
 
-    DcMotor mI;
-    public static boolean isReverse = true;
-    public static double power = 1;
+    Servo servo;
+    public static double position = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        mI = hardwareMap.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        servo = hardwareMap.get(Servo.class, "sD");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -60,16 +56,7 @@ public class Intake extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
 
         while (opModeIsActive()) {
-
-            if(isReverse)
-            {
-                mI.setPower(-power);
-            }
-            else
-            {
-                mI.setPower(power);
-            }
-
+            servo.setPosition(position);
         }
     }
 }

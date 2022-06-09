@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Cover {
 
     Servo sC;
-    public static double openingPosition = .6, closingPosition = .14;
+    public static double openingPosition = .6, closingPosition = .12;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.

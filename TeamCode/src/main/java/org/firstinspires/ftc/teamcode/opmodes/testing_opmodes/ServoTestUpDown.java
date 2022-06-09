@@ -27,38 +27,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
+import com.qualcomm.robotcore.hardware.Servo;
 
+// .15 close
+// .5
 @Config
-@TeleOp(name = "Carousel Testing", group = "testing")
-@Disabled
-public class CarouselTesting extends LinearOpMode {
+@TeleOp(name = "Servo Testing UpDowb", group = "testing")
+public class ServoTestUpDown extends LinearOpMode {
+
+    Servo servo;
+    public static double position = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        Carousel carousel = new Carousel(hardwareMap, telemetry, gamepad1);
+        servo = hardwareMap.get(Servo.class, "sC");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
+
         while (opModeIsActive()) {
-
-            while(gamepad1.x) {
-                carousel.spinCarousel(false);
-            }
-
-            carousel.stopCarousel();
-            carousel.displayTelemetry();
+            servo.setPosition(position);
         }
     }
 }
