@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor;
+
 
 @TeleOp(name="ColorSensorTest")
 @Disabled
@@ -45,7 +47,7 @@ public class ColorSensorTest extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor sensorColor = new SensorColor(hardwareMap);
+        SensorColor sensorColor = new SensorColor(hardwareMap);
 
 
         telemetry.addData("Status", "Initialized");

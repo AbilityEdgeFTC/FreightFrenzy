@@ -1,12 +1,18 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import android.graphics.Color;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.opencv.core.Scalar;
 
 /*
 DOESNT WORK - NOT BEEN TESTED
@@ -17,9 +23,7 @@ public class SensorColor {
     RevColorSensorV3 colorSensor;
     public static double gain = 2;
     float[] hsvValues = new float[3];
-    float[] rgbValues = new float[3];
     NormalizedRGBA colors;
-    double distance;
 
     public SensorColor(HardwareMap hardwareMap) {
         this.colorSensor = hardwareMap.get(RevColorSensorV3.class, "sensor_color");
@@ -32,7 +36,7 @@ public class SensorColor {
     public float[] getRGB()
     {
         colors = colorSensor.getNormalizedColors();
-        rgbValues = new float[]{colors.red, colors.blue, colors.green};
+        float[] rgbValues ={colors.red, colors.blue, colors.green};
         return rgbValues;
     }
 
@@ -49,10 +53,10 @@ public class SensorColor {
         return colors.alpha;
     }
 
-    public double getCM() {
-        distance = colorSensor.getDistance(DistanceUnit.CM);
-        return distance;
+    public boolean passedWearHouse()
+    {
+        return (hsvValues[2]>=0.06) && hsvValues[2]<=1;
     }
-    
 
 }
+

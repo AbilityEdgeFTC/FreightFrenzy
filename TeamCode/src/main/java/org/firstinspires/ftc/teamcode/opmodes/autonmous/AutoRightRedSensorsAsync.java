@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.Trajec
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
@@ -33,14 +34,14 @@ import java.util.Arrays;
  */
 @Config
 @Autonomous(name = "Right Red OLD ASYNC", group = "Autonomous Red")
-public class AutoRightRedNotNewAsync extends LinearOpMode {
+public class AutoRightRedSensorsAsync extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
-    public static double poseEntranceX = 10;
-    public static double poseEntranceY = -60;
+    public static double poseEntranceX = 7;
+    public static double poseEntranceY = -63;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 60;
     public static double poseCollectY = -60;
@@ -48,12 +49,13 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
     public static double poseHelpX = 7;
     public static double poseHelpY = -55;
     public static double poseHelpH = 180;
-    public static double cylceX2 = 60;
-    public static double cycleY2 = -58;
-    public static double cycleH2 = 180;
+    public static double poseIntakeFifteenX = 70;
+    public static double poseIntakeFifteenY = -57;
+    public static double poseIntakeFifteenH = 15;
+    public static double poseIntakeThirtyH = 30;
 
     public static double GO_PARK_AT = 28;
-    public static double powerSlowElevator = .7, powerElevator = 1, powerElevatorFast = 1;
+    public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     public static double elevatorDelay = 1;
     double whiteLineX = 28.5;
 
@@ -61,6 +63,7 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
 
     ModernRoboticsI2cRangeSensor rangeSensor;
 
+    int wentIntakeXTimes = 0;
     boolean hasFreight = false;
     double offset = 0;
     boolean firstTime = true;
@@ -72,10 +75,11 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
     dip dip;
     intake intake;
     Cover cover;
+    SensorColor colorSensor;
     ElapsedTime runningFor;
 
-    TrajectorySequence fixAngle, goToHub, intakeType1, park;
-    Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseCollectCycle2;
+    TrajectorySequence fixAngle, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
+    Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty;
 
     enum State
     {
@@ -87,7 +91,15 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
         WAIT_ELEVATOR_DELAY
     }
 
+    enum intakePathType
+    {
+        STRAIGHT_PATH,
+        FIFTEEN_DEGREE_PATH,
+        THIRTY_DEGREE_PATH
+    }
+
     State currentState = State.IDLE;
+    intakePathType intakeType = intakePathType.STRAIGHT_PATH;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -101,6 +113,7 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
         intake = new intake(hardwareMap);
         dip = new dip(hardwareMap);
         cover = new Cover(hardwareMap);
+        colorSensor = new SensorColor(hardwareMap);
 
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsC");
 
@@ -108,7 +121,8 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
         poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
-        poseCollectCycle2 = new Pose2d(cylceX2 , cycleY2, Math.toRadians(cycleH2));
+        poseGoToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
+        poseGoToIntakeThirty = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeThirtyH));
 
         drive.setPoseEstimate(startPoseRight);
 
@@ -142,11 +156,11 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
                 new RectangleMaskConstraint(50,-72,72,-50,
                         new TranslationalVelocityConstraint(10))));
 
-        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(30);
+        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(40);
 
         // Let's define our trajectories
         fixAngle = drive.trajectorySequenceBuilder(startPoseRight)
-                .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL/1.8, DriveConstants.TRACK_WIDTH),
+                .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL/3, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -158,9 +172,25 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL/2))
                 .build();
 
-        intakeType1 = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+        straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
+                .lineToSplineHeading(poseCollect)
+                .build();
+
+        fifteenDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+                .addTemporalMarker(intakeForward)
+                .lineToSplineHeading(poseCollect)
+                .splineTo(new Vector2d(poseGoToIntakeFifteen.getX(), poseGoToIntakeFifteen.getY()), poseGoToIntakeFifteen.getHeading())
+                .lineToSplineHeading(poseCollect)
+                .strafeLeft(2)
+                .build();
+
+        thirtyDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+                .addTemporalMarker(intakeForward)
+                .lineToSplineHeading(poseCollect)
+                .splineTo(new Vector2d(poseGoToIntakeThirty.getX(), poseGoToIntakeThirty.getY()), poseGoToIntakeThirty.getHeading())
+                .lineToSplineHeading(poseCollect)
+                .strafeLeft(2)
                 .build();
 
         park = drive.trajectorySequenceBuilder(goToHub.end())
@@ -204,7 +234,7 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
                 hasFreight = false;
             }
 
-            if(passedWhiteLine())
+            if(colorSensor.passedWearHouse())
             {
                 Pose2d poseEstimate = drive.getPoseEstimate();
                 drive.setPoseEstimate(new Pose2d(whiteLineX, poseEstimate.getY(), poseEstimate.getHeading()));
@@ -264,7 +294,18 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
 
                     closeElevator();
 
-                    changeState(State.INTAKE, intakeType1);
+                    switch (intakeType)
+                    {
+                        case STRAIGHT_PATH:
+                            changeStateIntake(State.INTAKE, straightLineIntake);
+                            break;
+                        case FIFTEEN_DEGREE_PATH:
+                            changeStateIntake(State.INTAKE, fifteenDegreeIntake);
+                            break;
+                        case THIRTY_DEGREE_PATH:
+                            changeStateIntake(State.INTAKE, thirtyDegreeIntake);
+                            break;
+                    }
                 }
                 break;
             case INTAKE:
@@ -304,6 +345,30 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
         }
     }
 
+    void changeStateIntake(State newState, TrajectorySequence traj)
+    {
+        if (!drive.isBusy()) {
+            currentState = newState;
+            drive.followTrajectorySequenceAsync(traj);
+
+            wentIntakeXTimes++;
+
+            switch (wentIntakeXTimes)
+            {
+                case 1:
+                    intakeType = intakePathType.STRAIGHT_PATH;
+                    break;
+                case 2:
+                    intakeType = intakePathType.FIFTEEN_DEGREE_PATH;
+                    break;
+                case 3:
+                    intakeType = intakePathType.THIRTY_DEGREE_PATH;
+                    wentIntakeXTimes = 0;
+                    break;
+            }
+        }
+    }
+
     void openElevator()
     {
         cover.openCover();
@@ -334,8 +399,6 @@ public class AutoRightRedNotNewAsync extends LinearOpMode {
 
         elevator.updateAuto();
         spinner.updateAuto();
-
-        dip.releaseFreight();
 
         hand.intake();
 
