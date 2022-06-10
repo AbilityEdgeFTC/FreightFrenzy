@@ -1,20 +1,21 @@
 package org.firstinspires.ftc.teamcode.opmodes.autonmous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 
 import org.jetbrains.annotations.NotNull;
 
-public class RectangleMaskConstraint implements TrajectoryVelocityConstraint {
+public class RectangleMaskConstraintAcceleration implements TrajectoryAccelerationConstraint {
     double minX, minY, maxX, maxY;
-    TrajectoryVelocityConstraint maxVelocity;
+    TrajectoryAccelerationConstraint maxAccel;
 
-    public RectangleMaskConstraint(double minX, double minY, double maxX, double maxY, TrajectoryVelocityConstraint maxVelocity) {
+    public RectangleMaskConstraintAcceleration(double minX, double minY, double maxX, double maxY, TrajectoryAccelerationConstraint maxAccel) {
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
-        this.maxVelocity = maxVelocity;
+        this.maxAccel = maxAccel;
     }
 
     /**
@@ -29,12 +30,11 @@ public class RectangleMaskConstraint implements TrajectoryVelocityConstraint {
     public double get(double s, @NotNull Pose2d pose, @NotNull Pose2d deriv, @NotNull Pose2d baseRobotVel) {
         if(minX <= pose.getX() && pose.getX() <= maxX && minY <= pose.getY() && pose.getY() <= maxY)
         {
-            return maxVelocity.get(s, pose, deriv, baseRobotVel);
+            return maxAccel.get(s, pose, deriv, baseRobotVel);
         }
         else
         {
             return Double.POSITIVE_INFINITY;
         }
     }
-
 }
