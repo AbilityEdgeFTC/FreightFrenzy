@@ -55,7 +55,7 @@ public class SensorColor {
 
     public boolean passedWearHouse()
     {
-        return (hsvValues[2]>=0.06) && hsvValues[2]<=1;
+        return (hsvValues[2]>=0.05) && hsvValues[2]<=1;
     }
 
 }

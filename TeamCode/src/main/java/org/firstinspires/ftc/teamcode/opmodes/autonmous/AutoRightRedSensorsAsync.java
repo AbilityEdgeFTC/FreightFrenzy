@@ -40,8 +40,9 @@ public class AutoRightRedSensorsAsync extends LinearOpMode {
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
-    public static double poseEntranceX = 7;
-    public static double poseEntranceY = -63;
+    public static double poseEntranceX = 11.5;
+    public static double poseEntranceFirstY = -61.5;
+    public static double poseEntranceY = -66;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 60;
     public static double poseCollectY = -60;
@@ -67,7 +68,7 @@ public class AutoRightRedSensorsAsync extends LinearOpMode {
     boolean hasFreight = false;
     double offset = 0;
     boolean firstTime = true;
-
+    boolean whiteLineDetected=false;
     SampleMecanumDrive drive;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
@@ -78,8 +79,8 @@ public class AutoRightRedSensorsAsync extends LinearOpMode {
     SensorColor colorSensor;
     ElapsedTime runningFor;
 
-    TrajectorySequence fixAngle, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
-    Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty;
+    TrajectorySequence fixAngle, goToHubFirst, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
+    Pose2d startPoseRight, poseHelp, poseEntranceFirst, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty;
 
     enum State
     {
@@ -119,6 +120,7 @@ public class AutoRightRedSensorsAsync extends LinearOpMode {
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
+        poseEntranceFirst = new Pose2d(poseEntranceX, poseEntranceFirstY, Math.toRadians(poseEntranceH));
         poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         poseGoToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
@@ -152,20 +154,23 @@ public class AutoRightRedSensorsAsync extends LinearOpMode {
         };
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new TranslationalVelocityConstraint(60),
-                new RectangleMaskConstraint(50,-72,72,-50,
-                        new TranslationalVelocityConstraint(10))));
+                new TranslationalVelocityConstraint(66),
+                new RectangleMaskConstraint(45,-72,72,-45,
+                        new TranslationalVelocityConstraint(8))));
 
         TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(40);
 
-        // Let's define our trajectories
         fixAngle = drive.trajectorySequenceBuilder(startPoseRight)
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL/3, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        // Second trajectory
-        // Ensure that we call trajectory1.end() as the start for this one
+        goToHubFirst = drive.trajectorySequenceBuilder(fixAngle.end())
+                .addTemporalMarker(intakeBackword)
+                .lineToSplineHeading(poseEntranceFirst, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL/2))
+                .build();
+
         goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
                 .lineToSplineHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -238,6 +243,7 @@ public class AutoRightRedSensorsAsync extends LinearOpMode {
             {
                 Pose2d poseEstimate = drive.getPoseEstimate();
                 drive.setPoseEstimate(new Pose2d(whiteLineX, poseEstimate.getY(), poseEstimate.getHeading()));
+                whiteLineDetected=true;
             }
 
             // We update drive continuously in the background, regardless of state
@@ -246,17 +252,14 @@ public class AutoRightRedSensorsAsync extends LinearOpMode {
             elevator.updateAuto();
             spinner.updateAuto();
 //
+            telemetry.addData("white line detected:",whiteLineDetected);
+            telemetry.update();
 //            // Read pose
 //            Pose2d poseEstimate = drive.getPoseEstimate();
 //
 //            // Continually write pose to `PoseStorage`
 //            PoseStorage.currentPose = poseEstimate;
         }
-    }
-
-    boolean passedWhiteLine()
-    {
-        return false;
     }
 
     void changeState(State newState, TrajectorySequence traj)
@@ -271,7 +274,7 @@ public class AutoRightRedSensorsAsync extends LinearOpMode {
     {
         switch (currentState) {
             case FIX_ANGLE:
-                changeState(State.OPEN_ELEVATOR, goToHub);
+                changeState(State.OPEN_ELEVATOR, goToHubFirst);
                 break;
             case OPEN_ELEVATOR:
                 if(!drive.isBusy())
