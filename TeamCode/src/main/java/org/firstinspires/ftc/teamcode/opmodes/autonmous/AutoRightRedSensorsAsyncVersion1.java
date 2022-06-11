@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.Trajec
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor;
+import org.firstinspires.ftc.teamcode.robot.subsystems.SensorFreight;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
@@ -58,7 +59,6 @@ public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
     public static double elevatorDelay = 1;
     double whiteLineX = 28.5;
 
-    double emptyBox = 0;
     int numOfTimesPassedWarehouse = 0;
 
     ModernRoboticsI2cRangeSensor rangeSensor;
@@ -77,6 +77,7 @@ public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
     Cover cover;
     SensorColor colorSensor;
     ElapsedTime runningFor;
+    SensorFreight freightSensor;
 
     TrajectorySequence fixAngle, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
     Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty;
@@ -114,8 +115,7 @@ public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
         dip = new dip(hardwareMap);
         cover = new Cover(hardwareMap);
         colorSensor = new SensorColor(hardwareMap);
-
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsC");
+        freightSensor = new SensorFreight(hardwareMap);
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
@@ -225,14 +225,7 @@ public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
                 currentState = State.LEAVE_EVERYTHING_AND_PARK;
             }
 
-            if(rangeSensor.rawOptical() != emptyBox)
-            {
-                hasFreight = true;
-            }
-            else
-            {
-                hasFreight = false;
-            }
+            hasFreight = freightSensor.hasFreight();
 
             if(colorSensor.passedWearHouse())
             {

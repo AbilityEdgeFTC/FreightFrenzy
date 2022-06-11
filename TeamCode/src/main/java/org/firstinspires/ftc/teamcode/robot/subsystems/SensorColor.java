@@ -14,9 +14,6 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.opencv.core.Scalar;
 
-/*
-DOESNT WORK - NOT BEEN TESTED
- */
 @Config
 public class SensorColor {
 

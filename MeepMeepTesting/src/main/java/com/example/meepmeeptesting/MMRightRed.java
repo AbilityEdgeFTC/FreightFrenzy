@@ -26,7 +26,7 @@ public class MMRightRed {
         double poseEntranceX = 13;
         double poseEntranceY = -64;
         double poseEntranceH = 180;
-        double poseCollectX = 50;
+        double poseCollectX = 53;
         double poseCollectY = -64;
         double poseCollectH = 180;
         double poseHelpX = 7;
@@ -34,7 +34,7 @@ public class MMRightRed {
         double poseHelpH = 180;
 
         //Cordinates for each course
-        double cylceX2 = 60;
+        double cylceX2 = 57;
         double cycleY2 = -63;
         double cycleH2 = 15;
 
@@ -51,7 +51,7 @@ public class MMRightRed {
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
                 new TranslationalVelocityConstraint(80),
-                new RectangleMaskConstraint(40,-72,72,-40,
+                new RectangleMaskConstraint(53,-72,72,-53,
                         new TranslationalVelocityConstraint(10))));
 
         TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(80);

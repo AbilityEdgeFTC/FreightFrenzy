@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.Trajec
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor;
+import org.firstinspires.ftc.teamcode.robot.subsystems.SensorFreight;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
@@ -40,16 +41,17 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
-    public static double minXOfWarehouse = 50, minYOfWarehouse = -50;
+    public static double minXOfWarehouse = 53, minYOfWarehouse = -53;
     public static double ROBOT_ACCEL = 40, ROBOT_ACCEL_IN_WAREHOUSE = 20;
     public static double ROBOT_VEL = 65, ROBOT_VEL_IN_WAREHOUSE = 10;
     public static double poseEntranceX = 7;
     public static double poseEntranceFirstTimeY = -60;
     public static double poseEntranceY = -63;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 60, poseCollectY = -60, poseCollectH = 180;
+    public static double poseCollectX = 53, poseCollectY = -60, poseCollectH = 180;
     public static double poseHelpX = 7, poseHelpY = -55, poseHelpH = 180;
-    public static double poseIntakeFifteenX = 70;
+    // was 63
+    public static double poseIntakeFifteenX = 57;
     public static double poseIntakeFifteenY = -57;
     public static double poseIntakeFifteenH = 15;
     public static double poseIntakeThirtyH = 30;
@@ -62,8 +64,6 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
     int numOfTimesPassedWarehouse = 0;
 
     double emptyBox = 0;
-
-    ModernRoboticsI2cRangeSensor rangeSensor;
 
     int wentIntakeXTimes = 0;
     boolean hasFreight = false;
@@ -79,6 +79,7 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
     Cover cover;
     SensorColor colorSensor;
     ElapsedTime runningFor;
+    SensorFreight freightSensor;
 
     TrajectorySequence fixAngle, goToHubFirstTime, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
     Pose2d startPoseRight, poseHelp, poseEntranceFirstTime, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty;
@@ -116,8 +117,7 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
         dip = new dip(hardwareMap);
         cover = new Cover(hardwareMap);
         colorSensor = new SensorColor(hardwareMap);
-
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsC");
+        freightSensor = new SensorFreight(hardwareMap);
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
@@ -233,14 +233,7 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
                 currentState = State.LEAVE_EVERYTHING_AND_PARK;
             }
 
-            if(rangeSensor.rawOptical() != emptyBox)
-            {
-                hasFreight = true;
-            }
-            else
-            {
-                hasFreight = false;
-            }
+            hasFreight = freightSensor.hasFreight();
 
             if(colorSensor.passedWearHouse())
             {
