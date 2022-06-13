@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.hardware.Sensor;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -12,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.SensorFreight;
+import org.firstinspires.ftc.teamcode.robot.subsystems.FreightSensor;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -34,7 +32,7 @@ public class teleOpRed extends LinearOpMode {
     Cover cover;
     cGamepad cGamepad1, cGamepad2;
     ElapsedTime resetElevator;
-    SensorFreight freightSensor;
+    FreightSensor freightSensor;
 
     public static double powerIntake = 1, powerSlowElevator = .6;
     public static double firstLevelHandDelay = 0.5, secondLevelHandDelay = .4;
@@ -77,7 +75,7 @@ public class teleOpRed extends LinearOpMode {
         cover = new Cover(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
-        freightSensor = new SensorFreight(hardwareMap);
+        freightSensor = new FreightSensor(hardwareMap);
         resetElevator = new ElapsedTime();
 
         // wait till after init

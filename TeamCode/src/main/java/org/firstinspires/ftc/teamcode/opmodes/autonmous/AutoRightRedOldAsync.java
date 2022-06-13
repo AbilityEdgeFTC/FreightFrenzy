@@ -20,8 +20,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.Trajec
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
-import org.firstinspires.ftc.teamcode.robot.subsystems.SensorColor;
-import org.firstinspires.ftc.teamcode.robot.subsystems.SensorFreight;
+import org.firstinspires.ftc.teamcode.robot.subsystems.FreightSensor;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
@@ -76,7 +75,7 @@ public class AutoRightRedOldAsync extends LinearOpMode {
     intake intake;
     Cover cover;
     ElapsedTime runningFor;
-    SensorFreight freightSensor;
+    FreightSensor freightSensor;
 
     TrajectorySequence fixAngle, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park, goToHubFromFixingAngle;
     Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty , wareHouseHelp;
@@ -114,7 +113,7 @@ public class AutoRightRedOldAsync extends LinearOpMode {
         intake = new intake(hardwareMap);
         dip = new dip(hardwareMap);
         cover = new Cover(hardwareMap);
-        freightSensor = new SensorFreight(hardwareMap);
+        freightSensor = new FreightSensor(hardwareMap);
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));

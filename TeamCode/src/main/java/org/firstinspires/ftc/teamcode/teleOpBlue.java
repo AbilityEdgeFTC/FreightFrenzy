@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.FreightSensor;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -18,7 +19,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 @Config
-@TeleOp(name = "BLUE TeleOp - Driver Control", group = "BLUE")
+@TeleOp(name = "BLUE TeleOp - Driver Control", group = "RED")
 public class teleOpBlue extends LinearOpMode {
 
     gamepad gamepad;
@@ -30,6 +31,9 @@ public class teleOpBlue extends LinearOpMode {
     dip dip;
     Cover cover;
     cGamepad cGamepad1, cGamepad2;
+    ElapsedTime resetElevator;
+    FreightSensor freightSensor;
+
     public static double powerIntake = 1, powerSlowElevator = .6;
     public static double firstLevelHandDelay = 0.5, secondLevelHandDelay = .4;
     public static double thirdLevelHandDelay = .18, shareLevelHandDelay = 0.25;
@@ -42,7 +46,6 @@ public class teleOpBlue extends LinearOpMode {
     boolean frontIntake = false, backIntake = false, canIntake = true;
     public static double delayCloseCover = 1.4;
     double positionDip = 0;
-    ElapsedTime resetElevator;
 
     enum ElevatorMovement
     {
@@ -72,6 +75,7 @@ public class teleOpBlue extends LinearOpMode {
         cover = new Cover(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
+        freightSensor = new FreightSensor(hardwareMap);
         resetElevator = new ElapsedTime();
 
         // wait till after init
@@ -270,29 +274,35 @@ public class teleOpBlue extends LinearOpMode {
          but we just check if the gamepads want to power the intake, and which way.
          */
 
-        if ((gamepad1.right_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad2.left_trigger == 0) && (gamepad1.left_trigger == 0))
+        if ((gamepad1.right_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad2.left_trigger == 0) && (gamepad1.left_trigger == 0) && !freightSensor.hasFreight())
         {
             intake.powerIntake(gamepad1.right_trigger);
             frontIntake = false;
             backIntake = false;
         }
-        else if ((gamepad1.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad2.left_trigger == 0))
+        else if ((gamepad1.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad2.left_trigger == 0) && !freightSensor.hasFreight())
         {
             intake.powerIntake(-gamepad1.left_trigger);
             frontIntake = false;
             backIntake = false;
         }
-        else if ((gamepad2.right_trigger != 0) && canIntake && (gamepad2.left_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0))
+        else if ((gamepad2.right_trigger != 0) && canIntake && (gamepad2.left_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0) && !freightSensor.hasFreight())
         {
             intake.powerIntake(gamepad2.right_trigger);
             frontIntake = false;
             backIntake = false;
         }
-        else if ((gamepad2.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0))
+        else if ((gamepad2.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0) && !freightSensor.hasFreight())
         {
             intake.powerIntake(-gamepad2.left_trigger);
             frontIntake = false;
             backIntake = false;
+        }
+
+        if(freightSensor.hasFreight())
+        {
+            frontIntake = false;
+            backIntake = true;
         }
 
 
@@ -692,7 +702,7 @@ public class teleOpBlue extends LinearOpMode {
      */
     boolean withoutPID()
     {
-        if(/*elevator.getUsePID() == true && */elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
+        if(elevator.getUsePID() == true && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
         {
             switch (hand.getHandPos())
             {

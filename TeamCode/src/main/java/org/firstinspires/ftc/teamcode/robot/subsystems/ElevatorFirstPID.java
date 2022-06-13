@@ -29,7 +29,6 @@ public class ElevatorFirstPID {
     public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
     public static double maxPower = 0.85;
-    public static boolean DEBUG = true;
     double power = 1;
     boolean usePID = true;
     public static int offset = 0;
@@ -113,7 +112,7 @@ public class ElevatorFirstPID {
             }
             else if(gamepad.left_stick_y != 0 && gamepad.left_stick_button)
             {
-                motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower/2, maxPower/2));
+                motor.setPower(Range.clip(-gamepad.left_stick_y, -1, 1));
             }
             else
             {

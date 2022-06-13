@@ -10,12 +10,12 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 @Config
-public class SensorFreight {
+public class FreightSensor {
 
     ModernRoboticsI2cRangeSensor rangeSensor;
     public static double emptyBox = 0;
 
-    public SensorFreight(HardwareMap hardwareMap) {
+    public FreightSensor(HardwareMap hardwareMap) {
         this.rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsC");
     }
 
