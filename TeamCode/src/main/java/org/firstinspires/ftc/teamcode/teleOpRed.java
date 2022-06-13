@@ -704,7 +704,7 @@ public class teleOpRed extends LinearOpMode {
      */
     boolean withoutPID()
     {
-        if(/*elevator.getUsePID() == true && */elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
+        if(elevator.getUsePID() == true && elevator.getElevatorLevel() != ElevatorFirstPID.ElevatorLevel.ZERO)
         {
             switch (hand.getHandPos())
             {

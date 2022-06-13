@@ -33,16 +33,15 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red ASYNC Version 2", group = "Autonomous Red")
-public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
+@Autonomous(name = "Right Red ASYNC - Thursday", group = "Autonomous Red")
+public class AutoRightRedOldAsync extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
-    public static double poseEntranceX = 11.5;
-    public static double poseEntranceFirstY = -61.5;
-    public static double poseEntranceY = -66;
+    public static double poseEntranceX = 7;
+    public static double poseEntranceY = -65;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 60;
     public static double poseCollectY = -60;
@@ -50,6 +49,9 @@ public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
     public static double poseHelpX = 7;
     public static double poseHelpY = -55;
     public static double poseHelpH = 180;
+    public static double poseWareHouseHelpX = 60;
+    public static double poseWareHouseHelpY = -63;
+    public static double poseWareHouseHelpH = 180;
     public static double poseIntakeFifteenX = 70;
     public static double poseIntakeFifteenY = -57;
     public static double poseIntakeFifteenH = 15;
@@ -58,9 +60,6 @@ public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
     public static double GO_PARK_AT = 28;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     public static double elevatorDelay = 1;
-    double whiteLineX = 28.5;
-
-    int numOfTimesPassedWarehouse = 0;
 
     ModernRoboticsI2cRangeSensor rangeSensor;
 
@@ -76,17 +75,17 @@ public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
     dip dip;
     intake intake;
     Cover cover;
-    SensorColor colorSensor;
     ElapsedTime runningFor;
     SensorFreight freightSensor;
 
-    TrajectorySequence fixAngle, goToHubFirst, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
-    Pose2d startPoseRight, poseHelp, poseEntranceFirst, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty;
+    TrajectorySequence fixAngle, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park, goToHubFromFixingAngle;
+    Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty , wareHouseHelp;
 
     enum State
     {
         FIX_ANGLE, // fix angle from start angle
         INTAKE, // go to intake
+        FIX_INTAKE,
         IDLE, // nothing
         LEAVE_EVERYTHING_AND_PARK,
         OPEN_ELEVATOR,
@@ -115,16 +114,15 @@ public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
         intake = new intake(hardwareMap);
         dip = new dip(hardwareMap);
         cover = new Cover(hardwareMap);
-        colorSensor = new SensorColor(hardwareMap);
         freightSensor = new SensorFreight(hardwareMap);
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
-        poseEntranceFirst = new Pose2d(poseEntranceX, poseEntranceFirstY, Math.toRadians(poseEntranceH));
         poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
         poseGoToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
         poseGoToIntakeThirty = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeThirtyH));
+        wareHouseHelp = new Pose2d(poseWareHouseHelpX, poseWareHouseHelpY, Math.toRadians(poseWareHouseHelpH));
 
         drive.setPoseEstimate(startPoseRight);
 
@@ -155,23 +153,26 @@ public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
                 new TranslationalVelocityConstraint(66),
-                new RectangleMaskConstraintVelocity(45,-72,72,-45,
-                        new TranslationalVelocityConstraint(8))));
+                new RectangleMaskConstraint(50,-72,72,-50,
+                        new TranslationalVelocityConstraint(10))));
 
         TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(40);
 
+        // Let's define our trajectories
         fixAngle = drive.trajectorySequenceBuilder(startPoseRight)
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL/3, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        goToHubFirst = drive.trajectorySequenceBuilder(fixAngle.end())
+        // Second trajectory
+        // Ensure that we call trajectory1.end() as the start for this one
+        goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToSplineHeading(poseEntranceFirst, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL/2))
                 .build();
 
-        goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
+        goToHubFromFixingAngle = drive.trajectorySequenceBuilder(wareHouseHelp)
                 .addTemporalMarker(intakeBackword)
                 .lineToSplineHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL/2))
@@ -232,26 +233,11 @@ public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
 
             hasFreight = freightSensor.hasFreight();
 
-            if(colorSensor.passedWearHouse())
-            {
-                numOfTimesPassedWarehouse++;
-                Pose2d poseEstimate = drive.getPoseEstimate();
-                drive.setPoseEstimate(new Pose2d(whiteLineX, poseEstimate.getY(), poseEstimate.getHeading()));
-            }
-
             // We update drive continuously in the background, regardless of state
             drive.update();
 
             elevator.updateAuto();
             spinner.updateAuto();
-
-            telemetry.addData("Num Of Times Passed Warehouse", numOfTimesPassedWarehouse);
-            telemetry.update();
-//            // Read pose
-//            Pose2d poseEstimate = drive.getPoseEstimate();
-//
-//            // Continually write pose to `PoseStorage`
-//            PoseStorage.currentPose = poseEstimate;
         }
     }
 
@@ -267,7 +253,7 @@ public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
     {
         switch (currentState) {
             case FIX_ANGLE:
-                changeState(State.OPEN_ELEVATOR, goToHubFirst);
+                changeState(State.OPEN_ELEVATOR, goToHub);
                 break;
             case OPEN_ELEVATOR:
                 if(!drive.isBusy())
@@ -308,11 +294,16 @@ public class AutoRightRedSensorsAsyncVersion2 extends LinearOpMode {
                 if(hasFreight)
                 {
                     drive.breakFollowing();
+                    intake.intakeBackward();
+                    Pose2d currentPose = drive.getPoseEstimate();
+                    TrajectorySequence wareHousFix = drive.trajectorySequenceBuilder(currentPose)
+                            .lineToLinearHeading(wareHouseHelp)
+                            .build();
+                    changeState(State.FIX_INTAKE, wareHousFix);
                 }
-
-                if (!drive.isBusy()) {
-                    changeState(State.OPEN_ELEVATOR, goToHub);
-                }
+                break;
+            case FIX_INTAKE:
+                changeState(State.OPEN_ELEVATOR, goToHubFromFixingAngle);
                 break;
             case LEAVE_EVERYTHING_AND_PARK:
                 if (drive.isBusy())

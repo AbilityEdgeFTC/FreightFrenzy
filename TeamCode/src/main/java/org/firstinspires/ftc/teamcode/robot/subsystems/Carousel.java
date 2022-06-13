@@ -16,9 +16,9 @@ public class Carousel {
     DcMotor mC;
     double powerGiven = 0;
     public static double addingBy = 0.25;
-    public static double MAX_POWER = 0.6; //configerable
+    public static double MAX_POWER = 0.5; //configerable
     public static double MIN_POWER = 0.3;
-    public static double delay = 1.1;
+    public static double delay = 1;
     public static double startAccel = .19;
     NanoClock clock;
     double offset = 0;

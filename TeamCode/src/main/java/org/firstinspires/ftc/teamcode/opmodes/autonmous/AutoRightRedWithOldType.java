@@ -9,11 +9,9 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
@@ -26,15 +24,11 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-
 import java.util.Arrays;
 
-/*
- * This is a simple routine to test translational drive capabilities.
- */
 @Config
-@Autonomous(name = "Right Red ASYNC Version 1", group = "Autonomous Red")
-public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
+@Autonomous(name = "Right Red OLD ASYNC", group = "Autonomous Red")
+public class AutoRightRedWithOldType extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -72 + 17.72;
@@ -57,11 +51,6 @@ public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
     public static double GO_PARK_AT = 28;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     public static double elevatorDelay = 1;
-    double whiteLineX = 28.5;
-
-    int numOfTimesPassedWarehouse = 0;
-
-    ModernRoboticsI2cRangeSensor rangeSensor;
 
     int wentIntakeXTimes = 0;
     boolean hasFreight = false;
@@ -153,7 +142,7 @@ public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
                 new TranslationalVelocityConstraint(60),
-                new RectangleMaskConstraintVelocity(50,-72,72,-50,
+                new RectangleMaskConstraint(50,-72,72,-50,
                         new TranslationalVelocityConstraint(10))));
 
         TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(40);
@@ -227,28 +216,17 @@ public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
 
             hasFreight = freightSensor.hasFreight();
 
-            if(colorSensor.passedWearHouse())
-            {
-                numOfTimesPassedWarehouse++;
-                Pose2d poseEstimate = drive.getPoseEstimate();
-                drive.setPoseEstimate(new Pose2d(whiteLineX, poseEstimate.getY(), poseEstimate.getHeading()));
-            }
-
             // We update drive continuously in the background, regardless of state
             drive.update();
 
             elevator.updateAuto();
             spinner.updateAuto();
-
-            telemetry.addData("Num Of TImes Passed Warehouse", numOfTimesPassedWarehouse);
-            telemetry.update();
-//
-//            // Read pose
-//            Pose2d poseEstimate = drive.getPoseEstimate();
-//
-//            // Continually write pose to `PoseStorage`
-//            PoseStorage.currentPose = poseEstimate;
         }
+    }
+
+    boolean passedWhiteLine()
+    {
+        return false;
     }
 
     void changeState(State newState, TrajectorySequence traj)
@@ -403,4 +381,3 @@ public class AutoRightRedSensorsAsyncVersion1 extends LinearOpMode {
         cover.closeCover();
     }
 }
-

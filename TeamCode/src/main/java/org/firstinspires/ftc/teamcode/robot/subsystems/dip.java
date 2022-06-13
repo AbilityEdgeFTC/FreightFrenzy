@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class dip {
 
     Servo sD;
-    public static double releasingPosition = .55, holdingPosition = 0;
+    public static double releasingPosition = .45, holdingPosition = 0;
     Telemetry telemetry;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.

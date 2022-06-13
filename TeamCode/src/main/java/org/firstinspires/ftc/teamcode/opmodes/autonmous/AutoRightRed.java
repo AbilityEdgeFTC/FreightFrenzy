@@ -39,7 +39,7 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Auto - Right Red", group = "Autonomous Red")
+@Autonomous(name = "Auto - Right Red with old paths", group = "Autonomous Red")
 public class AutoRightRed extends LinearOpMode {
 
     double startPoseRightX = 13;
@@ -88,8 +88,6 @@ public class AutoRightRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException
     {
-        DriveConstants.setMaxVel(65);
-        DriveConstants.setMaxAccel(65);
 
         if(useVision)
         {
@@ -109,6 +107,8 @@ public class AutoRightRed extends LinearOpMode {
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
 
+        DriveConstants.setMaxVel(65);
+        DriveConstants.setMaxAccel(65);
 
         Pose2d startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         Pose2d poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));

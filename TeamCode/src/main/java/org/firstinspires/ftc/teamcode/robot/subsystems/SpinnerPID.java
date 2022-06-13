@@ -69,11 +69,11 @@ public class SpinnerPID {
             }
             else if(slowMove && gamepad1.right_stick_x != 0 && gamepad1.right_stick_button)
             {
-                motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower/2, maxPower/2));
+                motor.setPower(Range.clip(gamepad1.right_stick_x, -1, 1));
             }
             else if(gamepad2.right_stick_x != 0 && gamepad2.right_stick_button)
             {
-                motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower/2, maxPower/2));
+                motor.setPower(Range.clip(gamepad2.right_stick_x, -1, 1));
             }
             else if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
             {

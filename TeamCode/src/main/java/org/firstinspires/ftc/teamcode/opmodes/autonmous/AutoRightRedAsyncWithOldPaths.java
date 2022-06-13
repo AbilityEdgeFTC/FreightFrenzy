@@ -2,15 +2,12 @@ package org.firstinspires.ftc.teamcode.opmodes.autonmous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
-import com.acmerobotics.roadrunner.trajectory.constraints.MinAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -34,38 +31,27 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red ASYNC Version 3", group = "Autonomous Red")
-public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
+@Autonomous(name = "Right Red ASYNC with old paths", group = "Autonomous Red")
+public class AutoRightRedAsyncWithOldPaths extends LinearOpMode {
 
-    double startPoseRightX = 13;
+    double startPoseRightX = 11;
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
-    public static double minXOfWarehouse = 53, minYOfWarehouse = -53;
-    public static double ROBOT_ACCEL = 40, ROBOT_ACCEL_IN_WAREHOUSE = 20;
-    public static double ROBOT_VEL = 65, ROBOT_VEL_IN_WAREHOUSE = 10;
-    public static double poseEntranceX = 7;
-    public static double poseEntranceFirstTimeY = -60;
-    public static double poseEntranceY = -63;
+    public static double poseEntranceX = 13.5;
+    public static double poseEntranceY = -58;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 53, poseCollectY = -60, poseCollectH = 180;
-    public static double poseHelpX = 7, poseHelpY = -55, poseHelpH = 180;
-    // was 63
-    public static double poseIntakeFifteenX = 57;
-    public static double poseIntakeFifteenY = -57;
-    public static double poseIntakeFifteenH = 15;
-    public static double poseIntakeThirtyH = 30;
+    public static double poseCollectX = 50.5;
+    public static double poseCollectY = -58;
+    public static double poseCollectH = 180;
+    public static double poseHelpX = 7;
+    public static double poseHelpY = -50;
+    public static double poseHelpH = 180;
 
     public static double GO_PARK_AT = 29;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
-    public static double elevatorDelay = .5;
-    double whiteLineX = 28.5;
+    public static double elevatorDelay = 1;
 
-    int numOfTimesPassedWarehouse = 0;
-
-    double emptyBox = 0;
-
-    int wentIntakeXTimes = 0;
     boolean hasFreight = false;
     double offset = 0;
     boolean firstTime = true;
@@ -81,8 +67,8 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
     ElapsedTime runningFor;
     SensorFreight freightSensor;
 
-    TrajectorySequence fixAngle, goToHubFirstTime, goToHub, straightLineIntake, fifteenDegreeIntake, thirtyDegreeIntake, park;
-    Pose2d startPoseRight, poseHelp, poseEntranceFirstTime, poseEntrance, poseCollect, poseGoToIntakeFifteen, poseGoToIntakeThirty;
+    TrajectorySequence fixAngle, goToHub, straightLineIntake, park;
+    Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect;
 
     enum State
     {
@@ -94,21 +80,10 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
         WAIT_ELEVATOR_DELAY
     }
 
-    enum intakePathType
-    {
-        STRAIGHT_PATH,
-        FIFTEEN_DEGREE_PATH,
-        THIRTY_DEGREE_PATH
-    }
-
     State currentState = State.IDLE;
-    intakePathType intakeType = intakePathType.STRAIGHT_PATH;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DriveConstants.setMaxVel(ROBOT_VEL);
-        DriveConstants.setMaxAccel(ROBOT_ACCEL);
-
         drive = new SampleMecanumDrive(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
         spinner = new SpinnerFirstPID(hardwareMap);
@@ -121,13 +96,13 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
-        poseEntranceFirstTime = new Pose2d(poseEntranceX, poseEntranceFirstTimeY, Math.toRadians(poseEntranceH));
         poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
-        poseGoToIntakeFifteen = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeFifteenH));
-        poseGoToIntakeThirty = new Pose2d(poseIntakeFifteenX, poseIntakeFifteenY, Math.toRadians(poseIntakeThirtyH));
 
         drive.setPoseEstimate(startPoseRight);
+
+        DriveConstants.setMaxVel(65);
+        DriveConstants.setMaxAccel(65);
 
         MarkerCallback intakeForward =  new MarkerCallback()
         {
@@ -155,49 +130,25 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
         };
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new TranslationalVelocityConstraint(ROBOT_VEL),
-                new RectangleMaskConstraintVelocity(minXOfWarehouse,-72,72,minYOfWarehouse,
-                        new TranslationalVelocityConstraint(ROBOT_VEL_IN_WAREHOUSE))));
+                new TranslationalVelocityConstraint(40),
+                new RectangleMaskConstraint(45,-72,72,-45,
+                        new TranslationalVelocityConstraint(8))));
 
-        TrajectoryAccelerationConstraint accelConstraint = new MinAccelerationConstraint(Arrays.asList(
-                new ProfileAccelerationConstraint(ROBOT_ACCEL),
-                new RectangleMaskConstraintAcceleration(minXOfWarehouse,-72,72,minYOfWarehouse,
-                        new ProfileAccelerationConstraint(ROBOT_ACCEL_IN_WAREHOUSE))));
+        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(40);
 
-        // Let's define our trajectories
         fixAngle = drive.trajectorySequenceBuilder(startPoseRight)
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL/3, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
-
-        goToHubFirstTime = drive.trajectorySequenceBuilder(fixAngle.end())
-                .addTemporalMarker(intakeBackword)
-                .lineToSplineHeading(poseEntranceFirstTime, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
                 .lineToSplineHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL/2))
                 .build();
 
         straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
-                .build();
-
-        fifteenDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
-                .splineTo(new Vector2d(poseGoToIntakeFifteen.getX(), poseGoToIntakeFifteen.getY()), poseGoToIntakeFifteen.getHeading())
-                .lineToSplineHeading(poseCollect)
-                .build();
-
-        thirtyDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(poseCollect)
-                .splineTo(new Vector2d(poseGoToIntakeThirty.getX(), poseGoToIntakeThirty.getY()), poseGoToIntakeThirty.getHeading())
                 .lineToSplineHeading(poseCollect)
                 .build();
 
@@ -235,27 +186,11 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
 
             hasFreight = freightSensor.hasFreight();
 
-            if(colorSensor.passedWearHouse())
-            {
-                numOfTimesPassedWarehouse++;
-                Pose2d poseEstimate = drive.getPoseEstimate();
-                drive.setPoseEstimate(new Pose2d(whiteLineX, poseEstimate.getY(), poseEstimate.getHeading()));
-            }
-
             // We update drive continuously in the background, regardless of state
             drive.update();
 
             elevator.updateAuto();
             spinner.updateAuto();
-
-            telemetry.addData("Num Of TImes Passed Warehouse", numOfTimesPassedWarehouse);
-            telemetry.update();
-//
-//            // Read pose
-//            Pose2d poseEstimate = drive.getPoseEstimate();
-//
-//            // Continually write pose to `PoseStorage`
-//            PoseStorage.currentPose = poseEstimate;
         }
     }
 
@@ -274,10 +209,9 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
                 changeState(State.OPEN_ELEVATOR, goToHub);
                 break;
             case OPEN_ELEVATOR:
-                openElevator();
-
                 if(!drive.isBusy())
                 {
+                    openElevator();
                     intake.stop();
                     currentState = State.WAIT_ELEVATOR_DELAY;
                 }
@@ -295,18 +229,7 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
 
                     closeElevator();
 
-                    switch (intakeType)
-                    {
-                        case STRAIGHT_PATH:
-                            changeStateIntake(State.INTAKE, straightLineIntake);
-                            break;
-                        case FIFTEEN_DEGREE_PATH:
-                            changeStateIntake(State.INTAKE, fifteenDegreeIntake);
-                            break;
-                        case THIRTY_DEGREE_PATH:
-                            changeStateIntake(State.INTAKE, thirtyDegreeIntake);
-                            break;
-                    }
+                    changeState(State.INTAKE, straightLineIntake);
                 }
                 break;
             case INTAKE:
@@ -346,30 +269,6 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
         }
     }
 
-    void changeStateIntake(State newState, TrajectorySequence traj)
-    {
-        if (!drive.isBusy()) {
-            currentState = newState;
-            drive.followTrajectorySequenceAsync(traj);
-
-            wentIntakeXTimes++;
-
-            switch (wentIntakeXTimes)
-            {
-                case 1:
-                    intakeType = intakePathType.STRAIGHT_PATH;
-                    break;
-                case 2:
-                    intakeType = intakePathType.FIFTEEN_DEGREE_PATH;
-                    break;
-                case 3:
-                    intakeType = intakePathType.THIRTY_DEGREE_PATH;
-                    wentIntakeXTimes = 0;
-                    break;
-            }
-        }
-    }
-
     void openElevator()
     {
         cover.openCover();
@@ -377,13 +276,12 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
         powerElevator = powerElevatorFast;
         elevator.setPower(powerElevator);
 
+        dip.holdFreight();
+
         elevator.updateAuto();
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         spinner.updateAuto();
-
-
-        dip.holdFreight();
 
         hand.level3();
 
@@ -410,6 +308,7 @@ public class AutoRightRedSensorsAsyncVersion3 extends LinearOpMode {
         spinner.updateAuto();
 
         cover.closeCover();
+
     }
 }
 

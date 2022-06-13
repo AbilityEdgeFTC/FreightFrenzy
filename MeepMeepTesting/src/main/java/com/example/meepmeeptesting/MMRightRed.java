@@ -26,7 +26,7 @@ public class MMRightRed {
         double poseEntranceX = 13;
         double poseEntranceY = -64;
         double poseEntranceH = 180;
-        double poseCollectX = 53;
+        double poseCollectX = 50;
         double poseCollectY = -64;
         double poseCollectH = 180;
         double poseHelpX = 7;
@@ -34,7 +34,7 @@ public class MMRightRed {
         double poseHelpH = 180;
 
         //Cordinates for each course
-        double cylceX2 = 57;
+        double cylceX2 = 60;
         double cycleY2 = -63;
         double cycleH2 = 15;
 
