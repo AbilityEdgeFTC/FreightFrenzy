@@ -49,6 +49,7 @@ public class ServoTestUpDown extends LinearOpMode {
         telemetry.update();
 
         servo = hardwareMap.get(Servo.class, "sUpDown");
+        servo.setDirection(Servo.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
