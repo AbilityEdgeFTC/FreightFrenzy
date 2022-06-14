@@ -32,7 +32,7 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red ASYNC - Thursday", group = "Autonomous Red")
+@Autonomous(name = "Right Red ASYNC - Stable", group = "Autonomous Red")
 public class AutoRightRedAsyncNotStable extends LinearOpMode {
 
     double startPoseRightX = 13;
