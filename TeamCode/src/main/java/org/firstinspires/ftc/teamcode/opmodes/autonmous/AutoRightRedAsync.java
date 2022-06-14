@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
 import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
@@ -47,8 +48,8 @@ public class AutoRightRedAsync extends LinearOpMode {
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
-    public static double poseEntranceX = 13.5;
-    public static double poseEntranceY = -58;
+    public static double poseEntranceX = 9;
+    public static double poseEntranceY = -59;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 50.5;
     public static double poseCollectY = -58;
@@ -78,8 +79,8 @@ public class AutoRightRedAsync extends LinearOpMode {
     double offset = 0;
     int intakeNumber = 0;
 
-    TrajectorySequence fixAngle, goToHub1, goToIntake1, goToHub2, goToIntake2, goToHub3, goToIntake3, goToHub4, goToPark;
-    Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseCollectCycle2, wareHouseHelp;
+    TrajectorySequence fixAngle, goToHub1, goToIntake1, goToHub2, goToIntake2, goToHub3, goToIntake3, goToHub4, goToPark, goToHub5, goToIntake4, goToIntake5, goToHub6;
+    Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseCollectCycle2;
 
     enum State
     {
@@ -110,11 +111,11 @@ public class AutoRightRedAsync extends LinearOpMode {
         DriveConstants.setMaxAccel(65);
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new TranslationalVelocityConstraint(50),
-                new RectangleMaskConstraint(47,-72,72,-47,
-                        new TranslationalVelocityConstraint(10))));
+                new TranslationalVelocityConstraint(55),
+                new RectangleMaskConstraint(48,-72,72,-48,
+                        new TranslationalVelocityConstraint(11))));
 
-        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(40);
+        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(45);
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
@@ -152,13 +153,23 @@ public class AutoRightRedAsync extends LinearOpMode {
             }
         };
 
+        MarkerCallback elevetorClose =  new MarkerCallback()
+        {
+            @Override
+            public void onMarkerReached(){
+                closeElevator();
+            }
+        };
+
         drive.setPoseEstimate(startPoseRight);
 
         dip.getFreight();
         cover.closeCover();
 
         fixAngle = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(poseHelp)
+                .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL/3,
+                        DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(40))
                 .build();
 
         goToHub1 = drive.trajectorySequenceBuilder(fixAngle.end())
@@ -169,10 +180,6 @@ public class AutoRightRedAsync extends LinearOpMode {
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX()+2, poseCollect.getY(), poseCollect.getHeading()))
-                /*,
-                        SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL,
-                                DriveConstants.TRACK_WIDTH),
-            SampleMecanumDrive.getAccelerationConstraint(40))*/
                 .build();
 
         goToHub2 = drive.trajectorySequenceBuilder(goToIntake1.end())
@@ -183,20 +190,7 @@ public class AutoRightRedAsync extends LinearOpMode {
         goToIntake2 = new TrajectorySequenceBuilder(goToHub2.end(), velConstraint, accelConstraint,
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                        /*,
-                        SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL,
-                                DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(40))*/
-                .lineToLinearHeading(new Pose2d(poseCollectCycle2.getX(), poseCollectCycle2.getY(), poseCollectCycle2.getHeading()))
-                        /*,SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL,
-                                DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(40))*/
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()+6, poseCollect.getY(), poseCollect.getHeading()))
-                        /*,
-                        SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL,
-                                DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(35))*/
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()+4, poseCollect.getY(), poseCollect.getHeading()))
                 .build();
 
         goToHub3 = drive.trajectorySequenceBuilder(goToIntake2.end())
@@ -207,16 +201,8 @@ public class AutoRightRedAsync extends LinearOpMode {
         goToIntake3 = new TrajectorySequenceBuilder(goToHub3.end(), velConstraint, accelConstraint,
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()+6, poseCollect.getY()+8, poseCollect.getHeading()))
-                        /*,SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL,
-                                DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(40))*/
                 .lineToSplineHeading(new Pose2d(poseCollect.getX()+6, poseCollect.getY(), poseCollect.getHeading()))
-                        /*,SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL,
-                                DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(40))*/
-                .forward(4)
+                .turn(Math.toRadians(3.6))
                 .build();
 
         goToHub4 = drive.trajectorySequenceBuilder(goToIntake3.end())
@@ -224,8 +210,34 @@ public class AutoRightRedAsync extends LinearOpMode {
                 .lineToLinearHeading(poseEntrance)
                 .build();
 
-        goToPark = drive.trajectorySequenceBuilder(goToHub4.end())
+        goToIntake4 = new TrajectorySequenceBuilder(goToHub4.end(), velConstraint, accelConstraint,
+                DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+                .addTemporalMarker(intakeForward)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()+8, poseCollect.getY(), poseCollect.getHeading()))
+                .splineTo(new Vector2d(poseCollect.getX()+9, poseCollect.getY()+1), 8)
+                .build();
+
+        goToHub5 = drive.trajectorySequenceBuilder(goToIntake4.end())
+                .addTemporalMarker(intakeBackword)
+                .lineToLinearHeading(poseEntrance)
+                .build();
+
+        goToIntake5 = new TrajectorySequenceBuilder(goToHub4.end(), velConstraint, accelConstraint,
+                DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
+                .addTemporalMarker(intakeForward)
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()+10, poseCollect.getY(), poseCollect.getHeading()))
+                .splineTo(new Vector2d(poseCollect.getX()+11, poseCollect.getY()+1.5), 15)
+                .build();
+
+        goToHub6 = drive.trajectorySequenceBuilder(goToIntake4.end())
+                .addTemporalMarker(intakeBackword)
+                .lineToLinearHeading(poseEntrance)
+                .build();
+
+
+        goToPark = drive.trajectorySequenceBuilder(goToHub5.end())
                 .addTemporalMarker(intakeStop)
+                .addTemporalMarker(elevetorClose)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX()+5, poseCollect.getY(), poseCollect.getHeading()),SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(40))
                 .build();
@@ -298,10 +310,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                     changeStateElevator();
                 }
                 break;
-            case PARK:
-                changeState(State.IDLE);
             case IDLE:
-                requestOpModeStop();
                 break;
         }
     }
@@ -310,7 +319,7 @@ public class AutoRightRedAsync extends LinearOpMode {
     {
         if (!drive.isBusy())
         {
-            currentState = State.INTAKE;
+            currentState = State.OPEN_ELEVATOR;
 
             switch (intakeNumber)
             {
@@ -322,6 +331,12 @@ public class AutoRightRedAsync extends LinearOpMode {
                     break;
                 case 3:
                     drive.followTrajectorySequenceAsync(goToHub4);
+                    break;
+                case 4:
+                    drive.followTrajectorySequenceAsync(goToHub5);
+                    break;
+                case 5:
+                    drive.followTrajectorySequenceAsync(goToHub6);
                     break;
             }
         }
@@ -346,8 +361,14 @@ public class AutoRightRedAsync extends LinearOpMode {
                     drive.followTrajectorySequenceAsync(goToIntake3);
                     break;
                 case 4:
+                    drive.followTrajectorySequenceAsync(goToIntake4);
+                    break;
+                case 5:
+                    drive.followTrajectorySequenceAsync(goToIntake5);
+                    break;
+                case 6:
                     drive.followTrajectorySequenceAsync(goToPark);
-                    currentState = State.PARK;
+                    currentState = State.IDLE;
                     break;
             }
         }
@@ -358,13 +379,6 @@ public class AutoRightRedAsync extends LinearOpMode {
         if (!drive.isBusy()) {
             currentState = newState;
             drive.followTrajectorySequenceAsync(traj);
-        }
-    }
-
-    void changeState(State newState)
-    {
-        if (!drive.isBusy()) {
-            currentState = newState;
         }
     }
 

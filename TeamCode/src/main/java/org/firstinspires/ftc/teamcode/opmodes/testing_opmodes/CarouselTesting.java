@@ -37,7 +37,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 
 @Config
 @TeleOp(name = "Carousel Testing", group = "testing")
-@Disabled
 public class CarouselTesting extends LinearOpMode {
 
     @Override
