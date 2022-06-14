@@ -19,9 +19,11 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 @TeleOp(name = "Elevator Fixing", group = "testing")
 public class ElevatorFixOpMode extends LinearOpMode {
 
-    public static double HUB_LEVEL3 = 23;
+    public static double HUB_LEVEL3 = 31;
     public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
+    public static double power = 1;
+    public static int delay = 1600;
     public static int offset = 0;
     DcMotorEx motor;
 
@@ -36,15 +38,21 @@ public class ElevatorFixOpMode extends LinearOpMode {
 
         waitForStart();
 
+        cGamepad gamepad = new cGamepad(gamepad1);
+
         while (opModeIsActive())
         {
+            gamepad.update();
+
             motor.setTargetPosition(inchesToEncoderTicks(HUB_LEVEL3));
-            motor.setPower(0.35);
+            motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            sleep(2000);
+            sleep(delay);
             motor.setTargetPosition(inchesToEncoderTicks(0));
-            motor.setPower(0.35);
+            motor.setPower(power);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            sleep(delay);
+
         }
 
 

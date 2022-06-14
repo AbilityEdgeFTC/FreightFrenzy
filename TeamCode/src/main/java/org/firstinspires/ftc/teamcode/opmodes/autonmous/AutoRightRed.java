@@ -488,7 +488,6 @@ public class AutoRightRed extends LinearOpMode {
         elevator.updateAuto();
         drive.followTrajectorySequence(main);
         spinner.updateAuto();
-        ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile("ElevatorEncoderValue.txt"), "" + elevator.getPosition());
     }
 
     public void initPipeline()

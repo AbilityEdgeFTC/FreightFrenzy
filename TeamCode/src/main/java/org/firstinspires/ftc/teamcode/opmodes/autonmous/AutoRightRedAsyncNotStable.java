@@ -33,13 +33,13 @@ import java.util.Arrays;
  */
 @Config
 @Autonomous(name = "Right Red ASYNC - Thursday", group = "Autonomous Red")
-public class AutoRightRedOldAsync extends LinearOpMode {
+public class AutoRightRedAsyncNotStable extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
-    public static double poseEntranceX = 7;
+    public static double poseEntranceX = 9;
     public static double poseEntranceY = -65;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 60;
@@ -59,8 +59,6 @@ public class AutoRightRedOldAsync extends LinearOpMode {
     public static double GO_PARK_AT = 28;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     public static double elevatorDelay = 1;
-
-    ModernRoboticsI2cRangeSensor rangeSensor;
 
     int wentIntakeXTimes = 0;
     boolean hasFreight = false;
@@ -168,7 +166,7 @@ public class AutoRightRedOldAsync extends LinearOpMode {
         goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
                 .lineToSplineHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL/2))
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         goToHubFromFixingAngle = drive.trajectorySequenceBuilder(wareHouseHelp)
@@ -180,6 +178,7 @@ public class AutoRightRedOldAsync extends LinearOpMode {
         straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(poseCollect)
+                .strafeLeft(5)
                 .build();
 
         fifteenDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
@@ -187,7 +186,7 @@ public class AutoRightRedOldAsync extends LinearOpMode {
                 .lineToSplineHeading(poseCollect)
                 .splineTo(new Vector2d(poseGoToIntakeFifteen.getX(), poseGoToIntakeFifteen.getY()), poseGoToIntakeFifteen.getHeading())
                 .lineToSplineHeading(poseCollect)
-                .strafeLeft(2)
+                .strafeLeft(5)
                 .build();
 
         thirtyDegreeIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
@@ -195,7 +194,7 @@ public class AutoRightRedOldAsync extends LinearOpMode {
                 .lineToSplineHeading(poseCollect)
                 .splineTo(new Vector2d(poseGoToIntakeThirty.getX(), poseGoToIntakeThirty.getY()), poseGoToIntakeThirty.getHeading())
                 .lineToSplineHeading(poseCollect)
-                .strafeLeft(2)
+                .strafeLeft(5)
                 .build();
 
         park = drive.trajectorySequenceBuilder(goToHub.end())
@@ -386,13 +385,13 @@ public class AutoRightRedOldAsync extends LinearOpMode {
         elevator.updateAuto();
         spinner.updateAuto();
 
-        hand.intake();
-
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
 
         elevator.updateAuto();
         spinner.updateAuto();
+
+        hand.intake();
 
         cover.closeCover();
     }

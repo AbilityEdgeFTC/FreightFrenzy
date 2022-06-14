@@ -497,12 +497,12 @@ public class teleOpRed extends LinearOpMode {
                 elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
                 hand.setLevelSharedHub(hand.getPos());
             case 1:
-                elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                hand.setLevel1Hub(hand.getPos());
+                //elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevel1Hub(hand.getPos());
                 break;
             case 2:
-                elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                hand.setLevel2Hub(hand.getPos());
+                //elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevel2Hub(hand.getPos());
                 break;
             case 3:
                 elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());

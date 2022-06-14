@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 23;
+    public static double HUB_LEVEL3 = 24.5;
     public static double HUB_LEVEL2 = 8.5;
     public static double HUB_LEVEL1 = HUB_LEVEL2;
     public static double AUTO_LEFT_LEVEL = 20.3;

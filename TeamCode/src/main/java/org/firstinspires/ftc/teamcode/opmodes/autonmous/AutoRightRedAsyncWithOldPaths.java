@@ -38,9 +38,9 @@ public class AutoRightRedAsyncWithOldPaths extends LinearOpMode {
     double startPoseRightH = 90;
 
     public static double poseEntranceX = 13.5;
-    public static double poseEntranceY = -58;
+    public static double poseEntranceY = -63;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 50.5;
+    public static double poseCollectX = 55;
     public static double poseCollectY = -58;
     public static double poseCollectH = 180;
     public static double poseHelpX = 7;
@@ -99,7 +99,7 @@ public class AutoRightRedAsyncWithOldPaths extends LinearOpMode {
         drive.setPoseEstimate(startPoseRight);
 
         DriveConstants.setMaxVel(65);
-        DriveConstants.setMaxAccel(65);
+        DriveConstants.setMaxAccel(50);
 
         MarkerCallback intakeForward =  new MarkerCallback()
         {
@@ -141,7 +141,7 @@ public class AutoRightRedAsyncWithOldPaths extends LinearOpMode {
         goToHub = drive.trajectorySequenceBuilder(fixAngle.end())
                 .addTemporalMarker(intakeBackword)
                 .lineToSplineHeading(poseEntrance, SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL/2))
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         straightLineIntake = new TrajectorySequenceBuilder(goToHub.end(), velConstraint, accelConstraint, DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
