@@ -35,6 +35,7 @@ public class Carousel {
     }
 
     public Carousel(HardwareMap hardwareMap) {
+        clock = NanoClock.system();
         this.mC = hardwareMap.get(DcMotor.class, "mC");
         this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -71,14 +72,14 @@ public class Carousel {
         }
     }
 
-    public void spinCarouselNoAccel(boolean reverse){
+    public void spinCarouselNoAccel(boolean reverse, double power){
         if(reverse)
         {
-            mC.setPower(-MIN_POWER);
+            mC.setPower(-power);
         }
         else
         {
-            mC.setPower(MIN_POWER);
+            mC.setPower(power);
         }
     }
 

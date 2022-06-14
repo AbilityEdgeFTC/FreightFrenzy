@@ -14,11 +14,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityC
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
@@ -30,10 +26,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.Arrays;
 
@@ -41,8 +33,8 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Auto - Right Red OLD paths with ASYNC", group = "Autonomous Red")
-public class AutoRightRedAsync extends LinearOpMode {
+@Autonomous(name = "Auto - Right Red 5 Cycles", group = "Autonomous Red")
+public class AutoRightRedAsync5Cycles extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -72 + 17.72;
@@ -79,7 +71,7 @@ public class AutoRightRedAsync extends LinearOpMode {
     double offset = 0;
     int intakeNumber = 0;
 
-    TrajectorySequence fixAngle, goToIntake1, goToHub2, goToIntake2, goToHub3, goToIntake3, goToHub4, goToPark, goToHub5, goToIntake4, goToIntake5, goToHub6;
+    TrajectorySequence fixAngle, goToIntake1, goToHub2, goToIntake2, goToHub3, goToIntake3, goToHub4, goToIntake4, goToPark;
     Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseCollectCycle2;
 
     enum State
@@ -110,11 +102,11 @@ public class AutoRightRedAsync extends LinearOpMode {
         DriveConstants.setMaxAccel(65);
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new TranslationalVelocityConstraint(55),
+                new TranslationalVelocityConstraint(50),
                 new RectangleMaskConstraint(45,-72,72,-45,
-                        new TranslationalVelocityConstraint(10))));
+                        new TranslationalVelocityConstraint(9))));
 
-        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(55);
+        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(45);
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
@@ -169,7 +161,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL/3,
                         DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(55))
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX(), poseEntrance.getY()-2, poseEntrance.getHeading()))
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX()+.3, poseEntrance.getY()-2, poseEntrance.getHeading()))
                 .build();
 
         goToIntake1 = new TrajectorySequenceBuilder(fixAngle.end(), velConstraint, accelConstraint,
@@ -186,49 +178,42 @@ public class AutoRightRedAsync extends LinearOpMode {
         goToIntake2 = new TrajectorySequenceBuilder(goToHub2.end(), velConstraint, accelConstraint,
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()+4, poseCollect.getY(), poseCollect.getHeading()))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()+6, poseCollect.getY(), poseCollect.getHeading()))
+                .splineTo(new Vector2d(poseCollect.getX()+13, poseCollect.getY()), Math.toRadians(10))
                 .build();
 
-        goToHub3 = drive.trajectorySequenceBuilder(goToIntake2.end())
+        goToHub2 = drive.trajectorySequenceBuilder(goToIntake2.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(poseEntrance)
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-1, poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
-        goToIntake3 = new TrajectorySequenceBuilder(goToHub3.end(), velConstraint, accelConstraint,
+        goToIntake3 = new TrajectorySequenceBuilder(goToHub2.end(), velConstraint, accelConstraint,
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+8, poseCollect.getY()), Math.toRadians(10))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()+7, poseCollect.getY(), poseCollect.getHeading()))
+                .splineTo(new Vector2d(poseCollect.getX()+14, poseCollect.getY()), Math.toRadians(15))
                 .build();
 
-        goToHub4 = drive.trajectorySequenceBuilder(goToIntake3.end())
+        goToHub3 = drive.trajectorySequenceBuilder(goToIntake3.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()+1, poseEntrance.getY(), poseEntrance.getHeading()))
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX(), poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
-        goToIntake4 = new TrajectorySequenceBuilder(goToHub4.end(), velConstraint, accelConstraint,
+        goToIntake4 = new TrajectorySequenceBuilder(goToHub3.end(), velConstraint, accelConstraint,
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+10, poseCollect.getY()), Math.toRadians(15))
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()+12, poseCollect.getY(), poseCollect.getHeading()))
+                .splineTo(new Vector2d(poseCollect.getX()+18, poseCollect.getY()), Math.toRadians(20))
                 .build();
 
-        goToHub5 = drive.trajectorySequenceBuilder(goToIntake4.end())
+        goToHub4 = drive.trajectorySequenceBuilder(goToIntake4.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()+2, poseEntrance.getY(), poseEntrance.getHeading()))
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-1, poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
-        goToIntake5 = new TrajectorySequenceBuilder(goToHub5.end(), velConstraint, accelConstraint,
-                DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+12, poseCollect.getY()), Math.toRadians(20))
-                .build();
-
-        goToPark = drive.trajectorySequenceBuilder(goToHub6.end())
+        goToPark = drive.trajectorySequenceBuilder(goToHub4.end())
                 .addTemporalMarker(intakeStop)
-                .addTemporalMarker(elevetorClose)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()+5, poseCollect.getY(), poseCollect.getHeading()),SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(poseCollect.getX()+7, poseCollect.getY(), poseCollect.getHeading()),SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(40))
                 .build();
 
@@ -326,10 +311,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                     drive.followTrajectorySequenceAsync(goToHub4);
                     break;
                 case 4:
-                    drive.followTrajectorySequenceAsync(goToHub5);
-                    break;
-                case 5:
-                    drive.followTrajectorySequenceAsync(goToHub6);
+                    drive.followTrajectorySequenceAsync(goToPark);
                     break;
             }
         }
@@ -357,9 +339,6 @@ public class AutoRightRedAsync extends LinearOpMode {
                     drive.followTrajectorySequenceAsync(goToIntake4);
                     break;
                 case 5:
-                    drive.followTrajectorySequenceAsync(goToIntake5);
-                    break;
-                case 6:
                     drive.followTrajectorySequenceAsync(goToPark);
                     currentState = State.IDLE;
                     break;

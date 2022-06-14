@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ReadWriteFile;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -39,36 +41,24 @@ import java.util.Arrays;
  */
 @Config
 @Autonomous(name = "Left Red FULL", group = "Autonomous Red")
-@Disabled
 public class AutoLeftRed extends LinearOpMode {
 
     double startPoseLeftX = -35;
     double startPoseLeftY = -72 + 17.72;
     double startPoseLeftH = 90;
 
-    public static double poseCarouselX = -59.5;
-    public static double poseCarouselY = -57.5;
-    public static double poseCarouselH = 95;
+    public static double poseCarouselX = -63.4;
+    public static double poseCarouselY = -50.5;
+    public static double poseCarouselH = 5;
     public static double carouselHelp = 15;
-    public static double poseParkHelpX = -40;
-    public static double poseParkHelpY = -6;
-    public static double poseParkHelpH = 180;
-    public static double poseParkaX = 7.5;
-    public static double poseParkaY = -6;
-    public static double poseParkaH = 180;
-    public static double poseParkbX = 7.5;
-    public static double poseParkbY = -45;
-    public static double poseParkbH = 180;
-    public static double poseParkcX = 50;
-    public static double poseParkcY = -45;
-    public static double poseParkcH = 180;
-    public static double runCarouselFor = 4;
+    public static double runCarouselFor = 4.5;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
     hand hand;
     intake intake;
     dip dip;
     Carousel carousel;
+    Cover cover;
     boolean canIntake = true;
     public static double powerSlowElevator = .6, powerElevator = 1, powerElevatorFast = 1;
     SampleMecanumDrive drive;
@@ -98,20 +88,18 @@ public class AutoLeftRed extends LinearOpMode {
         hand = new hand(hardwareMap);
         carousel = new Carousel(hardwareMap);
         dip = new dip(hardwareMap);
+        cover = new Cover(hardwareMap);
         DriveConstants.setMaxVel(60);
         DriveConstants.setMaxAccel(40);
 
         Pose2d startPoseLeft = new Pose2d(startPoseLeftX, startPoseLeftY, Math.toRadians(startPoseLeftH));
         Pose2d poseCarousel = new Pose2d(poseCarouselX, poseCarouselY, Math.toRadians(poseCarouselH));
-        Pose2d poseParkingHelp = new Pose2d(poseParkHelpX,poseParkHelpY,Math.toRadians(poseParkHelpH));
-        Pose2d poseParkinga = new Pose2d(poseParkaX, poseParkaY, Math.toRadians(poseParkaH));
-        Pose2d poseParkingb = new Pose2d(poseParkbX, poseParkbY, Math.toRadians(poseParkbH));
-        Pose2d poseParkingc = new Pose2d(poseParkcX, poseParkcY, Math.toRadians(poseParkcH));
+        //Pose2d poseParking = new Pose2d(poseParkHelpX,poseParkHelpY,Math.toRadians(poseParkHelpH));
 
         MarkerCallback carouselOnn = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                carousel.spinCarouselNoAccel(false);
+                carousel.spinCarouselNoAccel(false, 0.28);
             }
         };
         MarkerCallback carouselOff = new MarkerCallback() {
@@ -176,7 +164,7 @@ public class AutoLeftRed extends LinearOpMode {
             public void onMarkerReached() {
                 elevator.updateAuto();
                 spinner.updateAuto();
-
+                cover.openCover();
                 powerElevator = powerElevatorFast;
                 elevator.setPower(powerElevatorFast);
 
@@ -298,6 +286,7 @@ public class AutoLeftRed extends LinearOpMode {
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
                 elevator.updateAuto();
                 spinner.updateAuto();
+                cover.closeCover();
             }
         };
 
@@ -336,43 +325,65 @@ public class AutoLeftRed extends LinearOpMode {
             case MAX:
                 main = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                      .addTemporalMarker(elevetorVisionA)
-                    .waitSeconds(.8)
+                    .waitSeconds(.3)
                     .addTemporalMarker(elevetorVisionB)
-                    .waitSeconds(1.2)
+                    .waitSeconds(.3)
                     .addTemporalMarker(elevetorVisionC)
                     .waitSeconds(.6)
                     .addTemporalMarker(elevetorCloseA)
-                    .waitSeconds(.8)
+                    .waitSeconds(.3)
                     .addTemporalMarker(elevetorCloseB)
-                    .waitSeconds(1.5)
+                    .waitSeconds(.3)
                     .addTemporalMarker(elevetorCloseC)
                     .waitSeconds(.5)
                     .forward(carouselHelp)
-                    .lineToLinearHeading(poseCarousel)
+                    .lineToLinearHeading(poseCarousel,SampleMecanumDrive.getVelocityConstraint(47, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                            SampleMecanumDrive.getAccelerationConstraint(40))
                     .addTemporalMarker(carouselOnn)
                     .waitSeconds(runCarouselFor)
                     .addTemporalMarker(carouselOff)
+                    .forward(8)
+                    .turn(Math.toRadians(85))
                     .addTemporalMarker(intakeDuck)
-                    .strafeLeft(5)
-                    .back(6)
-                    .strafeLeft(16)
-                    .strafeRight(16)
-                    .lineToLinearHeading(poseParkingHelp)
+                    .back(8)
+                    .strafeRight(17)
                     .addTemporalMarker(intakeStop)
-                    .lineToLinearHeading(poseParkinga)
-                    .addTemporalMarker(elevetorClose)
-                    .addTemporalMarker(elevetorDuckLevel3)
-                    .waitSeconds(.88)
+                    .addTemporalMarker(elevetorVisionA)
+                    .waitSeconds(.3)
+                    .addTemporalMarker(elevetorVisionB)
+                    .waitSeconds(.3)
+                    .addTemporalMarker(elevetorVisionC)
+                    .waitSeconds(.6)
                     .addTemporalMarker(elevetorCloseA)
-                    .waitSeconds(.7)
+                    .waitSeconds(.3)
                     .addTemporalMarker(elevetorCloseB)
-                    .waitSeconds(.5)
+                    .waitSeconds(.3)
                     .addTemporalMarker(elevetorCloseC)
                     .waitSeconds(.5)
-                    .lineToLinearHeading(poseParkingb)
-                    .waitSeconds(.6)
-                    .lineToLinearHeading(poseParkingc,SampleMecanumDrive.getVelocityConstraint(70, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                            SampleMecanumDrive.getAccelerationConstraint(80))
+                    .forward(22)
+                    .turn(Math.toRadians(-90))
+                    .back(18)
+//                    .addTemporalMarker(intakeDuck)
+//                    .strafeLeft(5)
+//                    .back(6)
+//                    .strafeLeft(16)
+//                    .strafeRight(16)
+//                    .lineToLinearHeading(poseParkingHelp)
+//                    .addTemporalMarker(intakeStop)
+//                    .lineToLinearHeading(poseParkinga)
+//                    .addTemporalMarker(elevetorClose)
+//                    .addTemporalMarker(elevetorDuckLevel3)
+//                    .waitSeconds(.88)
+//                    .addTemporalMarker(elevetorCloseA)
+//                    .waitSeconds(.7)
+//                    .addTemporalMarker(elevetorCloseB)
+//                    .waitSeconds(.5)
+//                    .addTemporalMarker(elevetorCloseC)
+//                    .waitSeconds(.5)
+//                    .lineToLinearHeading(poseParkingb)
+//                    .waitSeconds(.6)
+//                    .lineToLinearHeading(poseParkingc,SampleMecanumDrive.getVelocityConstraint(70, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+//                            SampleMecanumDrive.getAccelerationConstraint(80))
                     .build();
                 break;
         }
