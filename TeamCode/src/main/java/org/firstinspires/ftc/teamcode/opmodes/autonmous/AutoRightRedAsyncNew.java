@@ -14,11 +14,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityC
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
@@ -30,10 +26,6 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.Arrays;
 
@@ -41,8 +33,8 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Auto - Right Red OLD paths with ASYNC", group = "Autonomous Red")
-public class AutoRightRedAsync extends LinearOpMode {
+@Autonomous(name = "Auto - Right Red NEW", group = "Autonomous Red")
+public class AutoRightRedAsyncNew extends LinearOpMode {
 
     double startPoseRightX = 13;
     double startPoseRightY = -72 + 17.72;
@@ -85,9 +77,27 @@ public class AutoRightRedAsync extends LinearOpMode {
     enum State
     {
         FIX_ANGLE,
-        OPEN_ELEVATOR,
-        WAIT_ELEVATOR_DELAY,
-        INTAKE,
+        OPEN_ELEVATOR1,
+        WAIT_ELEVATOR_DELAY1,
+        INTAKE1,
+        GO_TO_HUB1,
+        OPEN_ELEVATOR2,
+        WAIT_ELEVATOR_DELAY2,
+        INTAKE2,
+        GO_TO_HUB2,
+        OPEN_ELEVATOR3,
+        WAIT_ELEVATOR_DELAY3,
+        INTAKE3,
+        GO_TO_HUB3,
+        OPEN_ELEVATOR4,
+        WAIT_ELEVATOR_DELAY4,
+        INTAKE4,
+        GO_TO_HUB4,
+        OPEN_ELEVATOR5,
+        WAIT_ELEVATOR_DELAY5,
+        INTAKE5,
+        GO_TO_HU5,
+        PARK,
         IDLE
     }
 
@@ -218,16 +228,12 @@ public class AutoRightRedAsync extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(poseEntrance.getX()-3.5, poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
-        goToIntake5 = new TrajectorySequenceBuilder(goToHub5.end(), velConstraint, accelConstraint,
+        goToPark = new TrajectorySequenceBuilder(goToHub5.end(), velConstraint, accelConstraint,
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
+                .addTemporalMarker(intakeStop)
+                .addTemporalMarker(elevetorClose)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
                 .splineTo(new Vector2d(poseCollect.getX()+13, poseCollect.getY()), Math.toRadians(20))
-                .build();
-
-        goToPark = drive.trajectorySequenceBuilder(goToIntake5.end())
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()+5, poseCollect.getY(), poseCollect.getHeading()),SampleMecanumDrive.getVelocityConstraint(50, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(40))
                 .build();
 
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
@@ -265,18 +271,18 @@ public class AutoRightRedAsync extends LinearOpMode {
             case FIX_ANGLE:
                 if(!drive.isBusy())
                 {
-                    currentState = State.OPEN_ELEVATOR;
+                    currentState = State.OPEN_ELEVATOR1;
                 }
                 break;
-            case OPEN_ELEVATOR:
+            case OPEN_ELEVATOR1:
                 if(!drive.isBusy())
                 {
                     intake.stop();
                     openElevator();
-                    currentState = State.WAIT_ELEVATOR_DELAY;
+                    currentState = State.WAIT_ELEVATOR_DELAY1;
                 }
                 break;
-            case WAIT_ELEVATOR_DELAY:
+            case WAIT_ELEVATOR_DELAY1:
                 if(firstTime)
                 {
                     offset = runningFor.seconds();
@@ -289,82 +295,155 @@ public class AutoRightRedAsync extends LinearOpMode {
 
                     closeElevator();
 
-                    changeStateIntake();
+                    changeState(State.INTAKE1, goToIntake1);
                 }
                 break;
-            case INTAKE:
+            case INTAKE1:
                 if(hasFreight)
                 {
                     drive.breakFollowing();
                     intake.intakeBackward();
                 }
 
-                changeStateElevator();
+                changeState(State.OPEN_ELEVATOR2, goToHub2);
+                break;
+            case OPEN_ELEVATOR2:
+                if(!drive.isBusy())
+                {
+                    intake.stop();
+                    openElevator();
+                    currentState = State.WAIT_ELEVATOR_DELAY2;
+                }
+                break;
+            case WAIT_ELEVATOR_DELAY2:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelay)
+                {
+                    firstTime = true;
+
+                    closeElevator();
+
+                    changeState(State.INTAKE2, goToIntake2);
+                }
+                break;
+            case INTAKE2:
+                if(hasFreight)
+                {
+                    drive.breakFollowing();
+                    intake.intakeBackward();
+                }
+
+                changeState(State.OPEN_ELEVATOR3, goToHub3);
+                break;
+            case OPEN_ELEVATOR3:
+                if(!drive.isBusy())
+                {
+                    intake.stop();
+                    openElevator();
+                    currentState = State.WAIT_ELEVATOR_DELAY3;
+                }
+                break;
+            case WAIT_ELEVATOR_DELAY3:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelay)
+                {
+                    firstTime = true;
+
+                    closeElevator();
+
+                    changeState(State.INTAKE3, goToIntake3);
+                }
+                break;
+            case INTAKE3:
+                if(hasFreight)
+                {
+                    drive.breakFollowing();
+                    intake.intakeBackward();
+                }
+
+                changeState(State.OPEN_ELEVATOR4, goToHub4);
+                break;
+            case OPEN_ELEVATOR4:
+                if(!drive.isBusy())
+                {
+                    intake.stop();
+                    openElevator();
+                    currentState = State.WAIT_ELEVATOR_DELAY4;
+                }
+                break;
+            case WAIT_ELEVATOR_DELAY4:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelay)
+                {
+                    firstTime = true;
+
+                    closeElevator();
+
+                    changeState(State.INTAKE4, goToIntake4);
+                }
+                break;
+            case INTAKE4:
+                if(hasFreight)
+                {
+                    drive.breakFollowing();
+                    intake.intakeBackward();
+                }
+
+                changeState(State.OPEN_ELEVATOR5, goToHub5);
+                break;
+            case OPEN_ELEVATOR5:
+                if(!drive.isBusy())
+                {
+                    intake.stop();
+                    openElevator();
+                    currentState = State.WAIT_ELEVATOR_DELAY5;
+                }
+                break;
+            case WAIT_ELEVATOR_DELAY5:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelay)
+                {
+                    firstTime = true;
+
+                    closeElevator();
+
+                    changeState(State.INTAKE5, goToPark);
+                }
+                break;
+            case INTAKE5:
+                if(hasFreight)
+                {
+                    intake.intakeBackward();
+                }
+
+                if(!drive.isBusy())
+                {
+                    currentState = State.IDLE;
+                }
                 break;
             case IDLE:
+                requestOpModeStop();
                 break;
-        }
-    }
-
-    void changeStateElevator()
-    {
-        if (!drive.isBusy())
-        {
-            currentState = State.OPEN_ELEVATOR;
-
-            switch (intakeNumber)
-            {
-                case 1:
-                    drive.followTrajectorySequenceAsync(goToHub2);
-                    break;
-                case 2:
-                    drive.followTrajectorySequenceAsync(goToHub3);
-                    break;
-                case 3:
-                    drive.followTrajectorySequenceAsync(goToHub4);
-                    break;
-                case 4:
-                    drive.followTrajectorySequenceAsync(goToHub5);
-                    break;
-                case 5:
-                    drive.followTrajectorySequenceAsync(goToPark);
-                    closeElevator();
-                    intake.stop();
-                    currentState = State.IDLE;
-                    break;
-            }
-        }
-    }
-
-    void changeStateIntake()
-    {
-        if (!drive.isBusy())
-        {
-            intakeNumber++;
-            currentState = State.INTAKE;
-
-            switch (intakeNumber)
-            {
-                case 1:
-                    drive.followTrajectorySequenceAsync(goToIntake1);
-                    break;
-                case 2:
-                    drive.followTrajectorySequenceAsync(goToIntake2);
-                    break;
-                case 3:
-                    drive.followTrajectorySequenceAsync(goToIntake3);
-                    break;
-                case 4:
-                    drive.followTrajectorySequenceAsync(goToIntake4);
-                    break;
-                case 5:
-                    drive.followTrajectorySequenceAsync(goToIntake5);
-                    break;
-                case 6:
-                    drive.followTrajectorySequenceAsync(goToPark);
-                    currentState = State.IDLE;
-                    break;
-            }
         }
     }
 
