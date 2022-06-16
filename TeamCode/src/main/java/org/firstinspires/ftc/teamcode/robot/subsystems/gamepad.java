@@ -33,7 +33,7 @@ public class gamepad {
     double rightPower_f;
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
-    public static double mainPower = 1, multiplier = .9;
+    public static double mainPower = .8, multiplier = .9;
     public static boolean slowMove = false, isCentricDrive = true, canTwist = true, goSlow = false;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
@@ -116,15 +116,6 @@ public class gamepad {
         if(goSlow)
         {
             power = 0.25;
-        }
-        else
-        {
-            power = mainPower;
-        }
-
-        if(gamepad1.left_stick_button || gamepad2.dpad_down)
-        {
-            power = 1;
         }
         else
         {

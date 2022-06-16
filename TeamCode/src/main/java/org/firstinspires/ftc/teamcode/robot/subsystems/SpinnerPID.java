@@ -15,13 +15,13 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class SpinnerPID {
 
-    public static double power = 0.1;
+    public static double power = 0.04;
     boolean usePID = true;
-    public static double kP = 2;
+    public static double kP = 1;
     public static double kI = 0;
     public static double kD = 0;
     int pos = 0;
-    public static double maxPower = 0.3;
+    public static double maxPower = 0.07;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     boolean slowMove = false;

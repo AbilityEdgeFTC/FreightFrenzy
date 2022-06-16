@@ -36,7 +36,7 @@ import java.util.Arrays;
 @Autonomous(name = "Auto - Right Red NEW", group = "Autonomous Red")
 public class AutoRightRedAsyncNew extends LinearOpMode {
 
-    double startPoseRightX = 13;
+    double startPoseRightX = 12.7;
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
@@ -49,11 +49,9 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
     public static double poseHelpX = 7;
     public static double poseHelpY = -50;
     public static double poseHelpH = 180;
-
-    //Cordinates for each course
-    public static double cylceX2 = 60;
-    public static double cycleY2 = -58;
-    public static double cycleH2 = 180;
+    public static double poseCollectX2 = 60;
+    public static double poseCollectY2 = -58;
+    public static double poseCollectH2 = 180;
 
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
@@ -69,7 +67,6 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
 
     boolean hasFreight = false, firstTime = true;
     double offset = 0;
-    int intakeNumber = 0;
 
     TrajectorySequence fixAngle, goToIntake1, goToHub2, goToIntake2, goToHub3, goToIntake3, goToHub4, goToPark, goToHub5, goToIntake4, goToIntake5;
     Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseCollectCycle2;
@@ -80,23 +77,18 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
         OPEN_ELEVATOR1,
         WAIT_ELEVATOR_DELAY1,
         INTAKE1,
-        GO_TO_HUB1,
         OPEN_ELEVATOR2,
         WAIT_ELEVATOR_DELAY2,
         INTAKE2,
-        GO_TO_HUB2,
         OPEN_ELEVATOR3,
         WAIT_ELEVATOR_DELAY3,
         INTAKE3,
-        GO_TO_HUB3,
         OPEN_ELEVATOR4,
         WAIT_ELEVATOR_DELAY4,
         INTAKE4,
-        GO_TO_HUB4,
         OPEN_ELEVATOR5,
         WAIT_ELEVATOR_DELAY5,
         INTAKE5,
-        GO_TO_HU5,
         PARK,
         IDLE
     }
@@ -130,7 +122,7 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
         poseEntrance = new Pose2d(poseEntranceX, poseEntranceY, Math.toRadians(poseEntranceH));
         poseCollect = new Pose2d(poseCollectX, poseCollectY, Math.toRadians(poseCollectH));
-        poseCollectCycle2 = new Pose2d(cylceX2 , cycleY2, Math.toRadians(cycleH2));
+        poseCollectCycle2 = new Pose2d(poseCollectX2 , poseCollectY2, Math.toRadians(poseCollectH2));
 
         MarkerCallback intakeForward =  new MarkerCallback()
         {
@@ -230,10 +222,9 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
 
         goToPark = new TrajectorySequenceBuilder(goToHub5.end(), velConstraint, accelConstraint,
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeStop)
+                .addTemporalMarker(intakeForward)
                 .addTemporalMarker(elevetorClose)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+13, poseCollect.getY()), Math.toRadians(20))
                 .build();
 
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
@@ -438,10 +429,10 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
 
                 if(!drive.isBusy())
                 {
-                    currentState = State.IDLE;
+                    currentState = State.PARK;
                 }
                 break;
-            case IDLE:
+            case PARK:
                 requestOpModeStop();
                 break;
         }

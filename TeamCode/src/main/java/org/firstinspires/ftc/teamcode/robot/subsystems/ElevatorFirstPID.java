@@ -28,7 +28,7 @@ public class ElevatorFirstPID {
     public static double ZERO_HEIGHT = 0;
     public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
-    public static double maxPower = 0.85;
+    public static double maxPower = 0.8;
     double power = 1;
     boolean usePID = true;
     public static int offset = 0;
