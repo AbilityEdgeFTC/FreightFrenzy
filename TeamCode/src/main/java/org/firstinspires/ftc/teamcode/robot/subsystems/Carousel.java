@@ -15,11 +15,13 @@ public class Carousel {
 
     DcMotor mC;
     double powerGiven = 0;
-    public static double addingBy = 0.25;
+    public static double addingBy = 0.1;
     public static double MAX_POWER = 0.47; //configerable
     public static double MIN_POWER = 0.3;
     public static double delay = 1;
     public static double startAccel = .19;
+    public static double lastUsed = 0;
+    public static double addEvery = 0.05;
     NanoClock clock;
     double offset = 0;
     Telemetry telemetry;
@@ -56,10 +58,12 @@ public class Carousel {
         if(getSeconds() > delay && newSpin)
         {
             powerGiven += startAccel;
+            lastUsed = getSeconds();
         }
-        else if(powerGiven < MAX_POWER)
+        else if(powerGiven < MAX_POWER && lastUsed > addEvery)
         {
             powerGiven += addingBy;
+            lastUsed = getSeconds();
         }
 
         if(reverse)

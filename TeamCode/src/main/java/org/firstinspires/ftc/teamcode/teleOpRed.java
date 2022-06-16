@@ -34,17 +34,17 @@ public class teleOpRed extends LinearOpMode {
     ElapsedTime resetElevator;
     FreightSensor freightSensor;
 
-    public static double powerIntake = 1, powerSlowElevator = .6;
-    public static double firstLevelHandDelay = 0.5, secondLevelHandDelay = .4;
-    public static double thirdLevelHandDelay = .18, shareLevelHandDelay = 0.25;
+    public static double powerIntake = 1, powerSlowElevator = .65;
+    public static double firstLevelHandDelay = 0.2, secondLevelHandDelay = .2;
+    public static double thirdLevelHandDelay = .17, shareLevelHandDelay = 0.25;
     public static double spinnerSlowerPower = 0.4;
     public static double elevatorFastPower = 0.85;
     public static double sharedLevelElevatorGoBackDelay = 1, sharedLevelElevatorCloseDelay = 1;
     public static double closingHandDelayShare = .65, closingHandDelayLevel1 = 1.3;
-    public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .5;
+    public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .43;
     double MIN_MANUAL_HAND_MOVING = 0.03, MAX_MANUAL_HAND_MOVING = 1 - MIN_MANUAL_HAND_MOVING;
     boolean frontIntake = false, backIntake = false, canIntake = true;
-    public static double delayCloseCover = 1.4;
+    public static double delayCloseCover = 1.15;
     double positionDip = 0;
 
     enum ElevatorMovement

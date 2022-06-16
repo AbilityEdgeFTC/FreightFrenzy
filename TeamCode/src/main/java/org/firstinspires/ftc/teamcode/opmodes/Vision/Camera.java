@@ -12,7 +12,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @TeleOp(name = "RAW Camera", group = "vision")
-@Disabled
 public class Camera extends LinearOpMode {
 
     OpenCvWebcam webcam;
