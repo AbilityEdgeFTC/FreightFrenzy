@@ -34,17 +34,17 @@ import java.util.Arrays;
  */
 @Config
 @Autonomous(name = "Auto - Right Red NEW Pima", group = "Autonomous Red")
-public class AutoRightRedAsync7CyclesUnstable extends LinearOpMode {
+public class AutoRightRedAsync5CyclesArielPima extends LinearOpMode {
 
-    double startPoseRightX = 12.7;
+    double startPoseRightX = 12;
     double startPoseRightY = -72 + 17.72;
     double startPoseRightH = 90;
 
     public static double poseEntranceX = 8;
     public static double poseEntranceY = -59;
     public static double poseEntranceH = 180;
-    public static double poseCollectX = 49.5;
-    public static double poseCollectY = -58;
+    public static double poseCollectX = 47;
+    public static double poseCollectY = -57;
     public static double poseCollectH = 180;
     public static double poseHelpX = 7;
     public static double poseHelpY = -50;
@@ -68,7 +68,7 @@ public class AutoRightRedAsync7CyclesUnstable extends LinearOpMode {
     boolean hasFreight = false, firstTime = true;
     double offset = 0;
 
-    TrajectorySequence fixAngle, goToIntake1, goToHub2, goToIntake2, goToHub3, goToIntake3, goToHub4, goToPark, goToHub5, goToIntake4, goToIntake5,  goToHub6, goToIntake6 , goToHub7 , goToIntake7;
+    TrajectorySequence fixAngle, goToIntake1, goToHub2, goToIntake2, goToHub3, goToIntake3, goToHub4, goToPark, goToHub5, goToIntake4, goToIntake5,  goToHub6, goToIntake6 , goToHub7;
     Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseCollectCycle2;
 
     enum State
@@ -118,9 +118,9 @@ public class AutoRightRedAsync7CyclesUnstable extends LinearOpMode {
         DriveConstants.setMaxAccel(65);
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new TranslationalVelocityConstraint(63),
+                new TranslationalVelocityConstraint(70),
                 new RectangleMaskConstraint(45,-72,72,-45,
-                        new TranslationalVelocityConstraint(15))));
+                        new TranslationalVelocityConstraint(20))));
 
         TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(55);
 
@@ -218,7 +218,7 @@ public class AutoRightRedAsync7CyclesUnstable extends LinearOpMode {
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+11, poseCollect.getY()), Math.toRadians(15))
+                .splineTo(new Vector2d(poseCollect.getX()+11, poseCollect.getY()), Math.toRadians(12))
                 .build();
 
         goToHub5 = drive.trajectorySequenceBuilder(goToIntake4.end())
@@ -230,34 +230,9 @@ public class AutoRightRedAsync7CyclesUnstable extends LinearOpMode {
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+13, poseCollect.getY()), Math.toRadians(15))
+                .splineTo(new Vector2d(poseCollect.getX()+13, poseCollect.getY()), Math.toRadians(12))
                 .build();
 
-
-        goToHub6 = drive.trajectorySequenceBuilder(goToIntake5.end())
-                .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-4.5, poseEntrance.getY(), poseEntrance.getHeading()))
-                .build();
-
-        goToIntake6 = new TrajectorySequenceBuilder(goToHub6.end(), velConstraint, accelConstraint,
-                DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+13, poseCollect.getY()), Math.toRadians(15))
-                .build();
-
-
-        goToHub7 = drive.trajectorySequenceBuilder(goToIntake6.end())
-                .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-5.5, poseEntrance.getY(), poseEntrance.getHeading()))
-                .build();
-
-        goToIntake7 = new TrajectorySequenceBuilder(goToHub7.end(), velConstraint, accelConstraint,
-                DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+15, poseCollect.getY()), Math.toRadians(15))
-                .build();
 
 
         goToPark = new TrajectorySequenceBuilder(goToHub5.end(), velConstraint, accelConstraint,
@@ -464,13 +439,11 @@ public class AutoRightRedAsync7CyclesUnstable extends LinearOpMode {
             case INTAKE5:
                 if(hasFreight)
                 {
+                    drive.breakFollowing();
                     intake.intakeBackward();
                 }
 
-                if(!drive.isBusy())
-                {
-                    currentState = State.PARK;
-                }
+                changeState(State.OPEN_ELEVATOR6, goToHub6);
                 break;
             case OPEN_ELEVATOR6:
                 if(!drive.isBusy())
@@ -503,7 +476,7 @@ public class AutoRightRedAsync7CyclesUnstable extends LinearOpMode {
                     intake.intakeBackward();
                 }
 
-                changeState(State.OPEN_ELEVATOR6, goToHub6);
+                changeState(State.OPEN_ELEVATOR7, goToHub7);
                 break;
             case OPEN_ELEVATOR7:
                 if(!drive.isBusy())
@@ -526,17 +499,19 @@ public class AutoRightRedAsync7CyclesUnstable extends LinearOpMode {
 
                     closeElevator();
 
-                    changeState(State.INTAKE7, goToIntake7);
+                    changeState(State.INTAKE7, goToPark);
                 }
                 break;
             case INTAKE7:
                 if(hasFreight)
                 {
-                    drive.breakFollowing();
                     intake.intakeBackward();
                 }
 
-                changeState(State.OPEN_ELEVATOR7, goToHub7);
+                if(!drive.isBusy())
+                {
+                    currentState = State.PARK;
+                }
                 break;
             case PARK:
                 requestOpModeStop();
