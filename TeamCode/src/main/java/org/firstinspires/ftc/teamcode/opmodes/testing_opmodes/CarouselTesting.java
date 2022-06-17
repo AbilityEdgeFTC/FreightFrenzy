@@ -53,6 +53,7 @@ public class CarouselTesting extends LinearOpMode {
         while (opModeIsActive()) {
 
             while(gamepad1.x) {
+                carousel.displayTelemetry();
                 carousel.spinCarousel(false);
             }
 

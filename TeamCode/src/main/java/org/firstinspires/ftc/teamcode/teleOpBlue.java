@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
@@ -34,17 +33,17 @@ public class teleOpBlue extends LinearOpMode {
     ElapsedTime resetElevator;
     FreightSensor freightSensor;
 
-    public static double powerIntake = 1, powerSlowElevator = .6;
-    public static double firstLevelHandDelay = 0.5, secondLevelHandDelay = .4;
-    public static double thirdLevelHandDelay = .18, shareLevelHandDelay = 0.25;
+    public static double powerIntake = 1, powerSlowElevator = .65;
+    public static double firstLevelHandDelay = 0.2, secondLevelHandDelay = .2;
+    public static double thirdLevelHandDelay = .17, shareLevelHandDelay = 0.25;
     public static double spinnerSlowerPower = 0.4;
     public static double elevatorFastPower = 0.85;
     public static double sharedLevelElevatorGoBackDelay = 1, sharedLevelElevatorCloseDelay = 1;
     public static double closingHandDelayShare = .65, closingHandDelayLevel1 = 1.3;
-    public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .5;
+    public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .43;
     double MIN_MANUAL_HAND_MOVING = 0.03, MAX_MANUAL_HAND_MOVING = 1 - MIN_MANUAL_HAND_MOVING;
     boolean frontIntake = false, backIntake = false, canIntake = true;
-    public static double delayCloseCover = 1.4;
+    public static double delayCloseCover = 1.15;
     double positionDip = 0;
 
     enum ElevatorMovement
@@ -497,12 +496,12 @@ public class teleOpBlue extends LinearOpMode {
                 elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
                 hand.setLevelSharedHub(hand.getPos());
             case 1:
-                elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                hand.setLevel1Hub(hand.getPos());
+                //elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevel1Hub(hand.getPos());
                 break;
             case 2:
-                elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                hand.setLevel2Hub(hand.getPos());
+                //elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevel2Hub(hand.getPos());
                 break;
             case 3:
                 elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());

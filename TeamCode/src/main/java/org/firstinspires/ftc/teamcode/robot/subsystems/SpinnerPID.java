@@ -15,13 +15,13 @@ import com.qualcomm.robotcore.util.Range;
 @Config
 public class SpinnerPID {
 
-    public static double power = 0.04;
+    public static double power = 0.025;
     boolean usePID = true;
     public static double kP = 1;
     public static double kI = 0;
     public static double kD = 0;
     int pos = 0;
-    public static double maxPower = 0.07;
+    public static double maxPower = 0.055;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
     boolean slowMove = false;
@@ -63,10 +63,6 @@ public class SpinnerPID {
             {
                 motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
             }
-            else if(gamepad2.right_stick_x == 0 && gamepad1.right_stick_x == 0)
-            {
-                motor.setPower(0);
-            }
             else if(slowMove && gamepad1.right_stick_x != 0 && gamepad1.right_stick_button)
             {
                 motor.setPower(Range.clip(gamepad1.right_stick_x, -1, 1));
@@ -81,7 +77,6 @@ public class SpinnerPID {
             }
 
             pos = getPosition();
-
         }
 
     }

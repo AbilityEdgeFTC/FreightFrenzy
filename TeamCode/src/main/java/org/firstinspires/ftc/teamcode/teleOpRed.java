@@ -409,16 +409,19 @@ public class teleOpRed extends LinearOpMode {
                 break;
             case LEVEL1:
                 lastMovement = ElevatorMovement.LEVEL1;
+                freightSensor.setUseSensor(true);
                 // move elevator to the target, and add a delay for the opening of the hand
                 setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1, firstLevelHandDelay, hand.getLevel1Hub());
                 break;
             case LEVEL2:
                 lastMovement = ElevatorMovement.LEVEL2;
+                freightSensor.setUseSensor(true);
                 // move elevator to the target, and add a delay for the opening of the hand
                 setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2, secondLevelHandDelay, hand.getLevel2Hub());
                 break;
             case LEVEL3:
                 lastMovement = ElevatorMovement.LEVEL3;
+                freightSensor.setUseSensor(true);
                 // move elevator to the target, and add a delay for the opening of the hand
                 setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3, thirdLevelHandDelay, hand.getLevel3Hub());
                 break;
@@ -494,8 +497,8 @@ public class teleOpRed extends LinearOpMode {
     {
         switch (elevatorLevel) {
             case 0:
-                elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                hand.setLevelSharedHub(hand.getPos());
+                //elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevelSharedHub(hand.getPos());
             case 1:
                 //elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
                 //hand.setLevel1Hub(hand.getPos());
@@ -506,7 +509,7 @@ public class teleOpRed extends LinearOpMode {
                 break;
             case 3:
                 elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
-                hand.setLevel3Hub(hand.getPos());
+                //hand.setLevel3Hub(hand.getPos());
                 break;
         }
     }
@@ -535,6 +538,7 @@ public class teleOpRed extends LinearOpMode {
 
     void sharedLevelElevatorControl()
     {
+        freightSensor.setUseSensor(false);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
 
         // wait the delay(if with pid on ofc)

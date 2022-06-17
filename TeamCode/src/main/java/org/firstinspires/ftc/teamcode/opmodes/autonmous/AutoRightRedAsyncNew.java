@@ -15,6 +15,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
@@ -26,6 +28,10 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerFirstPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
 import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.Arrays;
 
@@ -53,6 +59,8 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
     public static double poseCollectY2 = -58;
     public static double poseCollectH2 = 180;
 
+    public static boolean useVision = true;
+
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
     hand hand;
@@ -63,7 +71,21 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
     FreightSensor freightSensor;
     SampleMecanumDrive drive;
 
+    enum levels
+    {
+        MIN,
+        MID,
+        MAX
+    }
+
+    levels placeFreightIn = levels.MAX;
+
+    OpenCvWebcam webcam;
+    HSVPipeline pipeline;
+
     public static double powerSlowElevator = .7, powerElevator = 1, powerElevatorFast = 1, elevatorDelay = .9;
+    public static double elevatorDelayOpenA1 = 0.2, elevatorDelayOpenB1 = 1, elevatorDelayOpenC1 = .6;
+    public static double elevatorDelayCloseA1 = .8, elevatorDelayCloseB1 = 1.3;
 
     boolean hasFreight = false, firstTime = true;
     double offset = 0;
@@ -74,6 +96,11 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
     enum State
     {
         FIX_ANGLE,
+        OPEN_ELEVATOR1A,
+        OPEN_ELEVATOR2B,
+        OPEN_ELEVATOR3C,
+        CLOSE_ELEVATOR1A,
+        CLOSE_ELEVATOR2B,
         OPEN_ELEVATOR1,
         WAIT_ELEVATOR_DELAY1,
         INTAKE1,
@@ -98,6 +125,15 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException
     {
+        if(useVision)
+        {
+            initPipeline();
+        }
+        else
+        {
+            placeFreightIn = levels.MAX;
+        }
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drive = new SampleMecanumDrive(hardwareMap);
         elevator = new ElevatorFirstPID(hardwareMap);
@@ -193,7 +229,7 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
 
         goToHub3 = drive.trajectorySequenceBuilder(goToIntake2.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(poseEntrance)
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-1.5, poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
         goToIntake3 = new TrajectorySequenceBuilder(goToHub3.end(), velConstraint, accelConstraint,
@@ -205,7 +241,7 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
 
         goToHub4 = drive.trajectorySequenceBuilder(goToIntake3.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-2, poseEntrance.getY(), poseEntrance.getHeading()))
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-2.5, poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
         goToIntake4 = new TrajectorySequenceBuilder(goToHub4.end(), velConstraint, accelConstraint,
@@ -229,9 +265,30 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
 
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
 
+        while (!opModeIsActive() && !isStopRequested() && useVision)
+        {
+            telemetry.addData("BARCODE LOCATION: ", pipeline.getLocation());
+            switch (pipeline.getLocation())
+            {
+                case Left:
+                    placeFreightIn = levels.MIN; // RED, blue = 3
+                    break;
+                case Center:
+                    placeFreightIn = levels.MID; // RED, blue = 2
+                    break;
+                case Right:
+                case Not_Found:
+                    placeFreightIn = levels.MAX; // RED, blue = 1
+                    break;
+            }
+            telemetry.update();
+        }
+
         waitForStart();
 
         if (isStopRequested()) return;
+
+        webcam.stopStreaming();
 
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
@@ -270,7 +327,17 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
                 {
                     intake.stop();
                     openElevator();
-                    currentState = State.WAIT_ELEVATOR_DELAY1;
+
+                    switch (placeFreightIn)
+                    {
+                        case MIN:
+                        case MID:
+                            currentState = State.OPEN_ELEVATOR1A;
+                            break;
+                        case MAX:
+                            currentState = State.WAIT_ELEVATOR_DELAY1;
+                            break;
+                    }
                 }
                 break;
             case WAIT_ELEVATOR_DELAY1:
@@ -287,6 +354,88 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
                     closeElevator();
 
                     changeState(State.INTAKE1, goToIntake1);
+                }
+                break;
+            case OPEN_ELEVATOR1A:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                elevatorVisionA();
+
+                if((runningFor.seconds() - offset) >= elevatorDelayOpenA1)
+                {
+                    firstTime = true;
+
+                    elevatorVisionB();
+
+                    currentState = State.OPEN_ELEVATOR2B;
+                }
+                break;
+            case OPEN_ELEVATOR2B:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelayOpenB1)
+                {
+                    firstTime = true;
+
+                    elevatorVisionC();
+
+                    currentState = State.OPEN_ELEVATOR3C;
+                }
+                break;
+            case OPEN_ELEVATOR3C:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelayOpenC1)
+                {
+                    firstTime = true;
+
+                    elevatorCloseA();
+
+                    currentState = State.CLOSE_ELEVATOR1A;
+                }
+                break;
+            case CLOSE_ELEVATOR1A:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelayCloseA1)
+                {
+                    firstTime = true;
+
+                    elevatorCloseB();
+
+                    currentState = State.CLOSE_ELEVATOR2B;
+                }
+                break;
+            case CLOSE_ELEVATOR2B:
+                if(firstTime)
+                {
+                    offset = runningFor.seconds();
+                    firstTime = false;
+                }
+
+                if((runningFor.seconds() - offset) >= elevatorDelayCloseB1)
+                {
+                    firstTime = true;
+
+                    elevatorCloseC();
+
+                    currentState = State.INTAKE1;
                 }
                 break;
             case INTAKE1:
@@ -488,5 +637,124 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
         cover.closeCover();
     }
 
+    public void initPipeline()
+    {
+        //setting up webcam from config, and displaying it in the teleop controller.
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        //getting the pipeline and giving it telemetry. and setting the pipeline to the webcam
+        pipeline = new HSVPipeline();
+        pipeline.telemetry = telemetry;
+        pipeline.DEBUG = false;
+
+
+        webcam.setPipeline(pipeline);
+        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                FtcDashboard.getInstance().startCameraStream(webcam,0);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+
+            }
+        });
+    }
+
+    void elevatorVisionA()
+    {
+        powerElevator = powerElevatorFast;
+        elevator.setPower(powerElevatorFast);
+
+        dip.holdFreight();
+
+        switch (placeFreightIn)
+        {
+            case MIN:
+            case MID:
+            case MAX:
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
+                break;
+        }
+    }
+
+    void elevatorVisionB()
+    {
+        powerElevator = powerElevatorFast;
+        elevator.setPower(powerElevatorFast);
+
+        dip.holdFreight();
+
+        switch (placeFreightIn)
+        {
+            case MIN:
+                hand.level1();
+                break;
+            case MID:
+                hand.level2();
+                break;
+            case MAX:
+                hand.level3();
+                break;
+        }
+    }
+    void elevatorVisionC()
+    {
+        powerElevator = powerElevatorFast;
+        elevator.setPower(powerElevatorFast);
+
+        dip.holdFreight();
+
+        switch (placeFreightIn)
+        {
+            case MIN:
+            case MID:
+            case MAX:
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
+                break;
+        }
+    }
+
+    void elevatorCloseA()
+    {
+        dip.releaseFreight();
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+        powerElevator = powerSlowElevator;
+        elevator.setPower(powerElevator);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
+    }
+
+    void elevatorCloseB()
+    {
+        dip.getFreight();
+        powerElevator = powerSlowElevator;
+        elevator.setPower(powerElevator);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
+        elevator.updateAuto();
+        spinner.updateAuto();
+        elevator.updateAuto();
+        spinner.updateAuto();
+        hand.intake();
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+    }
+
+    void elevatorCloseC()
+    {
+        dip.getFreight();
+        elevator.updateAuto();
+        spinner.updateAuto();
+        powerElevator = powerSlowElevator;
+        elevator.setPower(powerElevator);
+        elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+    }
 
 }

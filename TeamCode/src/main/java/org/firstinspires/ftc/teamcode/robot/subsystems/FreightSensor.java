@@ -14,6 +14,7 @@ public class FreightSensor {
 
     ModernRoboticsI2cRangeSensor rangeSensor;
     public static double emptyBox = 0;
+    public static boolean useSensor = true;
 
     public FreightSensor(HardwareMap hardwareMap) {
         this.rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "dsC");
@@ -22,8 +23,22 @@ public class FreightSensor {
 
     public boolean hasFreight()
     {
-        return rangeSensor.rawOptical() != emptyBox;
+        if(useSensor)
+        {
+            return rangeSensor.rawOptical() != emptyBox;
+        }
+        else
+        {
+            return false;
+        }
     }
 
+    public static boolean isUseSensor() {
+        return useSensor;
+    }
+
+    public static void setUseSensor(boolean useSensor) {
+        FreightSensor.useSensor = useSensor;
+    }
 }
 

@@ -115,7 +115,7 @@ public class gamepad {
 
         if(goSlow)
         {
-            power = 0.25;
+            power = 0.65;
         }
         else
         {
