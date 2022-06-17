@@ -670,6 +670,8 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
 
     void elevatorVisionA()
     {
+        cover.openCover();
+
         powerElevator = powerElevatorFast;
         elevator.setPower(powerElevatorFast);
 
@@ -755,6 +757,8 @@ public class AutoRightRedAsyncNew extends LinearOpMode {
         elevator.setPower(powerElevator);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+
+        cover.closeCover();
     }
 
 }
