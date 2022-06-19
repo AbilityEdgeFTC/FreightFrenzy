@@ -36,15 +36,17 @@ public class teleOpRed extends LinearOpMode {
 
     public static double powerIntake = 1, powerSlowElevator = .65;
     public static double firstLevelHandDelay = 0.2, secondLevelHandDelay = .2;
-    public static double thirdLevelHandDelay = .17, shareLevelHandDelay = 0.25;
+    public static double thirdLevelHandDelay = .17, shareLevelHandDelay = 0.17;
     public static double spinnerSlowerPower = 0.4;
     public static double elevatorFastPower = 0.85;
-    public static double sharedLevelElevatorGoBackDelay = 1, sharedLevelElevatorCloseDelay = 1;
+    public static double sharedLevelElevatorGoBackDelay = .5, sharedLevelElevatorCloseDelay = 1;
     public static double closingHandDelayShare = .65, closingHandDelayLevel1 = 1.3;
     public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .43;
+    public static double ELEVATOR_SPEED = 1;
     double MIN_MANUAL_HAND_MOVING = 0.03, MAX_MANUAL_HAND_MOVING = 1 - MIN_MANUAL_HAND_MOVING;
     boolean frontIntake = false, backIntake = false, canIntake = true;
-    public static double delayCloseCover = 1.15;
+    public static double delayCloseCover = 1.15, delayCloseCoverShared = .8;
+    public static double spinnerPower = 0.25;
     double positionDip = 0;
 
     enum ElevatorMovement
@@ -59,7 +61,7 @@ public class teleOpRed extends LinearOpMode {
 
     int elevatorLevel = 3;
     public static ElevatorMovement elevatorMovement = ElevatorMovement.CLOSED;
-    public static ElevatorMovement lastMovement = ElevatorMovement.CLOSED;
+    public static ElevatorMovement lastMovement = ElevatorMovement.LEVEL3;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -68,7 +70,7 @@ public class teleOpRed extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new SpinnerPID(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
-        carousel = new Carousel(hardwareMap , gamepad2);
+        carousel = new Carousel(hardwareMap, gamepad2);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
@@ -82,7 +84,7 @@ public class teleOpRed extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-
+            spinner.setUseGamepad2(true);
             cGamepad1.update();
             cGamepad2.update();
             gamepad.update();
@@ -142,7 +144,7 @@ public class teleOpRed extends LinearOpMode {
     void switchElevatorLevelsGP2()
     {
         // each button on game pad sets the target level of the elevator to a different level
-        if(gamepad1.y)
+        if(gamepad2.y)
         {
             elevatorLevel = 3;
 
@@ -162,7 +164,7 @@ public class teleOpRed extends LinearOpMode {
                 hand.level2();
             }
         }
-        else if (gamepad2.y)
+        else if (gamepad1.y)
         {
             elevatorLevel = 0;
 
@@ -356,6 +358,8 @@ public class teleOpRed extends LinearOpMode {
     void elevatorSwitch() {
         switch (elevatorMovement) {
             case CLOSED:
+                spinner.setUseGamepad2(true);
+
                 // while elevator is closed, spinner manual moving should be regular, and the gamepad 1 should let the user
                 // to spin the robot and not the spinner
                 if(lastMovement == ElevatorMovement.SHARED)
@@ -373,6 +377,8 @@ public class teleOpRed extends LinearOpMode {
                 // user wants to open elevator
                 if (gamepad1.right_bumper)
                 {
+                    spinner.setUseGamepad2(false);
+
                     // turn on pid if it was off, spinner movement should be slower and the gamepad1 should twist the spinner
                     // not the robot
                     elevator.setUsePID(true);
@@ -391,15 +397,23 @@ public class teleOpRed extends LinearOpMode {
                     switch (elevatorLevel)
                     {
                         case 0:
+                            spinner.setMaxPower(spinnerPower / 1.5);
+                            elevator.setPower(ELEVATOR_SPEED / 2);
                             elevatorMovement = ElevatorMovement.SHARED;
                             break;
                         case 1:
+                            spinner.setMaxPower(spinnerPower);
+                            elevator.setPower(ELEVATOR_SPEED);
                             elevatorMovement = ElevatorMovement.LEVEL1;
                             break;
                         case 2:
+                            spinner.setMaxPower(spinnerPower);
+                            elevator.setPower(ELEVATOR_SPEED);
                             elevatorMovement = ElevatorMovement.LEVEL2;
                             break;
                         case 3:
+                            spinner.setMaxPower(spinnerPower);
+                            elevator.setPower(ELEVATOR_SPEED);
                             elevatorMovement = ElevatorMovement.LEVEL3;
                             break;
                     }
@@ -433,6 +447,8 @@ public class teleOpRed extends LinearOpMode {
             case DIP:
                 // this will be in a loop, so update elevator and turn on manual servo moving
                 elevator.update();
+                spinner.update();
+
                 manualServoMoving();
 
                 // if gp1 right stick button is on, so we want to twist the robot and not spinner
@@ -559,7 +575,6 @@ public class teleOpRed extends LinearOpMode {
 
     void closeSharedHubElevator()
     {
-
         // wait the delay(if with pid on ofc)
         if(!withoutPID())
         {
@@ -582,8 +597,12 @@ public class teleOpRed extends LinearOpMode {
         if(!withoutPID() && resetElevator.seconds() > closingHandDelayShare + sharedLevelElevatorCloseDelay)
         {
             elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-            cover.closeCover();
             lastMovement = ElevatorMovement.CLOSED;
+        }
+
+        if(!withoutPID() && resetElevator.seconds() > delayCloseCoverShared)
+        {
+            cover.closeCover();
         }
     }
 

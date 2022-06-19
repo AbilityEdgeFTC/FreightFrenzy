@@ -24,13 +24,13 @@ public class SpinnerPID {
     public static double maxPower = 0.055;
     public static double GEAR_RATIO = 146.0/60.0; // in
     public static double TICKS_PER_REV = 537.7 * GEAR_RATIO;
-    boolean slowMove = false;
+    boolean slowMove = true;
+    boolean useGamepad2 = true;
     DcMotorEx motor;
     BasicPID PID = new BasicPID(new PIDCoefficients(kP, kI, kD));
     AngleController controller = new AngleController(PID);
 
     Gamepad gamepad2, gamepad1;
-    cGamepad cGamepad2;
 
     public SpinnerPID(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2)
     {
@@ -40,26 +40,21 @@ public class SpinnerPID {
         this.motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
-        this.cGamepad2 = new cGamepad(gamepad2);
     }
 
     public void update()
     {
-        cGamepad2.update();
-
         if(usePID)
         {
             motor.setPower(controller.calculate(encoderTicksToRadians(pos), encoderTicksToRadians(motor.getCurrentPosition())));
         }
         else
         {
-            cGamepad2.update();
-
             if(slowMove && gamepad1.right_stick_x != 0 && !gamepad1.right_stick_button)
             {
                 motor.setPower(Range.clip(gamepad1.right_stick_x, -maxPower, maxPower));
             }
-            else if(gamepad2.right_stick_x != 0 && !gamepad2.right_stick_button)
+            else if(gamepad2.right_stick_x != 0 && !gamepad2.right_stick_button && useGamepad2)
             {
                 motor.setPower(Range.clip(gamepad2.right_stick_x, -maxPower, maxPower));
             }
@@ -67,7 +62,7 @@ public class SpinnerPID {
             {
                 motor.setPower(Range.clip(gamepad1.right_stick_x, -1, 1));
             }
-            else if(gamepad2.right_stick_x != 0 && gamepad2.right_stick_button)
+            else if(gamepad2.right_stick_x != 0 && gamepad2.right_stick_button && useGamepad2)
             {
                 motor.setPower(Range.clip(gamepad2.right_stick_x, -1, 1));
             }
@@ -118,5 +113,21 @@ public class SpinnerPID {
 
     public static void setMaxPower(double maxPower) {
         SpinnerPID.maxPower = maxPower;
+    }
+
+    public static double getPower() {
+        return power;
+    }
+
+    public static void setPower(double power) {
+        SpinnerPID.power = power;
+    }
+
+    public boolean isUseGamepad2() {
+        return useGamepad2;
+    }
+
+    public void setUseGamepad2(boolean useGamepad2) {
+        this.useGamepad2 = useGamepad2;
     }
 }

@@ -51,7 +51,7 @@ public class AutoLeftRed extends LinearOpMode {
     public static double poseCarouselY = -51.6;
     public static double poseCarouselH = 5;
     public static double carouselHelp = 15;
-    public static double runCarouselFor = 6.72;
+    public static double runCarouselFor = 5;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
     hand hand;
@@ -99,7 +99,7 @@ public class AutoLeftRed extends LinearOpMode {
         MarkerCallback carouselOnn = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                carousel.spinCarouselNoAccel(false, 0.18);
+                carousel.spinCarouselNoAccel(false, 0.3);
             }
         };
         MarkerCallback carouselOff = new MarkerCallback() {
@@ -265,8 +265,8 @@ public class AutoLeftRed extends LinearOpMode {
                 spinner.updateAuto();
                 powerElevator = powerSlowElevator;
                 elevator.setPower(powerElevator);
-                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                 hand.intake();
+                elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                 elevator.updateAuto();
                 spinner.updateAuto();
                 elevator.updateAuto();
@@ -290,6 +290,12 @@ public class AutoLeftRed extends LinearOpMode {
             }
         };
 
+        MarkerCallback spinerZeroMode = new MarkerCallback() {
+            @Override
+            public void onMarkerReached() {
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
+            }
+        };
         drive.setPoseEstimate(startPoseLeft);
 
         /*
@@ -345,10 +351,17 @@ public class AutoLeftRed extends LinearOpMode {
                     .forward(8)
                     .turn(Math.toRadians(85))
                     .addTemporalMarker(intakeDuck)
+                    .back(8)//first intake
+                    .forward(8)
+                    .strafeRight(9)
+                    .back(8)//second intak
+                    .forward(8)
+                    .strafeRight(9)
+                    .back(8)//third intake
+                    .forward(8)
+                    .strafeRight(9.2)
                     .back(8)
-                    .strafeRight(20)
                     .addTemporalMarker(intakeStop)
-                    .back(3)
                     .addTemporalMarker(elevetorVisionA)
                     .waitSeconds(.3)
                     .addTemporalMarker(elevetorVisionB)
@@ -361,9 +374,10 @@ public class AutoLeftRed extends LinearOpMode {
                     .waitSeconds(.3)
                     .addTemporalMarker(elevetorCloseC)
                     .waitSeconds(.5)
+                    .addTemporalMarker(spinerZeroMode)
                     .forward(25)
-                    .turn(Math.toRadians(-90))
-                    .back(17)
+                    .turn(Math.toRadians(90))
+                    .forward(20)
                     .build();
                 break;
         }
