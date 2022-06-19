@@ -5,23 +5,16 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.MarkerCallback;
-import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.acmerobotics.roadrunner.util.NanoClock;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ReadWriteFile;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.opmodes.Vision.HSVPipeline;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
@@ -34,27 +27,25 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.Arrays;
-
 /*
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Left Red", group = "Autonomous Red")
-public class AutoLeftRed extends LinearOpMode {
+@Autonomous(name = "Right Blue", group = "Autonomous Blue")
+public class AutoRightBlue extends LinearOpMode {
 
     double startPoseLeftX = -35;
-    double startPoseLeftY = -72 + 17.72;
-    double startPoseLeftH = 90;
+    double startPoseLeftY = 72 - 17.72;
+    double startPoseLeftH = -90;
 
     public static double poseCarouselX = -63.3;
-    public static double poseCarouselY = -51.3;
-    public static double poseCarouselH = 5;
+    public static double poseCarouselY = 51.3;
+    public static double poseCarouselH = -85;
     public static double carouselHelp = 13;
     public static double runCarouselFor = 5;
-    public static double poseParkX = -57.35;
-    public static double poseParkY = -30.3;
-    public static double poseParkH = 180;
+    public static double poseParkX = -58.5;
+    public static double poseParkY = 29.8;
+    public static double poseParkH = -180;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
     hand hand;
@@ -103,7 +94,7 @@ public class AutoLeftRed extends LinearOpMode {
         MarkerCallback carouselOnn = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                carousel.spinCarouselNoAccel(false, 0.3);
+                carousel.spinCarouselNoAccel(true, 0.3);
             }
         };
         MarkerCallback carouselOff = new MarkerCallback() {
@@ -142,7 +133,7 @@ public class AutoLeftRed extends LinearOpMode {
 
                 dip.holdFreight();
 
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.DUCK_ANGLE_RED);
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.DUCK_ANGLE_BLUE);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
 
                 hand.level3Duck();
@@ -171,7 +162,7 @@ public class AutoLeftRed extends LinearOpMode {
                     case MIN:
                     case MID:
                     case MAX:
-                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT_AUTO_ANGLE_RED);
+                        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT_AUTO_ANGLE_BLUE);
                         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                         break;
                 }
@@ -289,7 +280,7 @@ public class AutoLeftRed extends LinearOpMode {
         MarkerCallback spinerZeroMode = new MarkerCallback() {
             @Override
             public void onMarkerReached() {
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_BLUE);
                 spinner.updateAuto();
             }
         };
@@ -309,14 +300,14 @@ public class AutoLeftRed extends LinearOpMode {
             switch (pipeline.getLocation())
             {
                 case Left:
-                    placeFreightIn = levels.MIN; // RED, blue = 3
+                case Not_Found:
+                    placeFreightIn = levels.MAX; // RED, blue = 3
                     break;
                 case Center:
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
-                case Not_Found:
-                    placeFreightIn = levels.MAX; // RED, blue = 1
+                    placeFreightIn = levels.MIN; // RED, blue = 1
                     break;
             }
             telemetry.update();
@@ -341,16 +332,15 @@ public class AutoLeftRed extends LinearOpMode {
                 .addTemporalMarker(carouselOnn)
                 .waitSeconds(runCarouselFor)
                 .addTemporalMarker(carouselOff)
-                .forward(8)
-                .turn(Math.toRadians(85))
                 .addTemporalMarker(intakeDuck)
-                .back(8)//first intake
+                .strafeLeft(9)
+                .back(8)
+                .forward(8)
+                .strafeLeft(9)
+                .back(11)
                 .forward(11)
-                .strafeRight(9)
+                .strafeLeft(9)
                 .back(11)//second intak
-                .forward(11)
-                .strafeRight(8.5)
-                .back(11)//third intake
                 .waitSeconds(1)
                 .addTemporalMarker(elevetorDuckLevel3)
                 .waitSeconds(1)
@@ -365,11 +355,11 @@ public class AutoLeftRed extends LinearOpMode {
                 .lineToSplineHeading(posePark)
                 .build();
 
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_BLUE);
 
         waitForStart();
         webcam.stopStreaming();
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.updateAuto();
         elevator.updateAuto();

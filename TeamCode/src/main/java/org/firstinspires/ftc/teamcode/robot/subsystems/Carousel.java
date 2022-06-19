@@ -18,7 +18,7 @@ public class Carousel {
     double offset = 0;
     Telemetry telemetry;
     boolean newSpin = true;
-    public static double MULTIPLYER = 5, MIN_POWER = 0.4, MAX_POWER = 1;
+    public static double MULTIPLYER = 4, MIN_POWER = 0.4, MAX_POWER = 1;
     Gamepad gamepad;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.

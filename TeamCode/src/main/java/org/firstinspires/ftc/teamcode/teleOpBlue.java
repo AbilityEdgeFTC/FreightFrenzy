@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 @Config
-@TeleOp(name = "RED TeleOp - Driver Control", group = "RED")
-public class teleOpRed extends LinearOpMode {
+@TeleOp(name = "BLUE TeleOp - Driver Control", group = "BLUE")
+public class teleOpBlue extends LinearOpMode {
 
     gamepad gamepad;
     SpinnerPID spinner;
@@ -65,7 +65,7 @@ public class teleOpRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        gamepad.setRedAlliance(true);
+        gamepad.setRedAlliance(false);
         gamepad = new gamepad(hardwareMap, gamepad1, gamepad2, telemetry); // teleop(gamepad) class functions
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new SpinnerPID(hardwareMap, gamepad1, gamepad2);
