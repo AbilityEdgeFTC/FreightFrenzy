@@ -86,7 +86,7 @@ public class AutoRightRedAsync extends LinearOpMode {
     public static double powerSlowElevator = .7, powerElevator = 1, powerElevatorFast = 1, elevatorDelay = .9;
     public static double elevatorDelayOpenA1 = 0.2, elevatorDelayOpenB1 = 1, elevatorDelayOpenC1 = .6;
     public static double elevatorDelayCloseA1 = .85, elevatorDelayCloseB1 = 1.3;
-    public static double intakeDelay = 1.5;
+
     boolean hasFreight = false, firstTime = true;
     double offset = 0;
 
@@ -439,13 +439,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                 }
                 break;
             case INTAKE1:
-                if(firstTime)
-                {
-                    offset = runningFor.seconds();
-                    firstTime = false;
-                }
-
-                if(hasFreight || (runningFor.seconds() - offset) >= intakeDelay)
+                if(hasFreight)
                 {
                     drive.breakFollowing();
                     intake.intakeBackward();
@@ -478,13 +472,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                 }
                 break;
             case INTAKE2:
-                if(firstTime)
-                {
-                    offset = runningFor.seconds();
-                    firstTime = false;
-                }
-
-                if(hasFreight || (runningFor.seconds() - offset) >= intakeDelay)
+                if(hasFreight)
                 {
                     drive.breakFollowing();
                     intake.intakeBackward();
@@ -517,13 +505,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                 }
                 break;
             case INTAKE3:
-                if(firstTime)
-                {
-                    offset = runningFor.seconds();
-                    firstTime = false;
-                }
-
-                if(hasFreight || (runningFor.seconds() - offset) >= intakeDelay)
+                if(hasFreight)
                 {
                     drive.breakFollowing();
                     intake.intakeBackward();
@@ -556,13 +538,7 @@ public class AutoRightRedAsync extends LinearOpMode {
                 }
                 break;
             case INTAKE4:
-                if(firstTime)
-                {
-                    offset = runningFor.seconds();
-                    firstTime = false;
-                }
-
-                if(hasFreight || (runningFor.seconds() - offset) >= intakeDelay)
+                if(hasFreight)
                 {
                     drive.breakFollowing();
                     intake.intakeBackward();
