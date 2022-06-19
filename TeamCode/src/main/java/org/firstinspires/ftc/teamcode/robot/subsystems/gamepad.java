@@ -33,7 +33,7 @@ public class gamepad {
     double rightPower_f;
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
-    public static double mainPower = .8, multiplier = .9;
+    public static double mainPower = .8, multiplier = .9, POWER_INCREMENT = 0.1;
     public static boolean slowMove = false, isCentricDrive = true, canTwist = true, goSlow = false;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
@@ -110,16 +110,11 @@ public class gamepad {
 
         if(cGamepad1.dpadUpOnce())
         {
-            goSlow = !goSlow;
+            power += POWER_INCREMENT;
         }
-
-        if(goSlow)
+        else if(cGamepad1.dpadDownOnce())
         {
-            power = 0.65;
-        }
-        else
-        {
-            power = mainPower;
+            power -= POWER_INCREMENT;
         }
 
         getGamepadDirections();

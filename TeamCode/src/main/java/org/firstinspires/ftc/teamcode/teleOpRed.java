@@ -337,10 +337,12 @@ public class teleOpRed extends LinearOpMode {
      */
     void moveAutomaticallyDip(double position)
     {
-        if(!withoutPID())
-        {
-            dip.moveTo(position);
-        }
+        dip.moveTo(position);
+
+//        if(!withoutPID())
+//        {
+//            dip.moveTo(position);
+//        }
     }
 
     /**
