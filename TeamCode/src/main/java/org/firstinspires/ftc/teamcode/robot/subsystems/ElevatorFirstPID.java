@@ -21,7 +21,7 @@ public class ElevatorFirstPID {
     public static double HUB_LEVEL3 = 24.4;
     public static double HUB_LEVEL2 = 10;
     public static double HUB_LEVEL1 = HUB_LEVEL2;
-    public static double AUTO_LEFT_LEVEL = 20;
+    public static double AUTO_LEFT_LEVEL = 19;
     public static double DUCK_RED_LEVEL = 8.4;
     public static double MID = 6;
     public static double SHARED_HUB = 6.5;
