@@ -16,7 +16,7 @@ public class hand {
 
     Servo sH;
     public static double intakePos = 0;
-    public static double level1Hub = .9, level2Hub = .8, level3Hub = .55, levelSharedHub = .8, levelDuck3 = 0.6, levelDuck2 = 0.78, levelDuck1 = 1;
+    public static double level1Hub = .93, level2Hub = .735, level3Hub = .5, levelSharedHub = .8, levelDuck3 = 0.6, levelDuck2 = .77, levelDuck1 = .947;
 
     public enum HandPos
     {
@@ -133,5 +133,37 @@ public class hand {
 
     public static double getLevelDuck1() {
         return levelDuck1;
+    }
+
+    public static void setIntakePos(double intakePos) {
+        hand.intakePos = intakePos;
+    }
+
+    public static void setLevel1Hub(double level1Hub) {
+        hand.level1Hub = level1Hub;
+    }
+
+    public static void setLevel2Hub(double level2Hub) {
+        hand.level2Hub = level2Hub;
+    }
+
+    public static void setLevel3Hub(double level3Hub) {
+        hand.level3Hub = level3Hub;
+    }
+
+    public static void setLevelSharedHub(double levelSharedHub) {
+        hand.levelSharedHub = levelSharedHub;
+    }
+
+    public static void setLevelDuck3(double levelDuck3) {
+        hand.levelDuck3 = levelDuck3;
+    }
+
+    public static void setLevelDuck2(double levelDuck2) {
+        hand.levelDuck2 = levelDuck2;
+    }
+
+    public static void setLevelDuck1(double levelDuck1) {
+        hand.levelDuck1 = levelDuck1;
     }
 }

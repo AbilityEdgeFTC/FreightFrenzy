@@ -18,18 +18,17 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 23.7;
-    public static double HUB_LEVEL2 = 10.5;
-    public static double HUB_LEVEL1 = 10.5;
-    public static double AUTO_LEFT_LEVEL = 20.3;
-    public static double DUCK_RED_LEVEL = 8.7;
+    public static double HUB_LEVEL3 = 24.4;
+    public static double HUB_LEVEL2 = 10;
+    public static double HUB_LEVEL1 = HUB_LEVEL2;
+    public static double AUTO_LEFT_LEVEL = 19;
+    public static double DUCK_RED_LEVEL = 8.4;
     public static double MID = 6;
     public static double SHARED_HUB = 6.5;
     public static double ZERO_HEIGHT = 0;
     public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
-    public static double maxPower = 0.85;
-    public static boolean DEBUG = true;
+    public static double maxPower = 0.8;
     double power = 1;
     boolean usePID = true;
     public static int offset = 0;
@@ -113,7 +112,7 @@ public class ElevatorFirstPID {
             }
             else if(gamepad.left_stick_y != 0 && gamepad.left_stick_button)
             {
-                motor.setPower(Range.clip(-gamepad.left_stick_y, -maxPower/2, maxPower/2));
+                motor.setPower(Range.clip(-gamepad.left_stick_y, -1, 1));
             }
             else
             {
@@ -151,6 +150,8 @@ public class ElevatorFirstPID {
                 target = MID;
                 break;
         }
+
+
 
         motor.setTargetPosition(inchesToEncoderTicks(target));
         motor.setPower(power);

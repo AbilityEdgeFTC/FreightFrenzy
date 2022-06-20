@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.util.Range;
 
 @Config
 @TeleOp(name = "Field Drive Testing", group = "test")
-@Disabled
 public class teleopDrive extends LinearOpMode {
 
     DcMotor mFL, mBL, mBR, mFR;

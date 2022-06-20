@@ -14,16 +14,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Carousel {
 
     DcMotor mC;
-    double powerGiven = 0;
-    public static double addingBy = 0.25;
-    public static double MAX_POWER = 0.5; //configerable
-    public static double MIN_POWER = 0.3;
-    public static double delay = 1.1;
-    public static double startAccel = .19;
     NanoClock clock;
     double offset = 0;
     Telemetry telemetry;
     boolean newSpin = true;
+    public static double MULTIPLYER = 4, MIN_POWER = 0.4, MAX_POWER = 1;
+    Gamepad gamepad;
 
     // 2 constructors for 2 options, construct the carousel with and without telementry.
     /** THE CONSTRUCTOR GET THE MOTOR TO SPIN, POWER FOR THAT MOTOR, AND HARDWAREMAP.  */
@@ -32,9 +28,11 @@ public class Carousel {
         this.mC = hardwareMap.get(DcMotor.class, "mC");
         this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.gamepad = gamepad1;
     }
 
     public Carousel(HardwareMap hardwareMap) {
+        clock = NanoClock.system();
         this.mC = hardwareMap.get(DcMotor.class, "mC");
         this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -47,44 +45,51 @@ public class Carousel {
         this.mC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.mC.setDirection(DcMotorSimple.Direction.REVERSE);
         this.telemetry = telemetry;
+        this.gamepad = gamepad1;
     }
 
 
     public void spinCarousel(boolean reverse){
-
-        if(getSeconds() > delay && newSpin)
+        if(newSpin)
         {
-            powerGiven += startAccel;
-        }
-        else if(powerGiven < MAX_POWER)
-        {
-            powerGiven += addingBy;
+            offset = clock.seconds();
+            newSpin = false;
         }
 
-        if(reverse)
+        if(!reverse && !gamepad.dpad_down)
         {
-            mC.setPower(-powerGiven);
+            mC.setPower(MIN_POWER + ((getSeconds()) / MULTIPLYER));
         }
-        else
+        else if(!gamepad.dpad_down)
         {
-            mC.setPower(powerGiven);
+            mC.setPower(-(MIN_POWER + ((getSeconds()) / MULTIPLYER)));
         }
+
+        if(gamepad.dpad_down && reverse)
+        {
+            mC.setPower(-MAX_POWER);
+        }
+        else if(gamepad.dpad_down)
+        {
+            mC.setPower(MAX_POWER);
+        }
+
     }
 
-    public void spinCarouselNoAccel(boolean reverse){
+    public void spinCarouselNoAccel(boolean reverse, double power){
         if(reverse)
         {
-            mC.setPower(-MIN_POWER);
+            mC.setPower(-power);
         }
         else
         {
-            mC.setPower(MIN_POWER);
+            mC.setPower(power);
         }
     }
 
     public void displayTelemetry()
     {
-        telemetry.addData("Power: ", powerGiven);
+        telemetry.addData("Power: ", mC.getPower());
         telemetry.addData("Seconds: ", getSeconds());
         telemetry.addData("Offset: ", offset);
         telemetry.update();
@@ -99,7 +104,6 @@ public class Carousel {
         mC.setPower(0);
         newSpin = true;
         offset = clock.seconds();
-        powerGiven = MIN_POWER;
     }
 
     public void stopCarouselNoAccel(){

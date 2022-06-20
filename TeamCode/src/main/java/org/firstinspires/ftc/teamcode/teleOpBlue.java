@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.robot.subsystems.Cover;
 import org.firstinspires.ftc.teamcode.robot.subsystems.ElevatorFirstPID;
+import org.firstinspires.ftc.teamcode.robot.subsystems.FreightSensor;
 import org.firstinspires.ftc.teamcode.robot.subsystems.SpinnerPID;
 import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
 import org.firstinspires.ftc.teamcode.robot.subsystems.dip;
@@ -18,7 +19,7 @@ import org.firstinspires.ftc.teamcode.robot.subsystems.hand;
 import org.firstinspires.ftc.teamcode.robot.subsystems.intake;
 
 @Config
-@TeleOp(name = "Blue TeleOp - Driver Control", group = "BLUE")
+@TeleOp(name = "BLUE TeleOp - Driver Control", group = "BLUE")
 public class teleOpBlue extends LinearOpMode {
 
     gamepad gamepad;
@@ -30,19 +31,23 @@ public class teleOpBlue extends LinearOpMode {
     dip dip;
     Cover cover;
     cGamepad cGamepad1, cGamepad2;
-    public static double powerIntake = 1, powerSlowElevator = .6;
-    public static double firstLevelHandDelay = 0.5, secondLevelHandDelay = .4;
-    public static double thirdLevelHandDelay = .18, shareLevelHandDelay = 0.25;
+    ElapsedTime resetElevator;
+    FreightSensor freightSensor;
+
+    public static double powerIntake = 1, powerSlowElevator = .65;
+    public static double firstLevelHandDelay = 0.2, secondLevelHandDelay = .2;
+    public static double thirdLevelHandDelay = .17, shareLevelHandDelay = 0.17;
     public static double spinnerSlowerPower = 0.4;
     public static double elevatorFastPower = 0.85;
-    public static double sharedLevelElevatorGoBackDelay = 1, sharedLevelElevatorCloseDelay = 1;
+    public static double sharedLevelElevatorGoBackDelay = .5, sharedLevelElevatorCloseDelay = 1;
     public static double closingHandDelayShare = .65, closingHandDelayLevel1 = 1.3;
-    public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .5;
+    public static double closingHandDelayLevel2 = 1, closingHandDelayLevel3 = .43;
+    public static double ELEVATOR_SPEED = 1;
     double MIN_MANUAL_HAND_MOVING = 0.03, MAX_MANUAL_HAND_MOVING = 1 - MIN_MANUAL_HAND_MOVING;
     boolean frontIntake = false, backIntake = false, canIntake = true;
-    public static double delayCloseCover = 1.4;
+    public static double delayCloseCover = .85, delayCloseCoverShared = .8;
+    public static double spinnerPower = 0.25;
     double positionDip = 0;
-    ElapsedTime resetElevator;
 
     enum ElevatorMovement
     {
@@ -56,7 +61,7 @@ public class teleOpBlue extends LinearOpMode {
 
     int elevatorLevel = 3;
     public static ElevatorMovement elevatorMovement = ElevatorMovement.CLOSED;
-    public static ElevatorMovement lastMovement = ElevatorMovement.CLOSED;
+    public static ElevatorMovement lastMovement = ElevatorMovement.LEVEL3;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -65,20 +70,21 @@ public class teleOpBlue extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()); // dashboard telemetry
         spinner = new SpinnerPID(hardwareMap, gamepad1, gamepad2);
         elevator = new ElevatorFirstPID(hardwareMap, gamepad2);
-        carousel = new Carousel(hardwareMap , gamepad2);
+        carousel = new Carousel(hardwareMap, gamepad2);
         intake = new intake(hardwareMap);
         hand = new hand(hardwareMap);
         dip = new dip(hardwareMap);
         cover = new Cover(hardwareMap);
         cGamepad1 = new cGamepad(gamepad1);
         cGamepad2 = new cGamepad(gamepad2);
+        freightSensor = new FreightSensor(hardwareMap);
         resetElevator = new ElapsedTime();
 
         // wait till after init
         waitForStart();
 
         while (opModeIsActive()) {
-
+            //spinner.setUseGamepad2(true);
             cGamepad1.update();
             cGamepad2.update();
             gamepad.update();
@@ -91,11 +97,24 @@ public class teleOpBlue extends LinearOpMode {
             manualServoMoving();
             switchElevatorLevelsGP2();
             spinCarousel();
+            turnOffSensor();
             telemetry.update();
 
         }
 
         gamepad.saveIMUHeading();
+    }
+
+    void turnOffSensor()
+    {
+        if(gamepad2.right_bumper && gamepad2.left_bumper)
+        {
+            freightSensor.setUseSensor(false);
+        }
+        else if(gamepad2.back)
+        {
+            freightSensor.setUseSensor(true);
+        }
     }
 
     /**
@@ -105,12 +124,12 @@ public class teleOpBlue extends LinearOpMode {
     {
         if (gamepad2.dpad_right)
         {
-            carousel.spinCarousel(true);
+            carousel.spinCarousel(false);
             toggleIntakesGP1GP2();
         }
         else if(gamepad2.dpad_left)
         {
-            carousel.spinCarousel( false);
+            carousel.spinCarousel( true);
             toggleIntakesGP1GP2();
         }
         else
@@ -179,13 +198,13 @@ public class teleOpBlue extends LinearOpMode {
         double position = hand.getPos();
 
         // check if the user wants to make the hand go up or down, and it can(0-1 range)
-        if(cGamepad2.rightBumperOnce() && hand.getPos() >= MIN_MANUAL_HAND_MOVING)
+        if(cGamepad2.rightBumperOnce() && hand.getPos() >= MIN_MANUAL_HAND_MOVING && !cGamepad2.leftBumperOnce())
         {
             // if so, go up
             position -= MIN_MANUAL_HAND_MOVING;
             hand.moveTo(position);
         }
-        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= MAX_MANUAL_HAND_MOVING)
+        else if(cGamepad2.leftBumperOnce() && hand.getPos() <= MAX_MANUAL_HAND_MOVING && !cGamepad2.rightBumperOnce())
         {
             // else if so, go down
             position += MIN_MANUAL_HAND_MOVING;
@@ -270,29 +289,35 @@ public class teleOpBlue extends LinearOpMode {
          but we just check if the gamepads want to power the intake, and which way.
          */
 
-        if ((gamepad1.right_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad2.left_trigger == 0) && (gamepad1.left_trigger == 0))
+        if ((gamepad1.right_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad2.left_trigger == 0) && (gamepad1.left_trigger == 0) && !freightSensor.hasFreight())
         {
             intake.powerIntake(gamepad1.right_trigger);
             frontIntake = false;
             backIntake = false;
         }
-        else if ((gamepad1.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad2.left_trigger == 0))
+        else if ((gamepad1.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad2.left_trigger == 0) && !freightSensor.hasFreight())
         {
             intake.powerIntake(-gamepad1.left_trigger);
             frontIntake = false;
             backIntake = false;
         }
-        else if ((gamepad2.right_trigger != 0) && canIntake && (gamepad2.left_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0))
+        else if ((gamepad2.right_trigger != 0) && canIntake && (gamepad2.left_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0) && !freightSensor.hasFreight())
         {
             intake.powerIntake(gamepad2.right_trigger);
             frontIntake = false;
             backIntake = false;
         }
-        else if ((gamepad2.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0))
+        else if ((gamepad2.left_trigger != 0) && canIntake && (gamepad2.right_trigger == 0) && (gamepad1.right_trigger == 0) && (gamepad1.left_trigger == 0) && !freightSensor.hasFreight())
         {
             intake.powerIntake(-gamepad2.left_trigger);
             frontIntake = false;
             backIntake = false;
+        }
+
+        if(freightSensor.hasFreight())
+        {
+            frontIntake = false;
+            backIntake = true;
         }
 
 
@@ -325,10 +350,12 @@ public class teleOpBlue extends LinearOpMode {
      */
     void moveAutomaticallyDip(double position)
     {
-        if(!withoutPID())
-        {
-            dip.moveTo(position);
-        }
+        dip.moveTo(position);
+
+//        if(!withoutPID())
+//        {
+//            dip.moveTo(position);
+//        }
     }
 
     /**
@@ -346,6 +373,8 @@ public class teleOpBlue extends LinearOpMode {
     void elevatorSwitch() {
         switch (elevatorMovement) {
             case CLOSED:
+                spinner.setUseGamepad2(true);
+
                 // while elevator is closed, spinner manual moving should be regular, and the gamepad 1 should let the user
                 // to spin the robot and not the spinner
                 if(lastMovement == ElevatorMovement.SHARED)
@@ -363,17 +392,14 @@ public class teleOpBlue extends LinearOpMode {
                 // user wants to open elevator
                 if (gamepad1.right_bumper)
                 {
+                    spinner.setUseGamepad2(false);
+
                     // turn on pid if it was off, spinner movement should be slower and the gamepad1 should twist the spinner
                     // not the robot
                     elevator.setUsePID(true);
                     spinner.setSlowMove(true);
                     spinner.setUsePID(false);
                     gamepad.setCanTwist(false);
-
-
-                    // open elevator slowly??? idk way lemme check this
-                    //powerElevator = powerSlowElevator;
-                    //elevator.setPower(powerElevator);
 
                     // turn of intake, and the option for intake
                     frontIntake = false;
@@ -386,15 +412,23 @@ public class teleOpBlue extends LinearOpMode {
                     switch (elevatorLevel)
                     {
                         case 0:
+                            spinner.setMaxPower(spinnerPower / 1.2);
+                            elevator.setPower(ELEVATOR_SPEED / 2);
                             elevatorMovement = ElevatorMovement.SHARED;
                             break;
                         case 1:
+                            spinner.setMaxPower(spinnerPower);
+                            elevator.setPower(ELEVATOR_SPEED);
                             elevatorMovement = ElevatorMovement.LEVEL1;
                             break;
                         case 2:
+                            spinner.setMaxPower(spinnerPower);
+                            elevator.setPower(ELEVATOR_SPEED);
                             elevatorMovement = ElevatorMovement.LEVEL2;
                             break;
                         case 3:
+                            spinner.setMaxPower(spinnerPower);
+                            elevator.setPower(ELEVATOR_SPEED);
                             elevatorMovement = ElevatorMovement.LEVEL3;
                             break;
                     }
@@ -404,16 +438,19 @@ public class teleOpBlue extends LinearOpMode {
                 break;
             case LEVEL1:
                 lastMovement = ElevatorMovement.LEVEL1;
+                freightSensor.setUseSensor(true);
                 // move elevator to the target, and add a delay for the opening of the hand
                 setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL1, firstLevelHandDelay, hand.getLevel1Hub());
                 break;
             case LEVEL2:
                 lastMovement = ElevatorMovement.LEVEL2;
+                freightSensor.setUseSensor(true);
                 // move elevator to the target, and add a delay for the opening of the hand
                 setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL2, secondLevelHandDelay, hand.getLevel2Hub());
                 break;
             case LEVEL3:
                 lastMovement = ElevatorMovement.LEVEL3;
+                freightSensor.setUseSensor(true);
                 // move elevator to the target, and add a delay for the opening of the hand
                 setTargetLevelCloseDipAndWaitTillDelayForHand(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3, thirdLevelHandDelay, hand.getLevel3Hub());
                 break;
@@ -425,6 +462,8 @@ public class teleOpBlue extends LinearOpMode {
             case DIP:
                 // this will be in a loop, so update elevator and turn on manual servo moving
                 elevator.update();
+                spinner.update();
+
                 manualServoMoving();
 
                 // if gp1 right stick button is on, so we want to twist the robot and not spinner
@@ -488,14 +527,20 @@ public class teleOpBlue extends LinearOpMode {
     void saveCurrentHubLevel()
     {
         switch (elevatorLevel) {
+            case 0:
+                //elevator.setSharedHub(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevelSharedHub(hand.getPos());
             case 1:
-                elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //elevator.setHubLevel1(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevel1Hub(hand.getPos());
                 break;
             case 2:
-                elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //elevator.setHubLevel2(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevel2Hub(hand.getPos());
                 break;
             case 3:
                 elevator.setHubLevel3(elevator.encoderTicksToInches(elevator.getPosition()) + elevator.getZeroHeight());
+                //hand.setLevel3Hub(hand.getPos());
                 break;
         }
     }
@@ -524,6 +569,7 @@ public class teleOpBlue extends LinearOpMode {
 
     void sharedLevelElevatorControl()
     {
+        freightSensor.setUseSensor(false);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.SHARED_HUB);
 
         // wait the delay(if with pid on ofc)
@@ -544,7 +590,6 @@ public class teleOpBlue extends LinearOpMode {
 
     void closeSharedHubElevator()
     {
-
         // wait the delay(if with pid on ofc)
         if(!withoutPID())
         {
@@ -567,8 +612,12 @@ public class teleOpBlue extends LinearOpMode {
         if(!withoutPID() && resetElevator.seconds() > closingHandDelayShare + sharedLevelElevatorCloseDelay)
         {
             elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-            cover.closeCover();
             lastMovement = ElevatorMovement.CLOSED;
+        }
+
+        if(!withoutPID() && resetElevator.seconds() > delayCloseCoverShared)
+        {
+            cover.closeCover();
         }
     }
 

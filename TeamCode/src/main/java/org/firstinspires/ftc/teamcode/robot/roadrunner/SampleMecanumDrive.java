@@ -55,9 +55,9 @@ import static org.firstinspires.ftc.teamcode.robot.roadrunner.DriveConstants.enc
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(10, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.2167348439;
+    public static double LATERAL_MULTIPLIER = 0.9911784173;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -130,6 +130,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         motorSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorElevator = hardwareMap.get(DcMotorEx.class, "mE");
         motorElevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         motorSpinner.setPower(0);
         motorElevator.setPower(0);
 

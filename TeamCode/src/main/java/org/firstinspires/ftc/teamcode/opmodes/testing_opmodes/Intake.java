@@ -27,70 +27,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
-
-
-import android.graphics.Color;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-
-import org.firstinspires.ftc.teamcode.robot.subsystems.cGamepad;
-
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
-@TeleOp(name = "colorSensor Testing LOCALIZER", group = "testing")
+@TeleOp(name = "Intake Testing", group = "testing")
 @Disabled
-public class colorSensorLocalizerDemo extends LinearOpMode {
-    double y_cord = 30;
+public class Intake extends LinearOpMode {
 
-    public static int minRed = 200, minGreen = 200, minBlue = 200;
-    public static int maxRed = 255, maxGreen = 255, maxBlue = 255;
-
-    double oldYCords = y_cord;
-    ColorSensor sensor;
-
-    float[] hsv = {0, 0, 0};
+    DcMotor mI;
+    public static boolean isReverse = true;
+    public static double power = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        sensor = hardwareMap.get(ColorSensor.class, "colorSensor");
-        cGamepad gamepad = new cGamepad(gamepad1);
+        mI = hardwareMap.get(DcMotor.class, "mI");
+        mI.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        while(opModeIsActive()) {
 
-            if (inMinMax(minRed, maxRed, sensor.red()) && inMinMax(minGreen, maxGreen, sensor.green()) && inMinMax(minBlue, maxBlue, sensor.blue())) {
-                y_cord = 10;
+        // run until the end of the match (driver presses STOP)
+
+        while (opModeIsActive()) {
+
+            if(isReverse)
+            {
+                mI.setPower(-power);
+            }
+            else
+            {
+                mI.setPower(power);
             }
 
-            if (gamepad.YOnce()) {
-                y_cord = oldYCords;
-            }
-
-            telemetry.addData("Alpha: ", sensor.alpha());
-            telemetry.addData("Red:  ", sensor.red());
-            telemetry.addData("Green:  ", sensor.green());
-            telemetry.addData("Blue: ", sensor.blue());
-            Color.RGBToHSV(sensor.red(), sensor.green(), sensor.blue(), hsv);
-            telemetry.addData("Red: ", hsv[0]);
-            telemetry.addData("Green:  ", hsv[1]);
-            telemetry.addData("Blue: ", hsv[2]);
-            telemetry.update();
         }
-
-
-    }
-
-    boolean inMinMax(int min, int max, int value)
-    {
-        return min <= value && value <= max;
     }
 }

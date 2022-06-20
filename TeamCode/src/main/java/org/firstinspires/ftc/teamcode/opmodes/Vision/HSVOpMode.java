@@ -40,8 +40,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp(name = "YCbCr OpMode", group = "vision")
-@Disabled
+@TeleOp(name = "HSV OpMode", group = "vision")
 public class HSVOpMode extends LinearOpMode {
 
     OpenCvWebcam webcam;
@@ -57,7 +56,8 @@ public class HSVOpMode extends LinearOpMode {
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
 
             telemetry.addData("Barcode Location:",pipeline.getLocation());
         }

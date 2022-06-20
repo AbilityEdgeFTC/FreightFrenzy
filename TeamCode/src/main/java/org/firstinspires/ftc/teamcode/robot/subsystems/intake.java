@@ -87,6 +87,11 @@ public class intake {
         intakeState = IntakeState.REVERSE;
     }
 
+    public void intakeBackward(double newPower){
+        mI.setPower(-newPower);
+        intakeState = IntakeState.REVERSE;
+    }
+
     /**
      * set power 0 to mI
      * stopping the mI motor

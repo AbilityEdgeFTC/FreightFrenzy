@@ -27,35 +27,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+// .3 is throw freight
+// 1 is out freight from intake
+@Config
+@TeleOp(name = "Servo Testing Hand", group = "testing")
+public class ServoTestHand extends LinearOpMode {
 
-@TeleOp(name = "Distance Sensor Testing", group = "Sensor")
-@Disabled
-public class DistanceSensorTesting extends LinearOpMode {
+    Servo servo;
+    public static double position = 0;
 
-    ModernRoboticsI2cRangeSensor rangeSensor;
+    @Override
+    public void runOpMode() throws InterruptedException {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
-    @Override public void runOpMode() {
+        servo = hardwareMap.get(Servo.class, "sH");
+        servo.setDirection(Servo.Direction.REVERSE);
 
-        // get a reference to our compass
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "distanceSensor");
-
-        // wait for the start button to be pressed
+        // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        // run until the end of the match (driver presses STOP)
+
         while (opModeIsActive()) {
-            telemetry.addData("raw ultrasonic", rangeSensor.rawUltrasonic());
-            telemetry.addData("raw optical", rangeSensor.rawOptical());
-            telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());
-            telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));
-            telemetry.update();
+            servo.setPosition(position);
         }
     }
 }

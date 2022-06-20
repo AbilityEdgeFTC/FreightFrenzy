@@ -27,30 +27,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-// .3 is throw freight
-// 1 is out freight from intake
+// .15 close
+// .5
 @Config
-@TeleOp(name = "Servo Testing Dip", group = "testing")
-@Disabled
-public class ServoTestDip extends LinearOpMode {
+@TeleOp(name = "Servo Testing Cover", group = "testing")
+public class ServoTestCover extends LinearOpMode {
 
     Servo servo;
-    public static double position = 0;
+    public static double position = .12;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        servo = hardwareMap.get(Servo.class, "sD");
+        servo = hardwareMap.get(Servo.class, "sC");
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();

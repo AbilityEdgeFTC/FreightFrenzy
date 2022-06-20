@@ -17,10 +17,10 @@ public class SpinnerFirstPID {
     public static int RIGHT_ANGLE = 250;
     public static int LEFT_ANGLE = -250;
     public static int ZERO_ANGLE = 330;
-    public static int LEFT_AUTO_ANGLE_RED = 143;
-    public static int LEFT_AUTO_ANGLE_BLUE = -143;
-    public static int DUCK_ANGLE_RED = -155;
-    public static int DUCK_ANGLE_BLUE = 155;
+    public static int LEFT_AUTO_ANGLE_RED = 117;
+    public static int LEFT_AUTO_ANGLE_BLUE = -117;
+    public static int DUCK_ANGLE_RED = 162;
+    public static int DUCK_ANGLE_BLUE = -162;
     public static double power = 1;
     public static boolean usePID = true;
     int target = 0;
@@ -45,16 +45,6 @@ public class SpinnerFirstPID {
 
     Gamepad gamepad;
     cGamepad cGamepad;
-
-    public SpinnerFirstPID(HardwareMap hardwareMap, Gamepad gamepad)
-    {
-        this.motor = hardwareMap.get(DcMotorEx.class, "mS");
-        this.motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        this.motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        this.motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        this.gamepad = gamepad;
-        this.cGamepad = new cGamepad(gamepad);
-    }
 
     public SpinnerFirstPID(HardwareMap hardwareMap)
     {

@@ -27,49 +27,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes.teleop;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@Config
-@TeleOp(name = "Intake Testing", group = "testing")
-@Disabled
-public class Intake extends LinearOpMode {
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.robot.subsystems.FreightSensor;
 
-    DcMotor mI;
-    public static boolean isReverse = true;
-    public static double power = 1;
+@TeleOp(name = "Freight Sensor Testing", group = "Sensor")
+public class DistanceSensor extends LinearOpMode {
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+    FreightSensor freightSensor;
 
-        mI = hardwareMap.get(DcMotor.class, "mI");
-        mI.setDirection(DcMotorSimple.Direction.REVERSE);
+    @Override public void runOpMode() {
 
+        // get a reference to our compass
+        freightSensor = new FreightSensor(hardwareMap);
 
-        // Wait for the game to start (driver presses PLAY)
+        // wait for the start button to be pressed
         waitForStart();
-
-        // run until the end of the match (driver presses STOP)
 
         while (opModeIsActive()) {
 
-            if(isReverse)
+            if(freightSensor.hasFreight())
             {
-                mI.setPower(-power);
+                telemetry.addLine("Has freight.");
             }
             else
             {
-                mI.setPower(power);
+                telemetry.addLine("NO freight.");
             }
 
+            telemetry.update();
         }
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020 FIRST. All rights reserved.
+/* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -27,66 +27,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.robot.subsystems;
-
-import android.graphics.Color;
+package org.firstinspires.ftc.teamcode.opmodes.testing_opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
+import org.firstinspires.ftc.teamcode.robot.subsystems.Carousel;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.opencv.core.Scalar;
-
-/*
-DOESNT WORK - NOT BEEN TESTED
- */
 @Config
-public class SensorColor {
+@TeleOp(name = "Carousel Testing", group = "testing")
+public class CarouselTesting extends LinearOpMode {
 
-    RevColorSensorV3 colorSensor;
-    public static double gain = 2;
-    float[] hsvValues = new float[3];
-    float[] rgbValues = new float[3];
-    NormalizedRGBA colors;
-    double distance;
+    @Override
+    public void runOpMode() throws InterruptedException {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
-    public SensorColor(HardwareMap hardwareMap) {
-        this.colorSensor = hardwareMap.get(RevColorSensorV3.class, "sensor_color");
-        if (colorSensor instanceof SwitchableLight) {
-            ((SwitchableLight)colorSensor).enableLight(true);
+        Carousel carousel = new Carousel(hardwareMap, telemetry, gamepad1);
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+
+            while(gamepad1.x) {
+                carousel.displayTelemetry();
+                carousel.spinCarousel(false);
+            }
+
+            carousel.stopCarousel();
+            carousel.displayTelemetry();
         }
-        colorSensor.setGain((float)gain);
     }
-
-    public float[] getRGB()
-    {
-        colors = colorSensor.getNormalizedColors();
-        rgbValues = new float[]{colors.red, colors.blue, colors.green};
-        return rgbValues;
-    }
-
-    public float[] getHSV()
-    {
-        colors = colorSensor.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        return hsvValues;
-    }
-
-    public float getAlpha()
-    {
-        colors = colorSensor.getNormalizedColors();
-        return colors.alpha;
-    }
-
-    public double getCM() {
-        distance = colorSensor.getDistance(DistanceUnit.CM);
-        return distance;
-    }
-
 }
