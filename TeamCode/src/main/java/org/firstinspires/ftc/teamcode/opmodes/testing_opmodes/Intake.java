@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp(name = "Intake Testing", group = "testing")
-@Disabled
 public class Intake extends LinearOpMode {
 
     DcMotor mI;

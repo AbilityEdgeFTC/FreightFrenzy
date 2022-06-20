@@ -284,8 +284,8 @@ public class teleOpBlue extends LinearOpMode {
     void toggleIntakesGP1GP2()
     {
         /**
-        theres alot of if's because we want to make sure there isn't any collusion between the intake when 2 drivers are trying to power
-        it by accident...
+         theres alot of if's because we want to make sure there isn't any collusion between the intake when 2 drivers are trying to power
+         it by accident...
          but we just check if the gamepads want to power the intake, and which way.
          */
 
