@@ -40,8 +40,8 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "FULL Left Blue", group = "Autonomous Blue")
-public class AutoLeftBlue extends LinearOpMode {
+@Autonomous(name = "Three Cycle Left Blue", group = "Autonomous Blue")
+public class ThreeCycleAutoLeftBlue extends LinearOpMode {
 
     double startPoseRightX = 12.7;
     double startPoseRightY = 72 - 17.72;
@@ -86,7 +86,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
     public static double powerSlowElevator = .7, powerElevator = 1, powerElevatorFast = 1, elevatorDelay = .9;
     public static double elevatorDelayOpenA1 = 0.1, elevatorDelayOpenB1 = .75, elevatorDelayOpenC1 = .65;
-    public static double elevatorDelayCloseA1 = .7, elevatorDelayCloseB1 = .95;
+    public static double elevatorDelayCloseA1 = .7, elevatorDelayCloseB1 = .95, stopOpModeDelay = 3;
 
     boolean hasFreight = false, firstTime = true;
     double offset = 0;
@@ -113,10 +113,6 @@ public class AutoLeftBlue extends LinearOpMode {
         INTAKE3,
         OPEN_ELEVATOR4,
         WAIT_ELEVATOR_DELAY4,
-        INTAKE4,
-        OPEN_ELEVATOR5,
-        WAIT_ELEVATOR_DELAY5,
-        INTAKE5,
         PARK,
         IDLE
     }
@@ -145,15 +141,15 @@ public class AutoLeftBlue extends LinearOpMode {
         dip = new dip(hardwareMap);
         freightSensor = new FreightSensor(hardwareMap);
 
-        DriveConstants.setMaxVel(70);
-        DriveConstants.setMaxAccel(70);
+        DriveConstants.setMaxVel(65);
+        DriveConstants.setMaxAccel(65);
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new TranslationalVelocityConstraint(55),
+                new TranslationalVelocityConstraint(50),
                 new RectangleMaskConstraint(45,72,72,45,
                         new TranslationalVelocityConstraint(10))));
 
-        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(50);
+        TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(45);
 
         startPoseRight = new Pose2d(startPoseRightX, startPoseRightY, Math.toRadians(startPoseRightH));
         poseHelp = new Pose2d(poseHelpX, poseHelpY, Math.toRadians(poseHelpH));
@@ -535,55 +531,28 @@ public class AutoLeftBlue extends LinearOpMode {
 
                     closeElevator();
 
-                    changeState(State.INTAKE4, goToIntake4);
-                }
-                break;
-            case INTAKE4:
-                if(hasFreight)
-                {
-                    drive.breakFollowing();
-                    intake.intakeBackward();
-                }
-
-                changeState(State.OPEN_ELEVATOR5, goToHub5);
-                break;
-            case OPEN_ELEVATOR5:
-                if(!drive.isBusy())
-                {
-                    intake.stop();
-                    openElevator();
-                    currentState = State.WAIT_ELEVATOR_DELAY5;
-                }
-                break;
-            case WAIT_ELEVATOR_DELAY5:
-                if(firstTime)
-                {
-                    offset = runningFor.seconds();
-                    firstTime = false;
-                }
-
-                if((runningFor.seconds() - offset) >= elevatorDelay)
-                {
-                    firstTime = true;
-
-                    closeElevator();
-
-                    changeState(State.INTAKE5, goToPark);
-                }
-                break;
-            case INTAKE5:
-                if(hasFreight)
-                {
-                    intake.intakeBackward();
-                }
-
-                if(!drive.isBusy())
-                {
-                    currentState = State.PARK;
+                    changeState(State.PARK, goToPark);
                 }
                 break;
             case PARK:
-                requestOpModeStop();
+                if(hasFreight)
+                {
+                    intake.intakeBackward();
+                }
+
+                if(!drive.isBusy())
+                {
+                    if(firstTime)
+                    {
+                        offset = runningFor.seconds();
+                        firstTime = false;
+                    }
+
+                    if((runningFor.seconds() - offset) >= stopOpModeDelay)
+                    {
+                        requestOpModeStop();
+                    }
+                }
                 break;
         }
     }

@@ -40,25 +40,25 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "FULL Left Blue", group = "Autonomous Blue")
-public class AutoLeftBlue extends LinearOpMode {
+@Autonomous(name = "One Cycle Right Red", group = "Autonomous Red")
+public class OneCycleAutoRightRed extends LinearOpMode {
 
     double startPoseRightX = 12.7;
-    double startPoseRightY = 72 - 17.72;
-    double startPoseRightH = -90;
+    double startPoseRightY = -72 + 17.72;
+    double startPoseRightH = 90;
 
     public static double poseEntranceX = 7.7;
-    public static double poseEntranceY = 59;
-    public static double poseEntranceH = -180;
+    public static double poseEntranceY = -59;
+    public static double poseEntranceH = 180;
     public static double poseCollectX = 49.5;
-    public static double poseCollectY = 60;
-    public static double poseCollectH = -180;
+    public static double poseCollectY = -60;
+    public static double poseCollectH = 180;
     public static double poseHelpX = 7.9;
-    public static double poseHelpY = 56;
-    public static double poseHelpH = -180;
+    public static double poseHelpY = -56;
+    public static double poseHelpH = 180;
     public static double poseCollectX2 = 60;
-    public static double poseCollectY2 = 58;
-    public static double poseCollectH2 = -180;
+    public static double poseCollectY2 = -58;
+    public static double poseCollectH2 = 180;
 
     public static boolean useVision = true;
 
@@ -86,12 +86,12 @@ public class AutoLeftBlue extends LinearOpMode {
 
     public static double powerSlowElevator = .7, powerElevator = 1, powerElevatorFast = 1, elevatorDelay = .9;
     public static double elevatorDelayOpenA1 = 0.1, elevatorDelayOpenB1 = .75, elevatorDelayOpenC1 = .65;
-    public static double elevatorDelayCloseA1 = .7, elevatorDelayCloseB1 = .95;
+    public static double elevatorDelayCloseA1 = .7, elevatorDelayCloseB1 = .95, stopOpModeDelay = 3;
 
     boolean hasFreight = false, firstTime = true;
     double offset = 0;
 
-    TrajectorySequence fixAngle, goToIntake1, goToHub2, goToIntake2, goToHub3, goToIntake3, goToHub4, goToPark, goToHub5, goToIntake4, goToIntake5;
+    TrajectorySequence fixAngle, goToIntake1, goToHub2, goToPark;
     Pose2d startPoseRight, poseHelp, poseEntrance, poseCollect, poseCollectCycle2;
 
     enum State
@@ -107,16 +107,6 @@ public class AutoLeftBlue extends LinearOpMode {
         INTAKE1,
         OPEN_ELEVATOR2,
         WAIT_ELEVATOR_DELAY2,
-        INTAKE2,
-        OPEN_ELEVATOR3,
-        WAIT_ELEVATOR_DELAY3,
-        INTAKE3,
-        OPEN_ELEVATOR4,
-        WAIT_ELEVATOR_DELAY4,
-        INTAKE4,
-        OPEN_ELEVATOR5,
-        WAIT_ELEVATOR_DELAY5,
-        INTAKE5,
         PARK,
         IDLE
     }
@@ -145,13 +135,13 @@ public class AutoLeftBlue extends LinearOpMode {
         dip = new dip(hardwareMap);
         freightSensor = new FreightSensor(hardwareMap);
 
-        DriveConstants.setMaxVel(70);
-        DriveConstants.setMaxAccel(70);
+        DriveConstants.setMaxVel(55);
+        DriveConstants.setMaxAccel(55);
 
         TrajectoryVelocityConstraint velConstraint = new MinVelocityConstraint(Arrays.asList(
-                new TranslationalVelocityConstraint(55),
-                new RectangleMaskConstraint(45,72,72,45,
-                        new TranslationalVelocityConstraint(10))));
+                new TranslationalVelocityConstraint(45),
+                new RectangleMaskConstraint(45,-72,72,-45,
+                        new TranslationalVelocityConstraint(40))));
 
         TrajectoryAccelerationConstraint accelConstraint = new ProfileAccelerationConstraint(50);
 
@@ -208,7 +198,7 @@ public class AutoLeftBlue extends LinearOpMode {
                 .lineToLinearHeading(poseHelp, SampleMecanumDrive.getVelocityConstraint(55, DriveConstants.MAX_ANG_VEL/3,
                         DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(60))
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX(), poseEntrance.getY()+2, poseEntrance.getHeading()))
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX(), poseEntrance.getY()-2, poseEntrance.getHeading()))
                 .build();
 
         goToIntake1 = new TrajectorySequenceBuilder(fixAngle.end(), velConstraint, accelConstraint,
@@ -222,49 +212,14 @@ public class AutoLeftBlue extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(poseEntrance.getX()-0.3, poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
-        goToIntake2 = new TrajectorySequenceBuilder(goToHub2.end(), velConstraint, accelConstraint,
-                DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()+2, poseCollect.getY(), poseCollect.getHeading()))
-                .build();
-
-        goToHub3 = drive.trajectorySequenceBuilder(goToIntake2.end())
-                .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-1.6, poseEntrance.getY(), poseEntrance.getHeading()))
-                .build();
-
-        goToIntake3 = new TrajectorySequenceBuilder(goToHub3.end(), velConstraint, accelConstraint,
-                DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX(), poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+8, poseCollect.getY()), Math.toRadians(-10))
-                .build();
-
-        goToHub4 = drive.trajectorySequenceBuilder(goToIntake3.end())
-                .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-1.3, poseEntrance.getY(), poseEntrance.getHeading()))
-                .build();
-
-        goToIntake4 = new TrajectorySequenceBuilder(goToHub4.end(), velConstraint, accelConstraint,
-                DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
-                .addTemporalMarker(intakeForward)
-                .lineToSplineHeading(new Pose2d(poseCollect.getX()+1, poseCollect.getY(), poseCollect.getHeading()))
-                .splineTo(new Vector2d(poseCollect.getX()+12, poseCollect.getY()), Math.toRadians(-15))
-                .build();
-
-        goToHub5 = drive.trajectorySequenceBuilder(goToIntake4.end())
-                .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-0.2, poseEntrance.getY(), poseEntrance.getHeading()))
-                .build();
-
-        goToPark = new TrajectorySequenceBuilder(goToHub5.end(), velConstraint, accelConstraint,
+        goToPark = new TrajectorySequenceBuilder(goToHub2.end(), velConstraint, accelConstraint,
                 DriveConstants.MAX_ANG_VEL, DriveConstants.MAX_ANG_ACCEL)
                 .addTemporalMarker(intakeForward)
                 .addTemporalMarker(elevetorClose)
                 .lineToSplineHeading(new Pose2d(poseCollect.getX()+1, poseCollect.getY(), poseCollect.getHeading()))
                 .build();
 
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_BLUE);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.ZERO_RED);
 
         while (!opModeIsActive() && !isStopRequested() && useVision)
         {
@@ -272,14 +227,14 @@ public class AutoLeftBlue extends LinearOpMode {
             switch (pipeline.getLocation())
             {
                 case Left:
-                case Not_Found:
-                    placeFreightIn = levels.MAX; // RED, blue = 3
+                    placeFreightIn = levels.MIN; // RED, blue = 3
                     break;
                 case Center:
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
-                    placeFreightIn = levels.MIN; // RED, blue = 1
+                case Not_Found:
+                    placeFreightIn = levels.MAX; // RED, blue = 1
                     break;
             }
             telemetry.update();
@@ -291,7 +246,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
         webcam.stopStreaming();
 
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
         spinner.updateAuto();
         elevator.updateAuto();
@@ -469,121 +424,28 @@ public class AutoLeftBlue extends LinearOpMode {
 
                     closeElevator();
 
-                    changeState(State.INTAKE2, goToIntake2);
-                }
-                break;
-            case INTAKE2:
-                if(hasFreight)
-                {
-                    drive.breakFollowing();
-                    intake.intakeBackward();
-                }
-
-                changeState(State.OPEN_ELEVATOR3, goToHub3);
-                break;
-            case OPEN_ELEVATOR3:
-                if(!drive.isBusy())
-                {
-                    intake.stop();
-                    openElevator();
-                    currentState = State.WAIT_ELEVATOR_DELAY3;
-                }
-                break;
-            case WAIT_ELEVATOR_DELAY3:
-                if(firstTime)
-                {
-                    offset = runningFor.seconds();
-                    firstTime = false;
-                }
-
-                if((runningFor.seconds() - offset) >= elevatorDelay)
-                {
-                    firstTime = true;
-
-                    closeElevator();
-
-                    changeState(State.INTAKE3, goToIntake3);
-                }
-                break;
-            case INTAKE3:
-                if(hasFreight)
-                {
-                    drive.breakFollowing();
-                    intake.intakeBackward();
-                }
-
-                changeState(State.OPEN_ELEVATOR4, goToHub4);
-                break;
-            case OPEN_ELEVATOR4:
-                if(!drive.isBusy())
-                {
-                    intake.stop();
-                    openElevator();
-                    currentState = State.WAIT_ELEVATOR_DELAY4;
-                }
-                break;
-            case WAIT_ELEVATOR_DELAY4:
-                if(firstTime)
-                {
-                    offset = runningFor.seconds();
-                    firstTime = false;
-                }
-
-                if((runningFor.seconds() - offset) >= elevatorDelay)
-                {
-                    firstTime = true;
-
-                    closeElevator();
-
-                    changeState(State.INTAKE4, goToIntake4);
-                }
-                break;
-            case INTAKE4:
-                if(hasFreight)
-                {
-                    drive.breakFollowing();
-                    intake.intakeBackward();
-                }
-
-                changeState(State.OPEN_ELEVATOR5, goToHub5);
-                break;
-            case OPEN_ELEVATOR5:
-                if(!drive.isBusy())
-                {
-                    intake.stop();
-                    openElevator();
-                    currentState = State.WAIT_ELEVATOR_DELAY5;
-                }
-                break;
-            case WAIT_ELEVATOR_DELAY5:
-                if(firstTime)
-                {
-                    offset = runningFor.seconds();
-                    firstTime = false;
-                }
-
-                if((runningFor.seconds() - offset) >= elevatorDelay)
-                {
-                    firstTime = true;
-
-                    closeElevator();
-
-                    changeState(State.INTAKE5, goToPark);
-                }
-                break;
-            case INTAKE5:
-                if(hasFreight)
-                {
-                    intake.intakeBackward();
-                }
-
-                if(!drive.isBusy())
-                {
-                    currentState = State.PARK;
+                    changeState(State.PARK, goToPark);
                 }
                 break;
             case PARK:
-                requestOpModeStop();
+                if(hasFreight)
+                {
+                    intake.intakeBackward();
+                }
+
+                if(!drive.isBusy())
+                {
+                    if(firstTime)
+                    {
+                        offset = runningFor.seconds();
+                        firstTime = false;
+                    }
+
+                    if((runningFor.seconds() - offset) >= stopOpModeDelay)
+                    {
+                        requestOpModeStop();
+                    }
+                }
                 break;
         }
     }
@@ -607,7 +469,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
         elevator.updateAuto();
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.HUB_LEVEL3);
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         spinner.updateAuto();
 
         hand.level3();
@@ -626,7 +488,7 @@ public class AutoLeftBlue extends LinearOpMode {
         elevator.updateAuto();
         spinner.updateAuto();
 
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
 
         elevator.updateAuto();
@@ -682,7 +544,7 @@ public class AutoLeftBlue extends LinearOpMode {
             case MIN:
             case MID:
             case MAX:
-                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+                spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
                 elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
                 break;
         }
@@ -728,7 +590,7 @@ public class AutoLeftBlue extends LinearOpMode {
     void elevatorCloseA()
     {
         dip.releaseFreight();
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
         powerElevator = powerSlowElevator;
         elevator.setPower(powerElevator);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.MID);
@@ -745,7 +607,7 @@ public class AutoLeftBlue extends LinearOpMode {
         elevator.updateAuto();
         spinner.updateAuto();
         hand.intake();
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
     }
 
     void elevatorCloseC()
@@ -756,7 +618,7 @@ public class AutoLeftBlue extends LinearOpMode {
         powerElevator = powerSlowElevator;
         elevator.setPower(powerElevator);
         elevator.setElevatorLevel(ElevatorFirstPID.ElevatorLevel.ZERO);
-        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.LEFT);
+        spinner.setSpinnerState(SpinnerFirstPID.SpinnerState.RIGHT);
 
         cover.closeCover();
     }

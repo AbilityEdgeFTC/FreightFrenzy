@@ -40,7 +40,7 @@ import java.util.Arrays;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Right Red", group = "Autonomous Red")
+@Autonomous(name = "FULL Right Red", group = "Autonomous Red")
 public class AutoRightRed extends LinearOpMode {
 
     double startPoseRightX = 12.7;
