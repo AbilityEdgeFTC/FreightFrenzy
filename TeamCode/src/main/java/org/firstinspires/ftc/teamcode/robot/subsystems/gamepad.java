@@ -33,8 +33,8 @@ public class gamepad {
     double rightPower_f;
     double rightPower_b;
     double drive,  strafe, twist, power = mainPower;
-    public static double mainPower = .87, multiplier = .9, POWER_INCREMENT = 0.1;
-    public static boolean slowMove = false, isCentricDrive = true, canTwist = true, goSlow = false;
+    public static double mainPower = .92, multiplier = .9, POWER_INCREMENT = 0.1;
+    public static boolean slowMove = false, isCentricDrive = true, canTwist = true;
     cGamepad cGamepad1, cGamepad2;
     SampleMecanumDrive drivetrain;
     public static double startH = 0;

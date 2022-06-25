@@ -38,10 +38,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp(name = "Intake Testing", group = "testing")
-public class Intake extends LinearOpMode {
+public class IntakeTesting extends LinearOpMode {
 
     DcMotor mI;
-    public static boolean isReverse = true;
+    public static boolean isReverse = false;
     public static double power = 1;
 
     @Override

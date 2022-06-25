@@ -47,8 +47,8 @@ public class PreloadParkAutoRightRed extends LinearOpMode {
     double startPoseRightY = 72 - 17.72;
     double startPoseRightH = -90;
 
-    public static double poseEntranceX = 7.7;
-    public static double poseEntranceY = 59;
+    public static double poseEntranceX = 7.6;
+    public static double poseEntranceY = -60.5;
     public static double poseEntranceH = -180;
     public static double poseCollectX = 49.5;
     public static double poseCollectY = 60;

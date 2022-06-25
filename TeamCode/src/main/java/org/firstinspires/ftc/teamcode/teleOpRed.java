@@ -37,7 +37,7 @@ public class teleOpRed extends LinearOpMode {
     public static double powerIntake = 1, powerSlowElevator = .65;
     public static double firstLevelHandDelay = 0.2, secondLevelHandDelay = .2;
     public static double thirdLevelHandDelay = .17, shareLevelHandDelay = 0.17;
-    public static double spinnerSlowerPower = 0.4;
+    public static double spinnerSlowerPower = 0.45;
     public static double elevatorFastPower = 0.85;
     public static double sharedLevelElevatorGoBackDelay = .5, sharedLevelElevatorCloseDelay = 1;
     public static double closingHandDelayShare = .65, closingHandDelayLevel1 = 1.3;
@@ -46,7 +46,7 @@ public class teleOpRed extends LinearOpMode {
     double MIN_MANUAL_HAND_MOVING = 0.03, MAX_MANUAL_HAND_MOVING = 1 - MIN_MANUAL_HAND_MOVING;
     boolean frontIntake = false, backIntake = false, canIntake = true;
     public static double delayCloseCover = .85, delayCloseCoverShared = .8;
-    public static double spinnerPower = 0.25;
+    public static double spinnerPower = 0.3;
     double positionDip = 0;
 
     enum ElevatorMovement
