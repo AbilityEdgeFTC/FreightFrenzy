@@ -53,7 +53,7 @@ public class AutoLeftRed extends LinearOpMode {
     public static double carouselHelp = 13;
     public static double runCarouselFor = 5;
     public static double poseParkX = -57.35;
-    public static double poseParkY = -30.3;
+    public static double poseParkY = -31.3;
     public static double poseParkH = 180;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;

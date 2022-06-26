@@ -19,21 +19,32 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class HSVPipeline extends OpenCvPipeline
 {
 
-    // purple
-    public static double lowValuesTSEH = 142;
-    public static double highValuesTSEH = 176;
-    public static double lowValuesTSES = 116;
-    public static double highValuesTSES = 200;
-    public static double lowValuesTSEV = 62;
-    public static double highValuesTSEV = 135;
+    // yellow cruise
+    public static double lowValuesTSEH = 17;
+    public static double highValuesTSEH = 75;
+    public static double lowValuesTSES = 97;
+    public static double highValuesTSES = 217;
+    public static double lowValuesTSEV = 122;
+    public static double highValuesTSEV = 240;
 
-    // green
-//    public static double lowValuesTSEH = 27;
-//    public static double highValuesTSEH = 103;
-//    public static double lowValuesTSES = 55;
-//    public static double highValuesTSES = 156;
-//    public static double lowValuesTSEV = 0;
-//    public static double highValuesTSEV = 201;
+    // roboforce green
+//    public static double lowValuesTSEH = 29;
+//    public static double highValuesTSEH = 100;
+//    public static double lowValuesTSES = 26;
+//    public static double highValuesTSES = 195;
+//    public static double lowValuesTSEV = 96;
+//    public static double highValuesTSEV = 255;
+
+
+    // purple ours
+//    public static double lowValuesTSEH = 84;
+//    public static double highValuesTSEH = 172;
+//    public static double lowValuesTSES = 75;
+//    public static double highValuesTSES = 177;
+//    public static double lowValuesTSEV = 113;
+//    public static double highValuesTSEV = 255;
+
+
     // creating a mast with the same resolution of the webcam for the place to display the detected team shipping element
     Mat mask = new Mat(1280,720,0);//
     Mat inputHSV = new Mat(1280,720,0);

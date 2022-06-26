@@ -47,8 +47,8 @@ public class TwoCycleAutoLeftBlue extends LinearOpMode {
     double startPoseRightY = 72 - 17.72;
     double startPoseRightH = -90;
 
-    public static double poseEntranceX = 7.6;
-    public static double poseEntranceY = 60.5;
+    public static double poseEntranceX = 7.61;
+    public static double poseEntranceY = 60.6;
     public static double poseEntranceH = -180;
     public static double poseCollectX = 49.5;
     public static double poseCollectY = 60;
@@ -241,14 +241,14 @@ public class TwoCycleAutoLeftBlue extends LinearOpMode {
             switch (pipeline.getLocation())
             {
                 case Left:
-                case Not_Found:
-                    placeFreightIn = levels.MAX; // RED, blue = 3
+                    placeFreightIn = levels.MIN; // RED, blue = 3
                     break;
                 case Center:
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
-                    placeFreightIn = levels.MIN; // RED, blue = 1
+                case Not_Found:
+                    placeFreightIn = levels.MAX; // RED, blue = 1
                     break;
             }
             telemetry.update();

@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 @Config
 public class ElevatorFirstPID {
 
-    public static double HUB_LEVEL3 = 24.4;
+    public static double HUB_LEVEL3 = 24.5;
     public static double HUB_LEVEL2 = 10;
     public static double HUB_LEVEL1 = HUB_LEVEL2;
     public static double AUTO_LEFT_LEVEL = 19;
@@ -28,7 +28,7 @@ public class ElevatorFirstPID {
     public static double ZERO_HEIGHT = 0;
     public static double TICKS_PER_REV = 145.1;
     public static double SPOOL_RADIUS = 0.75; // in
-    public static double maxPower = 0.8;
+    public static double maxPower = 0.6;
     double power = 1;
     boolean usePID = true;
     public static int offset = 0;

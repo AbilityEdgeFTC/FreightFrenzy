@@ -44,7 +44,7 @@ public class AutoRightBlue extends LinearOpMode {
     public static double carouselHelp = 13;
     public static double runCarouselFor = 5;
     public static double poseParkX = -58.5;
-    public static double poseParkY = 29.8;
+    public static double poseParkY = 31.3;
     public static double poseParkH = -180;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
@@ -300,14 +300,14 @@ public class AutoRightBlue extends LinearOpMode {
             switch (pipeline.getLocation())
             {
                 case Left:
-                case Not_Found:
-                    placeFreightIn = levels.MAX; // RED, blue = 3
+                    placeFreightIn = levels.MIN; // RED, blue = 3
                     break;
                 case Center:
                     placeFreightIn = levels.MID; // RED, blue = 2
                     break;
                 case Right:
-                    placeFreightIn = levels.MIN; // RED, blue = 1
+                case Not_Found:
+                    placeFreightIn = levels.MAX; // RED, blue = 1
                     break;
             }
             telemetry.update();
