@@ -50,7 +50,7 @@ public class AutoLeftBlue extends LinearOpMode {
     public static double poseEntranceX = 7.61;
     public static double poseEntranceY = 60.6;
     public static double poseEntranceH = -180;
-    public static double poseCollectX = 49.5;
+    public static double poseCollectX = 50;
     public static double poseCollectY = 60;
     public static double poseCollectH = -180;
     public static double poseHelpX = 7.9;
@@ -242,7 +242,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
         goToHub4 = drive.trajectorySequenceBuilder(goToIntake3.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-1.3, poseEntrance.getY(), poseEntrance.getHeading()))
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-1, poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
         goToIntake4 = new TrajectorySequenceBuilder(goToHub4.end(), velConstraint, accelConstraint,
@@ -254,7 +254,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
         goToHub5 = drive.trajectorySequenceBuilder(goToIntake4.end())
                 .addTemporalMarker(intakeBackword)
-                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-0.2, poseEntrance.getY(), poseEntrance.getHeading()))
+                .lineToLinearHeading(new Pose2d(poseEntrance.getX()-0.6, poseEntrance.getY(), poseEntrance.getHeading()))
                 .build();
 
         goToPark = new TrajectorySequenceBuilder(goToHub5.end(), velConstraint, accelConstraint,

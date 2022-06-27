@@ -43,8 +43,8 @@ public class AutoRightBlue extends LinearOpMode {
     public static double poseCarouselH = -85;
     public static double carouselHelp = 13;
     public static double runCarouselFor = 5;
-    public static double poseParkX = -58.5;
-    public static double poseParkY = 31.3;
+    public static double poseParkX = -57.37;
+    public static double poseParkY = 31.4;
     public static double poseParkH = -180;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;

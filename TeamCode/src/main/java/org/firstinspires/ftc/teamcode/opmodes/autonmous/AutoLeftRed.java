@@ -51,9 +51,9 @@ public class AutoLeftRed extends LinearOpMode {
     public static double poseCarouselY = -51.3;
     public static double poseCarouselH = 5;
     public static double carouselHelp = 13;
-    public static double runCarouselFor = 5;
-    public static double poseParkX = -57.35;
-    public static double poseParkY = -31.3;
+    public static double runCarouselFor = 8;
+    public static double poseParkX = -57.4;
+    public static double poseParkY = -28.4;
     public static double poseParkH = 180;
     ElevatorFirstPID elevator;
     SpinnerFirstPID spinner;
@@ -116,7 +116,7 @@ public class AutoLeftRed extends LinearOpMode {
         {
             @Override
             public void onMarkerReached(){
-                intake.intakeForward();
+                intake.stop();
             }
         };
         MarkerCallback intakeStop =  new MarkerCallback()
@@ -342,10 +342,10 @@ public class AutoLeftRed extends LinearOpMode {
                 .waitSeconds(runCarouselFor)
                 .addTemporalMarker(carouselOff)
                 .forward(8)
-                .turn(Math.toRadians(85))
-                .addTemporalMarker(intakeDuck)
-                .back(8)//first intake
-                .forward(11)
+                /*.turn(Math.toRadians(85))
+                //.addTemporalMarker(intakeDuck)
+                //.back(8)//first intake
+                //.forward(11)
                 .strafeRight(9)
                 .back(11)//second intak
                 .forward(11)
@@ -359,7 +359,7 @@ public class AutoLeftRed extends LinearOpMode {
                 .addTemporalMarker(elevetorCloseB)
                 .waitSeconds(1.5)
                 .addTemporalMarker(elevetorCloseC)
-                .waitSeconds(.5)
+                .waitSeconds(.5)*/
                 .addTemporalMarker(intakeStop)
                 .addTemporalMarker(spinerZeroMode)
                 .lineToSplineHeading(posePark)
@@ -374,6 +374,7 @@ public class AutoLeftRed extends LinearOpMode {
         spinner.updateAuto();
         elevator.updateAuto();
 
+        sleep(2000);
         drive.followTrajectorySequence(main);
         spinner.updateAuto();
     }

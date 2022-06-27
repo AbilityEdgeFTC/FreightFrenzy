@@ -50,13 +50,13 @@ public class PreloadParkAutoLeftBlue extends LinearOpMode {
     public static double poseEntranceY = 60.6;
     public static double poseEntranceH = 180;
     public static double poseCollectX = 49.5;
-    public static double poseCollectY = -60;
+    public static double poseCollectY = 60;
     public static double poseCollectH = 180;
     public static double poseHelpX = 7.9;
-    public static double poseHelpY = -56;
+    public static double poseHelpY = 56;
     public static double poseHelpH = 180;
     public static double poseCollectX2 = 60;
-    public static double poseCollectY2 = -58;
+    public static double poseCollectY2 = 58;
     public static double poseCollectH2 = 180;
 
     public static boolean useVision = true;

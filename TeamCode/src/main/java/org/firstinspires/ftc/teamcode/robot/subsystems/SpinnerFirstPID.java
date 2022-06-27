@@ -19,8 +19,8 @@ public class SpinnerFirstPID {
     public static int ZERO_ANGLE = 330;
     public static int LEFT_AUTO_ANGLE_RED = 117;
     public static int LEFT_AUTO_ANGLE_BLUE = -117;
-    public static int DUCK_ANGLE_RED = 180;
-    public static int DUCK_ANGLE_BLUE = -180;
+    public static int DUCK_ANGLE_RED = 169;
+    public static int DUCK_ANGLE_BLUE = -169;
     public static double power = 1;
     public static boolean usePID = true;
     int target = 0;
