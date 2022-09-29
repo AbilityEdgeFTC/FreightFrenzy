@@ -96,16 +96,18 @@ public class MMRightRed {
                 .splineTo(new Vector2d(poseCollect.getX()+11, poseCollect.getY()), Math.toRadians(15))
                 .build();
 
-        RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+
+        RoadRunnerBotEntity mySecondBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(70, 70, 7.706666469573975, 7.706666469573975, 13)
                 .followTrajectorySequence(main);
 
-        myBot.setDimensions(13,17.9);
-        meepMeep.setBackground(MeepMeep.Background.FIELD_FREIGHTFRENZY_ADI_DARK)
+
+        mySecondBot.setDimensions(13,17.9);
+        meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_KAI_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(myBot)
+                .addEntity(mySecondBot)
                 .start();
     }
 }
